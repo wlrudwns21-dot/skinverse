@@ -301,3 +301,68 @@ export function trendSeries(history: ScanRecord[]): TrendPoint[] {
       humidity: scan.weather?.h ?? null,
     }))
 }
+
+/**
+ * One axis across the whole history, for charting a single measurement.
+ *
+ * The per-axis scores are already fetched with every scan and were being
+ * thrown away at the chart: overall is the only number that got drawn, which
+ * answers "am I better?" but never "is the thing I am actually working on
+ * better?". A customer following the routine's advice on hydration wants the
+ * hydration line, not the average that hides it.
+ *
+ * Scans written before the history was widened carry no per-axis metrics, so
+ * they are dropped from an axis series rather than plotted as zero.
+ */
+export function axisSeries(points: TrendPoint[], axis: MetricKey): TrendPoint[] {
+  return points.filter((p) => p.metrics !== null && Number.isFinite(p.metrics[axis]))
+}
+
+/**
+ * The whole record in one line: how far the skin has come since the first scan.
+ *
+ * The findings above compare the latest scan with the one before it, which is
+ * the right question the day after a scan and the wrong one a season later —
+ * six scans each moving two points look like six non-events and add up to
+ * twelve. This is the other half: the distance travelled, over how many scans
+ * and how many days.
+ *
+ * Null with fewer than two scans. There is no journey from a single point, and
+ * inventing one would be the app claiming credit on day one.
+ */
+export interface Cumulative {
+  scans: number
+  /** Whole days between the first scan and the latest. */
+  days: number
+  first: number
+  latest: number
+  /** Signed, latest minus first. */
+  delta: number
+  /**
+   * Null when the total movement is still inside the noise floor — the same
+   * `MOVE_THRESHOLD` the per-scan findings use, so the summary cannot claim
+   * progress the individual comparisons already refused to claim.
+   */
+  direction: Direction | null
+}
+
+export function cumulative(points: TrendPoint[]): Cumulative | null {
+  if (points.length < 2) return null
+
+  const first = points[0]
+  const latest = points[points.length - 1]
+  const delta = latest.overall - first.overall
+  const days = Math.max(
+    0,
+    Math.round((Date.parse(latest.at) - Date.parse(first.at)) / 86_400_000),
+  )
+
+  return {
+    scans: points.length,
+    days,
+    first: first.overall,
+    latest: latest.overall,
+    delta,
+    direction: Math.abs(delta) >= MOVE_THRESHOLD ? move(delta) : null,
+  }
+}

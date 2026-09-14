@@ -1,4 +1,5 @@
-import type { Lang } from '../data/types'
+import { useState } from 'react'
+import type { Lang, MetricKey } from '../data/types'
 import { langOptions } from '../i18n'
 import { s } from '../lib/css'
 import { useAuth } from '../auth/AuthContext'
@@ -13,6 +14,85 @@ function initials(name: string, email: string): string {
     .map((part) => part[0]?.toUpperCase() ?? '')
     .join('')
   return fromName || email.slice(0, 2).toUpperCase()
+}
+
+/**
+ * The record, accumulating.
+ *
+ * The chart used to draw the overall score and nothing else, while the
+ * per-axis scores were fetched with every scan and dropped on the floor. The
+ * average is the wrong number for someone working on one thing: it can sit
+ * still for a month while the hydration underneath it climbs eight points. So
+ * the axis is pickable, and the line above the chart says how far the skin has
+ * come since the very first scan — the per-scan findings only ever compare the
+ * latest against the one before it, which stops meaning much after a season.
+ */
+function TrendCard() {
+  const st = useStore()
+  const [axis, setAxis] = useState<MetricKey | null>(null)
+
+  // An axis with too little history to chart is not offered, so the picker can
+  // never lead somewhere empty.
+  const chart = st.trendFor(axis) ?? st.trendFor(null)
+  if (!chart) return null
+
+  return (
+    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:20px')}>
+      <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:8px')}>
+        <div style={s('font-family:Marcellus,serif;font-size:16px')}>{st.trendTitle}</div>
+        <div style={s('font-size:11px;color:#A2957F;flex-shrink:0')}>{chart.count}</div>
+      </div>
+      <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>{st.trendSub}</div>
+
+      {st.cumulativeLine && (
+        <div style={s('background:#F8F5EF;border-radius:10px;padding:9px 12px;margin-top:10px;font-size:12px;color:#4A4234;line-height:1.5')}>
+          {st.cumulativeLine}
+        </div>
+      )}
+
+      {st.trendAxes.length > 1 && (
+        <div style={s('display:flex;gap:6px;overflow-x:auto;margin-top:12px;padding-bottom:3px')}>
+          {st.trendAxes.map((option) => {
+            const active = option.key === axis
+            return (
+              <div
+                key={option.key ?? 'overall'}
+                onClick={() => setAxis(option.key)}
+                style={s(
+                  'cursor:pointer;flex-shrink:0;font-size:11.5px;font-weight:600;border-radius:999px;padding:5px 11px;' +
+                    (active
+                      ? 'background:#221C15;color:#F3E9D6'
+                      : 'background:#F1EEE6;color:#8A7D6C'),
+                )}
+              >
+                {option.label}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      <div style={s('display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:14px;overflow-x:auto')}>
+        {chart.points.map((p) => (
+          <div key={p.key} style={s('flex:1;min-width:26px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%')}>
+            <div style={s('font-size:10px;font-weight:700;color:#4A4234;margin-bottom:3px')}>{p.score}</div>
+            <div style={s(`width:100%;border-radius:6px 6px 0 0;background:${p.color};height:${p.height}`)} />
+          </div>
+        ))}
+      </div>
+
+      <div style={s('display:flex;gap:6px;margin-top:6px;overflow-x:auto')}>
+        {chart.points.map((p) => (
+          <div key={p.key} style={s('flex:1;min-width:26px;text-align:center')}>
+            <div style={s('font-size:9.5px;color:#8A7D6C')}>{p.date}</div>
+            {p.humidity && (
+              <div style={s('font-size:9px;color:#B9AC93;margin-top:1px')}>💧{p.humidity}</div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export function MyPage() {
@@ -38,35 +118,7 @@ export function MyPage() {
           scores cluster narrowly, and a fixed axis flattens a real swing into
           a row of identical bars. The humidity under each one is what makes a
           dip readable rather than alarming. */}
-      {st.trend && (
-        <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:20px')}>
-          <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:8px')}>
-            <div style={s('font-family:Marcellus,serif;font-size:16px')}>{st.trend.title}</div>
-            <div style={s('font-size:11px;color:#A2957F;flex-shrink:0')}>{st.trend.count}</div>
-          </div>
-          <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>{st.trend.sub}</div>
-
-          <div style={s('display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:14px;overflow-x:auto')}>
-            {st.trend.points.map((p) => (
-              <div key={p.key} style={s('flex:1;min-width:26px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%')}>
-                <div style={s('font-size:10px;font-weight:700;color:#4A4234;margin-bottom:3px')}>{p.score}</div>
-                <div style={s(`width:100%;border-radius:6px 6px 0 0;background:${p.color};height:${p.height}`)} />
-              </div>
-            ))}
-          </div>
-
-          <div style={s('display:flex;gap:6px;margin-top:6px;overflow-x:auto')}>
-            {st.trend.points.map((p) => (
-              <div key={p.key} style={s('flex:1;min-width:26px;text-align:center')}>
-                <div style={s('font-size:9.5px;color:#8A7D6C')}>{p.date}</div>
-                {p.humidity && (
-                  <div style={s('font-size:9px;color:#B9AC93;margin-top:1px')}>💧{p.humidity}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <TrendCard />
 
       <div style={s('font-family:Marcellus,serif;font-size:16px;margin:20px 2px 8px')}>{st.t.skinHistory}</div>
       {st.history.length > 0 ? (

@@ -45,9 +45,19 @@ export function Home() {
               {st.overall}
             </div>
           </div>
-          <div style={s('flex:1')}>
+          <div style={s('flex:1;min-width:0')}>
             <div style={s('font-size:13px;font-weight:700')}>{st.t.skinScore} {st.overall} — {st.skinType}</div>
-            <div style={s('font-size:12px;color:#5E7A6C;margin-top:2px')}>{st.t.viewReport} →</div>
+            {/* What the record adds to today's number. A score on its own says
+                how the skin is; the pair says whether anything is working. */}
+            {st.vsLast && (
+              <div style={s(`font-size:11.5px;font-weight:600;margin-top:3px;color:${st.vsLast.colour}`)}>
+                {st.vsLast.text}
+              </div>
+            )}
+            {st.cumulativeLine && (
+              <div style={s('font-size:11px;color:#8A7D6C;margin-top:2px')}>{st.cumulativeLine}</div>
+            )}
+            <div style={s('font-size:12px;color:#5E7A6C;margin-top:4px')}>{st.t.viewReport} →</div>
           </div>
         </div>
       ) : (

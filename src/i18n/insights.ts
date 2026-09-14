@@ -76,6 +76,23 @@ export interface InsightStrings {
   trendSub: string
   noTrend: string
   scanCount: (n: number) => string
+
+  /** The chart's axis picker: the overall score, or one measurement. */
+  trendOverall: string
+
+  /**
+   * The whole record in one line — the distance travelled since the first
+   * scan, which the scan-to-scan findings cannot show.
+   */
+  sinceFirst: string
+  sinceFirstUp: (delta: number, scans: number, days: number) => string
+  sinceFirstDown: (delta: number, scans: number, days: number) => string
+  sinceFirstFlat: (scans: number, days: number) => string
+
+  /** On the home card: how the latest scan compares with the one before it. */
+  vsLastUp: (delta: number) => string
+  vsLastDown: (delta: number) => string
+  vsLastFlat: string
 }
 
 const ko: InsightStrings = {
@@ -163,6 +180,14 @@ const ko: InsightStrings = {
   trendSub: '분석할 때의 습도와 함께 표시됩니다',
   noTrend: '분석을 두 번 이상 하면 변화 추이가 표시됩니다.',
   scanCount: (n) => `분석 ${n}회`,
+  trendOverall: '종합 점수',
+  sinceFirst: '첫 분석 이후',
+  sinceFirstUp: (d, n, days) => `첫 분석 이후 ${d}점 올랐어요 · ${n}회 · ${days}일`,
+  sinceFirstDown: (d, n, days) => `첫 분석 이후 ${d}점 내려갔어요 · ${n}회 · ${days}일`,
+  sinceFirstFlat: (n, days) => `첫 분석 이후 큰 변화 없음 · ${n}회 · ${days}일`,
+  vsLastUp: (d) => `지난 분석보다 +${d}`,
+  vsLastDown: (d) => `지난 분석보다 −${d}`,
+  vsLastFlat: '지난 분석과 비슷',
 }
 
 const en: InsightStrings = {
@@ -250,6 +275,14 @@ const en: InsightStrings = {
   trendSub: 'Shown with the humidity at each scan',
   noTrend: 'Scan twice or more to see how your skin changes.',
   scanCount: (n) => `${n} scans`,
+  trendOverall: 'Overall',
+  sinceFirst: 'Since your first scan',
+  sinceFirstUp: (d, n, days) => `Up ${d} points since your first scan · ${n} scans · ${days} days`,
+  sinceFirstDown: (d, n, days) => `Down ${d} points since your first scan · ${n} scans · ${days} days`,
+  sinceFirstFlat: (n, days) => `Holding steady since your first scan · ${n} scans · ${days} days`,
+  vsLastUp: (d) => `+${d} on your last scan`,
+  vsLastDown: (d) => `−${d} on your last scan`,
+  vsLastFlat: 'Level with your last scan',
 }
 
 const zh: InsightStrings = {
@@ -337,6 +370,14 @@ const zh: InsightStrings = {
   trendSub: '与每次分析时的湿度一同显示',
   noTrend: '完成两次以上分析后即可查看变化趋势。',
   scanCount: (n) => `分析 ${n} 次`,
+  trendOverall: '综合评分',
+  sinceFirst: '自首次分析以来',
+  sinceFirstUp: (d, n, days) => `自首次分析以来上升 ${d} 分 · ${n} 次 · ${days} 天`,
+  sinceFirstDown: (d, n, days) => `自首次分析以来下降 ${d} 分 · ${n} 次 · ${days} 天`,
+  sinceFirstFlat: (n, days) => `自首次分析以来基本持平 · ${n} 次 · ${days} 天`,
+  vsLastUp: (d) => `较上次 +${d}`,
+  vsLastDown: (d) => `较上次 −${d}`,
+  vsLastFlat: '与上次持平',
 }
 
 const th: InsightStrings = {
@@ -424,6 +465,14 @@ const th: InsightStrings = {
   trendSub: 'แสดงพร้อมความชื้นในแต่ละครั้งที่วิเคราะห์',
   noTrend: 'วิเคราะห์ตั้งแต่สองครั้งขึ้นไปเพื่อดูแนวโน้ม',
   scanCount: (n) => `วิเคราะห์ ${n} ครั้ง`,
+  trendOverall: 'คะแนนรวม',
+  sinceFirst: 'นับจากการวิเคราะห์ครั้งแรก',
+  sinceFirstUp: (d, n, days) => `เพิ่มขึ้น ${d} คะแนนนับจากครั้งแรก · ${n} ครั้ง · ${days} วัน`,
+  sinceFirstDown: (d, n, days) => `ลดลง ${d} คะแนนนับจากครั้งแรก · ${n} ครั้ง · ${days} วัน`,
+  sinceFirstFlat: (n, days) => `คงที่นับจากครั้งแรก · ${n} ครั้ง · ${days} วัน`,
+  vsLastUp: (d) => `+${d} จากครั้งก่อน`,
+  vsLastDown: (d) => `−${d} จากครั้งก่อน`,
+  vsLastFlat: 'เท่ากับครั้งก่อน',
 }
 
 const table: Record<Lang, InsightStrings> = { ko, en, zh, th }

@@ -26,7 +26,7 @@ import { authT } from '../i18n/auth'
 import { routineT } from '../i18n/routine'
 import { buildPlan } from '../routine/rules'
 import { fallingAxes, rank, type ReasonKind } from '../routine/recommend'
-import { buildReport, MOVE_THRESHOLD, trendSeries } from '../insights/report'
+import { axisSeries, buildReport, cumulative, MOVE_THRESHOLD, trendSeries } from '../insights/report'
 import { describeAll } from '../insights/describe'
 import { insightT } from '../i18n/insights'
 import { strings, type Strings } from '../i18n'
@@ -938,29 +938,78 @@ function useStoreValue() {
    * 0–100: skin scores cluster in a narrow band, and a fixed axis flattens a
    * real 15-point swing into a row of near-identical bars.
    */
-  const trend = (() => {
-    const points = trendSeries(state.history)
+  const trendPoints = trendSeries(state.history)
+
+  /**
+   * The chart for one measurement — the overall score, or a single axis.
+   *
+   * `axis: null` is the overall score. Naming an axis charts that axis alone,
+   * which is the question someone actually following the routine has: the
+   * average can sit still for a month while the hydration they are working on
+   * climbs eight points underneath it.
+   */
+  const trendFor = (axis: MetricKey | null) => {
+    const points = axis === null ? trendPoints : axisSeries(trendPoints, axis)
     if (points.length < 2) return null
 
-    const scores = points.map((p) => p.overall)
+    const valueOf = (p: (typeof points)[number]) =>
+      axis === null ? p.overall : (p.metrics?.[axis] ?? 0)
+
+    const scores = points.map(valueOf)
     const min = Math.min(...scores)
     const max = Math.max(...scores)
     const span = Math.max(max - min, 1)
 
     return {
-      title: ins.trendTitle,
-      sub: ins.trendSub,
       count: ins.scanCount(points.length),
       points: points.map((p) => ({
         key: p.at,
         date: shortDate(p.at),
-        score: p.overall,
+        score: valueOf(p),
         // 18% floor so the lowest bar is still a bar and not a hairline.
-        height: Math.round(18 + ((p.overall - min) / span) * 72) + '%',
-        color: scoreColour(p.overall),
+        height: Math.round(18 + ((valueOf(p) - min) / span) * 72) + '%',
+        color: scoreColour(valueOf(p)),
         humidity: p.humidity === null ? '' : p.humidity + '%',
       })),
     }
+  }
+
+  const trend = trendFor(null)
+
+  /** The axis picker, in the order the results screen already lists them. */
+  const trendAxes = [
+    { key: null as MetricKey | null, label: ins.trendOverall },
+    ...metricDefs
+      .filter((d) => axisSeries(trendPoints, d.k).length >= 2)
+      .map((d) => ({ key: d.k as MetricKey | null, label: d.n[lang] })),
+  ]
+
+  /**
+   * The distance travelled since the first scan.
+   *
+   * The per-scan findings compare the latest against the one before it, which
+   * stops meaning much after a season: six scans each moving two points read
+   * as six non-events and add up to twelve. This is the other half of the
+   * record, and it is the answer to "is any of this working?".
+   */
+  const sinceFirst = cumulative(trendPoints)
+  const cumulativeLine =
+    sinceFirst === null
+      ? null
+      : sinceFirst.direction === 'up'
+        ? ins.sinceFirstUp(sinceFirst.delta, sinceFirst.scans, sinceFirst.days)
+        : sinceFirst.direction === 'down'
+          ? ins.sinceFirstDown(Math.abs(sinceFirst.delta), sinceFirst.scans, sinceFirst.days)
+          : ins.sinceFirstFlat(sinceFirst.scans, sinceFirst.days)
+
+  /** How the score on screen compares with the scan before it, for the home card. */
+  const vsLast = (() => {
+    if (trendPoints.length < 2) return null
+    const delta = trendPoints[trendPoints.length - 1].overall - trendPoints[trendPoints.length - 2].overall
+    if (Math.abs(delta) < MOVE_THRESHOLD) return { text: ins.vsLastFlat, colour: '#8A7D6C' }
+    return delta > 0
+      ? { text: ins.vsLastUp(delta), colour: '#2E6B58' }
+      : { text: ins.vsLastDown(Math.abs(delta)), colour: '#C25E43' }
   })()
 
   const tabScreens: Screen[] = ['home', 'scan', 'shop', 'routine', 'missions']
@@ -1158,6 +1207,14 @@ function useStoreValue() {
 
     tabs,
     toastMsg,
+
+    trendFor,
+    trendAxes,
+    trendTitle: ins.trendTitle,
+    trendSub: ins.trendSub,
+    sinceFirstLabel: ins.sinceFirst,
+    cumulativeLine,
+    vsLast,
   }
 }
 

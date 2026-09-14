@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest'
 import type { MetricKey, Weather } from '../data/types'
 import type { ScanRecord } from '../store/state'
 import {
+  axisSeries,
   buildReport,
+  cumulative,
+  MOVE_THRESHOLD,
   trendSeries,
   weakestAxis,
   type Insight,
@@ -254,5 +257,95 @@ describe('trendSeries', () => {
     const history = [scan({ createdAt: at(1) }), scan({ createdAt: at(30) })]
     trendSeries(history)
     expect(history[0].createdAt).toBe(at(1))
+  })
+})
+
+describe('axisSeries', () => {
+  it('charts one axis across the history', () => {
+    const points = trendSeries([
+      scan({ createdAt: at(30), metrics: M({ hydration: 50 }) }),
+      scan({ createdAt: at(15), metrics: M({ hydration: 58 }) }),
+      scan({ createdAt: at(1), metrics: M({ hydration: 66 }) }),
+    ])
+    expect(axisSeries(points, 'hydration').map((p) => p.metrics?.hydration)).toEqual([50, 58, 66])
+  })
+
+  /**
+   * Rows written before the history was widened carry no per-axis metrics.
+   * Plotting them as zero would draw a crash into someone's chart that never
+   * happened, so they are left out of an axis series entirely.
+   */
+  it('drops scans that carry no per-axis metrics', () => {
+    const points = trendSeries([
+      scan({ createdAt: at(30), metrics: null }),
+      scan({ createdAt: at(1), metrics: M({ hydration: 62 }) }),
+    ])
+    expect(axisSeries(points, 'hydration')).toHaveLength(1)
+    // The overall series keeps them: that column is on every row ever written.
+    expect(points).toHaveLength(2)
+  })
+})
+
+describe('cumulative', () => {
+  it('says nothing from a single scan', () => {
+    expect(cumulative(trendSeries([scan()]))).toBeNull()
+    expect(cumulative([])).toBeNull()
+  })
+
+  it('measures from the first scan to the latest, not the last pair', () => {
+    // Four scans, each step inside the noise floor, adding up to a real move.
+    const total = cumulative(
+      trendSeries([
+        scan({ createdAt: at(60), overall: 62 }),
+        scan({ createdAt: at(40), overall: 65 }),
+        scan({ createdAt: at(20), overall: 68 }),
+        scan({ createdAt: at(0), overall: 74 }),
+      ]),
+    )
+    expect(total).toMatchObject({ scans: 4, first: 62, latest: 74, delta: 12, direction: 'up' })
+    expect(total?.days).toBe(60)
+  })
+
+  it('counts a fall as a fall', () => {
+    const total = cumulative(
+      trendSeries([scan({ createdAt: at(30), overall: 80 }), scan({ createdAt: at(0), overall: 66 })]),
+    )
+    expect(total).toMatchObject({ delta: -14, direction: 'down' })
+  })
+
+  /**
+   * The summary must not claim progress the per-scan findings already refused
+   * to claim — both sides read the same noise floor.
+   */
+  it('reports no direction when the whole journey is inside the noise floor', () => {
+    const total = cumulative(
+      trendSeries([
+        scan({ createdAt: at(30), overall: 70 }),
+        scan({ createdAt: at(0), overall: 70 + MOVE_THRESHOLD - 1 }),
+      ]),
+    )
+    expect(total?.direction).toBeNull()
+    expect(total?.delta).toBe(MOVE_THRESHOLD - 1)
+  })
+
+  it('takes the direction at exactly the threshold', () => {
+    const total = cumulative(
+      trendSeries([
+        scan({ createdAt: at(30), overall: 70 }),
+        scan({ createdAt: at(0), overall: 70 + MOVE_THRESHOLD }),
+      ]),
+    )
+    expect(total?.direction).toBe('up')
+  })
+
+  it('does not go negative on two scans taken the same day', () => {
+    const total = cumulative(
+      trendSeries([
+        scan({ createdAt: '2026-06-01T09:00:00Z', overall: 70 }),
+        scan({ createdAt: '2026-06-01T21:00:00Z', overall: 78 }),
+      ]),
+    )
+    expect(total?.days).toBe(1)
+    expect(total?.scans).toBe(2)
   })
 })
