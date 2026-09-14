@@ -25,9 +25,14 @@ const MAX_IMAGE_BYTES = 10 * 1024 * 1024
 /** The only formats they accept. Anything else fails at their end. */
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png']
 
-/** Daily call ceilings. Members get more because they are known and billable. */
+/**
+ * How many analyses one member may run in a day.
+ *
+ * There is no guest ceiling because there is no guest path: every call is
+ * billed against a prepaid balance, so an unauthenticated caller would be
+ * spending the operator's money anonymously.
+ */
 const MEMBER_DAILY_LIMIT = Number(Deno.env.get('ANALYSIS_MEMBER_DAILY_LIMIT') ?? '20')
-const GUEST_DAILY_LIMIT = Number(Deno.env.get('ANALYSIS_GUEST_DAILY_LIMIT') ?? '1')
 
 const CORS = {
   'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') ?? '*',
@@ -80,24 +85,6 @@ function readWeather(field: FormDataEntryValue | null): Weather | null {
   }
 }
 
-/**
- * Identify the caller for quota purposes without storing anything identifying.
- * A signed-in member is their user id; everyone else is a salted hash of their
- * IP, which answers "same caller?" without keeping the address itself.
- */
-async function subjectFor(req: Request, userId: string | null): Promise<string> {
-  if (userId) return `user:${userId}`
-
-  const ip =
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    req.headers.get('cf-connecting-ip') ??
-    'unknown'
-  const salt = Deno.env.get('ANALYSIS_IP_SALT') ?? 'skinverse'
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ip))
-  const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('')
-  return `ip:${hex.slice(0, 32)}`
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
@@ -108,34 +95,26 @@ Deno.serve(async (req) => {
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } })
 
-  /**
-   * TEMPORARY. Records how far a request got.
-   *
-   * The edge logs are not reachable from where this is being debugged, and a
-   * client-side error with no quota row is consistent with several unrelated
-   * causes. This distinguishes them. Remove once the path is confirmed.
-   */
-  const trace = async (stage: string, detail: Record<string, unknown> = {}) => {
-    await admin.from('fn_hits').insert({ stage, detail }).then(
-      () => {},
-      () => {},
-    )
-  }
-
-  await trace('entered', {
-    contentType: req.headers.get('content-type'),
-    hasAuth: !!req.headers.get('authorization'),
-    origin: req.headers.get('origin'),
-  })
-
-  // Who is asking? An invalid or absent token is fine — that is a guest, and
-  // guests get the smaller quota rather than a rejection.
+  // ── who is asking ────────────────────────────────────────────────────────
+  // Members only, enforced here rather than only in the app. The app hides the
+  // button from guests, but a hidden button is a suggestion: this endpoint is
+  // public, every call spends the operator's prepaid units, and a result that
+  // cannot be attached to an account is worth nothing to the person who ran it.
   let userId: string | null = null
   const authHeader = req.headers.get('Authorization') ?? ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
   if (token) {
     const { data } = await admin.auth.getUser(token)
     userId = data.user?.id ?? null
+  }
+  if (!userId) {
+    return json(
+      {
+        error: 'members_only',
+        message: '회원만 AI 피부 분석을 이용할 수 있습니다. 가입 후 다시 시도해주세요.',
+      },
+      401,
+    )
   }
 
   // ── image ────────────────────────────────────────────────────────────────
@@ -148,12 +127,6 @@ Deno.serve(async (req) => {
     const form = await req.formData()
     weather = readWeather(form.get('weather'))
     const file = form.get('image')
-    await trace('form-parsed', {
-      keys: [...form.keys()],
-      isFile: file instanceof File,
-      size: file instanceof File ? file.size : null,
-      type: file instanceof File ? file.type : null,
-    })
     if (!(file instanceof File)) return json({ error: 'image_required' }, 400)
     if (file.size >= MAX_IMAGE_BYTES) {
       return json({ error: 'image_too_large', photo: 'tooLarge' }, 413)
@@ -163,14 +136,12 @@ Deno.serve(async (req) => {
     }
     mimeType = file.type
     image = new Uint8Array(await file.arrayBuffer())
-  } catch (err) {
-    await trace('form-parse-failed', { message: String(err) })
+  } catch {
     return json({ error: 'bad_request' }, 400)
   }
 
   // ── quota ────────────────────────────────────────────────────────────────
-  const subject = await subjectFor(req, userId)
-  const limit = userId ? MEMBER_DAILY_LIMIT : GUEST_DAILY_LIMIT
+  const subject = `user:${userId}`
 
   // Called on `public`, not `private`: PostgREST only serves schemas on its
   // exposed list, and whether `private` is on it is a dashboard setting rather
@@ -179,22 +150,19 @@ Deno.serve(async (req) => {
   // from a browser than it was before.
   const { data: allowed, error: quotaError } = await admin.rpc('claim_analysis_call', {
     p_subject: subject,
-    p_limit: limit,
+    p_limit: MEMBER_DAILY_LIMIT,
   })
 
   if (quotaError) {
     console.error('quota check failed', quotaError.message)
-    await trace('quota-failed', { message: quotaError.message, code: quotaError.code })
     return json({ error: 'quota_unavailable' }, 503)
   }
   if (allowed !== true) {
     return json(
       {
         error: 'quota_exceeded',
-        message: userId
-          ? '오늘 분석 횟수를 모두 사용했습니다.'
-          : '비회원은 하루 1회 체험할 수 있습니다. 회원가입하면 제한 없이 이용하실 수 있어요.',
-        limit,
+        message: '오늘 분석 횟수를 모두 사용했습니다. 내일 다시 이용해주세요.',
+        limit: MEMBER_DAILY_LIMIT,
       },
       429,
     )
@@ -202,8 +170,8 @@ Deno.serve(async (req) => {
 
   // Hand back the slot claimed above. Perfect Corp consumes units only when a
   // task succeeds, so anything that fails before then cost the operator nothing
-  // and must not cost the caller a daily call either — most of all a guest,
-  // whose single daily trial would otherwise be spent on a photo nobody read.
+  // and must not cost the member a daily call either — a photo nobody read
+  // should never come out of someone's allowance.
   const refund = async () => {
     const { error } = await admin.rpc('release_analysis_call', { p_subject: subject })
     if (error) console.error('could not release the quota slot', error.message)
@@ -221,17 +189,10 @@ Deno.serve(async (req) => {
 
   let result: AnalysisResult
   try {
-    await trace('calling-vendor', { tier: TIER, bytes: image.byteLength })
     result = await analyseWithPerfectCorp(image, mimeType, apiKey)
-    await trace('vendor-ok', {
-      overall: result.analysis.overall,
-      concerns: result.visuals.concerns.length,
-      hasPhoto: !!result.visuals.photo,
-    })
   } catch (err) {
     if (err instanceof VendorError) {
       console.error('vendor failed:', err.message)
-      await trace('vendor-failed', { message: err.message, status: err.status })
       if (!err.billed) await refund()
       return json(
         { error: 'vendor_failed', message: err.userMessage, photo: err.photoKey ?? undefined },
@@ -239,32 +200,28 @@ Deno.serve(async (req) => {
       )
     }
     console.error('unexpected failure', err)
-    await trace('unexpected-failure', { message: String(err) })
     // We do not know whether that cost anything, so the slot stays spent.
     return json({ error: 'analysis_failed', message: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.' }, 500)
   }
 
   const analysis = result.analysis
 
-  // Persist for members only; a guest's trial result is never written down.
-  if (userId) {
-    // Everything the analysis produced, not just what today's screen draws —
-    // a scan cannot be retaken retroactively, so anything dropped here is gone.
-    const { error } = await admin.from('scans').insert({
-      user_id: userId,
-      skin_condition: analysis.condition,
-      overall: analysis.overall,
-      metrics: analysis.metrics,
-      skin_age: analysis.skinAge,
-      oiliness: analysis.oiliness,
-      skin_type: analysis.skinType?.whole ?? null,
-      skin_type_t_zone: analysis.skinType?.tZone ?? null,
-      skin_type_u_zone: analysis.skinType?.uZone ?? null,
-      tier: TIER,
-      weather,
-    })
-    if (error) console.error('could not save scan', error.message)
-  }
+  // Everything the analysis produced, not just what today's screen draws — a
+  // scan cannot be retaken retroactively, so anything dropped here is gone.
+  const { error: saveError } = await admin.from('scans').insert({
+    user_id: userId,
+    skin_condition: analysis.condition,
+    overall: analysis.overall,
+    metrics: analysis.metrics,
+    skin_age: analysis.skinAge,
+    oiliness: analysis.oiliness,
+    skin_type: analysis.skinType?.whole ?? null,
+    skin_type_t_zone: analysis.skinType?.tZone ?? null,
+    skin_type_u_zone: analysis.skinType?.uZone ?? null,
+    tier: TIER,
+    weather,
+  })
+  if (saveError) console.error('could not save scan', saveError.message)
 
   return json({
     overall: analysis.overall,
@@ -278,6 +235,6 @@ Deno.serve(async (req) => {
     // are short-lived signed URLs of the customer's face, and keeping a copy of
     // someone's face is exactly what this function promises not to do.
     visuals: result.visuals,
-    saved: userId !== null,
+    saved: saveError === null,
   })
 })

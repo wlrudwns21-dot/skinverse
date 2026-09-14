@@ -33,6 +33,12 @@ export type AnalysisOutcome =
   | { kind: 'ok'; result: AnalysisResult }
   /** The vendor is not wired up yet — fall back to the demo result. */
   | { kind: 'notConfigured' }
+  /**
+   * The server refused because nobody is signed in. The app already gates the
+   * scan, so reaching this means the session expired between opening the screen
+   * and pressing the button — which is a prompt to sign in, not a failure.
+   */
+  | { kind: 'membersOnly' }
   /** Daily allowance spent. `message` is already customer-facing. */
   | { kind: 'quota'; message: string }
   /**
@@ -79,6 +85,7 @@ export async function analyseSkin(photo: File, weather: Weather): Promise<Analys
     // body; read it so the customer sees the real reason rather than "failed".
     const payload = await readErrorBody(error)
     if (payload?.error === 'vendor_not_configured') return { kind: 'notConfigured' }
+    if (payload?.error === 'members_only') return { kind: 'membersOnly' }
     if (payload?.error === 'quota_exceeded') {
       return { kind: 'quota', message: payload.message ?? '' }
     }

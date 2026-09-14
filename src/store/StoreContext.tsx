@@ -447,6 +447,15 @@ function useStoreValue() {
           return
         }
 
+        // The session expired somewhere between opening the screen and pressing
+        // the button. Nothing was billed and nothing is broken — they just need
+        // to sign in again, so say that rather than reporting a failure.
+        if (outcome?.kind === 'membersOnly') {
+          setState((cur) => ({ ...cur, scanStep: 'intro', progress: 0 }))
+          openGate('scan')
+          return
+        }
+
         if (outcome?.kind === 'ok') {
           const { result } = outcome
           setState((cur) => ({
