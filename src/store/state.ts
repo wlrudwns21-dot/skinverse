@@ -1,7 +1,7 @@
 import { demoAccount, demoScenario } from '../data/account'
 import type { ShipMethod } from '../data/commerce'
-import { pointsRules, shipping } from '../data/commerce'
-import { products } from '../data/products'
+import { shipping } from '../data/commerce'
+import type { CatalogProduct, StoreSettings } from '../catalog/types'
 import type { Lang, SkinConditionKey } from '../data/types'
 import type { Capability } from '../auth/capabilities'
 import type { ChipKey } from '../i18n/chips'
@@ -123,15 +123,22 @@ export interface Totals {
   total: number
 }
 
-export function totalsOf(state: StoreState): Totals {
+/** 100 points buy $1 of discount. */
+export const POINTS_PER_DOLLAR = 100
+
+export function totalsOf(
+  state: StoreState,
+  products: CatalogProduct[],
+  settings: StoreSettings,
+): Totals {
   const sub = Object.entries(state.cart).reduce((acc, [id, qty]) => {
     const product = products.find((p) => p.id === id)
     return acc + (product ? product.price * qty : 0)
   }, 0)
   const ship = Object.keys(state.cart).length ? shipping[state.ship].fee : 0
-  const cap = Math.floor(sub * pointsRules.useCap) * pointsRules.pointsPerDollar
+  const cap = Math.floor(sub * (settings.useCapPct / 100)) * POINTS_PER_DOLLAR
   const ptsUsed = state.usePoints ? Math.min(state.points, cap) : 0
-  const disc = ptsUsed / pointsRules.pointsPerDollar
+  const disc = ptsUsed / POINTS_PER_DOLLAR
   const total = Math.max(0, sub + ship - disc)
   return { sub, ship, ptsUsed, disc, total }
 }

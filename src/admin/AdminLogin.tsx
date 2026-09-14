@@ -37,7 +37,7 @@ export function AdminLogin() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  if (admin.authLoading || (admin.isSignedIn && admin.isAdmin === null)) {
+  if (admin.authLoading || (admin.isSignedIn && admin.role === undefined)) {
     return (
       <Frame>
         <div style={s('display:flex;justify-content:center;padding:20px')}>
@@ -48,7 +48,7 @@ export function AdminLogin() {
   }
 
   // Signed in, but not an operator.
-  if (admin.isSignedIn && admin.isAdmin === false) {
+  if (admin.isSignedIn && !admin.isAdmin) {
     return (
       <Frame>
         <div style={s('font-size:15px;font-weight:700')}>접근 권한이 없습니다</div>

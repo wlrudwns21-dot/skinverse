@@ -1,6 +1,5 @@
 import { s } from '../../lib/css'
 import { useAdmin } from '../AdminContext'
-import { LocalOnlyNotice } from './LocalOnlyNotice'
 
 const stepperStyle =
   'cursor:pointer;width:24px;height:24px;border:1px solid #D8CFBF;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700'
@@ -16,8 +15,6 @@ export function Products() {
           재고 5개 이하 <b style={s('color:#C25E43')}>{admin.lowStockN}건</b>
         </div>
       </div>
-
-      <LocalOnlyNotice what="상품 목록과 재고" />
 
       <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:14px')}>
         {admin.prodList.map((p) => (

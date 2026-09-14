@@ -1,4 +1,5 @@
 import { AuthProvider } from './auth/AuthContext'
+import { CatalogProvider } from './catalog/CatalogContext'
 import { GatePrompt } from './components/GatePrompt'
 import { Header } from './components/Header'
 import { PaypalModal } from './components/PaypalModal'
@@ -77,9 +78,11 @@ function StoreShell() {
 export function StoreApp() {
   return (
     <AuthProvider>
-      <StoreProvider>
-        <StoreShell />
-      </StoreProvider>
+      <CatalogProvider>
+        <StoreProvider>
+          <StoreShell />
+        </StoreProvider>
+      </CatalogProvider>
     </AuthProvider>
   )
 }

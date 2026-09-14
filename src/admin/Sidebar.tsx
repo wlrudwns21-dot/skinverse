@@ -36,7 +36,7 @@ export function Sidebar() {
             관
           </div>
           <div style={s('min-width:0')}>
-            <div style={s('color:#F5F0E6;font-weight:600')}>운영자</div>
+            <div style={s('color:#F5F0E6;font-weight:600')}>{admin.isMaster ? '마스터' : '일반 관리자'}</div>
             <div style={s('font-size:10.5px;color:#8A7D6C;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>{admin.email}</div>
           </div>
         </div>

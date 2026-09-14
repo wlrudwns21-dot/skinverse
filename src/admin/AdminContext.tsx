@@ -7,28 +7,19 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import {
-  adminMissions,
-  adminProducts,
-  adminRewards,
-  adminPointRules,
-  adminInquiries,
-  orderStatusMeta,
-  orderStatusOrder,
-} from '../data/admin'
+import { adminInquiries, orderStatusMeta, orderStatusOrder } from '../data/admin'
 import { levels } from '../data/rewards'
-import type {
-  AdminInquiry,
-  AdminMission,
-  AdminOrder,
-  AdminProduct,
-  AdminReward,
-  OrderStatus,
-} from '../data/types'
+import type { AdminInquiry, AdminOrder, OrderStatus } from '../data/types'
 import { useAuth } from '../auth/AuthContext'
+import { useCatalog } from '../catalog/CatalogContext'
+import * as catalogRemote from '../catalog/remote'
+import type { StoreSettings } from '../catalog/types'
 import * as remote from './adminRemote'
 
-export type AdminView = 'dash' | 'orders' | 'products' | 'users' | 'missions' | 'cs'
+export type AdminView = 'dash' | 'orders' | 'products' | 'users' | 'missions' | 'cs' | 'access'
+
+/** Views only a master may open: the operator list and the point economy. */
+const MASTER_ONLY: ReadonlySet<AdminView> = new Set<AdminView>(['missions', 'access'])
 
 const TOAST_MS = 2400
 const STOCK_STEP = 10
@@ -58,28 +49,30 @@ function deltaText(today: number, yesterday: number, unit: string): { text: stri
 
 function useAdminValue() {
   const auth = useAuth()
+  const catalog = useCatalog()
 
   const [view, setView] = useState<AdminView>('dash')
   const [orderFilter, setOrderFilter] = useState<OrderStatus | 'all'>('all')
   const [toast, setToast] = useState('')
 
   // Live from Postgres.
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
+  const [role, setRole] = useState<remote.AdminRole | null | undefined>(undefined)
+  const [operators, setOperators] = useState<remote.Operator[]>([])
   const [orders, setOrders] = useState<AdminOrder[]>([])
   const [members, setMembers] = useState<remote.AdminMember[]>([])
   const [stats, setStats] = useState<remote.AdminStats | null>(null)
   const [loadingData, setLoadingData] = useState(false)
 
-  // Still file-based: the catalogue lives in src/data, so inventory and the
-  // mission/reward configuration have nowhere to persist yet. Edits here are
-  // in-session only — see README.
-  const [products, setProducts] = useState<AdminProduct[]>(adminProducts)
-  const [missions, setMissions] = useState<AdminMission[]>(adminMissions)
-  const [rewardStock, setRewardStock] = useState<AdminReward[]>(adminRewards)
+  // The CS queue is the last surface with no table behind it.
   const [cs, setCs] = useState<AdminInquiry[]>(adminInquiries)
-  const [earnRate, setEarnRate] = useState(adminPointRules.earnRate)
-  const [useCap, setUseCap] = useState(adminPointRules.useCap)
-  const [streakBonus, setStreakBonus] = useState(adminPointRules.streakBonus)
+
+  // Point rules are edited locally and committed with an explicit save, so a
+  // half-typed number never becomes the live earn rate.
+  const [draft, setDraft] = useState<StoreSettings>(catalog.settings)
+  const [draftDirty, setDraftDirty] = useState(false)
+  useEffect(() => {
+    if (!draftDirty) setDraft(catalog.settings)
+  }, [catalog.settings, draftDirty])
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current) }, [])
@@ -95,12 +88,12 @@ function useAdminValue() {
   useEffect(() => {
     if (auth.loading) return
     if (!auth.isMember) {
-      setIsAdmin(null)
+      setRole(undefined)
       return
     }
     let cancelled = false
-    void remote.checkIsAdmin().then((ok) => {
-      if (!cancelled) setIsAdmin(ok)
+    void remote.myRole().then((r) => {
+      if (!cancelled) setRole(r)
     })
     return () => { cancelled = true }
   }, [auth.loading, auth.isMember])
@@ -115,8 +108,17 @@ function useAdminValue() {
   }, [])
 
   useEffect(() => {
-    if (isAdmin) void refresh()
-  }, [isAdmin, refresh])
+    if (role) void refresh()
+  }, [role, refresh])
+
+  useEffect(() => {
+    if (role === 'master') void remote.listOperators().then(setOperators)
+  }, [role])
+
+  // A demoted operator must not be left staring at a master-only screen.
+  useEffect(() => {
+    if (role === 'admin' && MASTER_ONLY.has(view)) setView('dash')
+  }, [role, view])
 
   // ── writes ────────────────────────────────────────────────────────────────
 
@@ -151,20 +153,92 @@ function useAdminValue() {
     toastMsg(member.name + '님에게 ' + GRANT_POINTS + 'P 지급 완료')
   }
 
-  // ── in-session config edits ───────────────────────────────────────────────
+  // ── catalogue writes ──────────────────────────────────────────────────────
 
-  const bumpStock = (id: string, delta: number) =>
-    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, stock: Math.max(0, p.stock + delta) } : p)))
+  const products = catalog.products
+  const missions = catalog.missions
+  const rewardStock = catalog.rewards
 
-  const toggleProduct = (id: string) => {
+  const bumpStock = async (id: string, delta: number) => {
     const product = products.find((p) => p.id === id)
     if (!product) return
-    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, active: !p.active } : p)))
+    const ok = await catalogRemote.setProductStock(id, product.stock + delta)
+    if (!ok) return toastMsg(product.name + ' — 재고 저장 실패')
+    await catalog.refresh()
+  }
+
+  const toggleProduct = async (id: string) => {
+    const product = products.find((p) => p.id === id)
+    if (!product) return
+    const ok = await catalogRemote.setProductActive(id, !product.active)
+    if (!ok) return toastMsg(product.name + ' — 저장 실패')
+    await catalog.refresh()
     toastMsg(product.name + (product.active ? ' — 판매 중지' : ' — 판매 재개'))
+  }
+
+  const changeMissionPoints = async (id: string, points: number) => {
+    const ok = await catalogRemote.setMissionPoints(id, points)
+    if (!ok) return toastMsg('미션 보상 저장 실패')
+    await catalog.refresh()
+  }
+
+  const toggleMission = async (id: string) => {
+    const mission = missions.find((m) => m.id === id)
+    if (!mission) return
+    const ok = await catalogRemote.setMissionActive(id, !mission.active)
+    if (!ok) return toastMsg('미션 상태 저장 실패')
+    await catalog.refresh()
+  }
+
+  const bumpRewardStock = async (id: string, delta: number) => {
+    const reward = rewardStock.find((r) => r.id === id)
+    if (!reward) return
+    const ok = await catalogRemote.setRewardStock(id, reward.stock + delta)
+    if (!ok) return toastMsg('리워드 재고 저장 실패')
+    await catalog.refresh()
+  }
+
+  const saveSettings = async () => {
+    const ok = await catalogRemote.saveSettings(draft)
+    if (!ok) return toastMsg('포인트 설정 저장 실패 — 마스터 권한이 필요합니다')
+    setDraftDirty(false)
+    await catalog.refresh()
+    toastMsg('포인트 설정을 저장했습니다')
+  }
+
+  const editDraft = (patch: Partial<StoreSettings>) => {
+    setDraft((prev) => ({ ...prev, ...patch }))
+    setDraftDirty(true)
+  }
+
+  // ── operator accounts ─────────────────────────────────────────────────────
+
+  const reloadOperators = async () => setOperators(await remote.listOperators())
+
+  const addOperator = async (email: string, r: remote.AdminRole, note: string) => {
+    const res = await remote.addOperator(email, r, note)
+    if (!res.ok) return toastMsg(res.error ?? '추가 실패')
+    await reloadOperators()
+    toastMsg(email + ' 추가됨')
+  }
+
+  const changeOperatorRole = async (email: string, r: remote.AdminRole) => {
+    const res = await remote.setOperatorRole(email, r)
+    if (!res.ok) return toastMsg(res.error ?? '변경 실패')
+    await reloadOperators()
+    toastMsg(email + ' → ' + (r === 'master' ? '마스터' : '일반 관리자'))
+  }
+
+  const removeOperator = async (email: string) => {
+    const res = await remote.removeOperator(email)
+    if (!res.ok) return toastMsg(res.error ?? '삭제 실패')
+    await reloadOperators()
+    toastMsg(email + ' 삭제됨')
   }
 
   // ── derived ───────────────────────────────────────────────────────────────
 
+  const isMaster = role === 'master'
   const pendingCs = cs.filter((c) => !c.done).length
   const newOrders = orders.filter((o) => o.status === 'paid' || o.status === 'preparing').length
   const lowStock = products.filter((p) => p.stock <= 5).length
@@ -179,8 +253,11 @@ function useAdminValue() {
       ['users', '회원 관리', 0],
       ['missions', '미션 · 포인트', 0],
       ['cs', 'CS 문의', pendingCs],
+      ['access', '권한 관리', 0],
     ] as [AdminView, string, number][]
-  ).map(([id, l, badge]) => ({
+  )
+    .filter(([id]) => isMaster || !MASTER_ONLY.has(id))
+    .map(([id, l, badge]) => ({
     id,
     label: l,
     badge,
@@ -260,7 +337,9 @@ function useAdminValue() {
   return {
     view,
     toast,
-    isAdmin,
+    role,
+    isMaster,
+    isAdmin: role !== undefined && role !== null,
     authLoading: auth.loading,
     isSignedIn: auth.isMember,
     signOut: () => void auth.signOut(),
@@ -278,6 +357,7 @@ function useAdminValue() {
     isUsers: view === 'users',
     isMissions: view === 'missions',
     isCs: view === 'cs',
+    isAccess: view === 'access',
 
     kpis,
     countrySales,
@@ -289,13 +369,14 @@ function useAdminValue() {
     orderChips,
 
     lowStockN: lowStock,
+    catalogLoading: catalog.loading,
     prodList: products.map((p) => ({
       ...p,
       grad: p.g,
       stockColor: p.stock <= 5 ? '#C25E43' : '#221C15',
-      inc: () => bumpStock(p.id, STOCK_STEP),
-      dec: () => bumpStock(p.id, -STOCK_STEP),
-      toggle: () => toggleProduct(p.id),
+      inc: () => void bumpStock(p.id, STOCK_STEP),
+      dec: () => void bumpStock(p.id, -STOCK_STEP),
+      toggle: () => void toggleProduct(p.id),
       activeLabel: p.active ? '판매중' : '판매중지',
       activeStyle: p.active ? 'background:#EAF1EC;color:#2E6B58' : 'background:#EFE9DD;color:#8A7D6C',
     })),
@@ -313,28 +394,45 @@ function useAdminValue() {
     grantPoints: GRANT_POINTS,
 
     missionCfg: missions.map((m) => ({
-      ...m,
-      txtColor: m.on ? '#221C15' : '#B0A490',
-      setPts: (pts: number) =>
-        setMissions((prev) => prev.map((x) => (x.id === m.id ? { ...x, pts: Math.max(0, pts) } : x))),
-      toggle: () => setMissions((prev) => prev.map((x) => (x.id === m.id ? { ...x, on: !x.on } : x))),
-      togBg: m.on ? '#2E6B58' : '#D8CFBF',
-      togLeft: m.on ? '19px' : '3px',
+      id: m.id,
+      label: m.l.ko,
+      cat: m.kind === 'daily' ? '일일' : '주간',
+      pts: m.pts,
+      on: m.active,
+      txtColor: m.active ? '#221C15' : '#B0A490',
+      setPts: (pts: number) => void changeMissionPoints(m.id, pts),
+      toggle: () => void toggleMission(m.id),
+      togBg: m.active ? '#2E6B58' : '#D8CFBF',
+      togLeft: m.active ? '19px' : '3px',
     })),
 
-    earnRate,
-    useCap,
-    streakBonus,
-    setEarnRate: (v: number) => setEarnRate(Math.max(0, v)),
-    setUseCap: (v: number) => setUseCap(Math.max(0, v)),
-    setStreakBonus: (v: number) => setStreakBonus(Math.max(0, v)),
+    earnRate: draft.earnPerDollar,
+    useCap: draft.useCapPct,
+    streakBonus: draft.streakBonus,
+    setEarnRate: (v: number) => editDraft({ earnPerDollar: Math.max(0, v) }),
+    setUseCap: (v: number) => editDraft({ useCapPct: Math.max(0, Math.min(100, v)) }),
+    setStreakBonus: (v: number) => editDraft({ streakBonus: Math.max(0, v) }),
+    settingsDirty: draftDirty,
+    saveSettings: () => void saveSettings(),
 
     rewardCfg: rewardStock.map((r) => ({
-      ...r,
+      id: r.id,
+      name: r.l.ko,
+      cost: r.cost,
+      stock: r.stock,
       color: r.stock <= 5 ? '#C25E43' : '#221C15',
-      inc: () => setRewardStock((prev) => prev.map((x) => (x.id === r.id ? { ...x, stock: x.stock + STOCK_STEP } : x))),
-      dec: () => setRewardStock((prev) => prev.map((x) => (x.id === r.id ? { ...x, stock: Math.max(0, x.stock - STOCK_STEP) } : x))),
+      inc: () => void bumpRewardStock(r.id, STOCK_STEP),
+      dec: () => void bumpRewardStock(r.id, -STOCK_STEP),
     })),
+
+    operators: operators.map((o) => ({
+      ...o,
+      isSelf: o.email.toLowerCase() === (auth.user?.email ?? '').toLowerCase(),
+      roleLabel: o.role === 'master' ? '마스터' : '일반 관리자',
+      setRole: (r: remote.AdminRole) => void changeOperatorRole(o.email, r),
+      remove: () => void removeOperator(o.email),
+    })),
+    addOperator: (email: string, r: remote.AdminRole, note: string) => void addOperator(email, r, note),
 
     csList: cs.map((c) => ({
       ...c,

@@ -1,7 +1,9 @@
 import { AuthProvider } from './auth/AuthContext'
 import { AdminProvider, useAdmin } from './admin/AdminContext'
 import { AdminLogin } from './admin/AdminLogin'
+import { CatalogProvider } from './catalog/CatalogContext'
 import { Sidebar } from './admin/Sidebar'
+import { Access } from './admin/views/Access'
 import { Dashboard } from './admin/views/Dashboard'
 import { Inquiries } from './admin/views/Inquiries'
 import { MissionConfig } from './admin/views/MissionConfig'
@@ -19,6 +21,7 @@ function CurrentView() {
   if (admin.isProducts) return <Products />
   if (admin.isUsers) return <Users />
   if (admin.isMissions) return <MissionConfig />
+  if (admin.isAccess) return <Access />
   return <Inquiries />
 }
 
@@ -42,9 +45,11 @@ function AdminShell() {
 export function AdminApp() {
   return (
     <AuthProvider>
-      <AdminProvider>
-        <AdminShell />
-      </AdminProvider>
+      <CatalogProvider>
+        <AdminProvider>
+          <AdminShell />
+        </AdminProvider>
+      </CatalogProvider>
     </AuthProvider>
   )
 }

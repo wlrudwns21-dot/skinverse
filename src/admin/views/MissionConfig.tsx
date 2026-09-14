@@ -1,6 +1,5 @@
 import { s } from '../../lib/css'
 import { useAdmin } from '../AdminContext'
-import { LocalOnlyNotice } from './LocalOnlyNotice'
 
 const numberInput =
   'width:56px;border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:13px;font-weight:700;text-align:right;outline:none'
@@ -15,8 +14,6 @@ export function MissionConfig() {
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>
       <div style={s('font-family:Marcellus,serif;font-size:24px')}>미션 · 포인트 설정</div>
-
-      <LocalOnlyNotice what="미션 보상과 적립 규칙" />
 
       <div style={s('display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:14px')}>
         <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px')}>

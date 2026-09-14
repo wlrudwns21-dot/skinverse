@@ -9,11 +9,12 @@ import {
   type ReactNode,
 } from 'react'
 import { cities, defaultCity } from '../data/cities'
-import { orderNoPrefix, pointsRules, shipping } from '../data/commerce'
-import { products } from '../data/products'
-import { dailyMissions, levels, rewards, weeklyMissions } from '../data/rewards'
+import { orderNoPrefix, shipping } from '../data/commerce'
+import { levels } from '../data/rewards'
 import { conditions, metricDefs } from '../data/skin'
-import type { Lang, Mission, Product, Reward } from '../data/types'
+import type { Lang } from '../data/types'
+import { useCatalog } from '../catalog/CatalogContext'
+import type { CatalogMission, CatalogProduct, CatalogReward } from '../catalog/types'
 import { can, guestScanUsedToday, markGuestScanUsed, type Capability } from '../auth/capabilities'
 import { useAuth } from '../auth/AuthContext'
 import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
@@ -83,7 +84,16 @@ interface Prefs {
 
 function useStoreValue() {
   const auth = useAuth()
+  const catalog = useCatalog()
   const isMember = auth.isMember
+
+  // Only live rows reach shoppers; an operator switching a product off removes
+  // it from the shop on the next load.
+  const products = catalog.products.filter((p) => p.active)
+  const dailyMissions = catalog.missions.filter((m) => m.kind === 'daily' && m.active)
+  const weeklyMissions = catalog.missions.filter((m) => m.kind === 'weekly' && m.active)
+  const rewards = catalog.rewards.filter((r) => r.active)
+  const settings = catalog.settings
 
   const [state, setState] = useState<StoreState>(() => {
     // UI preferences and a guest bag are restored before the first paint, so a
@@ -103,6 +113,13 @@ function useStoreValue() {
   const scanTimer = useRef<ReturnType<typeof setInterval> | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const payTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const dailyRef = useRef(dailyMissions)
+  dailyRef.current = dailyMissions
+  const productsRef = useRef(products)
+  productsRef.current = products
+  const settingsRef = useRef(settings)
+  settingsRef.current = settings
 
   const t = useMemo(() => strings(state.lang), [state.lang])
   const a = useMemo(() => authT(state.lang), [state.lang])
@@ -311,7 +328,7 @@ function useStoreValue() {
   // ── missions and rewards ──────────────────────────────────────────────────
 
   const claim = useCallback(
-    (mission: Mission) => {
+    (mission: CatalogMission) => {
       if (!isMember) {
         openGate('claimMission')
         return
@@ -344,7 +361,7 @@ function useStoreValue() {
   )
 
   const redeem = useCallback(
-    (reward: Reward) => {
+    (reward: CatalogReward) => {
       if (!isMember) {
         openGate('redeem')
         return
@@ -415,8 +432,8 @@ function useStoreValue() {
     payTimer.current = setTimeout(() => {
       void (async () => {
         const s = stateRef.current
-        const totals = totalsOf(s)
-        const earn = Math.round(totals.total * pointsRules.earnPerDollar)
+        const totals = totalsOf(s, productsRef.current, settingsRef.current)
+        const earn = Math.round(totals.total * settingsRef.current.earnPerDollar)
         const orderNo = orderNoPrefix + Math.floor(1000 + Math.random() * 9000)
         const eta = shipping[s.ship].eta
 
@@ -456,7 +473,7 @@ function useStoreValue() {
   const condition = conditions[state.skinCondition] ?? conditions.dehydrated
   const weather = cities[state.city] ?? cities[defaultCity]
   const points = state.points
-  const totals = totalsOf(state)
+  const totals = totalsOf(state, products, settings)
 
   const metrics = metricDefs.map((def) => {
     const score = condition.m[def.k]
@@ -472,7 +489,7 @@ function useStoreValue() {
   const lowest = metricDefs.reduce((x, y) => (condition.m[x.k] <= condition.m[y.k] ? x : y))
   const targetProduct = products.find((p) => p.metric === lowest.k) ?? products[0]
 
-  const toView = (p: Product): ProductView => {
+  const toView = (p: CatalogProduct): ProductView => {
     const matchN =
       p.metric === 'uv'
         ? Math.min(98, 58 + weather.uv * 4)
@@ -511,7 +528,7 @@ function useStoreValue() {
         : 'background:#FFFFFF;border:1px solid #D8CFBF;color:#4A4234'),
   }))
 
-  const toMissionView = (m: Mission): MissionView => {
+  const toMissionView = (m: CatalogMission): MissionView => {
     const done = !!state.done[m.id]
     return {
       pts: m.pts,
@@ -644,6 +661,7 @@ function useStoreValue() {
     a,
     lang,
     isMember,
+    catalogLoading: catalog.loading,
     authLoading: auth.loading,
     profile: auth.profile,
     signOut: () => void auth.signOut(),
@@ -704,7 +722,7 @@ function useStoreValue() {
     discS: '−' + usd(totals.disc),
     totalS: usd(totals.total),
     usePtsLine: t.usePts(totals.ptsUsed.toLocaleString(), usd(totals.disc)),
-    earnPreview: Math.round((totals.sub + totals.ship) * pointsRules.earnPerDollar),
+    earnPreview: Math.round((totals.sub + totals.ship) * settings.earnPerDollar),
     shipName: shipping[state.ship].label,
     setName: (value: string) => setState((s) => ({ ...s, name: value })),
     setAddr: (value: string) => setState((s) => ({ ...s, addr: value })),

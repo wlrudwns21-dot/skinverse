@@ -1,12 +1,11 @@
 import { s } from '../../lib/css'
 
 /**
- * Marks the views that are not yet wired to Postgres.
+ * Marks a view that is not yet wired to Postgres.
  *
- * Orders and members come from the database and persist. The catalogue, the
- * mission configuration and the CS queue still read from `src/data/`, so edits
- * made here last only as long as the tab is open. Saying so on the screen beats
- * letting an operator believe a stock change stuck.
+ * Only the CS queue is left: orders, members, the catalogue, missions and the
+ * point rules all persist now. Saying so on the screen beats letting an
+ * operator believe a change stuck when it will vanish on refresh.
  */
 export function LocalOnlyNotice({ what }: { what: string }) {
   return (

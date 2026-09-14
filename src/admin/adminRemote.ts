@@ -219,3 +219,68 @@ export async function loadStats(): Promise<AdminStats> {
     },
   }
 }
+
+// ── operator accounts (master only) ─────────────────────────────────────────
+
+export type AdminRole = 'master' | 'admin'
+
+export interface Operator {
+  email: string
+  role: AdminRole
+  note: string
+  created_at: string
+}
+
+/** The caller's own role, or null if they are not an operator at all. */
+export async function myRole(): Promise<AdminRole | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.rpc('my_admin_role')
+  if (error) {
+    console.error('[skinverse] 권한 확인 실패', error.message)
+    return null
+  }
+  return (data as AdminRole | null) ?? null
+}
+
+/** RLS returns nothing at all unless the caller is a master. */
+export async function listOperators(): Promise<Operator[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('admin_users')
+    .select('email, role, note, created_at')
+    .order('created_at')
+  if (error) {
+    console.error('[skinverse] 운영자 목록 조회 실패', error.message)
+    return []
+  }
+  return (data ?? []) as Operator[]
+}
+
+export async function addOperator(
+  email: string,
+  role: AdminRole,
+  note: string,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: '연결 없음' }
+  const { error } = await supabase
+    .from('admin_users')
+    .insert({ email: email.trim().toLowerCase(), role, note })
+  if (!error) return { ok: true }
+  return { ok: false, error: error.code === '23505' ? '이미 등록된 이메일입니다' : error.message }
+}
+
+export async function setOperatorRole(
+  email: string,
+  role: AdminRole,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: '연결 없음' }
+  const { error } = await supabase.from('admin_users').update({ role }).eq('email', email)
+  // The last-master guard raises from Postgres; surface its message as-is.
+  return error ? { ok: false, error: error.message } : { ok: true }
+}
+
+export async function removeOperator(email: string): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: '연결 없음' }
+  const { error } = await supabase.from('admin_users').delete().eq('email', email)
+  return error ? { ok: false, error: error.message } : { ok: true }
+}
