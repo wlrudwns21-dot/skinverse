@@ -1,5 +1,4 @@
 import type {
-  AdminInquiry,
   AdminMission,
   AdminOrder,
   AdminProduct,
@@ -59,14 +58,6 @@ export const adminRewards: AdminReward[] = [
 
 /** SAMPLE DATA — point rules as configured in the console. */
 export const adminPointRules = { earnRate: 5, useCap: 30, streakBonus: 0 }
-
-/** SAMPLE DATA — customer service queue. */
-export const adminInquiries: AdminInquiry[] = [
-  { id: 'c1', cat: '배송', title: '통관에서 멈춰 있어요', body: 'DHL 트래킹이 3일째 통관 단계에서 안 움직여요. 확인 부탁드립니다.', who: 'Ploy S. · 🇹🇭 · 09-14', done: false },
-  { id: 'c2', cat: '제품', title: '앰플 사용 순서 문의', body: '비타민C 앰플을 토너 전에 쓰나요, 후에 쓰나요? AI 루틴에는 3단계로 나와요.', who: 'Li Wei · 🇨🇳 · 09-13', done: false },
-  { id: 'c3', cat: '포인트', title: '스캔 미션 포인트가 안 들어왔어요', body: '주간 스캔을 완료했는데 +30P가 반영되지 않았습니다.', who: 'Emma Chen · 🇸🇬 · 09-13', done: true },
-  { id: 'c4', cat: '결제', title: 'PayPal 이중 결제 확인 요청', body: '같은 주문이 두 번 결제된 것 같아요. 환불 가능한가요?', who: 'Sarah Kim · 🇺🇸 · 09-12', done: true },
-]
 
 /** SAMPLE DATA — dashboard headline figures. */
 export const adminKpis: Kpi[] = [

@@ -17,6 +17,7 @@ export type Screen =
   | 'missions'
   | 'my'
   | 'auth'
+  | 'support'
 
 export type ScanStep = 'intro' | 'scanning' | 'results'
 export type AuthMode = 'signup' | 'login'

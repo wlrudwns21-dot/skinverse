@@ -108,8 +108,16 @@ export function MyPage() {
       </div>
 
       <div
+        onClick={st.goSupport}
+        style={s('cursor:pointer;margin-top:18px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600')}
+      >
+        <span>💬 {st.a.support}</span>
+        <span style={s('color:#B0A490')}>→</span>
+      </div>
+
+      <div
         onClick={st.signOut}
-        style={s('cursor:pointer;margin-top:18px;border:1px solid #D8CFBF;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700;color:#8A7D6C;background:#FFFFFF')}
+        style={s('cursor:pointer;margin-top:10px;border:1px solid #D8CFBF;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700;color:#8A7D6C;background:#FFFFFF')}
       >
         {st.a.logOut}
       </div>

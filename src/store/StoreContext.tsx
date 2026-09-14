@@ -8,11 +8,13 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { cities, defaultCity } from '../data/cities'
+import { cities, CURRENT_LOCATION, defaultCity } from '../data/cities'
 import { orderNoPrefix, shipping } from '../data/commerce'
 import { levels } from '../data/rewards'
 import { conditions, metricDefs } from '../data/skin'
-import type { Lang } from '../data/types'
+import type { Lang, Weather } from '../data/types'
+import { fetchWeather } from '../weather/remote'
+import { useGeolocation } from '../weather/useGeolocation'
 import { useCatalog } from '../catalog/CatalogContext'
 import type { CatalogMission, CatalogProduct, CatalogReward } from '../catalog/types'
 import { can, guestScanUsedToday, markGuestScanUsed, type Capability } from '../auth/capabilities'
@@ -85,6 +87,7 @@ interface Prefs {
 function useStoreValue() {
   const auth = useAuth()
   const catalog = useCatalog()
+  const geo = useGeolocation()
   const isMember = auth.isMember
 
   // Only live rows reach shoppers; an operator switching a product off removes
@@ -120,6 +123,8 @@ function useStoreValue() {
   productsRef.current = products
   const settingsRef = useRef(settings)
   settingsRef.current = settings
+
+  const [liveWeather, setLiveWeather] = useState<Weather | null>(null)
 
   const t = useMemo(() => strings(state.lang), [state.lang])
   const a = useMemo(() => authT(state.lang), [state.lang])
@@ -241,6 +246,30 @@ function useStoreValue() {
       cancelled = true
     }
   }, [isMember, auth.profile])
+
+  // ── live weather ──────────────────────────────────────────────────────────
+
+  // Re-fetch whenever the place changes. A failure leaves liveWeather null, so
+  // the screen falls back to the city's stored numbers rather than going blank.
+  const geoCoords = geo.coords
+  const selectedCity = state.city
+  useEffect(() => {
+    const place =
+      selectedCity === CURRENT_LOCATION
+        ? geoCoords
+        : { lat: (cities[selectedCity] ?? cities[defaultCity]).lat, lon: (cities[selectedCity] ?? cities[defaultCity]).lon }
+    if (!place) {
+      setLiveWeather(null)
+      return
+    }
+
+    let cancelled = false
+    setLiveWeather(null)
+    void fetchWeather(place.lat, place.lon).then((w) => {
+      if (!cancelled) setLiveWeather(w)
+    })
+    return () => { cancelled = true }
+  }, [selectedCity, geoCoords])
 
   // ── the membership gate ───────────────────────────────────────────────────
 
@@ -471,7 +500,13 @@ function useStoreValue() {
 
   const lang: Lang = state.lang
   const condition = conditions[state.skinCondition] ?? conditions.dehydrated
-  const weather = cities[state.city] ?? cities[defaultCity]
+
+  const usingLocation = state.city === CURRENT_LOCATION
+  const fallbackCity = cities[state.city] ?? cities[defaultCity]
+
+  // Live reading when we have one; the city's stored numbers until then.
+  const weather: Weather = liveWeather ?? { t: fallbackCity.t, h: fallbackCity.h, uv: fallbackCity.uv }
+  const placeLabel = usingLocation ? a.currentLocation : state.city
   const points = state.points
   const totals = totalsOf(state, products, settings)
 
@@ -585,7 +620,7 @@ function useStoreValue() {
     {
       n: 5,
       name: 'SPF50+ PA++++' + (weather.uv >= 8 ? t.spfRe : ''),
-      note: t.uvIn(weather.uv, state.city),
+      note: t.uvIn(weather.uv, placeLabel),
     },
   ]
   const pmSteps: RoutineStep[] = [
@@ -598,7 +633,7 @@ function useStoreValue() {
   const saveCurrentRoutine = () => {
     void (async () => {
       const ok = await remote.saveRoutine({
-        city: state.city,
+        city: placeLabel,
         skinCondition: state.skinCondition,
         temp: weather.t,
         humidity: weather.h,
@@ -691,6 +726,7 @@ function useStoreValue() {
     goMissions: go('missions'),
     goMy: guard('myPage', () => setState((s) => ({ ...s, screen: 'my' }))),
     goCart: go('cart'),
+    goSupport: guard('myPage', () => setState((s) => ({ ...s, screen: 'support' }))),
     goCheckout: guard('checkout', () => setState((s) => ({ ...s, screen: 'checkout', chkStep: 1 }))),
 
     startScan,
@@ -745,8 +781,22 @@ function useStoreValue() {
 
     setCity: (value: string) => {
       setState((s) => ({ ...s, city: value }))
-      if (isMember) void auth.updateProfile({ city: value })
+      // "current location" is a device fact, not a saved preference.
+      if (isMember && value !== CURRENT_LOCATION) void auth.updateProfile({ city: value })
     },
+    usingLocation,
+    placeLabel,
+    geoStatus: geo.status,
+    requestLocation: () => {
+      setState((s) => ({ ...s, city: CURRENT_LOCATION }))
+      geo.request()
+    },
+    clearLocation: () => {
+      geo.clear()
+      setState((s) => ({ ...s, city: defaultCity }))
+    },
+    locationCoords: usingLocation ? geo.coords : null,
+    weatherIsLive: liveWeather !== null,
     weather,
     uvColor: weather.uv >= 8 ? '#C25E43' : weather.uv >= 6 ? '#B08133' : '#2E6B58',
     wLine: weather.t + '°C · ' + t.humidity + ' ' + weather.h + '% · UV ' + weather.uv,

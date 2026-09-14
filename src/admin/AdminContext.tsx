@@ -7,9 +7,10 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { adminInquiries, orderStatusMeta, orderStatusOrder } from '../data/admin'
+import { orderStatusMeta, orderStatusOrder } from '../data/admin'
 import { levels } from '../data/rewards'
-import type { AdminInquiry, AdminOrder, OrderStatus } from '../data/types'
+import type { AdminOrder, OrderStatus } from '../data/types'
+import { loadAllThreads } from '../support/remote'
 import { useAuth } from '../auth/AuthContext'
 import { useCatalog } from '../catalog/CatalogContext'
 import * as catalogRemote from '../catalog/remote'
@@ -63,8 +64,8 @@ function useAdminValue() {
   const [stats, setStats] = useState<remote.AdminStats | null>(null)
   const [loadingData, setLoadingData] = useState(false)
 
-  // The CS queue is the last surface with no table behind it.
-  const [cs, setCs] = useState<AdminInquiry[]>(adminInquiries)
+  // Just the badge count; the CS screen loads its own threads.
+  const [pendingCs, setPendingCs] = useState(0)
 
   // Point rules are edited locally and committed with an explicit save, so a
   // half-typed number never becomes the live earn rate.
@@ -100,10 +101,16 @@ function useAdminValue() {
 
   const refresh = useCallback(async () => {
     setLoadingData(true)
-    const [o, m, s] = await Promise.all([remote.loadOrders(), remote.loadMembers(), remote.loadStats()])
+    const [o, m, s, threads] = await Promise.all([
+      remote.loadOrders(),
+      remote.loadMembers(),
+      remote.loadStats(),
+      loadAllThreads(),
+    ])
     setOrders(o)
     setMembers(m)
     setStats(s)
+    setPendingCs(threads.filter((t) => t.status === 'open').length)
     setLoadingData(false)
   }, [])
 
@@ -239,7 +246,6 @@ function useAdminValue() {
   // ── derived ───────────────────────────────────────────────────────────────
 
   const isMaster = role === 'master'
-  const pendingCs = cs.filter((c) => !c.done).length
   const newOrders = orders.filter((o) => o.status === 'paid' || o.status === 'preparing').length
   const lowStock = products.filter((p) => p.stock <= 5).length
 
@@ -434,12 +440,6 @@ function useAdminValue() {
     })),
     addOperator: (email: string, r: remote.AdminRole, note: string) => void addOperator(email, r, note),
 
-    csList: cs.map((c) => ({
-      ...c,
-      toggle: () => setCs((prev) => prev.map((x) => (x.id === c.id ? { ...x, done: !x.done } : x))),
-      btnLabel: c.done ? '답변완료 ✓' : '답변 대기',
-      btnStyle: c.done ? 'background:#EAF1EC;color:#2E6B58' : 'background:#221C15;color:#F5F0E6',
-    })),
   }
 }
 

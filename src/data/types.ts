@@ -17,11 +17,20 @@ export type MetricKey =
 export type SkinConditionKey = 'dehydrated' | 'oily' | 'balanced'
 
 export interface City {
-  /** Temperature in °C. */
+  /** Temperature in °C — fallback until the live reading arrives. */
   t: number
-  /** Relative humidity in %. */
+  /** Relative humidity in % — fallback. */
   h: number
-  /** UV index. */
+  /** UV index — fallback. */
+  uv: number
+  lat: number
+  lon: number
+}
+
+/** A live reading, or the fallback standing in for one. */
+export interface Weather {
+  t: number
+  h: number
   uv: number
 }
 
@@ -120,15 +129,6 @@ export interface AdminReward {
   name: string
   cost: number
   stock: number
-}
-
-export interface AdminInquiry {
-  id: string
-  cat: string
-  title: string
-  body: string
-  who: string
-  done: boolean
 }
 
 export interface Kpi {

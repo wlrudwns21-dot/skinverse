@@ -62,6 +62,32 @@ export interface AuthStrings {
   guestScanNotice: string
   guestScanUsed: string
 
+  // location & weather
+  currentLocation: string
+  useMyLocation: string
+  locating: string
+  locationDenied: string
+  locationUnavailable: string
+  pickCity: string
+  liveWeather: string
+  sampleWeather: string
+
+  // support
+  support: string
+  supportTitle: string
+  supportSub: string
+  supportPlaceholder: string
+  supportSend: string
+  supportEmpty: string
+  supportNew: string
+  supportBot: string
+  supportStaff: string
+  supportYou: string
+  supportNoMatch: string
+  supportStatus: Record<'bot' | 'open' | 'answered' | 'closed', string>
+  supportFaqTitle: string
+  supportAsk: string
+
   // member extras
   saveRoutineCta: string
   routineSaved: string
@@ -109,6 +135,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: '비회원은 하루 1회 체험할 수 있어요. 결과는 저장되지 않습니다.',
     guestScanUsed: '오늘 체험을 사용했어요 — 내일 다시 가능합니다',
 
+    currentLocation: '현재 위치', useMyLocation: '내 위치로 보기', locating: '위치 확인 중…',
+    locationDenied: '위치 권한이 거부되었습니다. 브라우저 주소창의 자물쇠 아이콘에서 허용할 수 있어요.',
+    locationUnavailable: '위치를 가져올 수 없습니다. 도시를 직접 선택해주세요.',
+    pickCity: '도시 선택', liveWeather: '실시간', sampleWeather: '샘플 값',
+    support: '문의하기', supportTitle: '무엇을 도와드릴까요?',
+    supportSub: '자주 묻는 질문은 즉시 답변드리고, 그 외에는 담당자가 확인 후 답변드립니다.',
+    supportPlaceholder: '궁금한 점을 입력해주세요 (예: 배송 얼마나 걸려요?)',
+    supportSend: '보내기', supportEmpty: '아직 문의 내역이 없습니다.', supportNew: '새 문의',
+    supportBot: '자동 응답', supportStaff: '상담원', supportYou: '나',
+    supportNoMatch: '문의를 접수했습니다. 담당자가 확인 후 답변드리겠습니다. 보통 영업일 기준 1일 이내에 회신드려요.',
+    supportStatus: { bot: '자동 응답 완료', open: '답변 대기', answered: '답변 완료', closed: '종료' },
+    supportFaqTitle: '자주 묻는 질문', supportAsk: '직접 문의하기',
     saveRoutineCta: '이 루틴 저장하기', routineSaved: '루틴을 저장했어요',
     savedRoutines: (n) => '저장한 루틴 ' + n + '개',
     welcome: (n) => n + '님, 환영합니다!',
@@ -157,6 +195,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: 'Guests get one trial per day. Results are not saved.',
     guestScanUsed: "Today's trial is used — come back tomorrow",
 
+    currentLocation: 'Current location', useMyLocation: 'Use my location', locating: 'Finding you…',
+    locationDenied: 'Location access was denied. You can allow it from the lock icon in the address bar.',
+    locationUnavailable: 'Could not get your location. Please pick a city instead.',
+    pickCity: 'Pick a city', liveWeather: 'Live', sampleWeather: 'Sample',
+    support: 'Support', supportTitle: 'How can we help?',
+    supportSub: 'Common questions are answered instantly; anything else goes to our team.',
+    supportPlaceholder: 'Ask us anything (e.g. how long does shipping take?)',
+    supportSend: 'Send', supportEmpty: 'No conversations yet.', supportNew: 'New question',
+    supportBot: 'Auto reply', supportStaff: 'Support', supportYou: 'You',
+    supportNoMatch: "Thanks — we've logged your question. Our team will reply, usually within one business day.",
+    supportStatus: { bot: 'Answered automatically', open: 'Waiting for reply', answered: 'Replied', closed: 'Closed' },
+    supportFaqTitle: 'Frequently asked', supportAsk: 'Ask a question',
     saveRoutineCta: 'Save this routine', routineSaved: 'Routine saved',
     savedRoutines: (n) => n + ' saved routine' + (n === 1 ? '' : 's'),
     welcome: (n) => 'Welcome, ' + n + '!',
@@ -205,6 +255,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: '非会员每天可体验1次，结果不会保存。',
     guestScanUsed: '今日体验已使用 — 明天再来',
 
+    currentLocation: '当前位置', useMyLocation: '使用我的位置', locating: '正在定位…',
+    locationDenied: '位置权限被拒绝。可在地址栏的锁形图标中允许。',
+    locationUnavailable: '无法获取位置，请手动选择城市。',
+    pickCity: '选择城市', liveWeather: '实时', sampleWeather: '示例值',
+    support: '联系客服', supportTitle: '需要什么帮助？',
+    supportSub: '常见问题将立即回复，其他问题由客服人员确认后回复。',
+    supportPlaceholder: '请输入您的问题（例如：配送需要多久？）',
+    supportSend: '发送', supportEmpty: '暂无咨询记录。', supportNew: '新咨询',
+    supportBot: '自动回复', supportStaff: '客服', supportYou: '我',
+    supportNoMatch: '已收到您的咨询，客服人员确认后会尽快回复，通常在一个工作日内。',
+    supportStatus: { bot: '已自动回复', open: '等待回复', answered: '已回复', closed: '已结束' },
+    supportFaqTitle: '常见问题', supportAsk: '直接咨询',
     saveRoutineCta: '保存此方案', routineSaved: '方案已保存',
     savedRoutines: (n) => '已保存 ' + n + ' 个方案',
     welcome: (n) => n + '，欢迎！',
@@ -253,6 +315,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: 'ผู้ที่ไม่ได้เป็นสมาชิกทดลองได้วันละ 1 ครั้ง ผลลัพธ์จะไม่ถูกบันทึก',
     guestScanUsed: 'ใช้สิทธิ์ทดลองของวันนี้แล้ว — พรุ่งนี้ลองใหม่',
 
+    currentLocation: 'ตำแหน่งปัจจุบัน', useMyLocation: 'ใช้ตำแหน่งของฉัน', locating: 'กำลังหาตำแหน่ง…',
+    locationDenied: 'การเข้าถึงตำแหน่งถูกปฏิเสธ อนุญาตได้จากไอคอนกุญแจในแถบที่อยู่',
+    locationUnavailable: 'ไม่สามารถระบุตำแหน่งได้ กรุณาเลือกเมืองแทน',
+    pickCity: 'เลือกเมือง', liveWeather: 'เรียลไทม์', sampleWeather: 'ค่าตัวอย่าง',
+    support: 'ติดต่อเรา', supportTitle: 'ให้เราช่วยอะไรดี?',
+    supportSub: 'คำถามที่พบบ่อยจะตอบทันที ส่วนเรื่องอื่นทีมงานจะตรวจสอบและตอบกลับ',
+    supportPlaceholder: 'พิมพ์คำถามของคุณ (เช่น จัดส่งใช้เวลานานแค่ไหน?)',
+    supportSend: 'ส่ง', supportEmpty: 'ยังไม่มีประวัติการสอบถาม', supportNew: 'คำถามใหม่',
+    supportBot: 'ตอบอัตโนมัติ', supportStaff: 'เจ้าหน้าที่', supportYou: 'คุณ',
+    supportNoMatch: 'รับเรื่องแล้ว ทีมงานจะตอบกลับโดยปกติภายใน 1 วันทำการ',
+    supportStatus: { bot: 'ตอบอัตโนมัติแล้ว', open: 'รอการตอบกลับ', answered: 'ตอบกลับแล้ว', closed: 'ปิดเรื่อง' },
+    supportFaqTitle: 'คำถามที่พบบ่อย', supportAsk: 'สอบถามเพิ่มเติม',
     saveRoutineCta: 'บันทึกรูทีนนี้', routineSaved: 'บันทึกรูทีนแล้ว',
     savedRoutines: (n) => 'รูทีนที่บันทึกไว้ ' + n + ' รายการ',
     welcome: (n) => 'ยินดีต้อนรับ ' + n + '!',

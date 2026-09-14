@@ -1,4 +1,4 @@
-import { cityNames } from '../data/cities'
+import { cityNames, CURRENT_LOCATION } from '../data/cities'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
@@ -15,14 +15,46 @@ export function Routine() {
         </div>
         <select
           value={st.state.city}
-          onChange={(e) => st.setCity(e.target.value)}
-          style={s('border:1px solid #D8CFBF;border-radius:10px;padding:8px 10px;font-size:12px;background:#FFFFFF;outline:none')}
+          onChange={(e) => {
+            if (e.target.value === CURRENT_LOCATION) st.requestLocation()
+            else st.setCity(e.target.value)
+          }}
+          style={s('border:1px solid #D8CFBF;border-radius:10px;padding:8px 10px;font-size:12px;background:#FFFFFF;outline:none;max-width:140px')}
         >
+          <option value={CURRENT_LOCATION}>📍 {st.a.currentLocation}</option>
           {cityNames.map((c) => (
-            <option key={c}>{c}</option>
+            <option key={c} value={c}>{c}</option>
           ))}
         </select>
       </div>
+
+      {/* Where the numbers come from, said plainly: a live reading, a sample
+          value, or a location request still in flight or refused. */}
+      <div style={s('display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap')}>
+        <span style={s('font-size:11px;font-weight:700;border-radius:999px;padding:4px 9px;' + (st.weatherIsLive ? 'background:#EAF1EC;color:#2E6B58' : 'background:#EFE9DD;color:#8A7D6C'))}>
+          {st.weatherIsLive ? '● ' + st.a.liveWeather : st.a.sampleWeather}
+        </span>
+        <span style={s('font-size:12px;color:#8A7D6C')}>{st.placeLabel}</span>
+        {!st.usingLocation && (
+          <span onClick={st.requestLocation} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600;text-decoration:underline')}>
+            📍 {st.a.useMyLocation}
+          </span>
+        )}
+      </div>
+
+      {st.geoStatus === 'asking' && (
+        <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:11px 14px;margin-top:8px;font-size:12.5px;color:#6E6252')}>
+          {st.a.locating}
+        </div>
+      )}
+      {(st.geoStatus === 'denied' || st.geoStatus === 'unavailable') && (
+        <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:12px;padding:11px 14px;margin-top:8px;font-size:12.5px;color:#9A8455;line-height:1.5;display:flex;justify-content:space-between;gap:10px;align-items:center')}>
+          <span>{st.geoStatus === 'denied' ? st.a.locationDenied : st.a.locationUnavailable}</span>
+          <span onClick={st.clearLocation} style={s('cursor:pointer;font-weight:700;color:#C29A5B;white-space:nowrap;flex-shrink:0')}>
+            {st.a.pickCity}
+          </span>
+        </div>
+      )}
 
       <div style={s('display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px')}>
         <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px;text-align:center')}>

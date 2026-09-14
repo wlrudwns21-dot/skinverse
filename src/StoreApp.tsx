@@ -13,6 +13,7 @@ import { Home } from './screens/Home'
 import { Missions } from './screens/Missions'
 import { MyPage } from './screens/MyPage'
 import { Routine } from './screens/Routine'
+import { Support } from './screens/Support'
 import { ProductDetail, Shop } from './screens/Shop'
 import { ScanIntro, Scanning, ScanResults } from './screens/Scan'
 import { StoreProvider, useStore } from './store/StoreContext'
@@ -45,6 +46,8 @@ function CurrentScreen() {
       return <Missions />
     case 'my':
       return <MyPage />
+    case 'support':
+      return <Support />
   }
 }
 
