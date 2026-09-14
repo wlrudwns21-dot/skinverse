@@ -57,6 +57,21 @@ export interface InsightStrings {
     tapForMore: string; measured: string; whatToDo: string
   }
 
+  /** The panel that shows what the routine was decided from. */
+  basis: {
+    title: string; sub: string; show: string; hide: string
+    weatherTitle: string; derivedTitle: string; faceTitle: string
+    temp: string; humidity: string; uv: string
+    vpd: string; vpdHelp: string
+    absHumidity: string; absHumidityHelp: string
+    dewPoint: string; dewPointHelp: string
+    occlusiveYes: string; occlusiveNo: string
+    drynessLoad: string; sebumLoad: string; coldStress: string; loadHelp: string
+    weakest: string; weakestHelp: (axis: string) => string
+    hydrationRead: (score: number, threshold: number) => string
+    hydrationOk: (score: number, threshold: number) => string
+  }
+
   trendTitle: string
   trendSub: string
   noTrend: string
@@ -122,6 +137,26 @@ const ko: InsightStrings = {
     title: '항목별 상세', sub: 'AI가 측정한 16개 항목 전체',
     skinType: 'AI 판정 피부 타입', tapForMore: '눌러서 자세히',
     measured: '무엇을 잰 값인가요', whatToDo: '이럴 땐',
+  },
+
+  basis: {
+    title: '이 루틴의 근거', sub: '무엇을 재서 이렇게 나왔는지', show: '자세히', hide: '접기',
+    weatherTitle: '측정한 날씨', derivedTitle: '피부에 실제로 작용하는 값', faceTitle: 'AI 분석에서 읽은 값',
+    temp: '기온', humidity: '상대습도', uv: '자외선 지수',
+    vpd: '수증기압차(VPD)',
+    vpdHelp: '피부 표면(32°C 포화)과 공기의 압력 차이. 수분을 끌어내는 실제 힘이에요.',
+    absHumidity: '절대습도',
+    absHumidityHelp: '공기가 실제로 품고 있는 물의 양. 상대습도와 달리 기온에 속지 않습니다.',
+    dewPoint: '이슬점',
+    dewPointHelp: '24°C를 넘으면 땀이 마르지 않아 무거운 제형이 겉돕니다.',
+    occlusiveYes: '이슬점이 24°C를 넘었습니다 — 땀이 증발하지 않아 크림·오일은 흡수되지 않고 겉돕니다. 분석 결과와 무관하게 젤 제형을 적용했습니다.',
+    occlusiveNo: '이슬점이 24°C 아래라 땀이 정상적으로 증발합니다. 제형 선택은 건조 부하와 분석 결과가 결정합니다.',
+    drynessLoad: '건조 부하', sebumLoad: '피지 부하', coldStress: '한랭 자극',
+    loadHelp: '건조 부하는 절대습도와 수증기압차를, 피지 부하는 기온과 이슬점을 조합한 값입니다(0~100). 피지 축에는 상대습도를 넣지 않습니다 — 온도가 같으면 습도는 피지 분비를 바꾸지 않기 때문이에요.',
+    weakest: '가장 낮은 항목',
+    weakestHelp: (axis) => `${axis}이(가) 가장 낮게 나와, 아침·저녁 트리트먼트 단계를 여기에 맞췄습니다.`,
+    hydrationRead: (score, threshold) => `수분 ${score}점으로 기준(${threshold}점) 아래입니다. 날씨와 별개로 제형을 한 단계 더 리치하게 올렸습니다.`,
+    hydrationOk: (score, threshold) => `수분 ${score}점으로 기준(${threshold}점) 이상입니다. 제형은 날씨만으로 결정했습니다.`,
   },
 
   trendTitle: '변화 추이',
@@ -191,6 +226,26 @@ const en: InsightStrings = {
     measured: 'What this measures', whatToDo: 'What to do',
   },
 
+  basis: {
+    title: 'Why this routine', sub: 'What was measured to arrive at it', show: 'Detail', hide: 'Hide',
+    weatherTitle: 'Measured conditions', derivedTitle: 'What that does to skin', faceTitle: 'Read from your analysis',
+    temp: 'Temperature', humidity: 'Relative humidity', uv: 'UV index',
+    vpd: 'Vapour pressure deficit',
+    vpdHelp: 'The gap between your skin surface (32°C, saturated) and the air. This is the force pulling water out.',
+    absHumidity: 'Absolute humidity',
+    absHumidityHelp: 'How much water the air is really carrying. Unlike the percentage, it is not fooled by temperature.',
+    dewPoint: 'Dew point',
+    dewPointHelp: 'Past 24°C sweat stops evaporating and heavy textures sit on the surface.',
+    occlusiveYes: 'The dew point is above 24°C — sweat is not evaporating, so creams and oils will sit on top rather than absorb. A gel was chosen regardless of what the analysis said.',
+    occlusiveNo: 'The dew point is below 24°C, so sweat evaporates normally. Texture was decided by the dryness load and your analysis.',
+    drynessLoad: 'Dryness load', sebumLoad: 'Sebum load', coldStress: 'Cold stress',
+    loadHelp: 'Dryness load combines absolute humidity with the vapour pressure deficit; sebum load combines temperature with dew point (0–100). Relative humidity is deliberately absent from the sebum axis — at a fixed temperature it does not change sebum output.',
+    weakest: 'Lowest reading',
+    weakestHelp: (axis) => `${axis} came back lowest, so the morning and evening treatment steps target it.`,
+    hydrationRead: (score, threshold) => `Hydration measured ${score}, below the ${threshold} threshold. The texture was moved one step richer independently of the weather.`,
+    hydrationOk: (score, threshold) => `Hydration measured ${score}, at or above the ${threshold} threshold, so texture was decided by the weather alone.`,
+  },
+
   trendTitle: 'Your trend',
   trendSub: 'Shown with the humidity at each scan',
   noTrend: 'Scan twice or more to see how your skin changes.',
@@ -258,6 +313,26 @@ const zh: InsightStrings = {
     measured: '这项测的是什么', whatToDo: '该怎么做',
   },
 
+  basis: {
+    title: '这套方案的依据', sub: '测了什么才得出这个结果', show: '详情', hide: '收起',
+    weatherTitle: '实测天气', derivedTitle: '对皮肤实际起作用的量', faceTitle: '从AI分析中读取',
+    temp: '气温', humidity: '相对湿度', uv: '紫外线指数',
+    vpd: '水汽压差（VPD）',
+    vpdHelp: '皮肤表面（32°C饱和）与空气之间的压差，这才是带走水分的真正作用力。',
+    absHumidity: '绝对湿度',
+    absHumidityHelp: '空气实际含有的水量。与百分比不同，它不会被气温误导。',
+    dewPoint: '露点',
+    dewPointHelp: '超过24°C时汗液不再蒸发，厚重质地会浮在表面。',
+    occlusiveYes: '露点高于24°C — 汗液无法蒸发，面霜与油类只会浮在表面而不被吸收。因此无论分析结果如何，均采用凝胶质地。',
+    occlusiveNo: '露点低于24°C，汗液正常蒸发。质地由干燥负荷与分析结果共同决定。',
+    drynessLoad: '干燥负荷', sebumLoad: '皮脂负荷', coldStress: '低温刺激',
+    loadHelp: '干燥负荷结合绝对湿度与水汽压差；皮脂负荷结合气温与露点（0~100）。皮脂轴刻意不含相对湿度 — 温度固定时湿度不改变皮脂分泌。',
+    weakest: '最低项',
+    weakestHelp: (axis) => `${axis}的分数最低，因此早晚的精华步骤针对这一项。`,
+    hydrationRead: (score, threshold) => `水分为 ${score} 分，低于 ${threshold} 分的阈值。已在天气之外额外将质地提升一档。`,
+    hydrationOk: (score, threshold) => `水分为 ${score} 分，达到或高于 ${threshold} 分阈值，质地仅由天气决定。`,
+  },
+
   trendTitle: '变化趋势',
   trendSub: '与每次分析时的湿度一同显示',
   noTrend: '完成两次以上分析后即可查看变化趋势。',
@@ -323,6 +398,26 @@ const th: InsightStrings = {
     title: 'รายละเอียดแต่ละหัวข้อ', sub: 'ครบทั้ง 16 หัวข้อที่ AI วัด',
     skinType: 'ประเภทผิวที่ AI ระบุ', tapForMore: 'แตะเพื่อดูรายละเอียด',
     measured: 'หัวข้อนี้วัดอะไร', whatToDo: 'ควรทำอย่างไร',
+  },
+
+  basis: {
+    title: 'ที่มาของรูทีนนี้', sub: 'วัดอะไรมาจึงได้ผลนี้', show: 'รายละเอียด', hide: 'ย่อ',
+    weatherTitle: 'สภาพอากาศที่วัดได้', derivedTitle: 'สิ่งที่ส่งผลต่อผิวจริง ๆ', faceTitle: 'อ่านจากผลวิเคราะห์',
+    temp: 'อุณหภูมิ', humidity: 'ความชื้นสัมพัทธ์', uv: 'ดัชนียูวี',
+    vpd: 'ส่วนต่างแรงดันไอน้ำ (VPD)',
+    vpdHelp: 'ช่องว่างระหว่างผิว (32°C อิ่มตัว) กับอากาศ นี่คือแรงที่ดึงน้ำออกจากผิวจริง ๆ',
+    absHumidity: 'ความชื้นสัมบูรณ์',
+    absHumidityHelp: 'ปริมาณน้ำที่อากาศมีอยู่จริง ต่างจากเปอร์เซ็นต์ตรงที่ไม่ถูกอุณหภูมิหลอก',
+    dewPoint: 'จุดน้ำค้าง',
+    dewPointHelp: 'เกิน 24°C เหงื่อจะไม่ระเหยและเนื้อหนักจะลอยอยู่บนผิว',
+    occlusiveYes: 'จุดน้ำค้างสูงกว่า 24°C — เหงื่อไม่ระเหย ครีมและออยล์จะลอยอยู่บนผิวแทนที่จะซึม จึงเลือกเนื้อเจลไม่ว่าผลวิเคราะห์จะเป็นอย่างไร',
+    occlusiveNo: 'จุดน้ำค้างต่ำกว่า 24°C เหงื่อระเหยได้ตามปกติ เนื้อผลิตภัณฑ์จึงตัดสินจากภาระความแห้งและผลวิเคราะห์',
+    drynessLoad: 'ภาระความแห้ง', sebumLoad: 'ภาระซีบัม', coldStress: 'ความเครียดจากความเย็น',
+    loadHelp: 'ภาระความแห้งรวมความชื้นสัมบูรณ์กับส่วนต่างแรงดันไอน้ำ ส่วนภาระซีบัมรวมอุณหภูมิกับจุดน้ำค้าง (0–100) แกนซีบัมไม่มีความชื้นสัมพัทธ์โดยตั้งใจ เพราะเมื่ออุณหภูมิคงที่ ความชื้นไม่เปลี่ยนการผลิตซีบัม',
+    weakest: 'หัวข้อที่ต่ำที่สุด',
+    weakestHelp: (axis) => `${axis} ได้คะแนนต่ำที่สุด ขั้นตอนบำรุงเช้าและเย็นจึงเน้นที่จุดนี้`,
+    hydrationRead: (score, threshold) => `ความชุ่มชื้นวัดได้ ${score} ต่ำกว่าเกณฑ์ ${threshold} จึงปรับเนื้อผลิตภัณฑ์ให้เข้มขึ้นหนึ่งระดับนอกเหนือจากสภาพอากาศ`,
+    hydrationOk: (score, threshold) => `ความชุ่มชื้นวัดได้ ${score} ถึงหรือสูงกว่าเกณฑ์ ${threshold} เนื้อผลิตภัณฑ์จึงตัดสินจากสภาพอากาศเพียงอย่างเดียว`,
   },
 
   trendTitle: 'แนวโน้มของคุณ',

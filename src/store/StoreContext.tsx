@@ -658,10 +658,18 @@ function useStoreValue() {
   const condition = conditions[state.skinCondition] ?? conditions.dehydrated
 
   const usingLocation = state.city === CURRENT_LOCATION
-  const fallbackCity = cities[state.city] ?? cities[defaultCity]
 
-  // Live reading when we have one; the city's stored numbers until then.
-  const weather: Weather = liveWeather ?? { t: fallbackCity.t, h: fallbackCity.h, uv: fallbackCity.uv }
+  /**
+   * The live reading, or a neutral placeholder while one is in flight.
+   *
+   * Cities no longer carry stored weather. They used to, as a fallback, which
+   * meant a routine could be built from a temperature invented months earlier
+   * with nothing on screen admitting it — a confident answer from stale data is
+   * worse than an obvious gap. `weatherIsLive` drives that admission, and the
+   * placeholder below only exists so the layout has numbers to render before
+   * the fetch lands.
+   */
+  const weather: Weather = liveWeather ?? { t: 20, h: 50, uv: 3 }
   weatherRef.current = weather
   const placeLabel = usingLocation ? a.currentLocation : state.city
   const points = state.points
@@ -1097,6 +1105,9 @@ function useStoreValue() {
     history,
     report: reportLines,
     visuals: state.liveVisuals,
+    plan,
+    weatherNow: weather,
+    basisT: ins.basis,
     mapT: ins.map,
     detailT: ins.detail,
     /** The vendor's own per-zone skin type, for the detailed report. */

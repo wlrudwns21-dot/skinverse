@@ -16,13 +16,14 @@ export type MetricKey =
 
 export type SkinConditionKey = 'dehydrated' | 'oily' | 'balanced'
 
+/**
+ * A place the routine can be built for.
+ *
+ * Coordinates only. Stored weather used to live here as a fallback, which meant
+ * a routine could be built from numbers invented months earlier with nothing on
+ * screen saying so. A missing reading is now shown as missing.
+ */
 export interface City {
-  /** Temperature in °C — fallback until the live reading arrives. */
-  t: number
-  /** Relative humidity in % — fallback. */
-  h: number
-  /** UV index — fallback. */
-  uv: number
   lat: number
   lon: number
 }

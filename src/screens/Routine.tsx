@@ -1,4 +1,5 @@
 import { cityNames, CURRENT_LOCATION } from '../data/cities'
+import { PlanBasis } from '../components/PlanBasis'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
@@ -96,6 +97,11 @@ export function Routine() {
           ))}
         </div>
       </div>
+
+      {/* The working behind the steps below. Collapsed by default — someone who
+          just wants the routine should get the routine, and someone who wants to
+          know why gets the measurements in the units they were taken in. */}
+      <PlanBasis plan={st.plan} weather={st.weatherNow} lang={st.lang} t={st.basisT} />
 
       <div style={s('font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px')}>{st.t.morning} ☀</div>
       <div style={s('display:flex;flex-direction:column;gap:8px')}>
