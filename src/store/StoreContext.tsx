@@ -12,6 +12,7 @@ import { cities, CURRENT_LOCATION, defaultCity } from '../data/cities'
 import { orderNoPrefix, shipping } from '../data/commerce'
 import { levels } from '../data/rewards'
 import { conditions, metricDefs } from '../data/skin'
+import { analyseSkin } from '../analysis/client'
 import type { Lang, Weather } from '../data/types'
 import { fetchWeather } from '../weather/remote'
 import { useGeolocation } from '../weather/useGeolocation'
@@ -312,6 +313,33 @@ function useStoreValue() {
 
   // ── scan ──────────────────────────────────────────────────────────────────
 
+  const setPhoto = useCallback((photo: File | null) => {
+    setState((s) => ({ ...s, photo }))
+  }, [])
+
+  /** Land on the results screen with a canned profile, clearly marked as such. */
+  const finishWithDemo = useCallback(() => {
+    const cond = conditions[stateRef.current.skinCondition]
+    setState((cur) => ({
+      ...cur,
+      progress: 100,
+      scanStep: 'results',
+      scanned: true,
+      scanIsReal: false,
+      liveMetrics: null,
+      liveOverall: null,
+    }))
+
+    // A demo score is not a measurement, so it does not go in the member's
+    // history — that record is meant to show how their skin actually changed.
+    if (!isMember) {
+      markGuestScanUsed()
+      setState((cur) => ({ ...cur, guestScanUsed: true }))
+      toastMsg(a.guestScanNotice)
+    }
+    return cond
+  }, [isMember, toastMsg, a])
+
   const startScan = useCallback(() => {
     const s = stateRef.current
 
@@ -324,38 +352,65 @@ function useStoreValue() {
     if (scanTimer.current) clearInterval(scanTimer.current)
     setState((cur) => ({ ...cur, screen: 'scan', scanStep: 'scanning' as ScanStep, progress: 0 }))
 
+    // The photo goes to the edge function while the progress bar runs, so the
+    // animation covers the round trip instead of being followed by a wait.
+    const photo = s.photo
+    const pending = photo ? analyseSkin(photo) : null
+
     scanTimer.current = setInterval(() => {
       const next = stateRef.current.progress + SCAN_TICK_STEP
       if (next < 100) {
         setState((cur) => ({ ...cur, progress: next }))
         return
       }
-
       if (scanTimer.current) clearInterval(scanTimer.current)
-      const cond = conditions[stateRef.current.skinCondition]
-      setState((cur) => ({ ...cur, progress: 100, scanStep: 'results', scanned: true }))
 
-      if (isMember) {
-        void remote.saveScan(stateRef.current.skinCondition, cond.overall, cond.m).then(() => {
+      void (async () => {
+        const outcome = pending ? await pending : null
+
+        if (outcome?.kind === 'quota') {
+          setState((cur) => ({ ...cur, scanStep: 'intro', progress: 0, guestScanUsed: !isMember }))
+          toastMsg(outcome.message || a.guestScanUsed)
+          return
+        }
+
+        if (outcome?.kind === 'ok') {
+          const { result } = outcome
           setState((cur) => ({
             ...cur,
-            history: [
-              {
-                skinCondition: cur.skinCondition,
-                overall: cond.overall,
-                createdAt: new Date().toISOString(),
-              },
-              ...cur.history,
-            ],
+            progress: 100,
+            scanStep: 'results',
+            scanned: true,
+            scanIsReal: true,
+            skinCondition: result.condition,
+            liveMetrics: result.metrics,
+            liveOverall: result.overall,
+            history: result.saved
+              ? [
+                  {
+                    skinCondition: result.condition,
+                    overall: result.overall,
+                    createdAt: new Date().toISOString(),
+                  },
+                  ...cur.history,
+                ]
+              : cur.history,
           }))
-        })
-      } else {
-        markGuestScanUsed()
-        setState((cur) => ({ ...cur, guestScanUsed: true }))
-        toastMsg(a.guestScanNotice)
-      }
+          if (!isMember) {
+            markGuestScanUsed()
+            setState((cur) => ({ ...cur, guestScanUsed: true }))
+          }
+          return
+        }
+
+        if (outcome?.kind === 'failed' && outcome.message) toastMsg(outcome.message)
+
+        // No photo, vendor not wired up, or the call failed: show the demo
+        // profile rather than a dead end, labelled so nobody mistakes it.
+        finishWithDemo()
+      })()
     }, SCAN_TICK_MS)
-  }, [isMember, openGate, toastMsg, a])
+  }, [isMember, openGate, toastMsg, a, finishWithDemo])
 
   // ── missions and rewards ──────────────────────────────────────────────────
 
@@ -513,8 +568,11 @@ function useStoreValue() {
   const points = state.points
   const totals = totalsOf(state, products, settings)
 
+  const liveMetrics = state.liveMetrics
+  const overallScore = state.liveOverall ?? condition.overall
+
   const metrics = metricDefs.map((def) => {
-    const score = condition.m[def.k]
+    const score = liveMetrics?.[def.k] ?? condition.m[def.k]
     return {
       nameL: def.n[lang],
       score,
@@ -524,14 +582,15 @@ function useStoreValue() {
     }
   })
 
-  const lowest = metricDefs.reduce((x, y) => (condition.m[x.k] <= condition.m[y.k] ? x : y))
+  const scoreOf = (k: (typeof metricDefs)[number]['k']) => liveMetrics?.[k] ?? condition.m[k]
+  const lowest = metricDefs.reduce((x, y) => (scoreOf(x.k) <= scoreOf(y.k) ? x : y))
   const targetProduct = products.find((p) => p.metric === lowest.k) ?? products[0]
 
   const toView = (p: CatalogProduct): ProductView => {
     const matchN =
       p.metric === 'uv'
         ? Math.min(98, 58 + weather.uv * 4)
-        : Math.min(98, 138 - condition.m[p.metric])
+        : Math.min(98, 138 - scoreOf(p.metric))
     return {
       id: p.id,
       brand: p.brand,
@@ -764,17 +823,19 @@ function useStoreValue() {
     scanStatus:
       state.progress < 30 ? t.s1 : state.progress < 60 ? t.s2 : state.progress < 90 ? t.s3 : t.s4,
     guestScanUsed: state.guestScanUsed,
-    overall: condition.overall,
+    overall: overallScore,
+    scanIsReal: state.scanIsReal,
+    setPhoto,
     skinType: condition.type[lang],
     summary: condition.sum[lang],
     metrics,
     dialStyle:
       'width:132px;height:132px;border-radius:50%;padding:10px;box-sizing:border-box;background:conic-gradient(#2E6B58 ' +
-      condition.overall * 3.6 +
+      overallScore * 3.6 +
       'deg,#E8E1D3 0deg)',
     dialSmStyle:
       'width:48px;height:48px;border-radius:50%;padding:4px;box-sizing:border-box;background:conic-gradient(#2E6B58 ' +
-      condition.overall * 3.6 +
+      overallScore * 3.6 +
       'deg,#D5E2D9 0deg);flex-shrink:0',
 
     homeRecs: all.slice(0, 4),

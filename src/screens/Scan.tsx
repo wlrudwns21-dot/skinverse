@@ -12,7 +12,11 @@ export function ScanIntro() {
 
       <div style={s('display:flex;justify-content:center;margin:22px 0')}>
         <div style={s('width:210px;height:270px;position:relative')}>
-          <ImageSlot mask="ellipse(50% 50% at 50% 50%)" placeholder={st.t.selfiePh} />
+          <ImageSlot
+            mask="ellipse(50% 50% at 50% 50%)"
+            placeholder={st.t.selfiePh}
+            onChange={st.setPhoto}
+          />
           <div style={s('position:absolute;inset:-8px;border:1.5px dashed #B9AC93;border-radius:50%;pointer-events:none')} />
         </div>
       </div>
@@ -24,6 +28,10 @@ export function ScanIntro() {
             <span>{tip}</span>
           </div>
         ))}
+      </div>
+
+      <div style={s('font-size:12px;color:#8A7D6C;line-height:1.5;margin-top:12px;text-align:center')}>
+        {st.a.photoNeeded}
       </div>
 
       {/* Guests may try the analysis once a day; the notice sets that
@@ -71,6 +79,13 @@ export function ScanResults() {
           </div>
         </div>
         <div style={s('font-size:16px;font-weight:700;margin-top:12px')}>{st.skinType}</div>
+
+        {/* A canned profile must never pass for a measurement. */}
+        {!st.scanIsReal && (
+          <div style={s('display:inline-block;margin-top:10px;background:#FBF3E4;border:1px solid #EBD9B8;color:#9A8455;border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:700')}>
+            {st.a.demoResult}
+          </div>
+        )}
       </div>
 
       <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:18px;display:flex;flex-direction:column;gap:12px')}>

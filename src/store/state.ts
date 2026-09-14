@@ -77,6 +77,18 @@ export interface StoreState {
   gate: Capability | null
   /** True once a guest has spent today's single trial scan. */
   guestScanUsed: boolean
+
+  /** The selfie the visitor picked, held only until the analysis is sent. */
+  photo: File | null
+  /**
+   * Whether the score on screen came from the vendor or from the canned demo
+   * profile. Shown to the customer — a made-up score presented as a measurement
+   * would be the worst thing this app could do.
+   */
+  scanIsReal: boolean
+  /** Live scan result, when the vendor produced one. */
+  liveMetrics: Record<string, number> | null
+  liveOverall: number | null
 }
 
 export const initialState: StoreState = {
@@ -114,6 +126,10 @@ export const initialState: StoreState = {
 
   gate: null,
   guestScanUsed: false,
+  photo: null,
+  scanIsReal: false,
+  liveMetrics: null,
+  liveOverall: null,
 }
 
 export interface Totals {
