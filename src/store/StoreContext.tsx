@@ -809,7 +809,7 @@ function useStoreValue() {
   const plan = buildPlan(weather, effectiveMetrics, lowest.k)
 
   const bands = {
-    humidity: { label: r.band.humidity[plan.humidity], why: r.why.humidity[plan.humidity], value: weather.h + '%' },
+    humidity: { label: r.band.humidity[plan.dryness], why: r.why.humidity[plan.dryness], value: weather.h + '%' },
     uv: { label: r.band.uv[plan.uv], why: r.why.uv[plan.uv], value: String(weather.uv) },
     temp: { label: r.band.temp[plan.temp], why: r.why.temp[plan.temp], value: weather.t + '°' },
   }

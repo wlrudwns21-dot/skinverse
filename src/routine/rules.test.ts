@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { conditions } from '../data/skin'
 import type { Weather } from '../data/types'
-import { buildPlan, humidityBand, tempBand, uvBand } from './rules'
+import { buildPlan, tempBand, uvBand } from './rules'
+import { drynessBand } from './climate'
 
 const weather = (t: number, h: number, uv: number): Weather => ({ t, h, uv })
 
@@ -13,17 +14,14 @@ const dehydrated = conditions.dehydrated.m
 describe('band boundaries', () => {
   // Each band is checked at its edges, since off-by-one here silently changes
   // what thousands of customers are told.
-  it('classifies humidity', () => {
-    expect(humidityBand(0)).toBe('veryDry')
-    expect(humidityBand(29)).toBe('veryDry')
-    expect(humidityBand(30)).toBe('dry')
-    expect(humidityBand(44)).toBe('dry')
-    expect(humidityBand(45)).toBe('comfortable')
-    expect(humidityBand(64)).toBe('comfortable')
-    expect(humidityBand(65)).toBe('humid')
-    expect(humidityBand(79)).toBe('humid')
-    expect(humidityBand(80)).toBe('veryHumid')
-    expect(humidityBand(100)).toBe('veryHumid')
+  it('classifies dryness by what the air does, not by the percentage', () => {
+    // The same relative humidity at two temperatures is two different days,
+    // which is the whole reason this is not banded on the percentage.
+    expect(drynessBand(weather(30, 84, 1))).toBe('humid')
+    expect(drynessBand(weather(22, 50, 1))).toBe('mild')
+    expect(drynessBand(weather(14, 62, 1))).toBe('drying')
+    expect(drynessBand(weather(22, 20, 1))).toBe('harsh')
+    expect(drynessBand(weather(-2, 40, 1))).toBe('severe')
   })
 
   it('follows the WHO UV index exactly', () => {
@@ -75,22 +73,41 @@ describe('temperature actually changes the plan', () => {
   })
 })
 
-describe('humidity drives texture', () => {
-  it('moves from oil-sealed to gel across the range', () => {
-    const at = (h: number) => buildPlan(weather(22, h, 1), balanced, 'hydration').am.moisturiser
-    expect(at(20)).toBe('richOil')
-    expect(at(38)).toBe('rich')
-    expect(at(55)).toBe('standard')
-    expect(at(72)).toBe('gel')
-    expect(at(90)).toBe('gel')
+describe('the air drives texture', () => {
+  it('moves from oil-sealed to gel as the pull on the skin eases', () => {
+    const at = (t: number, h: number) =>
+      buildPlan(weather(t, h, 1), balanced, 'hydration').am.moisturiser
+    expect(at(-2, 40)).toBe('richOil')  // Seoul winter: 1.7 g/m³ in the air
+    expect(at(22, 20)).toBe('rich')     // heated room, very low absolute humidity
+    expect(at(22, 50)).toBe('standard') // comfortable
+    expect(at(30, 84)).toBe('gel')      // tropics: nothing heavy will absorb
   })
 
-  it('layers toner in dry air and mists it in humid air', () => {
-    const at = (h: number) => buildPlan(weather(22, h, 1), balanced, 'hydration').am.toner
-    expect(at(25)).toBe('layered')
-    expect(at(40)).toBe('layered')
-    expect(at(55)).toBe('standard')
-    expect(at(75)).toBe('mist')
+  it('switches to a gel whenever sweat cannot evaporate, whatever the scan said', () => {
+    // A dew point past 24°C is the rule, and it outranks a dehydrated reading:
+    // a ceramide cream in that air sits on the surface instead of absorbing.
+    const plan = buildPlan(weather(31, 78, 8), dehydrated, 'hydration')
+    expect(plan.basis.occlusive).toBe(true)
+    expect(plan.am.moisturiser).toBe('gel')
+    expect(plan.pm.night).toBe('barrier')
+  })
+
+  it('layers toner when the air pulls and mists it when the air is saturated', () => {
+    const at = (t: number, h: number) => buildPlan(weather(t, h, 1), balanced, 'hydration').am.toner
+    expect(at(22, 20)).toBe('layered')
+    expect(at(14, 62)).toBe('layered')
+    expect(at(22, 50)).toBe('standard')
+    expect(at(30, 84)).toBe('mist')
+  })
+
+  it('reports the numbers it decided from', () => {
+    const { basis } = buildPlan(weather(-2, 40, 1), dehydrated, 'hydration')
+    // Cold air holds almost nothing, which is what makes a Korean winter the
+    // most desiccating condition in the model.
+    expect(basis.absoluteHumidity).toBeLessThan(2)
+    expect(basis.vpd).toBeGreaterThan(40)
+    expect(basis.hydration).toBe(dehydrated.hydration)
+    expect(basis.dehydratedBelow).toBe(60)
   })
 })
 

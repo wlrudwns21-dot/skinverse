@@ -4,7 +4,7 @@ import type {
   AmMoisturiser,
   AmSpf,
   AmToner,
-  HumidityBand,
+  DrynessBand,
   PmCleanse,
   PmNight,
   TempBand,
@@ -21,13 +21,13 @@ import type {
  */
 export interface RoutineStrings {
   band: {
-    humidity: Record<HumidityBand, string>
+    humidity: Record<DrynessBand, string>
     uv: Record<UvBand, string>
     temp: Record<TempBand, string>
   }
   /** One line per reading, explaining what it changes today. */
   why: {
-    humidity: Record<HumidityBand, string>
+    humidity: Record<DrynessBand, string>
     uv: Record<UvBand, string>
     temp: Record<TempBand, string>
   }
@@ -59,17 +59,17 @@ export interface RoutineStrings {
 export const routineStrings: Record<Lang, RoutineStrings> = {
   ko: {
     band: {
-      humidity: { veryDry: '매우 건조', dry: '건조', comfortable: '쾌적', humid: '높음', veryHumid: '매우 높음' },
+      humidity: { humid: '습함', mild: '쾌적', drying: '건조해짐', harsh: '건조', severe: '매우 건조' },
       uv: { low: '낮음', moderate: '보통', high: '높음', veryHigh: '매우 높음', extreme: '위험' },
       temp: { cold: '추움', cool: '선선', mild: '온화', warm: '따뜻', hot: '더움' },
     },
     why: {
       humidity: {
-        veryDry: '공기가 수분을 빼앗는 수준이에요. 유분으로 덮어 수분 증발을 막아야 합니다.',
-        dry: '건조한 편이라 수분을 얇게 여러 번 올리고 크림으로 잠가주세요.',
-        comfortable: '수분이 적당해 평소 레이어링을 그대로 유지하면 됩니다.',
-        humid: '습도가 높아 무거운 제형은 겉돕니다. 가벼운 젤로 바꾸세요.',
-        veryHumid: '공기가 포화 상태예요. 젤 제형만 얇게, 유분은 최소로.',
+        humid: '공기가 이미 물을 머금고 있어 땀이 잘 마르지 않아요. 무거운 제형은 겉돕니다 — 가벼운 젤로.',
+        mild: '수분 증발 부담이 적은 날이에요. 평소 레이어링을 그대로 유지하면 됩니다.',
+        drying: '공기가 수분을 조금씩 끌어가는 구간이에요. 얇게 여러 번 올리고 크림으로 잠가주세요.',
+        harsh: '증발 압력이 높습니다. 휴멕턴트만으로는 오히려 빼앗겨요 — 반드시 유분으로 덮으세요.',
+        severe: '피부와 공기의 수증기압 차가 매우 큽니다. 밀폐력 있는 제형으로 증발을 막아야 해요.',
       },
       uv: {
         low: '자외선이 약하지만 광노화는 누적됩니다. 기본 차단은 유지하세요.',
@@ -123,17 +123,17 @@ export const routineStrings: Record<Lang, RoutineStrings> = {
 
   en: {
     band: {
-      humidity: { veryDry: 'Very dry', dry: 'Dry', comfortable: 'Comfortable', humid: 'Humid', veryHumid: 'Very humid' },
+      humidity: { humid: 'Humid', mild: 'Comfortable', drying: 'Drying', harsh: 'Dry', severe: 'Very dry' },
       uv: { low: 'Low', moderate: 'Moderate', high: 'High', veryHigh: 'Very high', extreme: 'Extreme' },
       temp: { cold: 'Cold', cool: 'Cool', mild: 'Mild', warm: 'Warm', hot: 'Hot' },
     },
     why: {
       humidity: {
-        veryDry: 'The air is actively pulling water out of your skin. Seal it in with an occlusive layer.',
-        dry: 'Dry air — layer thin hydration and lock it down with a cream.',
-        comfortable: 'Humidity is in a good range. Keep your usual layering.',
-        humid: 'High humidity: heavy textures will sit on the surface. Switch to a light gel.',
-        veryHumid: 'The air is saturated. Gel textures only, and go easy on oils.',
+        humid: 'The air is already carrying water and sweat is not evaporating. Heavy textures will sit on top — use a light gel.',
+        mild: 'Little evaporative pull today. Keep your usual layering.',
+        drying: 'The air is starting to pull water out. Layer thin hydration and seal it with a cream.',
+        harsh: 'Strong evaporative pull. Humectants alone will lose water — they need an occlusive over them.',
+        severe: 'A very large vapour pressure gap between your skin and the air. Only an occlusive finish will hold water in.',
       },
       uv: {
         low: 'UV is weak, but photoageing accumulates. Keep your daily SPF.',
@@ -187,17 +187,17 @@ export const routineStrings: Record<Lang, RoutineStrings> = {
 
   zh: {
     band: {
-      humidity: { veryDry: '极干', dry: '干燥', comfortable: '舒适', humid: '偏湿', veryHumid: '非常湿' },
+      humidity: { humid: '潮湿', mild: '舒适', drying: '渐干', harsh: '干燥', severe: '极干' },
       uv: { low: '低', moderate: '中等', high: '高', veryHigh: '很高', extreme: '极高' },
       temp: { cold: '寒冷', cool: '凉爽', mild: '温和', warm: '温暖', hot: '炎热' },
     },
     why: {
       humidity: {
-        veryDry: '空气正在带走肌肤水分，需要用油分封闭锁水。',
-        dry: '空气偏干，薄涂多层补水后用面霜锁住。',
-        comfortable: '湿度适中，保持平时的叠加护肤即可。',
-        humid: '湿度偏高，厚重质地会浮在表面，改用轻盈啫喱。',
-        veryHumid: '空气接近饱和，只用啫喱质地，尽量减少油分。',
+        humid: '空气本身含水量高，汗液不易蒸发。厚重质地会浮在表面 — 请换成轻盈凝胶。',
+        mild: '蒸发压力不大，维持平时的叠加护理即可。',
+        drying: '空气开始带走水分。请薄涂多层保湿，再用面霜封存。',
+        harsh: '蒸发压力较强。只用保湿剂反而会流失水分，必须以封闭性产品覆盖。',
+        severe: '皮肤与空气的水汽压差极大，需要封闭性质地来阻止水分蒸发。',
       },
       uv: {
         low: '紫外线较弱，但光老化会累积，请保持日常防晒。',
@@ -251,17 +251,17 @@ export const routineStrings: Record<Lang, RoutineStrings> = {
 
   th: {
     band: {
-      humidity: { veryDry: 'แห้งมาก', dry: 'แห้ง', comfortable: 'กำลังดี', humid: 'ชื้น', veryHumid: 'ชื้นมาก' },
+      humidity: { humid: 'ชื้น', mild: 'สบาย', drying: 'เริ่มแห้ง', harsh: 'แห้ง', severe: 'แห้งมาก' },
       uv: { low: 'ต่ำ', moderate: 'ปานกลาง', high: 'สูง', veryHigh: 'สูงมาก', extreme: 'อันตราย' },
       temp: { cold: 'หนาว', cool: 'เย็น', mild: 'สบาย', warm: 'อุ่น', hot: 'ร้อน' },
     },
     why: {
       humidity: {
-        veryDry: 'อากาศกำลังดึงน้ำออกจากผิว ต้องใช้น้ำมันเคลือบเพื่อกักความชุ่มชื้น',
-        dry: 'อากาศแห้ง ลงน้ำบาง ๆ หลายชั้นแล้วปิดท้ายด้วยครีม',
-        comfortable: 'ความชื้นกำลังดี ใช้การเลเยอร์ตามปกติได้เลย',
-        humid: 'ความชื้นสูง เนื้อหนักจะลอยอยู่บนผิว เปลี่ยนเป็นเจลบางเบา',
-        veryHumid: 'อากาศอิ่มตัว ใช้เนื้อเจลเท่านั้น และลดน้ำมันให้น้อยที่สุด',
+        humid: 'อากาศมีความชื้นสูงและเหงื่อไม่ระเหย เนื้อผลิตภัณฑ์หนักจะลอยอยู่บนผิว — ใช้เจลบางเบา',
+        mild: 'แรงดึงน้ำจากผิวต่ำ ใช้รูทีนเลเยอร์ตามปกติได้',
+        drying: 'อากาศเริ่มดึงน้ำออกจากผิว ให้เลเยอร์บาง ๆ หลายชั้นแล้วปิดด้วยครีม',
+        harsh: 'แรงระเหยสูง ใช้สารกักน้ำอย่างเดียวจะยิ่งเสียน้ำ ต้องปิดทับด้วยออคคลูซีฟ',
+        severe: 'ความต่างของแรงดันไอน้ำระหว่างผิวกับอากาศสูงมาก ต้องใช้เนื้อที่ปิดผิวเพื่อกักน้ำไว้',
       },
       uv: {
         low: 'UV อ่อน แต่ความเสื่อมจากแสงสะสมได้ ทากันแดดประจำวันต่อไป',

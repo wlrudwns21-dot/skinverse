@@ -1,6 +1,7 @@
 import type { MetricKey, ProductTag, Weather } from '../data/types'
 import type { SkinConditionKey } from '../data/types'
-import { humidityBand, tempBand, uvBand, type HumidityBand, type TempBand, type UvBand } from './rules'
+import { tempBand, uvBand, type TempBand, type UvBand } from './rules'
+import { dewPoint, drynessBand, type DrynessBand } from './climate'
 
 /**
  * Which products to put in front of this customer, and why.
@@ -107,8 +108,7 @@ export const WEIGHTS = {
   drySkin: 8,
 } as const
 
-const isDryAir = (h: HumidityBand) => h === 'veryDry' || h === 'dry'
-const isHumidAir = (h: HumidityBand) => h === 'humid' || h === 'veryHumid'
+const isDryAir = (d: DrynessBand) => d === 'drying' || d === 'harsh' || d === 'severe'
 const isHot = (t: TempBand) => t === 'warm' || t === 'hot'
 const isCold = (t: TempBand) => t === 'cold' || t === 'cool'
 const isHighUv = (uv: UvBand) => uv === 'high' || uv === 'veryHigh' || uv === 'extreme'
@@ -131,9 +131,11 @@ const UV_NEED: Record<UvBand, number> = {
 // ── scoring ─────────────────────────────────────────────────────────────────
 
 export function scoreProduct(product: Rankable, context: RecommendContext): Recommendation {
-  const humidity = humidityBand(context.weather.h)
+  const dryness = drynessBand(context.weather)
   const uv = uvBand(context.weather.uv)
   const temp = tempBand(context.weather.t)
+  /** Sweat is not evaporating, so anything heavy will sit on the surface. */
+  const occlusive = dewPoint(context.weather.t, context.weather.h) >= 24
 
   const reasons: Reason[] = []
   let total = 0
@@ -167,11 +169,13 @@ export function scoreProduct(product: Rankable, context: RecommendContext): Reco
   // Weather. Humidity decides whether a texture will absorb at all, which is
   // why it can argue against an otherwise well-matched hydration product.
   if (product.tag === 'Hydration') {
-    if (isDryAir(humidity)) add('dryAir', WEIGHTS.dryAir)
-    else if (isHumidAir(humidity)) add('humidAir', WEIGHTS.humidAir)
+    if (isDryAir(dryness)) add('dryAir', WEIGHTS.dryAir)
+    else if (occlusive || dryness === 'humid') add('humidAir', WEIGHTS.humidAir)
   }
 
-  if (product.tag === 'Pore' && (isHumidAir(humidity) || isHot(temp))) {
+  // Sebum tracks temperature; what damp air changes is whether sweat can
+  // evaporate. Both raise the case for a pore product, for different reasons.
+  if (product.tag === 'Pore' && (occlusive || isHot(temp))) {
     add(isHot(temp) ? 'heat' : 'humidAir', WEIGHTS.sebum)
   }
 

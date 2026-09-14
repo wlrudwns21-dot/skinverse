@@ -1,39 +1,40 @@
 import type { MetricKey, Weather } from '../data/types'
+import {
+  absoluteHumidity,
+  coldStress,
+  dewPoint,
+  drynessBand,
+  drynessLoad,
+  sebumBand,
+  sebumLoad,
+  vapourPressureDeficit,
+  type DrynessBand,
+  type SebumBand,
+} from './climate'
 
 /**
  * The weather-to-routine rules, in one place.
  *
- * Previously these thresholds were three inline comparisons scattered through
- * the store — and temperature, though displayed, changed nothing. Everything
- * that decides what a customer is told now lives here, with its reasoning, so
- * the criteria can be reviewed and adjusted without hunting through render code.
+ * Everything that decides what a customer is told lives here, with its
+ * reasoning, so the criteria can be reviewed and adjusted without hunting
+ * through render code.
  *
  * The plan is a pure function of (weather, scan result). No dates, no
  * randomness: the same inputs always produce the same routine, which is what
- * makes it reviewable.
+ * makes it reviewable — and what lets the app show its working.
+ *
+ * Humidity is read through src/routine/climate.ts rather than directly. The
+ * percentage on a weather widget is not what dries skin out; the deficit
+ * against the skin's own surface is, and 20% at 41°C is a different day from
+ * 20% at -2°C in a way the percentage cannot express.
  */
 
 // ── bands ───────────────────────────────────────────────────────────────────
 
-export type HumidityBand = 'veryDry' | 'dry' | 'comfortable' | 'humid' | 'veryHumid'
 export type UvBand = 'low' | 'moderate' | 'high' | 'veryHigh' | 'extreme'
 export type TempBand = 'cold' | 'cool' | 'mild' | 'warm' | 'hot'
 
-/**
- * Relative humidity, in %.
- *
- * The comfortable band (45–65%) is the range indoor-air guidance generally
- * targets; below it transepidermal water loss climbs and the barrier needs
- * occlusion, above it sebum sits on the skin and heavy creams stop absorbing.
- * The outer bands mark where the advice changes in kind, not just degree.
- */
-export const HUMIDITY_THRESHOLDS: { band: HumidityBand; below: number }[] = [
-  { band: 'veryDry', below: 30 },
-  { band: 'dry', below: 45 },
-  { band: 'comfortable', below: 65 },
-  { band: 'humid', below: 80 },
-  { band: 'veryHumid', below: Infinity },
-]
+export type { DrynessBand, SebumBand }
 
 /**
  * WHO / WMO Global Solar UV Index — the published international scale, used
@@ -51,10 +52,9 @@ export const UV_THRESHOLDS: { band: UvBand; below: number }[] = [
 /**
  * Air temperature, in °C.
  *
- * Sebum output rises roughly with skin temperature, so warm and hot days move
- * the routine toward lighter textures and a firmer evening cleanse. Cold days
- * do the opposite, and bring the indoor-heating dryness that humidity alone
- * does not capture.
+ * Kept as a plain band because temperature is shown to the customer as a
+ * temperature. Its effect on sebum is handled in climate.ts, which curves it
+ * properly and plateaus where thermoregulation caps output.
  */
 export const TEMP_THRESHOLDS: { band: TempBand; below: number }[] = [
   { band: 'cold', below: 10 },
@@ -69,7 +69,6 @@ function classify<T extends string>(value: number, table: { band: T; below: numb
   return table[table.length - 1].band
 }
 
-export const humidityBand = (h: number) => classify(h, HUMIDITY_THRESHOLDS)
 export const uvBand = (uv: number) => classify(uv, UV_THRESHOLDS)
 export const tempBand = (t: number) => classify(t, TEMP_THRESHOLDS)
 
@@ -82,8 +81,37 @@ export type AmSpf = 'spf50' | 'reapply3h' | 'reapply2h'
 export type PmCleanse = 'single' | 'double'
 export type PmNight = 'maskHumidifier' | 'creamOil' | 'barrier'
 
+/**
+ * What the plan was decided from, in the units it was decided in.
+ *
+ * Carried on the plan so the screen can show its working. "Rich cream" is an
+ * instruction; "rich cream, because the air is pulling 41 hPa against your skin
+ * and your hydration measured 52" is a reason — and a customer can weigh a
+ * reason, or disagree with it.
+ */
+export interface PlanBasis {
+  /** Evaporative pull between skin and air, hPa. Higher means drier. */
+  vpd: number
+  /** Water the air is actually carrying, g/m³. */
+  absoluteHumidity: number
+  /** Above ~24°C sweat stops evaporating and heavy textures sit on top. */
+  dewPoint: number
+  /** 0–100 composite of the two humidity axes. */
+  drynessLoad: number
+  /** 0–100 from temperature and dew point. Never from relative humidity. */
+  sebumLoad: number
+  /** 0–100. Below 15°C the barrier's surface pH shifts and stinging rises. */
+  coldStress: number
+  /** True when sweat cannot evaporate freely — the occlusion rule. */
+  occlusive: boolean
+  /** The measured hydration the plan read, and the threshold it was tested against. */
+  hydration: number
+  dehydratedBelow: number
+}
+
 export interface RoutinePlan {
-  humidity: HumidityBand
+  dryness: DrynessBand
+  sebum: SebumBand
   uv: UvBand
   temp: TempBand
   /** The scan axis that scored lowest — what the treatment step targets. */
@@ -98,11 +126,11 @@ export interface RoutinePlan {
     cleanse: PmCleanse
     night: PmNight
   }
+  basis: PlanBasis
 }
 
-/** Does the air, as opposed to the skin, need the routine to hold water in? */
-const isDryAir = (h: HumidityBand) => h === 'veryDry' || h === 'dry'
-const isHumidAir = (h: HumidityBand) => h === 'humid' || h === 'veryHumid'
+/** Air that is pulling water out faster than skin replaces it. */
+const isDryAir = (d: DrynessBand) => d === 'drying' || d === 'harsh' || d === 'severe'
 
 /**
  * Below this hydration score the routine goes richer whatever the weather.
@@ -123,16 +151,22 @@ export function buildPlan(
   metrics: Record<MetricKey, number>,
   weakest: MetricKey,
 ): RoutinePlan {
-  const humidity = humidityBand(weather.h)
+  const dryness = drynessBand(weather)
+  const sebum = sebumBand(weather)
   const uv = uvBand(weather.uv)
   const temp = tempBand(weather.t)
 
+  const td = dewPoint(weather.t, weather.h)
+  /** Sweat will not evaporate freely, so anything heavy sits on the surface. */
+  const occlusive = td >= 24
   const cold = temp === 'cold' || temp === 'cool'
   const warm = temp === 'warm' || temp === 'hot'
+  const dryAir = isDryAir(dryness)
   const dehydrated = metrics.hydration < DEHYDRATED_BELOW
 
   return {
-    humidity,
+    dryness,
+    sebum,
     uv,
     temp,
     weakest,
@@ -140,43 +174,58 @@ export function buildPlan(
     am: {
       // Cold, dry mornings are the wrong time for a foaming cleanse; warm humid
       // ones need the overnight sebum off before anything else will sit right.
-      cleanse: cold && isDryAir(humidity) ? 'gentle' : 'gel',
+      cleanse: cold && dryAir ? 'gentle' : 'gel',
 
       // Layering thin hydration beats one thick application when the air is
       // pulling water out; when it is already saturated, a mist is enough.
-      toner: isDryAir(humidity) ? 'layered' : isHumidAir(humidity) ? 'mist' : 'standard',
+      toner: dryAir ? 'layered' : dryness === 'humid' ? 'mist' : 'standard',
 
-      // Humidity picks the texture, the scan picks the strength — and in that
-      // order. Dehydrated skin still wants a gel when the air is already
-      // saturated: a ceramide cream at 78% humidity sits on the surface instead
-      // of absorbing, which is the opposite of helpful.
-      moisturiser: isHumidAir(humidity)
-        ? 'gel'
-        : humidity === 'veryDry' || (cold && dehydrated)
-          ? 'richOil'
-          : humidity === 'dry' || dehydrated
-            ? 'rich'
-            : 'standard',
+      // Whether a texture will absorb at all comes first, and the scan picks the
+      // strength second. Dehydrated skin still wants a gel when sweat cannot
+      // evaporate: a ceramide cream at a dew point of 26°C sits on the surface
+      // instead of absorbing, which is the opposite of helpful.
+      moisturiser:
+        occlusive || dryness === 'humid'
+          ? 'gel'
+          : dryness === 'severe' || (cold && dehydrated)
+            ? 'richOil'
+            : dryAir || dehydrated
+              ? 'rich'
+              : 'standard',
 
       // Straight off the WHO index: daily protection regardless, with
       // reapplication tightening as the index climbs.
-      spf: uv === 'extreme' ? 'reapply2h' : uv === 'veryHigh' || uv === 'high' ? 'reapply3h' : 'spf50',
+      spf:
+        uv === 'extreme' ? 'reapply2h' : uv === 'veryHigh' || uv === 'high' ? 'reapply3h' : 'spf50',
     },
 
     pm: {
       // Sunscreen and a day's sebum need two steps to come off; a cold, dry,
       // low-UV day does not.
-      cleanse: warm || isHumidAir(humidity) || uv !== 'low' ? 'double' : 'single',
+      cleanse: warm || occlusive || uv !== 'low' ? 'double' : 'single',
 
-      // Same ordering as the morning: humid air rules out the oil top-up no
-      // matter what the scan said.
-      night: isHumidAir(humidity)
-        ? 'barrier'
-        : humidity === 'veryDry' || (cold && dehydrated)
-          ? 'maskHumidifier'
-          : isDryAir(humidity) || dehydrated
-            ? 'creamOil'
-            : 'barrier',
+      // Same ordering as the morning: air that stops sweat evaporating rules
+      // out the oil top-up no matter what the scan said.
+      night:
+        occlusive || dryness === 'humid'
+          ? 'barrier'
+          : dryness === 'severe' || (cold && dehydrated)
+            ? 'maskHumidifier'
+            : dryAir || dehydrated
+              ? 'creamOil'
+              : 'barrier',
+    },
+
+    basis: {
+      vpd: Math.round(vapourPressureDeficit(weather) * 10) / 10,
+      absoluteHumidity: Math.round(absoluteHumidity(weather.t, weather.h) * 10) / 10,
+      dewPoint: Math.round(td * 10) / 10,
+      drynessLoad: Math.round(drynessLoad(weather)),
+      sebumLoad: Math.round(sebumLoad(weather)),
+      coldStress: Math.round(coldStress(weather)),
+      occlusive,
+      hydration: metrics.hydration,
+      dehydratedBelow: DEHYDRATED_BELOW,
     },
   }
 }
