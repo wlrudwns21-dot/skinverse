@@ -11,9 +11,7 @@ export type { SkinAnalysis }
 /**
  * The Perfect Corp (YouCam) adapter.
  *
- * ────────────────────────────────────────────────────────────────────────────
  * THE ONLY FILE THAT KNOWS WHICH VENDOR WE USE.
- * ────────────────────────────────────────────────────────────────────────────
  *
  * Their AI Skin Analysis is asynchronous and takes four round trips: register
  * the file, PUT the bytes to the URL they hand back, start a task, then poll it.

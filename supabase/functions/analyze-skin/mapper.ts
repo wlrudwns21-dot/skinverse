@@ -1,7 +1,7 @@
 /**
  * Maps Perfect Corp's `score_info.json` onto the six axes this app scores.
  *
- * ⚠️ COPY of src/analysis/perfectcorp.ts. Edge functions deploy as their own
+ * COPY of src/analysis/perfectcorp.ts. Edge functions deploy as their own
  * bundle and cannot import from the app's source tree, so the file is copied.
  * It is pure on purpose — no fetch, no unzip, no Deno APIs — which is what lets
  * the app's vitest suite test the exact code that runs here. If you edit one,
