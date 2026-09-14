@@ -71,6 +71,19 @@ export interface AuthStrings {
     string
   >
   photoTips: string[]
+  /** Taking the selfie in the app rather than picking one from the photo roll. */
+  camera: {
+    take: string
+    pick: string
+    guide: string
+    shutter: string
+    cancel: string
+    denied: string
+    missing: string
+    failed: string
+    flip: string
+    usePicker: string
+  }
   /** Shown when the analysis failed for a reason that is not the photo's fault. */
   analysisFailed: string
   skinAge: (age: number) => string
@@ -170,6 +183,15 @@ export const authStrings: Record<Lang, AuthStrings> = {
       '앞머리는 넘기고 안경은 벗기',
       '메이크업을 지우면 더 정확합니다',
     ],
+    camera: {
+      take: '카메라로 촬영', pick: '앨범에서 선택',
+      guide: '얼굴을 타원에 맞추고 정면을 봐주세요. 촬영 버튼을 누르면 3초 뒤에 찍힙니다.',
+      shutter: '촬영', cancel: '취소',
+      denied: '카메라 권한이 거부되었습니다. 브라우저 주소창의 자물쇠 아이콘에서 허용하거나, 앨범에서 사진을 선택해주세요.',
+      missing: '사용할 수 있는 카메라가 없습니다. 앨범에서 사진을 선택해주세요.',
+      failed: '카메라를 열지 못했습니다. 다른 앱이 카메라를 쓰고 있지 않은지 확인해주세요.',
+      flip: '전환', usePicker: '앨범에서 선택',
+    },
     analysisFailed: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.',
     skinAge: (n) => 'AI 측정 피부 나이 ' + n + '세',
     demoResult: '샘플 결과 · 실제 측정 아님',
@@ -254,6 +276,15 @@ export const authStrings: Record<Lang, AuthStrings> = {
       'Push your fringe back and take off glasses',
       'Removing makeup gives more accurate results',
     ],
+    camera: {
+      take: 'Take a photo', pick: 'Choose from photos',
+      guide: 'Fit your face in the oval and look straight ahead. The shutter fires 3 seconds after you tap.',
+      shutter: 'Capture', cancel: 'Cancel',
+      denied: 'Camera access was blocked. Allow it from the padlock icon in the address bar, or choose a photo instead.',
+      missing: 'No camera is available. Please choose a photo instead.',
+      failed: 'The camera would not open. Check that no other app is using it.',
+      flip: 'Flip', usePicker: 'Choose a photo',
+    },
     analysisFailed: 'The analysis failed. Please try again in a moment.',
     skinAge: (n) => 'Skin age ' + n,
     demoResult: 'Sample result · not a measurement',
@@ -338,6 +369,15 @@ export const authStrings: Record<Lang, AuthStrings> = {
       '梳起刘海并摘下眼镜',
       '卸妆后结果更准确',
     ],
+    camera: {
+      take: '拍照', pick: '从相册选择',
+      guide: '将面部对准椭圆并正视前方。点击快门后 3 秒拍摄。',
+      shutter: '拍摄', cancel: '取消',
+      denied: '相机权限被拒绝。请在地址栏的锁形图标中允许，或改为从相册选择照片。',
+      missing: '没有可用的相机，请改为从相册选择照片。',
+      failed: '无法打开相机。请确认没有其他应用正在使用相机。',
+      flip: '切换', usePicker: '从相册选择',
+    },
     analysisFailed: '分析失败，请稍后再试。',
     skinAge: (n) => '肌肤年龄 ' + n + ' 岁',
     demoResult: '示例结果 · 非实际检测',
@@ -422,6 +462,15 @@ export const authStrings: Record<Lang, AuthStrings> = {
       'รวบผมหน้าและถอดแว่น',
       'ล้างเครื่องสำอางออกจะแม่นยำกว่า',
     ],
+    camera: {
+      take: 'ถ่ายรูป', pick: 'เลือกจากคลังภาพ',
+      guide: 'จัดใบหน้าให้อยู่ในวงรีและมองตรง กดชัตเตอร์แล้วจะถ่ายใน 3 วินาที',
+      shutter: 'ถ่าย', cancel: 'ยกเลิก',
+      denied: 'การเข้าถึงกล้องถูกปฏิเสธ อนุญาตได้จากไอคอนกุญแจในแถบที่อยู่ หรือเลือกรูปจากคลังภาพแทน',
+      missing: 'ไม่พบกล้องที่ใช้ได้ กรุณาเลือกรูปจากคลังภาพแทน',
+      failed: 'เปิดกล้องไม่สำเร็จ กรุณาตรวจสอบว่าไม่มีแอปอื่นใช้กล้องอยู่',
+      flip: 'สลับ', usePicker: 'เลือกจากคลังภาพ',
+    },
     analysisFailed: 'การวิเคราะห์ล้มเหลว กรุณาลองใหม่อีกครั้ง',
     skinAge: (n) => 'อายุผิว ' + n + ' ปี',
     demoResult: 'ผลตัวอย่าง · ไม่ใช่การวัดจริง',

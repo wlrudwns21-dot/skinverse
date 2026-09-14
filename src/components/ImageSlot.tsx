@@ -21,6 +21,12 @@ export interface ImageSlotProps {
   browseLabel?: string
   fit?: 'cover' | 'contain'
   onChange?: (file: File | null) => void
+  /**
+   * The image to show, when the owner holds it — a photo just taken with the
+   * camera, for instance. Passing this makes the slot controlled: it stops
+   * keeping its own copy and draws whatever it is given.
+   */
+  value?: File | null
 }
 
 const DROP_ACCENT = '#c96442'
@@ -32,24 +38,36 @@ export function ImageSlot({
   browseLabel,
   fit = 'cover',
   onChange,
+  value,
 }: ImageSlotProps) {
+  const controlled = value !== undefined
+
   const inputRef = useRef<HTMLInputElement>(null)
-  const urlRef = useRef<string | null>(null)
-  const [url, setUrl] = useState<string | null>(null)
+  const [own, setOwn] = useState<File | null>(null)
   const [over, setOver] = useState(false)
 
-  // Object URLs are released when replaced and when the slot goes away.
-  useEffect(() => () => { if (urlRef.current) URL.revokeObjectURL(urlRef.current) }, [])
+  const file = controlled ? value : own
+
+  // One object URL per file, released as soon as the file changes or the slot
+  // goes away — a leaked blob URL pins the whole image in memory.
+  const [url, setUrl] = useState<string | null>(null)
+  useEffect(() => {
+    if (!file) {
+      setUrl(null)
+      return
+    }
+    const next = URL.createObjectURL(file)
+    setUrl(next)
+    return () => URL.revokeObjectURL(next)
+  }, [file])
 
   const accept = useCallback(
-    (file: File | null | undefined) => {
-      if (!file || !file.type.startsWith('image/')) return
-      if (urlRef.current) URL.revokeObjectURL(urlRef.current)
-      urlRef.current = URL.createObjectURL(file)
-      setUrl(urlRef.current)
-      onChange?.(file)
+    (picked: File | null | undefined) => {
+      if (!picked || !picked.type.startsWith('image/')) return
+      if (!controlled) setOwn(picked)
+      onChange?.(picked)
     },
-    [onChange],
+    [controlled, onChange],
   )
 
   const frameStyle = s(

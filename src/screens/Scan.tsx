@@ -1,25 +1,68 @@
+import { useRef, useState } from 'react'
+import { CameraCapture } from '../components/CameraCapture'
 import { ImageSlot } from '../components/ImageSlot'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
 export function ScanIntro() {
   const st = useStore()
+  const [cameraOpen, setCameraOpen] = useState(false)
+  const pickerRef = useRef<HTMLInputElement>(null)
 
   return (
     <div style={s('padding:24px 20px;animation:rise .4s ease both')}>
       <div style={s('font-family:Marcellus,serif;font-size:24px')}>{st.t.scanTitle}</div>
       <div style={s('font-size:13px;color:#8A7D6C;margin-top:4px')}>{st.t.scanSub}</div>
 
-      <div style={s('display:flex;justify-content:center;margin:22px 0')}>
+      <div style={s('display:flex;justify-content:center;margin:22px 0 14px')}>
         <div style={s('width:210px;height:270px;position:relative')}>
           <ImageSlot
             mask="ellipse(50% 50% at 50% 50%)"
             placeholder={st.t.selfiePh}
             onChange={st.setPhoto}
+            value={st.photo}
           />
           <div style={s('position:absolute;inset:-8px;border:1.5px dashed #B9AC93;border-radius:50%;pointer-events:none')} />
         </div>
       </div>
+
+      {/* Taking the photo here rather than picking one is what keeps it within
+          the vendor's framing rules — the guide oval is the only chance to get
+          that right before the analysis is spent. */}
+      <div style={s('display:flex;gap:8px;justify-content:center;margin-bottom:16px')}>
+        <div
+          onClick={() => setCameraOpen(true)}
+          style={s('cursor:pointer;background:#FFFFFF;border:1.5px solid #221C15;border-radius:999px;padding:10px 18px;font-size:12.5px;font-weight:700')}
+        >
+          📷 {st.a.camera.take}
+        </div>
+        <div
+          onClick={() => pickerRef.current?.click()}
+          style={s('cursor:pointer;background:#FFFFFF;border:1px solid #D8CFBF;border-radius:999px;padding:10px 18px;font-size:12.5px;font-weight:600;color:#6E6252')}
+        >
+          {st.a.camera.pick}
+        </div>
+      </div>
+
+      <input
+        ref={pickerRef}
+        type="file"
+        accept="image/jpeg,image/png"
+        style={s('display:none')}
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) st.setPhoto(file)
+          e.target.value = ''
+        }}
+      />
+
+      <CameraCapture
+        open={cameraOpen}
+        onCapture={st.setPhoto}
+        onClose={() => setCameraOpen(false)}
+        onUsePicker={() => pickerRef.current?.click()}
+        t={st.a.camera}
+      />
 
       {/* What the pre-flight check found. A problem is a hard stop, shown in
           red; a warning is advice the customer can ignore. */}

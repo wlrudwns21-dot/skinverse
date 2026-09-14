@@ -982,6 +982,7 @@ function useStoreValue() {
     scanIsReal: state.scanIsReal,
     skinAge: state.liveSkinAge,
     setPhoto,
+    photo: state.photo,
     photoCheck: state.photoCheck,
     skinType: condition.type[lang],
     summary: condition.sum[lang],
