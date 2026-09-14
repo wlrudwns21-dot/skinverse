@@ -20,6 +20,17 @@ npm run typecheck
 
 React 19 + Vite + TypeScript. 런타임 의존성은 React와 react-router-dom뿐입니다.
 
+## 배포
+
+Vercel에 저장소를 연결하면 Vite 프리셋이 자동 인식됩니다 (빌드 `npm run build`,
+출력 `dist`). `vercel.json`의 rewrite 규칙이 모든 경로를 `index.html`로 보내므로
+`/admin`에 직접 접속하거나 새로고침해도 404가 나지 않습니다 — 라우팅은 브라우저에서
+react-router가 처리합니다.
+
+> ⚠️ `/admin`에는 인증이 없습니다. 공개 배포하면 주소를 아는 누구나 관리자 콘솔을
+> 열 수 있습니다. 현재는 `src/data/admin.ts`의 샘플 데이터만 보이지만, 실제 주문·회원
+> 데이터를 넣기 전에 반드시 로그인을 붙여야 합니다.
+
 ## 샘플 데이터 교체
 
 실제 데이터로 한 번에 바꿀 수 있도록 **모든 더미 데이터는 `src/data/` 안에만**
