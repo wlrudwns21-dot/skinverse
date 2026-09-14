@@ -50,6 +50,13 @@ export interface InsightStrings {
   reason: Record<ReasonKind, string>
   whyThis: string
 
+  /** The overlay viewer and the full concern list. */
+  map: { title: string; sub: string; none: string; expires: string }
+  detail: {
+    title: string; sub: string; skinType: string
+    tapForMore: string; measured: string; whatToDo: string
+  }
+
   trendTitle: string
   trendSub: string
   noTrend: string
@@ -104,6 +111,18 @@ const ko: InsightStrings = {
     drySkin: '건성 피부',
   },
   whyThis: '추천 이유',
+
+  map: {
+    title: '피부 맵',
+    sub: '항목을 누르면 내 사진 위에 실제 검출 결과가 표시됩니다',
+    none: '이번 분석에서는 검출 이미지를 받지 못했어요. 점수는 아래에서 확인하실 수 있습니다.',
+    expires: '검출 이미지는 이 화면에서만 잠시 표시되며 저장되지 않습니다.',
+  },
+  detail: {
+    title: '항목별 상세', sub: 'AI가 측정한 16개 항목 전체',
+    skinType: 'AI 판정 피부 타입', tapForMore: '눌러서 자세히',
+    measured: '무엇을 잰 값인가요', whatToDo: '이럴 땐',
+  },
 
   trendTitle: '변화 추이',
   trendSub: '분석할 때의 습도와 함께 표시됩니다',
@@ -160,6 +179,18 @@ const en: InsightStrings = {
   },
   whyThis: 'Why this',
 
+  map: {
+    title: 'Skin map',
+    sub: 'Tap a concern to see what was actually detected, on your own photo',
+    none: 'No detection images came back with this analysis. The scores are below.',
+    expires: 'Detection images are shown here only and are never stored.',
+  },
+  detail: {
+    title: 'Every reading', sub: 'All sixteen concerns the AI measured',
+    skinType: 'AI skin type', tapForMore: 'Tap for detail',
+    measured: 'What this measures', whatToDo: 'What to do',
+  },
+
   trendTitle: 'Your trend',
   trendSub: 'Shown with the humidity at each scan',
   noTrend: 'Scan twice or more to see how your skin changes.',
@@ -215,6 +246,18 @@ const zh: InsightStrings = {
   },
   whyThis: '推荐理由',
 
+  map: {
+    title: '肌肤地图',
+    sub: '点击项目，在你的照片上查看实际检测结果',
+    none: '本次分析未返回检测图像，评分见下方。',
+    expires: '检测图像仅在此页面临时显示，不会被保存。',
+  },
+  detail: {
+    title: '各项详情', sub: 'AI 测定的全部 16 个项目',
+    skinType: 'AI 判定肤质', tapForMore: '点击查看详情',
+    measured: '这项测的是什么', whatToDo: '该怎么做',
+  },
+
   trendTitle: '变化趋势',
   trendSub: '与每次分析时的湿度一同显示',
   noTrend: '完成两次以上分析后即可查看变化趋势。',
@@ -269,6 +312,18 @@ const th: InsightStrings = {
     drySkin: 'ผิวแห้ง',
   },
   whyThis: 'เหตุผลที่แนะนำ',
+
+  map: {
+    title: 'แผนผังผิว',
+    sub: 'แตะแต่ละหัวข้อเพื่อดูสิ่งที่ตรวจพบจริงบนรูปของคุณ',
+    none: 'การวิเคราะห์ครั้งนี้ไม่มีภาพผลตรวจกลับมา ดูคะแนนได้ด้านล่าง',
+    expires: 'ภาพผลตรวจแสดงเฉพาะหน้านี้และไม่ถูกจัดเก็บ',
+  },
+  detail: {
+    title: 'รายละเอียดแต่ละหัวข้อ', sub: 'ครบทั้ง 16 หัวข้อที่ AI วัด',
+    skinType: 'ประเภทผิวที่ AI ระบุ', tapForMore: 'แตะเพื่อดูรายละเอียด',
+    measured: 'หัวข้อนี้วัดอะไร', whatToDo: 'ควรทำอย่างไร',
+  },
 
   trendTitle: 'แนวโน้มของคุณ',
   trendSub: 'แสดงพร้อมความชื้นในแต่ละครั้งที่วิเคราะห์',

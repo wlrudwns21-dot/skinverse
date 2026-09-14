@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { CameraCapture } from '../components/CameraCapture'
+import { ConcernReport } from '../components/ConcernReport'
 import { ImageSlot } from '../components/ImageSlot'
+import { SkinMap } from '../components/SkinMap'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
@@ -210,6 +212,22 @@ export function ScanResults() {
         <br />
         {st.summary}
       </div>
+
+      {/* The analysis drawn on their own face. Placed above the written report
+          because seeing the pores that were counted is what makes the number
+          beside them credible. */}
+      {st.visuals && <SkinMap visuals={st.visuals} lang={st.lang} t={st.mapT} />}
+
+      {/* All sixteen readings, grouped and explained. The six bars above are a
+          headline; this is the measurement. */}
+      {st.visuals && (
+        <ConcernReport
+          visuals={st.visuals}
+          skinType={st.skinTypeReading}
+          lang={st.lang}
+          t={st.detailT}
+        />
+      )}
 
       {/* What the numbers say beyond the bars: what is behind, what moved, and
           whether the weather explains it better than the routine does. */}

@@ -275,6 +275,7 @@ function useStoreValue() {
         liveSkinAge: snap.latestScan?.skinAge ?? null,
         liveOiliness: snap.latestScan?.oiliness ?? null,
         liveSkinType: snap.latestScan?.skinType ?? null,
+        liveVisuals: null,
         order: snap.latestOrder
           ? {
               no: snap.latestOrder.order_no,
@@ -460,6 +461,7 @@ function useStoreValue() {
             liveSkinAge: result.skinAge,
             liveOiliness: result.oiliness,
             liveSkinType: result.skinType,
+            liveVisuals: result.visuals,
             // Show the scan in the history immediately rather than waiting for
             // the next snapshot; the server has already written the same row.
             history: result.saved
@@ -1094,6 +1096,11 @@ function useStoreValue() {
 
     history,
     report: reportLines,
+    visuals: state.liveVisuals,
+    mapT: ins.map,
+    detailT: ins.detail,
+    /** The vendor's own per-zone skin type, for the detailed report. */
+    skinTypeReading: state.liveSkinType,
     reportTitle: ins.reportTitle,
     reportSub: ins.reportSub,
     whyThis: ins.whyThis,

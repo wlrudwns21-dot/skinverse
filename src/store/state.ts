@@ -3,7 +3,7 @@ import type { ShipMethod } from '../data/commerce'
 import { shipping } from '../data/commerce'
 import type { CatalogProduct, StoreSettings } from '../catalog/types'
 import type { Lang, MetricKey, SkinConditionKey, Weather } from '../data/types'
-import type { SkinTypeReading } from '../analysis/perfectcorp'
+import type { AnalysisVisuals, SkinTypeReading } from '../analysis/perfectcorp'
 import type { Capability } from '../auth/capabilities'
 import type { ImageCheck } from '../analysis/imageCheck'
 import type { ChipKey } from '../i18n/chips'
@@ -121,6 +121,13 @@ export interface StoreState {
   liveSkinAge: number | null
   liveOiliness: number | null
   liveSkinType: SkinTypeReading | null
+  /**
+   * The detailed readings and overlays from the scan just taken.
+   *
+   * Not restored from history on purpose: the mask URLs expire, so a stale set
+   * would render as broken images over a face that no longer matches.
+   */
+  liveVisuals: AnalysisVisuals | null
 }
 
 export const initialState: StoreState = {
@@ -167,6 +174,7 @@ export const initialState: StoreState = {
   liveSkinAge: null,
   liveOiliness: null,
   liveSkinType: null,
+  liveVisuals: null,
 }
 
 export interface Totals {

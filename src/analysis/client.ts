@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase'
 import type { MetricKey, SkinConditionKey, Weather } from '../data/types'
-import type { SkinTypeReading } from './perfectcorp'
+import type { AnalysisVisuals, SkinTypeReading } from './perfectcorp'
 
 /**
  * Calls the `analyze-skin` edge function, which is the only thing holding the
@@ -17,6 +17,14 @@ export interface AnalysisResult {
   oiliness: number | null
   /** Their own skin-type labels, per zone. */
   skinType: SkinTypeReading | null
+  /**
+   * Every concern they measured and the overlay that illustrates it.
+   *
+   * Short-lived signed URLs of the customer's own face. Shown, never stored —
+   * they expire within hours and keeping a copy of someone's face is not
+   * something this app does.
+   */
+  visuals: AnalysisVisuals | null
   /** Whether the server wrote this scan to the member's history. */
   saved: boolean
 }
