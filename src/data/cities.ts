@@ -9,6 +9,7 @@ import type { City } from './types'
  * unreachable. Live values come from Open-Meteo (see `src/weather/remote.ts`).
  */
 export const cities: Record<string, City> = {
+  Seoul: { t: 26, h: 62, uv: 6, lat: 37.5665, lon: 126.978 },
   Tokyo: { t: 31, h: 78, uv: 8, lat: 35.6762, lon: 139.6503 },
   Shanghai: { t: 29, h: 82, uv: 7, lat: 31.2304, lon: 121.4737 },
   Bangkok: { t: 34, h: 75, uv: 11, lat: 13.7563, lon: 100.5018 },
@@ -27,6 +28,7 @@ export const CURRENT_LOCATION = '__current__'
 
 /** Countries offered on the checkout shipping form. */
 export const shippingCountries = [
+  'South Korea',
   'Japan',
   'China',
   'Thailand',
