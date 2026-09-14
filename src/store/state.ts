@@ -89,6 +89,7 @@ export interface StoreState {
   /** Live scan result, when the vendor produced one. */
   liveMetrics: Record<string, number> | null
   liveOverall: number | null
+  liveSkinAge: number | null
 }
 
 export const initialState: StoreState = {
@@ -130,6 +131,7 @@ export const initialState: StoreState = {
   scanIsReal: false,
   liveMetrics: null,
   liveOverall: null,
+  liveSkinAge: null,
 }
 
 export interface Totals {

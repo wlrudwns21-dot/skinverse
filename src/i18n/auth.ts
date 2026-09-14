@@ -63,6 +63,7 @@ export interface AuthStrings {
   guestScanUsed: string
 
   // analysis
+  skinAge: (age: number) => string
   demoResult: string
   photoNeeded: string
 
@@ -139,6 +140,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: '비회원은 하루 1회 체험할 수 있어요. 결과는 저장되지 않습니다.',
     guestScanUsed: '오늘 체험을 사용했어요 — 내일 다시 가능합니다',
 
+    skinAge: (n) => 'AI 측정 피부 나이 ' + n + '세',
     demoResult: '샘플 결과 · 실제 측정 아님',
     photoNeeded: '사진을 올리면 실제 AI 분석이 실행됩니다. 없으면 샘플 결과를 보여드려요.',
     currentLocation: '현재 위치', useMyLocation: '내 위치로 보기', locating: '위치 확인 중…',
@@ -201,6 +203,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: 'Guests get one trial per day. Results are not saved.',
     guestScanUsed: "Today's trial is used — come back tomorrow",
 
+    skinAge: (n) => 'Skin age ' + n,
     demoResult: 'Sample result · not a measurement',
     photoNeeded: 'Add a photo to run the real AI analysis. Without one we show a sample result.',
     currentLocation: 'Current location', useMyLocation: 'Use my location', locating: 'Finding you…',
@@ -263,6 +266,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: '非会员每天可体验1次，结果不会保存。',
     guestScanUsed: '今日体验已使用 — 明天再来',
 
+    skinAge: (n) => '肌肤年龄 ' + n + ' 岁',
     demoResult: '示例结果 · 非实际检测',
     photoNeeded: '上传照片即可进行真实AI分析，未上传时显示示例结果。',
     currentLocation: '当前位置', useMyLocation: '使用我的位置', locating: '正在定位…',
@@ -325,6 +329,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: 'ผู้ที่ไม่ได้เป็นสมาชิกทดลองได้วันละ 1 ครั้ง ผลลัพธ์จะไม่ถูกบันทึก',
     guestScanUsed: 'ใช้สิทธิ์ทดลองของวันนี้แล้ว — พรุ่งนี้ลองใหม่',
 
+    skinAge: (n) => 'อายุผิว ' + n + ' ปี',
     demoResult: 'ผลตัวอย่าง · ไม่ใช่การวัดจริง',
     photoNeeded: 'เพิ่มรูปเพื่อวิเคราะห์ด้วย AI จริง หากไม่มีเราจะแสดงผลตัวอย่าง',
     currentLocation: 'ตำแหน่งปัจจุบัน', useMyLocation: 'ใช้ตำแหน่งของฉัน', locating: 'กำลังหาตำแหน่ง…',

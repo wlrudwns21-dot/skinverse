@@ -80,6 +80,12 @@ export function ScanResults() {
         </div>
         <div style={s('font-size:16px;font-weight:700;margin-top:12px')}>{st.skinType}</div>
 
+        {st.skinAge !== null && (
+          <div style={s('font-size:13px;color:#8A7D6C;margin-top:6px')}>
+            {st.a.skinAge(st.skinAge)}
+          </div>
+        )}
+
         {/* A canned profile must never pass for a measurement. */}
         {!st.scanIsReal && (
           <div style={s('display:inline-block;margin-top:10px;background:#FBF3E4;border:1px solid #EBD9B8;color:#9A8455;border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:700')}>

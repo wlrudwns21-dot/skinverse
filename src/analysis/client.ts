@@ -10,6 +10,8 @@ export interface AnalysisResult {
   overall: number
   metrics: Record<MetricKey, number>
   condition: SkinConditionKey
+  /** The vendor's AI-derived skin age, when they report one. */
+  skinAge: number | null
   /** Whether the server wrote this scan to the member's history. */
   saved: boolean
 }

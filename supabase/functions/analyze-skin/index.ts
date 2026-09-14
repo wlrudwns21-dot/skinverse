@@ -143,6 +143,7 @@ Deno.serve(async (req) => {
       skin_condition: analysis.condition,
       overall: analysis.overall,
       metrics: analysis.metrics,
+      skin_age: analysis.skinAge,
     })
     if (error) console.error('could not save scan', error.message)
   }
@@ -151,6 +152,7 @@ Deno.serve(async (req) => {
     overall: analysis.overall,
     metrics: analysis.metrics,
     condition: analysis.condition,
+    skinAge: analysis.skinAge,
     saved: userId !== null,
   })
 })

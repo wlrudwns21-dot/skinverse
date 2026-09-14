@@ -110,21 +110,55 @@ Perfect Corp 같은 유료 분석 API는 **키가 곧 돈**이라 브라우저�
 증가와 검사가 한 문장이라 동시 요청이 둘 다 통과하는 일이 없습니다. 기본값은
 회원 20회 / 비회원 1회이며 함수 환경변수로 바꿉니다.
 
-### 남은 작업 — 벤더 호출부
+### 응답 매핑 (완료)
 
-`supabase/functions/analyze-skin/vendor.ts`의 `analyseWithPerfectCorp()` 하나만
-채우면 됩니다. **의도적으로 비워두었습니다** — API 문서가 개발자 포털 안에 있어
-확인하지 못했고, 검증 안 된 규격에 맞춰 그럴듯한 코드를 쓰면 배포까지는 통과하고
+Perfect Corp은 ZIP을 돌려줍니다 — `skinanalysisResult/score_info.json` + 항목별 PNG
+마스크. 우리는 JSON만 씁니다(마스크는 원본 사진에 검출 결과를 겹쳐 그리는 용도이고
+이 제품은 그렇게 쓰지 않습니다). PNG는 압축조차 풀지 않습니다.
+
+**점수 방향: 높을수록 좋음.** 문서에 "a higher score indicates healthier and more
+aesthetically pleasing skin condition"이라고 명시돼 있어 우리 척도와 같습니다.
+뒤집지 않습니다.
+
+**`raw_score`를 씁니다, `ui_score`가 아니라.** 문서가 솔직하게 적어놨습니다 —
+ui_score는 "소비자가 긍정적 평가를 선호하므로 상향 조정한" 값입니다. 이 점수는 화면
+장식이 아니라 **가장 낮은 항목이 집중 케어 단계와 추천 제품을 결정**합니다. 듣기 좋은
+숫자로 엉뚱한 세럼을 추천하는 것보다 정직한 48을 보여주는 편이 낫습니다.
+`SCORE_SOURCE` 상수 하나로 바꿀 수 있습니다.
+
+축 매핑 (HD 우선, 없으면 SD):
+
+| 우리 축 | HD | SD |
+| --- | --- | --- |
+| 수분 | `hd_moisture` | `moisture` |
+| 탄력 | `hd_firmness` | `firmness` |
+| 모공 | `hd_pore.whole` | `pore` |
+| 색소침착 | `hd_age_spot` | `age_spot` |
+| 주름 | `hd_wrinkle.whole` | `wrinkle` |
+| 민감도 | `hd_redness` | `redness` |
+
+`hd_pore`·`hd_wrinkle`처럼 부위별로 나뉜 항목은 **`whole`(요약)을 읽습니다.** 샘플에서
+`hd_pore.nose`는 29, `forehead`는 80으로, 아무 부위나 집으면 최저 항목 판정이 크게
+왜곡됩니다.
+
+피부 타입은 벤더의 `skin_type` 라벨을 우선 쓰고, 없으면 수분·유분 점수로 판정합니다
+(유분은 **낮을수록 지성** — 높은 쪽이 건강한 끝입니다). `skin_age`도 함께 저장·표시합니다.
+
+매핑은 **벤더가 공개한 샘플 응답 2종(HD·SD)으로 테스트**했습니다
+(`src/analysis/perfectcorp.test.ts`, `npm test`). 인식 가능한 점수가 하나도 없으면
+중립값 50을 지어내지 않고 예외를 던져, 호출자가 "샘플 결과" 배지가 붙은 데모로
+떨어지게 합니다.
+
+### 남은 작업 — 호출 순서만
+
+`supabase/functions/analyze-skin/vendor.ts`의 `analyseWithPerfectCorp()` 하나입니다.
+인증 → 파일 업로드 → 태스크 생성 → 폴링 → ZIP 다운로드까지가 남았고, ZIP을 받은
+다음은 `readScoreZip()`이 이미 처리합니다. Developer Guide를 읽지 못해
+**의도적으로 비워두었습니다** — 검증 안 된 규격에 맞춘 코드는 배포까지 통과하고
 운영에서 실패합니다.
 
-채울 때 필요한 것:
-
-1. Supabase 대시보드 > Edge Functions > Secrets 에 `PERFECTCORP_API_KEY`,
-   `PERFECTCORP_API_SECRET` 등록
-2. 인증 → 이미지 전송 → (비동기면) 폴링 → 결과를 6개 축으로 매핑
-3. ⚠️ **점수 방향 확인** — 벤더가 "심각도"(높을수록 나쁨)로 주면 뒤집어야 합니다.
-   `invertIfNeeded()`가 그 용도입니다. 반대로 매핑하면 모든 고객에게 정반대
-   결과를 조용히 알려주게 됩니다.
+Supabase 대시보드 > Edge Functions > Secrets 에 `PERFECTCORP_API_KEY`,
+`PERFECTCORP_API_SECRET`을 등록해야 동작합니다.
 
 벤더가 설정되지 않은 동안에도 앱은 정상 동작하며, 샘플 결과에 배지를 달아 실제
 측정이 아님을 명시합니다.

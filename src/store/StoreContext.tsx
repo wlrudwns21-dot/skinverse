@@ -328,6 +328,7 @@ function useStoreValue() {
       scanIsReal: false,
       liveMetrics: null,
       liveOverall: null,
+      liveSkinAge: null,
     }))
 
     // A demo score is not a measurement, so it does not go in the member's
@@ -385,6 +386,7 @@ function useStoreValue() {
             skinCondition: result.condition,
             liveMetrics: result.metrics,
             liveOverall: result.overall,
+            liveSkinAge: result.skinAge,
             history: result.saved
               ? [
                   {
@@ -825,6 +827,7 @@ function useStoreValue() {
     guestScanUsed: state.guestScanUsed,
     overall: overallScore,
     scanIsReal: state.scanIsReal,
+    skinAge: state.liveSkinAge,
     setPhoto,
     skinType: condition.type[lang],
     summary: condition.sum[lang],
