@@ -115,6 +115,21 @@ export async function loadMemberSnapshot(): Promise<MemberSnapshot> {
     supabase.from('routines').select('id', { count: 'exact', head: true }),
   ])
 
+  // A failed query yields `data: null`, which reads downstream as "this member
+  // has nothing" — an empty bag, no saved routines, no scans ever taken. That
+  // is indistinguishable on screen from a new account, so it must at least be
+  // loud in the console rather than passing for a fact about the customer.
+  for (const [what, res] of [
+    ['cart_items', cart],
+    ['mission_claims', claims],
+    ['redemptions', redemptions],
+    ['scans', scans],
+    ['orders', orders],
+    ['routines', routines],
+  ] as const) {
+    if (res.error) console.error(`[skinverse] ${what}를 불러오지 못했습니다`, res.error.message)
+  }
+
   const cartMap: Record<string, number> = {}
   for (const row of cart.data ?? []) cartMap[row.product_id as string] = row.qty as number
 

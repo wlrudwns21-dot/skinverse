@@ -5,6 +5,7 @@ import {
   storiesHomeCta,
   storiesSub,
   storiesTitle,
+  storyImage,
 } from '../data/stories'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
@@ -30,7 +31,7 @@ export function Home() {
 
       <div onClick={st.goRoutine} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px')}>
         <div>
-          <div style={s('font-size:12px;color:#8A7D6C')}>{st.t.todayIn} {st.state.city}</div>
+          <div style={s('font-size:12px;color:#8A7D6C')}>{st.t.todayIn} {st.placeLabel}</div>
           <div style={s('font-size:14px;font-weight:600;margin-top:3px')}>{st.wLine}</div>
           <div style={s('font-size:12px;color:#2E6B58;margin-top:3px;font-weight:500')}>{st.wHint}</div>
         </div>
@@ -54,6 +55,46 @@ export function Home() {
           {st.t.noScan}
         </div>
       )}
+
+      {/* Skin Stories, above the shelf. Most visits are not a scan and not a
+          purchase, so what a customer can do *today* has to be within reach —
+          burying the reading under the product strip made it the last thing on
+          a screen most people never scrolled to the end of. */}
+      <div style={s('display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 2px')}>
+        <div style={s('font-family:Marcellus,serif;font-size:18px')}>{storiesTitle[lang]}</div>
+        <div onClick={st.goStories} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600')}>
+          {storiesHomeCta[lang]} →
+        </div>
+      </div>
+      <div style={s('font-size:11.5px;color:#8A7D6C;margin:0 2px 10px')}>{storiesSub[lang]}</div>
+
+      <div style={s('display:flex;gap:10px;overflow-x:auto;padding-bottom:6px')}>
+        {stories.slice(0, HOME_STORIES).map((story) => (
+          <div
+            key={story.id}
+            onClick={st.goStories}
+            style={s('cursor:pointer;min-width:190px;max-width:190px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;overflow:hidden;display:flex;flex-direction:column')}
+          >
+            <img
+              src={storyImage(story)}
+              alt={story.title[lang]}
+              loading="lazy"
+              style={s('display:block;width:100%;aspect-ratio:2/1;object-fit:cover;background:#EFE9DD')}
+            />
+            <div style={s('padding:11px 13px 13px;display:flex;flex-direction:column;gap:5px;flex:1')}>
+              <div style={s('font-size:10.5px;font-weight:700;color:#8A7D6C;letter-spacing:0.04em')}>
+                {categoryNames[story.category][lang]}
+              </div>
+              <div style={s('font-size:13px;font-weight:700;line-height:1.4;color:#221C15')}>
+                {story.title[lang]}
+              </div>
+              <div style={s('font-size:10.5px;color:#A2957F;margin-top:auto')}>
+                {minutesLabel(story.minutes, lang)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       <div style={s('display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px')}>
         <div style={s('font-family:Marcellus,serif;font-size:18px')}>{st.t.matched}</div>
@@ -82,37 +123,6 @@ export function Home() {
           <div style={s('font-size:12px;color:#8A7D6C;margin-top:2px')}>🔥 {st.streakLine} · Lv. {st.levelName}</div>
         </div>
         <div style={s('background:#C29A5B;color:#FFF;border-radius:999px;font-size:11px;font-weight:700;padding:6px 10px')}>{st.t.earnP} →</div>
-      </div>
-
-      {/* Skin Stories, at the foot of the home screen. Reading is what a
-          customer does on the days they are not scanning or buying, and it is
-          the cheapest reason to come back. */}
-      <div style={s('display:flex;align-items:baseline;justify-content:space-between;margin:24px 2px 2px')}>
-        <div style={s('font-family:Marcellus,serif;font-size:18px')}>{storiesTitle[lang]}</div>
-        <div onClick={st.goStories} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600')}>
-          {storiesHomeCta[lang]} →
-        </div>
-      </div>
-      <div style={s('font-size:11.5px;color:#8A7D6C;margin:0 2px 10px')}>{storiesSub[lang]}</div>
-
-      <div style={s('display:flex;gap:10px;overflow-x:auto;padding-bottom:6px')}>
-        {stories.slice(0, HOME_STORIES).map((story) => (
-          <div
-            key={story.id}
-            onClick={st.goStories}
-            style={s('cursor:pointer;min-width:190px;max-width:190px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:6px')}
-          >
-            <div style={s('font-size:10.5px;font-weight:700;color:#8A7D6C;letter-spacing:0.04em')}>
-              {categoryNames[story.category][lang]}
-            </div>
-            <div style={s('font-size:13px;font-weight:700;line-height:1.4;color:#221C15')}>
-              {story.title[lang]}
-            </div>
-            <div style={s('font-size:10.5px;color:#A2957F;margin-top:auto')}>
-              {minutesLabel(story.minutes, lang)}
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   )

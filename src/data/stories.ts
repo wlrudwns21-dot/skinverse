@@ -200,6 +200,15 @@ export const stories: Story[] = [
   },
 ]
 
+/**
+ * Where a story's card photo lives.
+ *
+ * Derived from the id rather than stored on the entry, so a story can never
+ * ship carrying a picture of a different one: the file in `public/stories/` is
+ * named after the story it belongs to, or that story has no picture.
+ */
+export const storyImage = (story: Story) => `/stories/${story.id}.webp`
+
 /** The one story the routine screen shows inline. */
 export const coreTip = stories.find((story) => story.coreTip) ?? stories[0]
 

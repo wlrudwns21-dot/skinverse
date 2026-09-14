@@ -194,35 +194,50 @@ function useStoreValue() {
 
   const hydratedFor = useRef<string | null>(null)
 
+  /**
+   * The latest profile, without making it an effect dependency.
+   *
+   * `loadProfile` hands back a fresh object on every auth event — the initial
+   * session, the sign-in, each token refresh — so depending on the object
+   * itself re-ran the hydration effect while its own snapshot request was
+   * still in flight. The cleanup cancelled that request, the re-run saw the
+   * same member id and returned early, and the account's history, bag and
+   * saved routines were never applied: the member signed in and the app told
+   * them they had never scanned. Keying on the id alone is what fixes it.
+   */
+  const profileRef = useRef(auth.profile)
+  profileRef.current = auth.profile
+
+  const memberId = isMember ? (auth.profile?.id ?? null) : null
+
+  // Signed out. Keyed on the session rather than the profile, so a profile
+  // that is briefly missing — mid-refresh, or after a failed re-read — does
+  // not read as a sign-out and wipe an account that is still signed in.
   useEffect(() => {
-    if (!isMember || !auth.profile) {
-      // Signed out: drop everything that belonged to the account and fall back
-      // to the guest bag that is still in localStorage.
-      if (hydratedFor.current !== null) {
-        hydratedFor.current = null
-        setState((s) => ({
-          ...s,
-          points: 0,
-          streak: 0,
-          done: {},
-          redeemed: {},
-          history: [],
-          savedRoutineCount: 0,
-          scanned: false,
-          order: null,
-          name: '',
-          addr: '',
-          cart: readLocal<Record<string, number>>(LOCAL_KEYS.cart, {}),
-          screen: 'home',
-        }))
-      }
-      return
-    }
+    if (isMember || hydratedFor.current === null) return
+    hydratedFor.current = null
+    setState((s) => ({
+      ...s,
+      points: 0,
+      streak: 0,
+      done: {},
+      redeemed: {},
+      history: [],
+      savedRoutineCount: 0,
+      scanned: false,
+      order: null,
+      name: '',
+      addr: '',
+      cart: readLocal<Record<string, number>>(LOCAL_KEYS.cart, {}),
+      screen: 'home',
+    }))
+  }, [isMember])
 
-    if (hydratedFor.current === auth.profile.id) return
-    hydratedFor.current = auth.profile.id
+  useEffect(() => {
+    if (!memberId) return
+    if (hydratedFor.current === memberId) return
+    hydratedFor.current = memberId
 
-    const profile = auth.profile
     let cancelled = false
 
     void (async () => {
@@ -234,7 +249,14 @@ function useStoreValue() {
       }
 
       const snap = await remote.loadMemberSnapshot()
-      if (cancelled) return
+      const profile = profileRef.current
+      // Let the next run try again rather than leaving the member looking like
+      // someone with no history: a claimed-but-unapplied hydration is the bug
+      // this whole block exists to prevent.
+      if (cancelled || !profile || profile.id !== memberId) {
+        if (hydratedFor.current === memberId) hydratedFor.current = null
+        return
+      }
 
       const done: Record<string, boolean> = {}
       for (const id of snap.claimedToday) done[id] = true
@@ -249,7 +271,11 @@ function useStoreValue() {
         addr: profile.address,
         country: profile.country,
         lang: profile.language,
-        city: profile.city,
+        // "Current location" is a device fact and is never written to the
+        // profile, so the saved city would otherwise undo the choice on every
+        // sign-in — the visitor asked for wherever they are, and signing in is
+        // not them changing their mind.
+        city: s.city === CURRENT_LOCATION ? s.city : profile.city,
         notif: profile.routine_reminders,
         cart: snap.cart,
         done,
@@ -288,7 +314,7 @@ function useStoreValue() {
     return () => {
       cancelled = true
     }
-  }, [isMember, auth.profile])
+  }, [memberId])
 
   // ── live weather ──────────────────────────────────────────────────────────
 
