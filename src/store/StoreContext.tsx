@@ -21,6 +21,8 @@ import { can, guestScanUsedToday, markGuestScanUsed, type Capability } from '../
 import { useAuth } from '../auth/AuthContext'
 import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
 import { authT } from '../i18n/auth'
+import { routineT } from '../i18n/routine'
+import { buildPlan } from '../routine/rules'
 import { strings, type Strings } from '../i18n'
 import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
 import * as remote from './remote'
@@ -128,6 +130,7 @@ function useStoreValue() {
 
   const t = useMemo(() => strings(state.lang), [state.lang])
   const a = useMemo(() => authT(state.lang), [state.lang])
+  const r = useMemo(() => routineT(state.lang), [state.lang])
   const tRef = useRef<Strings>(t)
   tRef.current = t
 
@@ -606,28 +609,55 @@ function useStoreValue() {
       ) + '%'
     : '100%'
 
-  const humid = weather.h >= 70
-  const dry = weather.h < 45
-  const wAdvice =
-    (humid ? t.advHumid(weather.h) : dry ? t.advDry(weather.h) : t.advMild) +
-    (weather.uv >= 8 ? t.advUvHi(weather.uv) : weather.uv >= 6 ? t.advUvMid(weather.uv) : t.advUvLo)
+  // Every step below is decided by src/routine/rules.ts, which owns the
+  // thresholds and their rationale. Nothing here re-derives them.
+  const plan = buildPlan(weather, condition, lowest.k)
+
+  const bands = {
+    humidity: { label: r.band.humidity[plan.humidity], why: r.why.humidity[plan.humidity], value: weather.h + '%' },
+    uv: { label: r.band.uv[plan.uv], why: r.why.uv[plan.uv], value: String(weather.uv) },
+    temp: { label: r.band.temp[plan.temp], why: r.why.temp[plan.temp], value: weather.t + '°' },
+  }
+
+  // The advice block is the three explanations, in the order they matter.
+  const wAdvice = [bands.humidity.why, bands.uv.why, bands.temp.why].join(' ')
 
   const amSteps: RoutineStep[] = [
-    { n: 1, name: t.st1, note: t.st1n },
-    { n: 2, name: humid ? t.st2h : t.st2d, note: t.st2n },
-    { n: 3, name: t.target + ' ' + targetProduct.name, note: t.lowestNote + ' ' + lowest.n[lang] },
-    { n: 4, name: humid ? t.st4h : t.st4d, note: humid ? t.st4hn(weather.h) : t.st4dn },
+    { n: 1, name: r.step.amCleanse[plan.am.cleanse], note: r.note.amCleanse },
+    { n: 2, name: r.step.amToner[plan.am.toner], note: r.note.amToner },
+    {
+      n: 3,
+      name: r.step.amTreatment + ': ' + targetProduct.name,
+      note: r.note.weakest(lowest.n[lang]),
+    },
+    {
+      n: 4,
+      name: r.step.amMoisturiser[plan.am.moisturiser],
+      note: bands.humidity.label + ' · ' + bands.humidity.value,
+    },
     {
       n: 5,
-      name: 'SPF50+ PA++++' + (weather.uv >= 8 ? t.spfRe : ''),
-      note: t.uvIn(weather.uv, placeLabel),
+      name: r.step.amSpf[plan.am.spf],
+      note: 'UV ' + weather.uv + ' · ' + bands.uv.label,
     },
   ]
   const pmSteps: RoutineStep[] = [
-    { n: 1, name: t.pm1, note: humid ? t.pm1h : t.pm1n },
-    { n: 2, name: t.pm2, note: t.pm2n },
-    { n: 3, name: t.target + ' ' + targetProduct.name, note: t.pm3n },
-    { n: 4, name: dry || condition.m.hydration < 60 ? t.pm4a : t.pm4b, note: t.pm4n },
+    {
+      n: 1,
+      name: r.step.pmCleanse[plan.pm.cleanse],
+      note: bands.temp.label + ' · ' + bands.temp.value,
+    },
+    { n: 2, name: r.step.pmEssence, note: r.note.pmEssence },
+    {
+      n: 3,
+      name: r.step.pmTreatment + ': ' + targetProduct.name,
+      note: r.note.pmTreatment,
+    },
+    {
+      n: 4,
+      name: r.step.pmNight[plan.pm.night],
+      note: bands.humidity.label + ' · ' + bands.humidity.value,
+    },
   ]
 
   const saveCurrentRoutine = () => {
@@ -798,10 +828,13 @@ function useStoreValue() {
     locationCoords: usingLocation ? geo.coords : null,
     weatherIsLive: liveWeather !== null,
     weather,
-    uvColor: weather.uv >= 8 ? '#C25E43' : weather.uv >= 6 ? '#B08133' : '#2E6B58',
+    uvColor: plan.uv === 'extreme' || plan.uv === 'veryHigh' ? '#C25E43' : plan.uv === 'high' ? '#B08133' : '#2E6B58',
     wLine: weather.t + '°C · ' + t.humidity + ' ' + weather.h + '% · UV ' + weather.uv,
-    wHint: humid ? t.hintHumid : dry ? t.hintDry : t.hintMild,
+    wHint: bands.humidity.why,
     wAdvice,
+    bands,
+    basisTitle: r.basis,
+    basisHint: r.basisHint,
     amSteps,
     pmSteps,
     saveRoutine: guard('saveRoutine', saveCurrentRoutine),

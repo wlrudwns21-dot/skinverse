@@ -71,10 +71,30 @@ export function Routine() {
         </div>
       </div>
 
-      <div style={s('background:#221C15;color:#EFE8DA;border-radius:14px;padding:14px;margin-top:10px;font-size:13px;line-height:1.55')}>
-        <b style={s('color:#C7B99E')}>{st.t.adjust}</b>
-        <br />
-        {st.wAdvice}
+      {/* The three readings that decide the plan, each with what it changes.
+          Showing the criteria beats an unexplained list of products. */}
+      <div style={s('background:#221C15;color:#EFE8DA;border-radius:14px;padding:16px;margin-top:10px')}>
+        <div style={s('font-size:11px;letter-spacing:0.12em;color:#C7B99E;font-weight:700')}>{st.basisTitle}</div>
+        <div style={s('font-size:11.5px;color:#9A8F7C;margin-top:4px')}>{st.basisHint}</div>
+
+        <div style={s('display:flex;flex-direction:column;gap:11px;margin-top:13px')}>
+          {[
+            { key: 'temp', icon: '🌡', v: st.bands.temp },
+            { key: 'humidity', icon: '💧', v: st.bands.humidity },
+            { key: 'uv', icon: '☀', v: st.bands.uv },
+          ].map((row) => (
+            <div key={row.key} style={s('display:flex;gap:10px;align-items:flex-start')}>
+              <span style={s('font-size:13px;flex-shrink:0;width:18px')}>{row.icon}</span>
+              <div style={s('min-width:0')}>
+                <div style={s('font-size:12.5px;font-weight:700')}>
+                  {row.v.value}
+                  <span style={s('color:#C7B99E;font-weight:600')}> · {row.v.label}</span>
+                </div>
+                <div style={s('font-size:12px;color:#BDB2A0;line-height:1.5;margin-top:2px')}>{row.v.why}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div style={s('font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px')}>{st.t.morning} ☀</div>
