@@ -172,12 +172,19 @@ Deno.serve(async (req) => {
   const subject = await subjectFor(req, userId)
   const limit = userId ? MEMBER_DAILY_LIMIT : GUEST_DAILY_LIMIT
 
-  const { data: allowed, error: quotaError } = await admin
-    .schema('private')
-    .rpc('claim_analysis_call', { p_subject: subject, p_limit: limit })
+  // Called on `public`, not `private`: PostgREST only serves schemas on its
+  // exposed list, and whether `private` is on it is a dashboard setting rather
+  // than something the schema can guarantee. The public wrappers are SECURITY
+  // DEFINER and granted to service_role alone, so this is no more reachable
+  // from a browser than it was before.
+  const { data: allowed, error: quotaError } = await admin.rpc('claim_analysis_call', {
+    p_subject: subject,
+    p_limit: limit,
+  })
 
   if (quotaError) {
     console.error('quota check failed', quotaError.message)
+    await trace('quota-failed', { message: quotaError.message, code: quotaError.code })
     return json({ error: 'quota_unavailable' }, 503)
   }
   if (allowed !== true) {
@@ -198,9 +205,7 @@ Deno.serve(async (req) => {
   // and must not cost the caller a daily call either — most of all a guest,
   // whose single daily trial would otherwise be spent on a photo nobody read.
   const refund = async () => {
-    const { error } = await admin
-      .schema('private')
-      .rpc('release_analysis_call', { p_subject: subject })
+    const { error } = await admin.rpc('release_analysis_call', { p_subject: subject })
     if (error) console.error('could not release the quota slot', error.message)
   }
 
