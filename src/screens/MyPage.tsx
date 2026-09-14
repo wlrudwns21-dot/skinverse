@@ -34,6 +34,40 @@ export function MyPage() {
         </div>
       </div>
 
+      {/* Bars are scaled to the range actually present, not to 0–100: skin
+          scores cluster narrowly, and a fixed axis flattens a real swing into
+          a row of identical bars. The humidity under each one is what makes a
+          dip readable rather than alarming. */}
+      {st.trend && (
+        <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:20px')}>
+          <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:8px')}>
+            <div style={s('font-family:Marcellus,serif;font-size:16px')}>{st.trend.title}</div>
+            <div style={s('font-size:11px;color:#A2957F;flex-shrink:0')}>{st.trend.count}</div>
+          </div>
+          <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>{st.trend.sub}</div>
+
+          <div style={s('display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:14px;overflow-x:auto')}>
+            {st.trend.points.map((p) => (
+              <div key={p.key} style={s('flex:1;min-width:26px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%')}>
+                <div style={s('font-size:10px;font-weight:700;color:#4A4234;margin-bottom:3px')}>{p.score}</div>
+                <div style={s(`width:100%;border-radius:6px 6px 0 0;background:${p.color};height:${p.height}`)} />
+              </div>
+            ))}
+          </div>
+
+          <div style={s('display:flex;gap:6px;margin-top:6px;overflow-x:auto')}>
+            {st.trend.points.map((p) => (
+              <div key={p.key} style={s('flex:1;min-width:26px;text-align:center')}>
+                <div style={s('font-size:9.5px;color:#8A7D6C')}>{p.date}</div>
+                {p.humidity && (
+                  <div style={s('font-size:9px;color:#B9AC93;margin-top:1px')}>💧{p.humidity}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={s('font-family:Marcellus,serif;font-size:16px;margin:20px 2px 8px')}>{st.t.skinHistory}</div>
       {st.history.length > 0 ? (
         <div style={s('display:flex;flex-direction:column;gap:8px')}>

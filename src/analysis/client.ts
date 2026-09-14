@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
-import type { MetricKey, SkinConditionKey } from '../data/types'
+import type { MetricKey, SkinConditionKey, Weather } from '../data/types'
+import type { SkinTypeReading } from './perfectcorp'
 
 /**
  * Calls the `analyze-skin` edge function, which is the only thing holding the
@@ -12,6 +13,10 @@ export interface AnalysisResult {
   condition: SkinConditionKey
   /** The vendor's AI-derived skin age, when they report one. */
   skinAge: number | null
+  /** Their oiliness reading — classifies the skin, never drawn as an axis. */
+  oiliness: number | null
+  /** Their own skin-type labels, per zone. */
+  skinType: SkinTypeReading | null
   /** Whether the server wrote this scan to the member's history. */
   saved: boolean
 }
@@ -50,11 +55,14 @@ const PHOTO_KEYS = new Set<string>([
 
 const FUNCTION_NAME = 'analyze-skin'
 
-export async function analyseSkin(photo: File): Promise<AnalysisOutcome> {
+export async function analyseSkin(photo: File, weather: Weather): Promise<AnalysisOutcome> {
   if (!supabase) return { kind: 'notConfigured' }
 
   const body = new FormData()
   body.append('image', photo)
+  // Saved with the scan so the history can tell a routine that stopped working
+  // apart from a month that simply got drier.
+  body.append('weather', JSON.stringify(weather))
 
   const { data, error } = await supabase.functions.invoke(FUNCTION_NAME, { body })
 

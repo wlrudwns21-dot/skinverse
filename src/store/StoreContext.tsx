@@ -14,7 +14,7 @@ import { levels } from '../data/rewards'
 import { conditions, metricDefs } from '../data/skin'
 import { analyseSkin } from '../analysis/client'
 import { checkPhoto } from '../analysis/imageCheck'
-import type { Lang, Weather } from '../data/types'
+import type { Lang, MetricKey, Weather } from '../data/types'
 import { fetchWeather } from '../weather/remote'
 import { useGeolocation } from '../weather/useGeolocation'
 import { useCatalog } from '../catalog/CatalogContext'
@@ -25,6 +25,10 @@ import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
 import { authT } from '../i18n/auth'
 import { routineT } from '../i18n/routine'
 import { buildPlan } from '../routine/rules'
+import { fallingAxes, rank, type ReasonKind } from '../routine/recommend'
+import { buildReport, MOVE_THRESHOLD, trendSeries } from '../insights/report'
+import { describeAll } from '../insights/describe'
+import { insightT } from '../i18n/insights'
 import { strings, type Strings } from '../i18n'
 import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
 import * as remote from './remote'
@@ -56,6 +60,8 @@ export interface ProductView {
   priceS: string
   matchS: string
   matchN: number
+  /** Why this product is being recommended — at most two, strongest first. */
+  reasons: string[]
   open: () => void
   add: () => void
 }
@@ -86,6 +92,22 @@ export interface RoutineStep {
 interface Prefs {
   lang: Lang
   city: string
+}
+
+/** Contributions every product has, so they explain no ranking on their own. */
+const BASE_REASONS = new Set<ReasonKind>(['axisNeed', 'uvLoad'])
+
+/**
+ * Up to two reasons for a card, most informative first.
+ *
+ * A modifier — dry air, a falling axis, the focus of this cycle — is what moved
+ * a product up or down the list, so it leads. The base need follows as context.
+ * Any more than two and the card stops being a reason and becomes a wall.
+ */
+function orderedReasons(reasons: { kind: ReasonKind; points: number }[]): ReasonKind[] {
+  const modifiers = reasons.filter((r) => !BASE_REASONS.has(r.kind))
+  const base = reasons.filter((r) => BASE_REASONS.has(r.kind))
+  return [...modifiers, ...base].slice(0, 2).map((r) => r.kind)
 }
 
 function useStoreValue() {
@@ -129,10 +151,17 @@ function useStoreValue() {
   settingsRef.current = settings
 
   const [liveWeather, setLiveWeather] = useState<Weather | null>(null)
+  /**
+   * The reading as of this render. `startScan` is memoised and would otherwise
+   * close over whatever the weather was when it was created, which is usually
+   * the fallback rather than the live value.
+   */
+  const weatherRef = useRef<Weather>({ t: 0, h: 0, uv: 0 })
 
   const t = useMemo(() => strings(state.lang), [state.lang])
   const a = useMemo(() => authT(state.lang), [state.lang])
   const r = useMemo(() => routineT(state.lang), [state.lang])
+  const ins = useMemo(() => insightT(state.lang), [state.lang])
   const tRef = useRef<Strings>(t)
   tRef.current = t
 
@@ -228,11 +257,7 @@ function useStoreValue() {
         cart: snap.cart,
         done,
         redeemed,
-        history: snap.scanHistory.map((h) => ({
-          skinCondition: h.skin_condition,
-          overall: h.overall,
-          createdAt: h.created_at,
-        })),
+        history: snap.scanHistory,
         savedRoutineCount: snap.savedRoutineCount,
         scanned: !!snap.latestScan,
         scanStep: snap.latestScan ? 'results' : 'intro',
@@ -346,6 +371,8 @@ function useStoreValue() {
       liveMetrics: null,
       liveOverall: null,
       liveSkinAge: null,
+      liveOiliness: null,
+      liveSkinType: null,
     }))
 
     // A demo score is not a measurement, so it does not go in the member's
@@ -382,7 +409,10 @@ function useStoreValue() {
     // The photo goes to the edge function while the progress bar runs, so the
     // animation covers the round trip instead of being followed by a wait.
     const photo = s.photo
-    const pending = photo ? analyseSkin(photo) : null
+    // The weather goes with the photo so the saved scan records the conditions
+    // it was taken in — see the `weather` column on `scans`.
+    const weather = weatherRef.current
+    const pending = photo ? analyseSkin(photo, weather) : null
 
     scanTimer.current = setInterval(() => {
       const next = stateRef.current.progress + SCAN_TICK_STEP
@@ -413,12 +443,21 @@ function useStoreValue() {
             liveMetrics: result.metrics,
             liveOverall: result.overall,
             liveSkinAge: result.skinAge,
+            liveOiliness: result.oiliness,
+            liveSkinType: result.skinType,
+            // Show the scan in the history immediately rather than waiting for
+            // the next snapshot; the server has already written the same row.
             history: result.saved
               ? [
                   {
                     skinCondition: result.condition,
                     overall: result.overall,
                     createdAt: new Date().toISOString(),
+                    metrics: result.metrics,
+                    skinAge: result.skinAge,
+                    oiliness: result.oiliness,
+                    skinType: result.skinType,
+                    weather,
                   },
                   ...cur.history,
                 ]
@@ -606,6 +645,7 @@ function useStoreValue() {
 
   // Live reading when we have one; the city's stored numbers until then.
   const weather: Weather = liveWeather ?? { t: fallbackCity.t, h: fallbackCity.h, uv: fallbackCity.uv }
+  weatherRef.current = weather
   const placeLabel = usingLocation ? a.currentLocation : state.city
   const points = state.points
   const totals = totalsOf(state, products, settings)
@@ -624,16 +664,48 @@ function useStoreValue() {
     }
   })
 
-  const scoreOf = (k: (typeof metricDefs)[number]['k']) => liveMetrics?.[k] ?? condition.m[k]
+  /**
+   * The scores every downstream decision reads: the live scan when there is
+   * one, the canned profile otherwise. Everything — the routine, the report and
+   * the recommendations — reads this single map, so they can never disagree
+   * about what the customer's skin actually measured.
+   */
+  const effectiveMetrics = liveMetrics ?? condition.m
+  const scoreOf = (k: MetricKey) => effectiveMetrics[k]
   const lowest = metricDefs.reduce((x, y) => (scoreOf(x.k) <= scoreOf(y.k) ? x : y))
+
+  // What the numbers say, beyond the bars themselves.
+  const report = buildReport({
+    metrics: effectiveMetrics,
+    overall: overallScore,
+    skinAge: state.liveSkinAge,
+    oiliness: state.liveOiliness,
+    skinType: state.liveSkinType,
+    weather,
+    previous: state.history.slice(state.scanIsReal ? 1 : 0),
+  })
+
+  const previousMetrics = state.history.find((h) => h.metrics)?.metrics ?? null
+  const recommendations = new Map(
+    rank(products, {
+      metrics: effectiveMetrics,
+      weather,
+      focus: report.insights.some((i) => i.kind === 'weakest') ? report.focus : null,
+      falling: fallingAxes(effectiveMetrics, previousMetrics, MOVE_THRESHOLD),
+      condition: state.skinCondition,
+    }).map((r) => [r.id, r]),
+  )
+
   const targetProduct = products.find((p) => p.metric === lowest.k) ?? products[0]
 
   const toView = (p: CatalogProduct): ProductView => {
-    const matchN =
-      p.metric === 'uv'
-        ? Math.min(98, 58 + weather.uv * 4)
-        : Math.min(98, 138 - scoreOf(p.metric))
+    const match = recommendations.get(p.id)
+    const matchN = match?.score ?? 50
     return {
+      // The base need is always the largest contribution and every product has
+      // one, so leading with it tells the customer nothing about why *this*
+      // product is where it is. Put what actually distinguishes it first.
+      reasons: orderedReasons(match?.reasons ?? []).map((kind) => ins.reason[kind]),
       id: p.id,
       brand: p.brand,
       name: p.name,
@@ -712,7 +784,12 @@ function useStoreValue() {
 
   // Every step below is decided by src/routine/rules.ts, which owns the
   // thresholds and their rationale. Nothing here re-derives them.
-  const plan = buildPlan(weather, condition, lowest.k)
+  //
+  // This takes `effectiveMetrics`, not the canned condition: it used to read
+  // the sample profile's hydration, which meant a real scan of 42 still got a
+  // routine built for whatever the demo said — the analysis was paid for and
+  // then partly ignored.
+  const plan = buildPlan(weather, effectiveMetrics, lowest.k)
 
   const bands = {
     humidity: { label: r.band.humidity[plan.humidity], why: r.why.humidity[plan.humidity], value: weather.h + '%' },
@@ -780,19 +857,55 @@ function useStoreValue() {
     })()
   }
 
-  const history = state.history.map((h) => {
-    const cond = conditions[h.skinCondition] ?? condition
-    const date = new Date(h.createdAt)
+  const scoreColour = (n: number) => (n < 50 ? '#C25E43' : n < 70 ? '#B08133' : '#2E6B58')
+  const shortDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(lang === 'en' ? 'en-US' : lang, {
+      month: 'short',
+      day: 'numeric',
+    })
+
+  const history = state.history.map((h) => ({
+    date: shortDate(h.createdAt),
+    type: (conditions[h.skinCondition] ?? condition).type[lang],
+    score: h.overall,
+    color: scoreColour(h.overall),
+  }))
+
+  // ── the report ────────────────────────────────────────────────────────────
+
+  const reportLines = describeAll(report.insights, lang)
+
+  /**
+   * The history as a chart-ready series.
+   *
+   * Bar heights are relative to the range actually present rather than to
+   * 0–100: skin scores cluster in a narrow band, and a fixed axis flattens a
+   * real 15-point swing into a row of near-identical bars.
+   */
+  const trend = (() => {
+    const points = trendSeries(state.history)
+    if (points.length < 2) return null
+
+    const scores = points.map((p) => p.overall)
+    const min = Math.min(...scores)
+    const max = Math.max(...scores)
+    const span = Math.max(max - min, 1)
+
     return {
-      date: date.toLocaleDateString(lang === 'en' ? 'en-US' : lang, {
-        month: 'short',
-        day: 'numeric',
-      }),
-      type: cond.type[lang],
-      score: h.overall,
-      color: h.overall < 50 ? '#C25E43' : h.overall < 70 ? '#B08133' : '#2E6B58',
+      title: ins.trendTitle,
+      sub: ins.trendSub,
+      count: ins.scanCount(points.length),
+      points: points.map((p) => ({
+        key: p.at,
+        date: shortDate(p.at),
+        score: p.overall,
+        // 18% floor so the lowest bar is still a bar and not a hairline.
+        height: Math.round(18 + ((p.overall - min) / span) * 72) + '%',
+        color: scoreColour(p.overall),
+        humidity: p.humidity === null ? '' : p.humidity + '%',
+      })),
     }
-  })
+  })()
 
   const tabScreens: Screen[] = ['home', 'scan', 'shop', 'routine', 'missions']
   const tabs = tabScreens.map((id, i) => {
@@ -954,6 +1067,12 @@ function useStoreValue() {
     levelPct,
 
     history,
+    report: reportLines,
+    reportTitle: ins.reportTitle,
+    reportSub: ins.reportSub,
+    whyThis: ins.whyThis,
+    trend,
+    noTrend: ins.noTrend,
     toggleNotif: () => {
       const next = !state.notif
       setState((s) => ({ ...s, notif: next }))

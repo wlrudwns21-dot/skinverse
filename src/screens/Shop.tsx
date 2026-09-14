@@ -27,9 +27,15 @@ export function Shop() {
               <div style={s('font-size:11px;color:#A2957F')}>{p.sub}</div>
             </div>
             <div style={s('display:flex;justify-content:space-between;align-items:center;margin-top:8px')}>
-              <div>
+              <div style={s('min-width:0')}>
                 <div style={s('font-size:14px;font-weight:700')}>{p.priceS}</div>
                 <div style={s('font-size:10px;font-weight:700;color:#2E6B58')}>{p.matchS} {st.t.match}</div>
+                {/* A percentage with no cause is just a number. */}
+                {p.reasons[0] && (
+                  <div style={s('font-size:9.5px;color:#A2957F;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>
+                    {p.reasons[0]}
+                  </div>
+                )}
               </div>
               <div onClick={p.add} style={s('cursor:pointer;background:#221C15;color:#F5F0E6;border-radius:999px;font-size:11px;font-weight:700;padding:8px 12px')}>
                 + {st.t.bag}
@@ -65,6 +71,17 @@ export function ProductDetail() {
           <div style={s('font-size:11px;font-weight:700;color:#2E6B58;background:#EAF1EC;border-radius:6px;padding:3px 7px;margin-top:4px')}>{sel.matchS} {st.t.match}</div>
         </div>
       </div>
+
+      {sel.reasons.length > 0 && (
+        <div style={s('display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px')}>
+          <span style={s('font-size:11.5px;color:#8A7D6C;font-weight:600')}>{st.whyThis}</span>
+          {sel.reasons.map((reason) => (
+            <span key={reason} style={s('font-size:11px;font-weight:600;color:#4A4234;background:#F1EEE6;border:1px solid #E2DACA;border-radius:999px;padding:4px 10px')}>
+              {reason}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div style={s('background:#EAF1EC;border-radius:14px;padding:14px;margin-top:14px;font-size:13px;line-height:1.55;color:#2C4A3E')}>
         <b>{st.t.whyT}</b>

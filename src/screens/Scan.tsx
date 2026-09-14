@@ -137,6 +137,30 @@ export function ScanResults() {
         {st.summary}
       </div>
 
+      {/* What the numbers say beyond the bars: what is behind, what moved, and
+          whether the weather explains it better than the routine does. */}
+      {st.report.length > 0 && (
+        <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:12px')}>
+          <div style={s('font-family:Marcellus,serif;font-size:16px')}>{st.reportTitle}</div>
+          <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px;margin-bottom:12px')}>
+            {st.reportSub}
+          </div>
+          <div style={s('display:flex;flex-direction:column;gap:10px')}>
+            {st.report.map((line) => (
+              <div key={line.kind + line.text} style={s('display:flex;gap:9px;align-items:flex-start')}>
+                <span
+                  style={s(
+                    'flex-shrink:0;width:6px;height:6px;border-radius:50%;margin-top:6px;background:' +
+                      (line.tone === 'good' ? '#2E6B58' : line.tone === 'bad' ? '#C25E43' : '#B9AC93'),
+                  )}
+                />
+                <span style={s('font-size:12.5px;line-height:1.55;color:#4A4234')}>{line.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={s('display:flex;gap:10px;margin-top:16px')}>
         <div onClick={st.goShop} style={s('cursor:pointer;flex:1;background:#221C15;color:#F5F0E6;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700')}>
           {st.t.matchedBtn}

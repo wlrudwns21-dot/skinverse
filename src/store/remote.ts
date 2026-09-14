@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase'
 import { products } from '../data/products'
-import type { SkinConditionKey } from '../data/types'
+import type { MetricKey, SkinConditionKey, Weather } from '../data/types'
+import type { SkinTypeReading } from '../analysis/perfectcorp'
+import type { ScanRecord } from './state'
 import type { RoutineStepRecord } from './types'
 
 /**
@@ -11,14 +13,59 @@ import type { RoutineStepRecord } from './types'
  * surface to the caller, which decides whether to toast or ignore.
  */
 
+/**
+ * How far back the reports look.
+ *
+ * Thirty scans is roughly a year for someone scanning fortnightly — enough for
+ * a seasonal trend to be visible, and small enough that it costs nothing to
+ * fetch on every load.
+ */
+const SCAN_HISTORY_LIMIT = 30
+
+const SCAN_COLUMNS =
+  'skin_condition, overall, created_at, metrics, skin_age, oiliness, ' +
+  'skin_type, skin_type_t_zone, skin_type_u_zone, weather'
+
+/** A `scans` row as PostgREST returns it. */
+interface ScanRow {
+  skin_condition: SkinConditionKey
+  overall: number
+  created_at: string
+  metrics: Record<MetricKey, number> | null
+  skin_age: number | null
+  oiliness: number | null
+  skin_type: string | null
+  skin_type_t_zone: string | null
+  skin_type_u_zone: string | null
+  weather: Weather | null
+}
+
+function toScanRecord(row: ScanRow): ScanRecord {
+  const skinType: SkinTypeReading | null =
+    row.skin_type || row.skin_type_t_zone || row.skin_type_u_zone
+      ? { whole: row.skin_type, tZone: row.skin_type_t_zone, uZone: row.skin_type_u_zone }
+      : null
+
+  return {
+    skinCondition: row.skin_condition,
+    overall: row.overall,
+    createdAt: row.created_at,
+    metrics: row.metrics,
+    skinAge: row.skin_age,
+    oiliness: row.oiliness,
+    skinType,
+    weather: row.weather,
+  }
+}
+
 export interface MemberSnapshot {
   cart: Record<string, number>
   /** Mission ids already claimed today. */
   claimedToday: string[]
   /** Reward ids ever redeemed. */
   redeemed: string[]
-  latestScan: { skin_condition: SkinConditionKey; overall: number; created_at: string } | null
-  scanHistory: { skin_condition: SkinConditionKey; overall: number; created_at: string }[]
+  latestScan: ScanRecord | null
+  scanHistory: ScanRecord[]
   latestOrder: {
     order_no: string
     total: number
@@ -57,9 +104,9 @@ export async function loadMemberSnapshot(): Promise<MemberSnapshot> {
     supabase.from('redemptions').select('reward_id'),
     supabase
       .from('scans')
-      .select('skin_condition, overall, created_at')
+      .select(SCAN_COLUMNS)
       .order('created_at', { ascending: false })
-      .limit(10),
+      .limit(SCAN_HISTORY_LIMIT),
     supabase
       .from('orders')
       .select('order_no, total, points_earned, eta, created_at')
@@ -71,7 +118,7 @@ export async function loadMemberSnapshot(): Promise<MemberSnapshot> {
   const cartMap: Record<string, number> = {}
   for (const row of cart.data ?? []) cartMap[row.product_id as string] = row.qty as number
 
-  const history = (scans.data ?? []) as MemberSnapshot['scanHistory']
+  const history = (scans.data ?? []).map((row) => toScanRecord(row as unknown as ScanRow))
   const order = (orders.data ?? [])[0] as MemberSnapshot['latestOrder']
 
   return {

@@ -22,12 +22,34 @@ export interface SkinMetrics {
   sensitivity: number
 }
 
+/**
+ * Their skin-type labels, verbatim, per zone.
+ *
+ * Kept as their own strings rather than folded into our three conditions: the
+ * vocabulary is theirs (Normal, Oily, Dry, Combination, Redness and the four
+ * "& Redness" pairings), and a T-zone that reads Oily against a U-zone that
+ * reads Dry is a real finding about the customer's face that our single
+ * condition cannot express.
+ */
+export interface SkinTypeReading {
+  whole: string | null
+  tZone: string | null
+  uZone: string | null
+}
+
 export interface SkinAnalysis {
   overall: number
   metrics: SkinMetrics
   condition: SkinConditionKey
   /** Their AI-derived skin age, when returned. */
   skinAge: number | null
+  /**
+   * Their oiliness reading. It classifies the skin rather than being shown as
+   * an axis, but it is a measurement like any other and worth keeping: a
+   * customer whose oiliness climbs every month is being told something.
+   */
+  oiliness: number | null
+  skinType: SkinTypeReading | null
   raw?: unknown
 }
 
@@ -174,36 +196,52 @@ const OILINESS_KEYS = ['hd_oiliness', 'oiliness']
  * but not the JSON shape of the value, and the published samples omit the field
  * entirely — so this reads defensively and lets the caller fall back.
  */
-function conditionFromSkinType(info: ScoreInfo): SkinConditionKey | null {
+export function readSkinType(info: ScoreInfo): SkinTypeReading | null {
   const raw = (info.hd_skin_type ?? info.skin_type) as unknown
   if (!raw) return null
 
-  const candidate =
-    typeof raw === 'string'
-      ? raw
-      : typeof raw === 'object' && raw !== null
-        ? findLabel(raw as Record<string, unknown>)
-        : null
+  // A bare string is the whole face and nothing else.
+  if (typeof raw === 'string') return { whole: raw, tZone: null, uZone: null }
+  if (typeof raw !== 'object') return null
+
+  const node = raw as Record<string, unknown>
+  const reading: SkinTypeReading = {
+    whole: zoneLabel(node.whole),
+    tZone: zoneLabel(node.t_zone),
+    uZone: zoneLabel(node.u_zone),
+  }
+  return reading.whole || reading.tZone || reading.uZone ? reading : null
+}
+
+/** A zone is either the label itself or an object with the label inside it. */
+function zoneLabel(value: unknown): string | null {
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && value !== null) {
+    for (const inner of Object.values(value as Record<string, unknown>)) {
+      if (typeof inner === 'string') return inner
+    }
+  }
+  return null
+}
+
+/**
+ * Fold their eight labels into our three conditions.
+ *
+ * `Redness` on its own has no counterpart here, so it deliberately returns null
+ * and lets the numbers decide. That is not a loss: a redness reading always
+ * comes with a low sensitivity score, which makes sensitivity the weakest axis
+ * and drives the treatment step and the recommendations anyway — and the label
+ * itself is kept on the analysis, so the report can say what they actually
+ * found rather than paraphrasing it into a category that does not fit.
+ */
+function conditionFromSkinType(reading: SkinTypeReading | null): SkinConditionKey | null {
+  const candidate = reading?.whole ?? reading?.tZone ?? reading?.uZone
   if (!candidate) return null
 
   const label = candidate.toLowerCase()
   if (label.includes('dry')) return 'dehydrated'
   if (label.includes('oily') || label.includes('combination')) return 'oily'
   if (label.includes('normal')) return 'balanced'
-  return null
-}
-
-/** Dig one level for a string value — covers `{ whole: "Oily" }` and friends. */
-function findLabel(node: Record<string, unknown>): string | null {
-  for (const key of ['whole', 't_zone', 'u_zone']) {
-    const value = node[key]
-    if (typeof value === 'string') return value
-    if (typeof value === 'object' && value !== null) {
-      for (const inner of Object.values(value as Record<string, unknown>)) {
-        if (typeof inner === 'string') return inner
-      }
-    }
-  }
   return null
 }
 
@@ -272,11 +310,15 @@ export function mapScoreInfo(info: ScoreInfo): SkinAnalysis {
       ? Math.round(info.skin_age)
       : null
 
+  const skinType = readSkinType(info)
+
   return {
     overall,
     metrics,
-    condition: conditionFromSkinType(info) ?? conditionFromScores(measured, oiliness),
+    condition: conditionFromSkinType(skinType) ?? conditionFromScores(measured, oiliness),
     skinAge,
+    oiliness,
+    skinType,
     raw: info,
   }
 }

@@ -1,6 +1,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import {
   analyseWithPerfectCorp,
+  TIER,
   VendorError,
   type SkinAnalysis,
 } from './vendor.ts'
@@ -39,6 +40,37 @@ const json = (body: unknown, status = 200) =>
     status,
     headers: { ...CORS, 'Content-Type': 'application/json' },
   })
+
+/** Local conditions at the time of the scan, as the app reports them. */
+interface Weather {
+  t: number
+  h: number
+  uv: number
+}
+
+/**
+ * Read the weather the app sent alongside the photo.
+ *
+ * Stored with the scan because it is what makes the history readable later: a
+ * hydration score that falls 12 points means one thing in unchanged weather and
+ * something quite different when the humidity fell 30% in the same period.
+ *
+ * It comes from the client, so it is checked rather than trusted — a bad value
+ * is dropped, not saved, and never blocks the analysis.
+ */
+function readWeather(field: FormDataEntryValue | null): Weather | null {
+  if (typeof field !== 'string') return null
+  try {
+    const parsed = JSON.parse(field) as Partial<Weather>
+    const sane = (n: unknown, min: number, max: number) =>
+      typeof n === 'number' && Number.isFinite(n) && n >= min && n <= max
+    // Ranges wide enough for anywhere anyone lives, narrow enough to reject junk.
+    if (!sane(parsed.t, -60, 60) || !sane(parsed.h, 0, 100) || !sane(parsed.uv, 0, 20)) return null
+    return { t: parsed.t as number, h: parsed.h as number, uv: parsed.uv as number }
+  } catch {
+    return null
+  }
+}
 
 /**
  * Identify the caller for quota purposes without storing anything identifying.
@@ -83,8 +115,10 @@ Deno.serve(async (req) => {
   // should not cost the caller one of their daily calls, nor a round trip.
   let image: Uint8Array
   let mimeType = 'image/jpeg'
+  let weather: Weather | null = null
   try {
     const form = await req.formData()
+    weather = readWeather(form.get('weather'))
     const file = form.get('image')
     if (!(file instanceof File)) return json({ error: 'image_required' }, 400)
     if (file.size >= MAX_IMAGE_BYTES) {
@@ -164,12 +198,20 @@ Deno.serve(async (req) => {
 
   // Persist for members only; a guest's trial result is never written down.
   if (userId) {
+    // Everything the analysis produced, not just what today's screen draws —
+    // a scan cannot be retaken retroactively, so anything dropped here is gone.
     const { error } = await admin.from('scans').insert({
       user_id: userId,
       skin_condition: analysis.condition,
       overall: analysis.overall,
       metrics: analysis.metrics,
       skin_age: analysis.skinAge,
+      oiliness: analysis.oiliness,
+      skin_type: analysis.skinType?.whole ?? null,
+      skin_type_t_zone: analysis.skinType?.tZone ?? null,
+      skin_type_u_zone: analysis.skinType?.uZone ?? null,
+      tier: TIER,
+      weather,
     })
     if (error) console.error('could not save scan', error.message)
   }
@@ -179,6 +221,8 @@ Deno.serve(async (req) => {
     metrics: analysis.metrics,
     condition: analysis.condition,
     skinAge: analysis.skinAge,
+    oiliness: analysis.oiliness,
+    skinType: analysis.skinType,
     saved: userId !== null,
   })
 })

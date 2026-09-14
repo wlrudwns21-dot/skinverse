@@ -254,3 +254,37 @@ describe('toScoreInfo', () => {
     expect(() => mapScoreInfo(toScoreInfo([{ type: 'resize_image' }]))).toThrow(UnreadableAnalysis)
   })
 })
+
+describe('readings we keep but do not show as axes', () => {
+  it('keeps the oiliness score rather than only classifying with it', () => {
+    expect(mapScoreInfo(SD_SAMPLE).oiliness).toBe(61)
+    expect(mapScoreInfo(HD_SAMPLE).oiliness).toBe(61)
+  })
+
+  it('keeps each zone label separately', () => {
+    expect(mapScoreInfo(toScoreInfo(JSON_OUTPUT)).skinType).toEqual({
+      whole: 'Combination',
+      tZone: 'Oily',
+      uZone: 'Dry & Redness',
+    })
+  })
+
+  it('accepts a bare string as the whole-face reading', () => {
+    const result = mapScoreInfo({ ...SD_SAMPLE, skin_type: 'Normal' } as ScoreInfo)
+    expect(result.skinType).toEqual({ whole: 'Normal', tZone: null, uZone: null })
+    expect(result.condition).toBe('balanced')
+  })
+
+  it('reports null rather than an empty reading when they send no skin type', () => {
+    expect(mapScoreInfo(SD_SAMPLE).skinType).toBeNull()
+  })
+
+  it('lets the numbers decide when the label is Redness alone', () => {
+    // Redness has no counterpart among our three conditions. The label is still
+    // kept, so the report can say what they actually found.
+    const result = mapScoreInfo({ ...SD_SAMPLE, skin_type: { whole: 'Redness' } } as ScoreInfo)
+    expect(result.skinType?.whole).toBe('Redness')
+    // SD_SAMPLE has moisture 49, so the numbers say dehydrated.
+    expect(result.condition).toBe('dehydrated')
+  })
+})

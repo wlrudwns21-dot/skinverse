@@ -15,8 +15,14 @@ import { describe, expect, it } from 'vitest'
 const read = (relative: string) =>
   readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8')
 
-/** The header comments differ on purpose; everything after them must not. */
-const body = (source: string) => source.split('*/', 2)[1]
+/**
+ * The header comments differ on purpose; everything after them must not.
+ *
+ * Drop exactly the first block comment and keep the entire rest of the file.
+ * Splitting on every comment terminator instead would compare only as far as
+ * the next doc comment, and quietly stop checking the file from there down.
+ */
+const body = (source: string) => source.slice(source.indexOf('*/') + 2)
 
 describe('edge function mapper copy', () => {
   it('is byte-identical to the tested source', () => {

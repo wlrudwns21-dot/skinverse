@@ -2,7 +2,8 @@ import { demoAccount, demoScenario } from '../data/account'
 import type { ShipMethod } from '../data/commerce'
 import { shipping } from '../data/commerce'
 import type { CatalogProduct, StoreSettings } from '../catalog/types'
-import type { Lang, SkinConditionKey } from '../data/types'
+import type { Lang, MetricKey, SkinConditionKey, Weather } from '../data/types'
+import type { SkinTypeReading } from '../analysis/perfectcorp'
 import type { Capability } from '../auth/capabilities'
 import type { ImageCheck } from '../analysis/imageCheck'
 import type { ChipKey } from '../i18n/chips'
@@ -30,10 +31,23 @@ export interface PlacedOrder {
   eta: string
 }
 
+/**
+ * One past analysis, as the reports need it.
+ *
+ * Everything past `createdAt` is nullable because rows written before the
+ * history was widened have none of it — a member who scanned in the first week
+ * still has a valid record, it just cannot carry a per-axis trend.
+ */
 export interface ScanRecord {
   skinCondition: SkinConditionKey
   overall: number
   createdAt: string
+  metrics: Record<MetricKey, number> | null
+  skinAge: number | null
+  oiliness: number | null
+  skinType: SkinTypeReading | null
+  /** The conditions the face was measured in, which is what makes a trend readable. */
+  weather: Weather | null
 }
 
 export interface StoreState {
@@ -93,9 +107,11 @@ export interface StoreState {
    */
   scanIsReal: boolean
   /** Live scan result, when the vendor produced one. */
-  liveMetrics: Record<string, number> | null
+  liveMetrics: Record<MetricKey, number> | null
   liveOverall: number | null
   liveSkinAge: number | null
+  liveOiliness: number | null
+  liveSkinType: SkinTypeReading | null
 }
 
 export const initialState: StoreState = {
@@ -139,6 +155,8 @@ export const initialState: StoreState = {
   liveMetrics: null,
   liveOverall: null,
   liveSkinAge: null,
+  liveOiliness: null,
+  liveSkinType: null,
 }
 
 export interface Totals {

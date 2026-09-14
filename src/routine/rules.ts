@@ -1,4 +1,4 @@
-import type { MetricKey, SkinCondition, Weather } from '../data/types'
+import type { MetricKey, Weather } from '../data/types'
 
 /**
  * The weather-to-routine rules, in one place.
@@ -104,15 +104,32 @@ export interface RoutinePlan {
 const isDryAir = (h: HumidityBand) => h === 'veryDry' || h === 'dry'
 const isHumidAir = (h: HumidityBand) => h === 'humid' || h === 'veryHumid'
 
-export function buildPlan(weather: Weather, condition: SkinCondition, weakest: MetricKey): RoutinePlan {
+/**
+ * Below this hydration score the routine goes richer whatever the weather.
+ *
+ * 60 sits between the "fair" and "good" bands the results screen already draws,
+ * so the routine changing at the same point the bar changes colour is one
+ * threshold the customer can see rather than two they cannot.
+ */
+export const DEHYDRATED_BELOW = 60
+
+/**
+ * @param metrics the scan's per-axis scores — the live ones when a real scan
+ *                produced them, so the routine reflects the face in front of
+ *                the camera rather than a canned profile.
+ */
+export function buildPlan(
+  weather: Weather,
+  metrics: Record<MetricKey, number>,
+  weakest: MetricKey,
+): RoutinePlan {
   const humidity = humidityBand(weather.h)
   const uv = uvBand(weather.uv)
   const temp = tempBand(weather.t)
 
   const cold = temp === 'cold' || temp === 'cool'
   const warm = temp === 'warm' || temp === 'hot'
-  /** A low hydration score pushes the routine richer regardless of the weather. */
-  const dehydrated = condition.m.hydration < 60
+  const dehydrated = metrics.hydration < DEHYDRATED_BELOW
 
   return {
     humidity,

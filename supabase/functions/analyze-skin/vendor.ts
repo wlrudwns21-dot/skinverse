@@ -31,7 +31,7 @@ const API_BASE = 'https://yce-api-01.makeupar.com'
  * the whole list, and it is an environment variable because switching tier is a
  * billing decision, not a code change.
  */
-const TIER = Deno.env.get('PERFECTCORP_TIER')?.toLowerCase() === 'hd' ? 'hd' : 'sd'
+export const TIER = Deno.env.get('PERFECTCORP_TIER')?.toLowerCase() === 'hd' ? 'hd' : 'sd'
 
 /**
  * What we ask them to measure: the six axes this app scores, plus oiliness and

@@ -6,9 +6,9 @@ import { buildPlan, humidityBand, tempBand, uvBand } from './rules'
 const weather = (t: number, h: number, uv: number): Weather => ({ t, h, uv })
 
 /** Balanced skin keeps the weather as the only variable under test. */
-const balanced = conditions.balanced
+const balanced = conditions.balanced.m
 /** hydration 42 — below the 60 threshold that pushes the routine richer. */
-const dehydrated = conditions.dehydrated
+const dehydrated = conditions.dehydrated.m
 
 describe('band boundaries', () => {
   // Each band is checked at its edges, since off-by-one here silently changes
@@ -150,7 +150,7 @@ describe('the plan is a pure function', () => {
     for (const t of [-5, 5, 15, 22, 27, 35]) {
       for (const h of [10, 35, 55, 70, 95]) {
         for (const uv of [0, 4, 7, 9, 13]) {
-          for (const cond of [balanced, dehydrated, conditions.oily]) {
+          for (const cond of [balanced, dehydrated, conditions.oily.m]) {
             const plan = buildPlan(weather(t, h, uv), cond, 'hydration')
             expect(plan.am.cleanse).toBeTruthy()
             expect(plan.am.toner).toBeTruthy()
