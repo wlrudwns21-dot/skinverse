@@ -86,6 +86,11 @@ export interface AuthStrings {
   }
   /** Shown when the analysis failed for a reason that is not the photo's fault. */
   analysisFailed: string
+  scanUnavailable: string
+  photoRequired: string
+  scanFailedTitle: string
+  scanRetry: string
+  scanFailedHelp: string
   skinAge: (age: number) => string
   demoResult: string
   photoNeeded: string
@@ -193,9 +198,14 @@ export const authStrings: Record<Lang, AuthStrings> = {
       flip: '전환', usePicker: '앨범에서 선택',
     },
     analysisFailed: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.',
+    scanUnavailable: '피부 분석 서비스를 일시적으로 이용할 수 없습니다.',
+    photoRequired: '먼저 사진을 촬영하거나 선택해주세요.',
+    scanFailedTitle: '분석에 실패했어요',
+    scanRetry: '다시 시도하기',
+    scanFailedHelp: '밝은 곳에서 얼굴이 가이드 원을 가득 채우도록 정면으로 다시 촬영하면 성공률이 올라갑니다.',
     skinAge: (n) => 'AI 측정 피부 나이 ' + n + '세',
     demoResult: '샘플 결과 · 실제 측정 아님',
-    photoNeeded: '사진을 올리면 실제 AI 분석이 실행됩니다. 없으면 샘플 결과를 보여드려요.',
+    photoNeeded: '사진을 올려야 AI 분석을 시작할 수 있어요.',
     currentLocation: '현재 위치', useMyLocation: '내 위치로 보기', locating: '위치 확인 중…',
     locationDenied: '위치 권한이 거부되었습니다. 브라우저 주소창의 자물쇠 아이콘에서 허용할 수 있어요.',
     locationUnavailable: '위치를 가져올 수 없습니다. 도시를 직접 선택해주세요.',
@@ -286,9 +296,14 @@ export const authStrings: Record<Lang, AuthStrings> = {
       flip: 'Flip', usePicker: 'Choose a photo',
     },
     analysisFailed: 'The analysis failed. Please try again in a moment.',
+    scanUnavailable: 'Skin analysis is temporarily unavailable.',
+    photoRequired: 'Take or choose a photo first.',
+    scanFailedTitle: 'The analysis did not complete',
+    scanRetry: 'Try again',
+    scanFailedHelp: 'Retake it in good light, facing the camera, with your face filling the guide oval — that is what usually fixes it.',
     skinAge: (n) => 'Skin age ' + n,
     demoResult: 'Sample result · not a measurement',
-    photoNeeded: 'Add a photo to run the real AI analysis. Without one we show a sample result.',
+    photoNeeded: 'A photo is needed before the analysis can run.',
     currentLocation: 'Current location', useMyLocation: 'Use my location', locating: 'Finding you…',
     locationDenied: 'Location access was denied. You can allow it from the lock icon in the address bar.',
     locationUnavailable: 'Could not get your location. Please pick a city instead.',
@@ -379,9 +394,14 @@ export const authStrings: Record<Lang, AuthStrings> = {
       flip: '切换', usePicker: '从相册选择',
     },
     analysisFailed: '分析失败，请稍后再试。',
+    scanUnavailable: '肌肤分析服务暂时无法使用。',
+    photoRequired: '请先拍摄或选择照片。',
+    scanFailedTitle: '分析未能完成',
+    scanRetry: '重新尝试',
+    scanFailedHelp: '在光线充足处正对镜头，让面部填满引导圆圈后重新拍摄，通常就能成功。',
     skinAge: (n) => '肌肤年龄 ' + n + ' 岁',
     demoResult: '示例结果 · 非实际检测',
-    photoNeeded: '上传照片即可进行真实AI分析，未上传时显示示例结果。',
+    photoNeeded: '需要先上传照片才能开始分析。',
     currentLocation: '当前位置', useMyLocation: '使用我的位置', locating: '正在定位…',
     locationDenied: '位置权限被拒绝。可在地址栏的锁形图标中允许。',
     locationUnavailable: '无法获取位置，请手动选择城市。',
@@ -472,9 +492,14 @@ export const authStrings: Record<Lang, AuthStrings> = {
       flip: 'สลับ', usePicker: 'เลือกจากคลังภาพ',
     },
     analysisFailed: 'การวิเคราะห์ล้มเหลว กรุณาลองใหม่อีกครั้ง',
+    scanUnavailable: 'ขณะนี้ไม่สามารถใช้บริการวิเคราะห์ผิวได้ชั่วคราว',
+    photoRequired: 'กรุณาถ่ายหรือเลือกรูปก่อน',
+    scanFailedTitle: 'การวิเคราะห์ไม่สำเร็จ',
+    scanRetry: 'ลองใหม่',
+    scanFailedHelp: 'ถ่ายใหม่ในที่สว่าง หันหน้าเข้ากล้อง ให้ใบหน้าเต็มวงรีนำทาง มักจะแก้ปัญหาได้',
     skinAge: (n) => 'อายุผิว ' + n + ' ปี',
     demoResult: 'ผลตัวอย่าง · ไม่ใช่การวัดจริง',
-    photoNeeded: 'เพิ่มรูปเพื่อวิเคราะห์ด้วย AI จริง หากไม่มีเราจะแสดงผลตัวอย่าง',
+    photoNeeded: 'ต้องมีรูปก่อนจึงจะเริ่มวิเคราะห์ได้',
     currentLocation: 'ตำแหน่งปัจจุบัน', useMyLocation: 'ใช้ตำแหน่งของฉัน', locating: 'กำลังหาตำแหน่ง…',
     locationDenied: 'การเข้าถึงตำแหน่งถูกปฏิเสธ อนุญาตได้จากไอคอนกุญแจในแถบที่อยู่',
     locationUnavailable: 'ไม่สามารถระบุตำแหน่งได้ กรุณาเลือกเมืองแทน',

@@ -252,7 +252,6 @@ function useStoreValue() {
         country: profile.country,
         lang: profile.language,
         city: profile.city,
-        skinCondition: profile.skin_condition,
         notif: profile.routine_reminders,
         cart: snap.cart,
         done,
@@ -261,6 +260,21 @@ function useStoreValue() {
         savedRoutineCount: snap.savedRoutineCount,
         scanned: !!snap.latestScan,
         scanStep: snap.latestScan ? 'results' : 'intro',
+
+        // Put the member's last real measurement back on screen.
+        //
+        // Without this the scores were saved and then never read: coming back
+        // to the app showed the canned profile for their condition, labelled
+        // "sample result", as though the analysis they paid for had been
+        // thrown away. The overlays are not restored — those are short-lived
+        // vendor URLs that expire, and are not ours to keep.
+        skinCondition: snap.latestScan?.skinCondition ?? profile.skin_condition,
+        scanIsReal: !!snap.latestScan?.metrics,
+        liveMetrics: snap.latestScan?.metrics ?? null,
+        liveOverall: snap.latestScan?.overall ?? null,
+        liveSkinAge: snap.latestScan?.skinAge ?? null,
+        liveOiliness: snap.latestScan?.oiliness ?? null,
+        liveSkinType: snap.latestScan?.skinType ?? null,
         order: snap.latestOrder
           ? {
               no: snap.latestOrder.order_no,
@@ -359,31 +373,24 @@ function useStoreValue() {
     })()
   }, [])
 
-  /** Land on the results screen with a canned profile, clearly marked as such. */
-  const finishWithDemo = useCallback(() => {
-    const cond = conditions[stateRef.current.skinCondition]
+  /**
+   * Stop on a failure screen instead of quietly showing the canned profile.
+   *
+   * The old behaviour turned every failure into a plausible-looking result with
+   * a small "sample" badge, which is the worst of both: the customer believes
+   * they were analysed, and the one time they read the badge they stop trusting
+   * the scores that were real.
+   */
+  const finishWithFailure = useCallback((message: string) => {
     setState((cur) => ({
       ...cur,
       progress: 100,
-      scanStep: 'results',
-      scanned: true,
+      scanStep: 'failed',
+      scanError: message,
+      scanned: false,
       scanIsReal: false,
-      liveMetrics: null,
-      liveOverall: null,
-      liveSkinAge: null,
-      liveOiliness: null,
-      liveSkinType: null,
     }))
-
-    // A demo score is not a measurement, so it does not go in the member's
-    // history — that record is meant to show how their skin actually changed.
-    if (!isMember) {
-      markGuestScanUsed()
-      setState((cur) => ({ ...cur, guestScanUsed: true }))
-      toastMsg(a.guestScanNotice)
-    }
-    return cond
-  }, [isMember, toastMsg, a])
+  }, [])
 
   const startScan = useCallback(() => {
     const s = stateRef.current
@@ -394,9 +401,17 @@ function useStoreValue() {
       return
     }
 
-    // A photo the vendor would reject must not start a scan: the call is billed
-    // whether it succeeds or not, and the customer would wait out the whole
-    // progress bar to be told something we already knew.
+    // No photo, no scan. This used to run the progress bar and land on the
+    // canned profile, which is how someone ends up believing the app measured
+    // a face it never saw.
+    if (!s.photo) {
+      toastMsg(a.photoRequired)
+      return
+    }
+
+    // A photo the vendor would reject must not start a scan: the customer
+    // would wait out the whole progress bar to be told something we already
+    // knew, and a guest would spend their one daily try on it.
     const problem = s.photoCheck?.problem
     if (problem) {
       toastMsg(a.photoError[problem])
@@ -484,14 +499,14 @@ function useStoreValue() {
           return
         }
 
-        if (outcome?.kind === 'failed') toastMsg(a.analysisFailed)
-
-        // No photo, vendor not wired up, or the call failed: show the demo
-        // profile rather than a dead end, labelled so nobody mistakes it.
-        finishWithDemo()
+        // Everything left is a failure. Say so and offer another go — never a
+        // score that was not measured.
+        finishWithFailure(
+          outcome?.kind === 'notConfigured' ? a.scanUnavailable : a.analysisFailed,
+        )
       })()
     }, SCAN_TICK_MS)
-  }, [isMember, openGate, toastMsg, a, finishWithDemo])
+  }, [isMember, openGate, toastMsg, a, finishWithFailure])
 
   // ── missions and rewards ──────────────────────────────────────────────────
 
@@ -975,6 +990,16 @@ function useStoreValue() {
 
     startScan,
     progress: state.progress,
+    scanError: state.scanError,
+    /** Back to the camera with the failed photo cleared, ready for another go. */
+    retryScan: () => setState((cur) => ({
+      ...cur,
+      scanStep: 'intro',
+      progress: 0,
+      scanError: '',
+      photo: null,
+      photoCheck: null,
+    })),
     scanStatus:
       state.progress < 30 ? t.s1 : state.progress < 60 ? t.s2 : state.progress < 90 ? t.s3 : t.s4,
     guestScanUsed: state.guestScanUsed,

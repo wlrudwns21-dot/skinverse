@@ -1,12 +1,20 @@
 import {
   mapScoreInfo,
+  readVisuals,
   toScoreInfo,
   UnreadableAnalysis,
+  type AnalysisVisuals,
   type OutputEntry,
   type SkinAnalysis,
 } from './mapper.ts'
 
-export type { SkinAnalysis }
+export type { AnalysisVisuals, SkinAnalysis }
+
+/** What one analysis produces: the scores, and the pictures that explain them. */
+export interface AnalysisResult {
+  analysis: SkinAnalysis
+  visuals: AnalysisVisuals
+}
 
 /**
  * The Perfect Corp (YouCam) adapter.
@@ -17,10 +25,11 @@ export type { SkinAnalysis }
  * the file, PUT the bytes to the URL they hand back, start a task, then poll it.
  * All four are implemented below, against their published OpenAPI description.
  *
- * We ask for `format: "json"` rather than the default ZIP. The archive's bulk is
- * one PNG detection mask per concern, drawn over the customer's own photo — this
- * product shows scores, not overlays, so downloading and unzipping megabytes of
- * images to reach one small JSON file would be work done to throw away.
+ * We ask for `format: "json"` rather than the default ZIP. Both carry the same
+ * thing — the scores and one detection mask per concern — but the archive makes
+ * us download every mask up front and unzip it server-side to reach the JSON.
+ * The JSON form hands back signed URLs instead, so the masks reach the screen
+ * directly and only the ones the customer actually looks at are ever fetched.
  */
 
 const API_BASE = 'https://yce-api-01.makeupar.com'
@@ -34,24 +43,39 @@ const API_BASE = 'https://yce-api-01.makeupar.com'
 export const TIER = Deno.env.get('PERFECTCORP_TIER')?.toLowerCase() === 'hd' ? 'hd' : 'sd'
 
 /**
- * What we ask them to measure: the six axes this app scores, plus oiliness and
- * skin type, which classify the skin without appearing as axes themselves.
+ * Everything they measure, not just the six the summary draws.
  *
- * Eight concerns sits in their 5–8 band — 12 units on SD, 16 on HD. Seven would
- * cost exactly the same, which makes `skin_type` free: their own explicit
- * classification is better than anything we could infer from the numbers.
+ * Their pricing is banded, not per concern: 1–4 costs 9 units on SD, 13–16
+ * costs 16. Asking for eight and asking for all sixteen differ by four units —
+ * a third more — and double what the customer gets to see. Dark circles, eye
+ * bags, texture, acne and radiance are all measured by the same pass over the
+ * same photo; leaving them unrequested saves almost nothing and shows the
+ * customer a report that looks thin next to what the engine actually did.
+ *
+ * The pairs are spelled out rather than prefixed: their HD name for dark
+ * circles is `hd_dark_circle`, not `hd_dark_circle_v2`, so deriving one list
+ * from the other by string surgery produces a concern that does not exist and
+ * fails the whole request with InvalidParameters.
  */
-const SD_ACTIONS = [
-  'moisture',
-  'firmness',
-  'pore',
-  'age_spot',
-  'wrinkle',
-  'redness',
-  'oiliness',
-  'skin_type',
+const CONCERNS: { sd: string; hd: string }[] = [
+  { sd: 'moisture', hd: 'hd_moisture' },
+  { sd: 'oiliness', hd: 'hd_oiliness' },
+  { sd: 'firmness', hd: 'hd_firmness' },
+  { sd: 'pore', hd: 'hd_pore' },
+  { sd: 'wrinkle', hd: 'hd_wrinkle' },
+  { sd: 'age_spot', hd: 'hd_age_spot' },
+  { sd: 'redness', hd: 'hd_redness' },
+  { sd: 'texture', hd: 'hd_texture' },
+  { sd: 'acne', hd: 'hd_acne' },
+  { sd: 'radiance', hd: 'hd_radiance' },
+  { sd: 'dark_circle_v2', hd: 'hd_dark_circle' },
+  { sd: 'eye_bag', hd: 'hd_eye_bag' },
+  { sd: 'tear_trough', hd: 'hd_tear_trough' },
+  { sd: 'droopy_upper_eyelid', hd: 'hd_droopy_upper_eyelid' },
+  { sd: 'droopy_lower_eyelid', hd: 'hd_droopy_lower_eyelid' },
+  { sd: 'skin_type', hd: 'hd_skin_type' },
 ]
-const ACTIONS = TIER === 'hd' ? SD_ACTIONS.map((action) => `hd_${action}`) : SD_ACTIONS
+const ACTIONS = CONCERNS.map((c) => (TIER === 'hd' ? c.hd : c.sd))
 
 /**
  * How long to wait for the engine.
@@ -267,7 +291,7 @@ interface TaskStatus {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /** Wait for the engine, then read what it produced. */
-async function awaitResult(taskId: string, apiKey: string): Promise<SkinAnalysis> {
+async function awaitResult(taskId: string, apiKey: string): Promise<AnalysisResult> {
   const deadline = Date.now() + POLL_BUDGET_MS
 
   for (let attempt = 0; ; attempt++) {
@@ -304,7 +328,10 @@ async function awaitResult(taskId: string, apiKey: string): Promise<SkinAnalysis
         )
       }
       try {
-        return mapScoreInfo(toScoreInfo(output))
+        // The scores and the overlays come out of the same payload: one folds
+        // it down to the six summary axes, the other keeps every reading and
+        // the mask that illustrates it.
+        return { analysis: mapScoreInfo(toScoreInfo(output)), visuals: readVisuals(output) }
       } catch (err) {
         if (err instanceof UnreadableAnalysis) {
           // Scores we cannot recognise must not become a fabricated neutral
@@ -334,7 +361,7 @@ export async function analyseWithPerfectCorp(
   image: Uint8Array,
   mimeType: string,
   apiKey: string,
-): Promise<SkinAnalysis> {
+): Promise<AnalysisResult> {
   const fileId = await upload(image, mimeType, apiKey)
 
   const task = await call<{ task_id?: string }>('/s2s/v2.1/task/skin-analysis', apiKey, {

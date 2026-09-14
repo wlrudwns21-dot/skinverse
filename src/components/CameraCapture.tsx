@@ -54,8 +54,23 @@ const CONSTRAINTS = (facing: 'user' | 'environment'): MediaStreamConstraints => 
  */
 const COUNTDOWN_FROM = 3
 
-/** The guide oval, as a share of the frame width. */
-const GUIDE_WIDTH_PCT = 68
+/**
+ * The guide oval, as a share of the frame width.
+ *
+ * Sized against their actual rule, which is about the *face*, not the head:
+ * face width must exceed 60% of the image width. An oval that merely contains
+ * someone's head leaves hair and chin margin inside it, so a face filling a 68%
+ * oval measures well under 60% and gets rejected — which is exactly what
+ * happened on the first live attempt (`error_src_face_too_small`).
+ *
+ * At 80% the cheek-to-cheek width of a face that fills the oval lands around
+ * 70%, comfortably inside their 60–80% recommendation.
+ */
+const GUIDE_WIDTH_PCT = 80
+
+/** Vertical extent of the guide, as a share of the frame height. */
+const GUIDE_TOP_PCT = 10
+const GUIDE_HEIGHT_PCT = 62
 
 type Problem = 'denied' | 'missing' | 'failed'
 
@@ -142,16 +157,36 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
     const video = videoRef.current
     if (!video || !video.videoWidth) return
 
+    /**
+     * Capture exactly what the preview showed, not the whole sensor frame.
+     *
+     * The preview fills its box with `object-fit: cover`, which crops the sides
+     * off a portrait frame. Grabbing the full frame instead meant the saved
+     * photo was wider than what the customer had been aiming with — their face
+     * sat inside the guide oval on screen and then measured far smaller in the
+     * file, which is a rejection for a framing error they never made.
+     *
+     * Cropping to the visible region fixes the mismatch and helps twice over:
+     * throwing away the margins the customer could not see raises the face's
+     * share of the image, which is the number the vendor actually checks.
+     */
+    const box = video.getBoundingClientRect()
+    const scale = Math.max(box.width / video.videoWidth, box.height / video.videoHeight)
+    const sw = Math.min(video.videoWidth, Math.round(box.width / scale))
+    const sh = Math.min(video.videoHeight, Math.round(box.height / scale))
+    const sx = Math.round((video.videoWidth - sw) / 2)
+    const sy = Math.round((video.videoHeight - sh) / 2)
+
     const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
+    canvas.width = sw
+    canvas.height = sh
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
     // Drawn unmirrored on purpose. The preview is mirrored because that is how
     // people expect to see themselves, but the analysis reports per-region
     // scores — a flipped image would swap the customer's cheeks.
-    ctx.drawImage(video, 0, 0)
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh)
 
     canvas.toBlob(
       (blob) => {
@@ -226,14 +261,25 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
             <div
               style={s(
                 `position:absolute;inset:0;background:rgba(18,16,13,0.55);` +
-                  `-webkit-mask:radial-gradient(ellipse ${GUIDE_WIDTH_PCT / 2}% 32% at 50% 44%,transparent 98%,#000 100%);` +
-                  `mask:radial-gradient(ellipse ${GUIDE_WIDTH_PCT / 2}% 32% at 50% 44%,transparent 98%,#000 100%)`,
+                  `-webkit-mask:radial-gradient(ellipse ${GUIDE_WIDTH_PCT / 2}% ${GUIDE_HEIGHT_PCT / 2}% at 50% ${GUIDE_TOP_PCT + GUIDE_HEIGHT_PCT / 2}%,transparent 98%,#000 100%);` +
+                  `mask:radial-gradient(ellipse ${GUIDE_WIDTH_PCT / 2}% ${GUIDE_HEIGHT_PCT / 2}% at 50% ${GUIDE_TOP_PCT + GUIDE_HEIGHT_PCT / 2}%,transparent 98%,#000 100%)`,
               )}
             />
             <div
               style={s(
                 `position:absolute;left:${(100 - GUIDE_WIDTH_PCT) / 2}%;width:${GUIDE_WIDTH_PCT}%;` +
-                  'top:12%;height:64%;border:2px dashed rgba(245,240,230,0.75);border-radius:50%;pointer-events:none',
+                  `top:${GUIDE_TOP_PCT}%;height:${GUIDE_HEIGHT_PCT}%;` +
+                  'border:2px dashed rgba(245,240,230,0.85);border-radius:50%;pointer-events:none',
+              )}
+            />
+            {/* The rule is about face width, so mark the width the face has to
+                reach. An oval alone reads as "get your head in here", which is
+                how a face ends up too small for their check. */}
+            <div
+              style={s(
+                `position:absolute;left:${(100 - GUIDE_WIDTH_PCT) / 2}%;width:${GUIDE_WIDTH_PCT}%;` +
+                  `top:${GUIDE_TOP_PCT + GUIDE_HEIGHT_PCT * 0.62}%;height:0;` +
+                  'border-top:1.5px solid rgba(245,240,230,0.5);pointer-events:none',
               )}
             />
 

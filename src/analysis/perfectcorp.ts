@@ -98,6 +98,76 @@ export interface OutputEntry {
   score?: number
   /** Used by `skin_type` / `hd_skin_type`, which report a label. */
   skin_type?: string
+  /** Overlay images for this reading; `resize_image` carries the source photo. */
+  mask_urls?: string[]
+}
+
+/**
+ * Everything they measured, in their own vocabulary.
+ *
+ * `mapScoreInfo` folds their readings down to the six axes the summary draws.
+ * This keeps the rest: every concern they scored, per region, with the overlay
+ * masks that go with it. Requesting a concern and then throwing away two thirds
+ * of what comes back is paying for measurements nobody sees.
+ */
+export interface ConcernReading {
+  /** Their key, e.g. `pore` or `hd_wrinkle`. */
+  key: string
+  /** `whole` unless the concern reports per region. */
+  region: string
+  score: number
+  /**
+   * Overlay images for this concern, aligned to `AnalysisVisuals.photo`.
+   *
+   * Transparent PNGs meant to be composited over the source. They are
+   * short-lived signed URLs of the customer's own face, so they are handed
+   * straight to the screen and never written down.
+   */
+  masks: string[]
+}
+
+export interface AnalysisVisuals {
+  /**
+   * The resized source photo the masks line up with.
+   *
+   * Using their resized copy rather than the original is what guarantees the
+   * overlays land in the right place: they downscale anything over 2560px, and
+   * the masks are drawn against that copy, not the file we uploaded.
+   */
+  photo: string | null
+  concerns: ConcernReading[]
+}
+
+/** A skin-type label rather than a score — those are read separately. */
+const isLabelEntry = (entry: OutputEntry) => typeof entry.skin_type === 'string'
+
+/** Pull out every reading and its overlays, for the detailed view. */
+export function readVisuals(output: OutputEntry[]): AnalysisVisuals {
+  let photo: string | null = null
+  const concerns: ConcernReading[] = []
+
+  for (const entry of output) {
+    if (!entry.type) continue
+
+    if (entry.type === 'resize_image') {
+      photo = entry.mask_urls?.[0] ?? null
+      continue
+    }
+    // `all` and `skin_age` are summaries, not concerns; skin types are labels.
+    if (entry.type === 'all' || entry.type === 'skin_age' || isLabelEntry(entry)) continue
+
+    const raw = SCORE_SOURCE === 'ui' ? entry.ui_score : entry.raw_score
+    if (typeof raw !== 'number' || !Number.isFinite(raw)) continue
+
+    concerns.push({
+      key: entry.type,
+      region: entry.region ?? 'whole',
+      score: clamp(raw),
+      masks: entry.mask_urls ?? [],
+    })
+  }
+
+  return { photo, concerns }
 }
 
 /**

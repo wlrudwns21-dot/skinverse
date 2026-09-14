@@ -21,7 +21,14 @@ export type Screen =
   | 'auth'
   | 'support'
 
-export type ScanStep = 'intro' | 'scanning' | 'results'
+/**
+ * `failed` is a real destination, not a detour to the demo.
+ *
+ * An analysis that did not happen must not be dressed up as one that did:
+ * showing a canned profile after a failure teaches the customer to distrust
+ * every score the app has ever shown them.
+ */
+export type ScanStep = 'intro' | 'scanning' | 'results' | 'failed'
 export type AuthMode = 'signup' | 'login'
 
 export interface PlacedOrder {
@@ -93,6 +100,8 @@ export interface StoreState {
   /** True once a guest has spent today's single trial scan. */
   guestScanUsed: boolean
 
+  /** Why the last scan failed, ready to show. Empty when none has. */
+  scanError: string
   /** The selfie the visitor picked, held only until the analysis is sent. */
   photo: File | null
   /**
@@ -149,6 +158,7 @@ export const initialState: StoreState = {
 
   gate: null,
   guestScanUsed: false,
+  scanError: '',
   photo: null,
   photoCheck: null,
   scanIsReal: false,

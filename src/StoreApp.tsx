@@ -15,7 +15,7 @@ import { MyPage } from './screens/MyPage'
 import { Routine } from './screens/Routine'
 import { Support } from './screens/Support'
 import { ProductDetail, Shop } from './screens/Shop'
-import { ScanIntro, Scanning, ScanResults } from './screens/Scan'
+import { ScanFailed, ScanIntro, Scanning, ScanResults } from './screens/Scan'
 import { StoreProvider, useStore } from './store/StoreContext'
 
 function CurrentScreen() {
@@ -29,6 +29,7 @@ function CurrentScreen() {
     case 'scan':
       if (state.scanStep === 'intro') return <ScanIntro />
       if (state.scanStep === 'scanning') return <Scanning />
+      if (state.scanStep === 'failed') return <ScanFailed />
       return <ScanResults />
     case 'shop':
       return <Shop />

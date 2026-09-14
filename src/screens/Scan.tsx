@@ -88,10 +88,6 @@ export function ScanIntro() {
         ))}
       </div>
 
-      <div style={s('font-size:12px;color:#8A7D6C;line-height:1.5;margin-top:12px;text-align:center')}>
-        {st.a.photoNeeded}
-      </div>
-
       {/* Guests may try the analysis once a day; the notice sets that
           expectation before they spend it rather than after. */}
       {!st.isMember && (
@@ -111,7 +107,6 @@ export function ScanIntro() {
       >
         {st.t.beginScan}
       </div>
-      <div style={s('text-align:center;font-size:11px;color:#A2957F;margin-top:10px')}>{st.t.demoNote}</div>
     </div>
   )
 }
@@ -128,6 +123,42 @@ export function Scanning() {
       <div style={s('margin-top:26px;width:56px;height:56px;border-radius:50%;border:3px solid #E4DCCB;border-top-color:#2E6B58;animation:spin 1s linear infinite')} />
       <div style={s('font-family:Marcellus,serif;font-size:26px;margin-top:18px')}>{st.progress}%</div>
       <div style={s('font-size:13px;color:#6E6252;margin-top:6px;animation:pulse 1.6s ease infinite')}>{st.scanStatus}</div>
+    </div>
+  )
+}
+
+/**
+ * Where a failed analysis lands.
+ *
+ * Deliberately a dead end with one way out. The alternative — dropping the
+ * customer on a canned profile with a small "sample" badge — reads as a result,
+ * and a result they cannot tell apart from a real one is worse than no result.
+ */
+export function ScanFailed() {
+  const st = useStore()
+
+  return (
+    <div style={s('padding:40px 24px;animation:rise .4s ease both;display:flex;flex-direction:column;align-items:center;text-align:center')}>
+      <div style={s('width:64px;height:64px;border-radius:50%;background:#FBECEC;border:1px solid #E9C9C9;display:flex;align-items:center;justify-content:center;font-size:26px')}>
+        !
+      </div>
+      <div style={s('font-family:Marcellus,serif;font-size:22px;margin-top:18px')}>
+        {st.a.scanFailedTitle}
+      </div>
+      <div style={s('font-size:13px;color:#8A7D6C;margin-top:8px;line-height:1.6;max-width:300px')}>
+        {st.scanError || st.a.analysisFailed}
+      </div>
+
+      <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;margin-top:22px;font-size:12.5px;color:#6E6252;line-height:1.6;text-align:left')}>
+        {st.a.scanFailedHelp}
+      </div>
+
+      <div
+        onClick={st.retryScan}
+        style={s('cursor:pointer;margin-top:22px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px 30px;font-size:14px;font-weight:700')}
+      >
+        {st.a.scanRetry}
+      </div>
     </div>
   )
 }

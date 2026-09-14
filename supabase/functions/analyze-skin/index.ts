@@ -3,7 +3,7 @@ import {
   analyseWithPerfectCorp,
   TIER,
   VendorError,
-  type SkinAnalysis,
+  type AnalysisResult,
 } from './vendor.ts'
 
 /**
@@ -219,11 +219,15 @@ Deno.serve(async (req) => {
     )
   }
 
-  let analysis: SkinAnalysis
+  let result: AnalysisResult
   try {
     await trace('calling-vendor', { tier: TIER, bytes: image.byteLength })
-    analysis = await analyseWithPerfectCorp(image, mimeType, apiKey)
-    await trace('vendor-ok', { overall: analysis.overall })
+    result = await analyseWithPerfectCorp(image, mimeType, apiKey)
+    await trace('vendor-ok', {
+      overall: result.analysis.overall,
+      concerns: result.visuals.concerns.length,
+      hasPhoto: !!result.visuals.photo,
+    })
   } catch (err) {
     if (err instanceof VendorError) {
       console.error('vendor failed:', err.message)
@@ -239,6 +243,8 @@ Deno.serve(async (req) => {
     // We do not know whether that cost anything, so the slot stays spent.
     return json({ error: 'analysis_failed', message: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.' }, 500)
   }
+
+  const analysis = result.analysis
 
   // Persist for members only; a guest's trial result is never written down.
   if (userId) {
@@ -267,6 +273,11 @@ Deno.serve(async (req) => {
     skinAge: analysis.skinAge,
     oiliness: analysis.oiliness,
     skinType: analysis.skinType,
+    // Every concern they measured, and the overlays that illustrate them.
+    // Passed straight through to the screen and deliberately not stored: these
+    // are short-lived signed URLs of the customer's face, and keeping a copy of
+    // someone's face is exactly what this function promises not to do.
+    visuals: result.visuals,
     saved: userId !== null,
   })
 })
