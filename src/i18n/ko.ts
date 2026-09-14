@@ -1,7 +1,7 @@
 import type { Strings } from './types'
 
 export const ko: Strings = {
-  myPage: '마이페이지', bag: '가방', match: '매치',
+  myPage: 'MY', bag: '가방', match: '매치',
   kicker: 'AI 피부 분석', heroT: '40초 만에 읽어내는 당신의 피부.',
   heroSub: '6개 항목 진단, 맞춤 K-뷰티 루틴, 서울에서 전 세계 배송.',
   startBtn: '분석 시작', todayIn: '오늘의 날씨 ·', skinScore: '피부 점수', skinScoreU: '피부 점수',

@@ -1,7 +1,7 @@
 import type { Strings } from './types'
 
 export const zh: Strings = {
-  myPage: '我的', bag: '购物袋', match: '匹配',
+  myPage: 'MY', bag: '购物袋', match: '匹配',
   kicker: 'AI 肌肤分析', heroT: '40秒读懂你的肌肤。',
   heroSub: '6项诊断，专属K-beauty护肤方案，首尔直邮全球。',
   startBtn: '开始分析', todayIn: '今日天气 ·', skinScore: '肌肤评分', skinScoreU: '肌肤评分',

@@ -1,7 +1,7 @@
 import type { Strings } from './types'
 
 export const en: Strings = {
-  myPage: 'My Page', bag: 'Bag', match: 'match',
+  myPage: 'MY', bag: 'Bag', match: 'match',
   kicker: 'AI SKIN ANALYSIS', heroT: 'Your skin, decoded in 40 seconds.',
   heroSub: '6-point diagnosis, matched K-beauty routine, shipped worldwide from Seoul.',
   startBtn: 'Start Analysis', todayIn: 'Today in', skinScore: 'Skin Score', skinScoreU: 'SKIN SCORE',

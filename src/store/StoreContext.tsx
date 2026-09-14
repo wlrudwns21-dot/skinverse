@@ -19,7 +19,7 @@ import { fetchWeather } from '../weather/remote'
 import { useGeolocation } from '../weather/useGeolocation'
 import { useCatalog } from '../catalog/CatalogContext'
 import type { CatalogMission, CatalogProduct, CatalogReward } from '../catalog/types'
-import { can, guestScanUsedToday, markGuestScanUsed, type Capability } from '../auth/capabilities'
+import { can, type Capability } from '../auth/capabilities'
 import { useAuth } from '../auth/AuthContext'
 import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
 import { authT } from '../i18n/auth'
@@ -133,7 +133,6 @@ function useStoreValue() {
       lang: prefs.lang ?? initialState.lang,
       city: prefs.city ?? initialState.city,
       cart: readLocal<Record<string, number>>(LOCAL_KEYS.cart, {}),
-      guestScanUsed: guestScanUsedToday(),
     }
   })
 
@@ -214,7 +213,6 @@ function useStoreValue() {
           name: '',
           addr: '',
           cart: readLocal<Record<string, number>>(LOCAL_KEYS.cart, {}),
-          guestScanUsed: guestScanUsedToday(),
           screen: 'home',
         }))
       }
@@ -396,9 +394,11 @@ function useStoreValue() {
   const startScan = useCallback(() => {
     const s = stateRef.current
 
-    // Guests get one trial a day; the second attempt sells the signup instead.
-    if (!isMember && s.guestScanUsed) {
-      openGate('saveScan')
+    // Members only. Every analysis is a billed call whose value is the record
+    // it leaves, so a guest is sent to sign up rather than handed a number they
+    // cannot keep.
+    if (!isMember) {
+      openGate('scan')
       return
     }
 
@@ -442,8 +442,8 @@ function useStoreValue() {
         const outcome = pending ? await pending : null
 
         if (outcome?.kind === 'quota') {
-          setState((cur) => ({ ...cur, scanStep: 'intro', progress: 0, guestScanUsed: !isMember }))
-          toastMsg(outcome.message || a.guestScanUsed)
+          setState((cur) => ({ ...cur, scanStep: 'intro', progress: 0 }))
+          toastMsg(outcome.message || a.dailyLimitReached)
           return
         }
 
@@ -480,10 +480,6 @@ function useStoreValue() {
                 ]
               : cur.history,
           }))
-          if (!isMember) {
-            markGuestScanUsed()
-            setState((cur) => ({ ...cur, guestScanUsed: true }))
-          }
           return
         }
 
@@ -1012,7 +1008,6 @@ function useStoreValue() {
     })),
     scanStatus:
       state.progress < 30 ? t.s1 : state.progress < 60 ? t.s2 : state.progress < 90 ? t.s3 : t.s4,
-    guestScanUsed: state.guestScanUsed,
     overall: overallScore,
     scanIsReal: state.scanIsReal,
     skinAge: state.liveSkinAge,

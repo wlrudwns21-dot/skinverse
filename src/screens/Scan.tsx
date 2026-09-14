@@ -90,25 +90,40 @@ export function ScanIntro() {
         ))}
       </div>
 
-      {/* Guests may try the analysis once a day; the notice sets that
-          expectation before they spend it rather than after. */}
-      {!st.isMember && (
-        <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:12px 14px;margin-top:14px;font-size:12.5px;color:#9A8455;line-height:1.5')}>
-          {st.guestScanUsed ? st.a.guestScanUsed : st.a.guestScanNotice}
+      {/* A guest is told before they frame a photo, not after. The pitch is
+          what the account gives them — a saved record and a trend — rather than
+          a refusal. */}
+      {!st.isMember ? (
+        <>
+          <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 15px;margin-top:14px;font-size:12.5px;color:#9A8455;line-height:1.55')}>
+            {st.a.scanMemberOnly}
+          </div>
+          <div
+            onClick={() => st.goAuth('signup')}
+            style={s('cursor:pointer;margin-top:14px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700')}
+          >
+            {st.a.scanMemberOnlyCta}
+          </div>
+          <div
+            onClick={() => st.goAuth('login')}
+            style={s('cursor:pointer;text-align:center;font-size:12px;color:#8A7D6C;margin-top:12px;text-decoration:underline')}
+          >
+            {st.a.hasAccount} {st.a.logIn}
+          </div>
+        </>
+      ) : (
+        <div
+          onClick={st.startScan}
+          style={s(
+            'cursor:pointer;margin-top:18px;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700' +
+              (st.photoCheck?.problem
+                ? ';background:#CFC7B8;color:#FFFFFF'
+                : ';background:#221C15;color:#F5F0E6'),
+          )}
+        >
+          {st.t.beginScan}
         </div>
       )}
-
-      <div
-        onClick={st.startScan}
-        style={s(
-          'cursor:pointer;margin-top:18px;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700' +
-            (st.photoCheck?.problem
-              ? ';background:#CFC7B8;color:#FFFFFF'
-              : ';background:#221C15;color:#F5F0E6'),
-        )}
-      >
-        {st.t.beginScan}
-      </div>
     </div>
   )
 }

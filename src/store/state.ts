@@ -97,8 +97,6 @@ export interface StoreState {
 
   /** Which member-only capability the guest just bumped into, if any. */
   gate: Capability | null
-  /** True once a guest has spent today's single trial scan. */
-  guestScanUsed: boolean
 
   /** Why the last scan failed, ready to show. Empty when none has. */
   scanError: string
@@ -164,7 +162,6 @@ export const initialState: StoreState = {
   notif: true,
 
   gate: null,
-  guestScanUsed: false,
   scanError: '',
   photo: null,
   photoCheck: null,

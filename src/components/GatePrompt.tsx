@@ -16,9 +16,11 @@ function copy(capability: Capability, a: AuthStrings): { title: string; body: st
       return { title: a.gateTitle, body: a.gateRedeem }
     case 'myPage':
       return { title: a.gateTitle, body: a.gateMyPage }
-    // Raised when a guest asks for a second scan in one day.
+    // The analysis itself. This is the main door a guest reaches, so it sells
+    // the account rather than simply refusing.
+    case 'scan':
     case 'saveScan':
-      return { title: a.gateScanLimit, body: a.gateScanLimitSub }
+      return { title: a.gateScanTitle, body: a.gateScanBody }
     default:
       return { title: a.gateTitle, body: a.gateSaveScan }
   }

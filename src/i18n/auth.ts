@@ -54,13 +54,20 @@ export interface AuthStrings {
   gateSaveScan: string
   gateScanLimit: string
   gateScanLimitSub: string
+  gateScanTitle: string
+  gateScanBody: string
+  /** The signup pitch on the scan screen itself, before they press anything. */
+  scanMemberOnly: string
+  scanMemberOnlyCta: string
   gateCta: string
   gateLater: string
 
-  // guest mode
-  guestBadge: string
-  guestScanNotice: string
-  guestScanUsed: string
+  /**
+   * The member's own daily analysis allowance is spent. Not a guest-trial
+   * message: guests cannot scan at all, so the only person who sees this is a
+   * member who has already had their scans today.
+   */
+  dailyLimitReached: string
 
   // analysis
   /** Why a photo was refused before it cost a call, or by the vendor after. */
@@ -162,11 +169,13 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateSaveScan: '분석 기록을 저장하려면 회원가입이 필요합니다.',
     gateScanLimit: '오늘의 체험 분석을 모두 사용했어요',
     gateScanLimitSub: '회원가입하면 횟수 제한 없이 분석하고, 피부 변화를 기록으로 남길 수 있습니다.',
+    gateScanTitle: 'AI 피부 분석은 회원 전용이에요',
+    gateScanBody: '가입하면 분석 결과가 계정에 저장되고, 다음 분석과 비교해 피부가 어떻게 달라졌는지 추적해드립니다. 이메일만 있으면 30초면 끝나요.',
+    scanMemberOnly: 'AI 분석은 회원 전용입니다. 가입하면 결과가 저장되고 변화 추이를 볼 수 있어요.',
+    scanMemberOnlyCta: '30초 만에 가입하고 분석받기',
     gateCta: '회원가입하기', gateLater: '나중에',
 
-    guestBadge: '둘러보기',
-    guestScanNotice: '비회원은 하루 1회 체험할 수 있어요. 결과는 저장되지 않습니다.',
-    guestScanUsed: '오늘 체험을 사용했어요 — 내일 다시 가능합니다',
+    dailyLimitReached: '오늘 분석 횟수를 모두 사용했어요 — 내일 다시 가능합니다',
 
     photoError: {
       format: 'JPG 또는 PNG 파일만 분석할 수 있어요.',
@@ -260,11 +269,13 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateSaveScan: 'Sign up to keep your analysis history.',
     gateScanLimit: "You've used today's trial analysis",
     gateScanLimitSub: 'Members scan as often as they like and keep a record of how their skin changes.',
+    gateScanTitle: 'The AI analysis is for members',
+    gateScanBody: 'With an account your results are saved, so the next scan can be compared with this one and you can see what actually changed. An email is all it takes — about thirty seconds.',
+    scanMemberOnly: 'The AI analysis is for members. Sign up and your results are saved, with the trend over time.',
+    scanMemberOnlyCta: 'Sign up and analyse — 30 seconds',
     gateCta: 'Sign up', gateLater: 'Later',
 
-    guestBadge: 'Browsing',
-    guestScanNotice: 'Guests get one trial per day. Results are not saved.',
-    guestScanUsed: "Today's trial is used — come back tomorrow",
+    dailyLimitReached: 'You have used today’s analyses — come back tomorrow',
 
     photoError: {
       format: 'Only JPG and PNG files can be analysed.',
@@ -358,11 +369,13 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateSaveScan: '注册后可保存分析记录。',
     gateScanLimit: '今日体验次数已用完',
     gateScanLimitSub: '注册会员可无限次分析，并记录肌肤变化。',
+    gateScanTitle: 'AI 肌肤分析为会员专享',
+    gateScanBody: '注册后分析结果会保存到账户，可与下次分析对比，看到肌肤的实际变化。只需邮箱，约30秒即可完成。',
+    scanMemberOnly: 'AI 分析为会员专享。注册后结果会保存，并可查看变化趋势。',
+    scanMemberOnlyCta: '30秒注册并开始分析',
     gateCta: '立即注册', gateLater: '稍后',
 
-    guestBadge: '浏览模式',
-    guestScanNotice: '非会员每天可体验1次，结果不会保存。',
-    guestScanUsed: '今日体验已使用 — 明天再来',
+    dailyLimitReached: '今日检测次数已用完 — 明天再来',
 
     photoError: {
       format: '仅支持 JPG 或 PNG 格式。',
@@ -456,11 +469,13 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateSaveScan: 'สมัครสมาชิกเพื่อเก็บประวัติการวิเคราะห์',
     gateScanLimit: 'คุณใช้สิทธิ์ทดลองของวันนี้แล้ว',
     gateScanLimitSub: 'สมาชิกวิเคราะห์ได้ไม่จำกัด และเก็บบันทึกการเปลี่ยนแปลงของผิวได้',
+    gateScanTitle: 'การวิเคราะห์ด้วย AI สำหรับสมาชิกเท่านั้น',
+    gateScanBody: 'เมื่อสมัครแล้วผลวิเคราะห์จะถูกบันทึกไว้ในบัญชี เพื่อเปรียบเทียบกับครั้งถัดไปและดูว่าผิวเปลี่ยนไปอย่างไรจริง ๆ ใช้แค่อีเมล ประมาณ 30 วินาที',
+    scanMemberOnly: 'การวิเคราะห์ด้วย AI สำหรับสมาชิกเท่านั้น สมัครแล้วผลจะถูกบันทึกพร้อมดูแนวโน้มได้',
+    scanMemberOnlyCta: 'สมัครใน 30 วินาทีแล้ววิเคราะห์เลย',
     gateCta: 'สมัครสมาชิก', gateLater: 'ไว้ภายหลัง',
 
-    guestBadge: 'เยี่ยมชม',
-    guestScanNotice: 'ผู้ที่ไม่ได้เป็นสมาชิกทดลองได้วันละ 1 ครั้ง ผลลัพธ์จะไม่ถูกบันทึก',
-    guestScanUsed: 'ใช้สิทธิ์ทดลองของวันนี้แล้ว — พรุ่งนี้ลองใหม่',
+    dailyLimitReached: 'ใช้สิทธิ์วิเคราะห์ของวันนี้ครบแล้ว — พรุ่งนี้ลองใหม่',
 
     photoError: {
       format: 'รองรับเฉพาะไฟล์ JPG หรือ PNG เท่านั้น',
