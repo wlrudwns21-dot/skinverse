@@ -66,10 +66,13 @@ export interface AuthStrings {
   /** Why a photo was refused before it cost a call, or by the vendor after. */
   photoError: Record<
     | 'format' | 'tooLarge' | 'tooSmall' | 'landscape'
-    | 'faceTooSmall' | 'faceOutOfBound' | 'tooDark' | 'resolutionHigh' | 'generic',
+    | 'faceTooSmall' | 'faceOutOfBound' | 'tooDark' | 'resolutionHigh'
+    | 'noFace' | 'pose' | 'generic',
     string
   >
   photoTips: string[]
+  /** Shown when the analysis failed for a reason that is not the photo's fault. */
+  analysisFailed: string
   skinAge: (age: number) => string
   demoResult: string
   photoNeeded: string
@@ -156,6 +159,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
       faceOutOfBound: '얼굴이 사진 밖으로 잘렸어요. 얼굴 전체가 들어오도록 다시 찍어주세요.',
       tooDark: '사진이 너무 어둡습니다. 밝고 고른 조명에서 다시 찍어주세요.',
       resolutionHigh: '사진 해상도가 너무 큽니다.',
+      noFace: '사진에서 얼굴을 찾지 못했어요. 얼굴 전체가 보이도록 다시 찍어주세요.',
+      pose: '얼굴이 정면을 향하지 않았어요. 카메라를 똑바로 보고 다시 찍어주세요.',
       generic: '이 사진으로는 분석이 어려워요. 다른 사진으로 시도해주세요.',
     },
     photoTips: [
@@ -165,6 +170,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
       '앞머리는 넘기고 안경은 벗기',
       '메이크업을 지우면 더 정확합니다',
     ],
+    analysisFailed: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.',
     skinAge: (n) => 'AI 측정 피부 나이 ' + n + '세',
     demoResult: '샘플 결과 · 실제 측정 아님',
     photoNeeded: '사진을 올리면 실제 AI 분석이 실행됩니다. 없으면 샘플 결과를 보여드려요.',
@@ -237,6 +243,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
       faceOutOfBound: 'Your face is cut off. Please retake with your whole face in frame.',
       tooDark: 'The photo is too dark. Try again in brighter, even lighting.',
       resolutionHigh: 'That photo is too high-resolution.',
+      noFace: 'We could not find a face in that photo. Please retake it with your whole face visible.',
+      pose: 'Your face is turned away. Look straight into the camera and try again.',
       generic: 'We could not analyse this photo. Please try another one.',
     },
     photoTips: [
@@ -246,6 +254,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
       'Push your fringe back and take off glasses',
       'Removing makeup gives more accurate results',
     ],
+    analysisFailed: 'The analysis failed. Please try again in a moment.',
     skinAge: (n) => 'Skin age ' + n,
     demoResult: 'Sample result · not a measurement',
     photoNeeded: 'Add a photo to run the real AI analysis. Without one we show a sample result.',
@@ -318,6 +327,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
       faceOutOfBound: '面部被裁切了，请重新拍摄完整的脸部。',
       tooDark: '照片太暗，请在明亮均匀的光线下重拍。',
       resolutionHigh: '照片分辨率过高。',
+      noFace: '照片中未能识别到面部，请重新拍摄并露出完整面部。',
+      pose: '面部未正对镜头，请直视镜头后重新拍摄。',
       generic: '无法分析这张照片，请换一张试试。',
     },
     photoTips: [
@@ -327,6 +338,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
       '梳起刘海并摘下眼镜',
       '卸妆后结果更准确',
     ],
+    analysisFailed: '分析失败，请稍后再试。',
     skinAge: (n) => '肌肤年龄 ' + n + ' 岁',
     demoResult: '示例结果 · 非实际检测',
     photoNeeded: '上传照片即可进行真实AI分析，未上传时显示示例结果。',
@@ -399,6 +411,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
       faceOutOfBound: 'ใบหน้าถูกตัดขอบ กรุณาถ่ายใหม่ให้เห็นใบหน้าทั้งหมด',
       tooDark: 'ภาพมืดเกินไป กรุณาถ่ายใหม่ในที่ที่มีแสงสว่างสม่ำเสมอ',
       resolutionHigh: 'ความละเอียดของภาพสูงเกินไป',
+      noFace: 'ไม่พบใบหน้าในภาพนี้ กรุณาถ่ายใหม่ให้เห็นใบหน้าทั้งหมด',
+      pose: 'ใบหน้าไม่ได้หันเข้ากล้อง กรุณามองตรงเข้ากล้องแล้วถ่ายใหม่',
       generic: 'ไม่สามารถวิเคราะห์รูปนี้ได้ กรุณาลองรูปอื่น',
     },
     photoTips: [
@@ -408,6 +422,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
       'รวบผมหน้าและถอดแว่น',
       'ล้างเครื่องสำอางออกจะแม่นยำกว่า',
     ],
+    analysisFailed: 'การวิเคราะห์ล้มเหลว กรุณาลองใหม่อีกครั้ง',
     skinAge: (n) => 'อายุผิว ' + n + ' ปี',
     demoResult: 'ผลตัวอย่าง · ไม่ใช่การวัดจริง',
     photoNeeded: 'เพิ่มรูปเพื่อวิเคราะห์ด้วย AI จริง หากไม่มีเราจะแสดงผลตัวอย่าง',

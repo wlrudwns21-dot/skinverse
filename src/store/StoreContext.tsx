@@ -445,7 +445,7 @@ function useStoreValue() {
           return
         }
 
-        if (outcome?.kind === 'failed' && outcome.message) toastMsg(outcome.message)
+        if (outcome?.kind === 'failed') toastMsg(a.analysisFailed)
 
         // No photo, vendor not wired up, or the call failed: show the demo
         // profile rather than a dead end, labelled so nobody mistakes it.

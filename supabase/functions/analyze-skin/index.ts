@@ -79,8 +79,8 @@ Deno.serve(async (req) => {
   }
 
   // ── image ────────────────────────────────────────────────────────────────
-  // Before the quota, not after: a photo the vendor would refuse should not
-  // cost the caller one of their daily calls.
+  // Before the quota, not after: a photo we can already tell they would refuse
+  // should not cost the caller one of their daily calls, nor a round trip.
   let image: Uint8Array
   let mimeType = 'image/jpeg'
   try {
@@ -124,10 +124,21 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Hand back the slot claimed above. Perfect Corp consumes units only when a
+  // task succeeds, so anything that fails before then cost the operator nothing
+  // and must not cost the caller a daily call either — most of all a guest,
+  // whose single daily trial would otherwise be spent on a photo nobody read.
+  const refund = async () => {
+    const { error } = await admin
+      .schema('private')
+      .rpc('release_analysis_call', { p_subject: subject })
+    if (error) console.error('could not release the quota slot', error.message)
+  }
+
   // ── vendor ───────────────────────────────────────────────────────────────
   const apiKey = Deno.env.get('PERFECTCORP_API_KEY')
-  const apiSecret = Deno.env.get('PERFECTCORP_API_SECRET')
-  if (!apiKey || !apiSecret) {
+  if (!apiKey) {
+    await refund()
     return json(
       { error: 'vendor_not_configured', message: '피부 분석 서비스가 아직 연결되지 않았습니다.' },
       501,
@@ -136,16 +147,18 @@ Deno.serve(async (req) => {
 
   let analysis: SkinAnalysis
   try {
-    analysis = await analyseWithPerfectCorp(image, mimeType, apiKey, apiSecret)
+    analysis = await analyseWithPerfectCorp(image, mimeType, apiKey)
   } catch (err) {
     if (err instanceof VendorError) {
       console.error('vendor failed:', err.message)
+      if (!err.billed) await refund()
       return json(
         { error: 'vendor_failed', message: err.userMessage, photo: err.photoKey ?? undefined },
         err.status,
       )
     }
     console.error('unexpected failure', err)
+    // We do not know whether that cost anything, so the slot stays spent.
     return json({ error: 'analysis_failed', message: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.' }, 500)
   }
 

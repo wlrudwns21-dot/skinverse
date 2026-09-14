@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mapScoreInfo, UnreadableAnalysis, type ScoreInfo } from './perfectcorp'
+import { mapScoreInfo, toScoreInfo, UnreadableAnalysis, type ScoreInfo } from './perfectcorp'
 
 /**
  * The two payloads Perfect Corp publishes as samples, verbatim. Testing against
@@ -177,5 +177,80 @@ describe('defensive parsing', () => {
 
   it('ignores a non-numeric skin age', () => {
     expect(mapScoreInfo({ ...SD_SAMPLE, skin_age: undefined }).skinAge).toBeNull()
+  })
+})
+
+/**
+ * The `format: "json"` example from their OpenAPI description, verbatim. This
+ * is the shape we actually receive, so the converter is pinned to their own
+ * published sample rather than to an assumption about it.
+ */
+const JSON_OUTPUT = [
+  { type: 'hd_wrinkle', region: 'whole', raw_score: 25.3, ui_score: 25, mask_urls: ['x'] },
+  { type: 'hd_wrinkle', region: 'forehead', raw_score: 20.1, ui_score: 20, mask_urls: ['x'] },
+  { type: 'hd_wrinkle', region: 'glabellar', raw_score: 15.8, ui_score: 16, mask_urls: ['x'] },
+  { type: 'hd_wrinkle', region: 'crowfeet', raw_score: 30.5, ui_score: 31, mask_urls: ['x'] },
+  { type: 'hd_pore', region: 'whole', raw_score: 35.2, ui_score: 35, mask_urls: ['x'] },
+  { type: 'hd_pore', region: 'forehead', raw_score: 30, ui_score: 30, mask_urls: ['x'] },
+  { type: 'hd_pore', region: 'nose', raw_score: 45.7, ui_score: 46, mask_urls: ['x'] },
+  { type: 'hd_pore', region: 'cheek', raw_score: 32.1, ui_score: 32, mask_urls: ['x'] },
+  { type: 'hd_acne', region: 'whole', raw_score: 12.5, ui_score: 13, mask_urls: ['x'] },
+  { type: 'hd_skin_type', region: 'whole', skin_type: 'Combination', mask_urls: ['x'] },
+  { type: 'hd_skin_type', region: 't_zone', skin_type: 'Oily', mask_urls: ['x'] },
+  { type: 'hd_skin_type', region: 'u_zone', skin_type: 'Dry & Redness', mask_urls: ['x'] },
+  { type: 'skin_age', score: 29 },
+  { type: 'all', score: 28.5 },
+  { type: 'resize_image', mask_urls: ['x'] },
+]
+
+describe('toScoreInfo', () => {
+  it('nests the regional categories under their region', () => {
+    const info = toScoreInfo(JSON_OUTPUT)
+    expect(info.hd_pore).toEqual({
+      whole: { raw_score: 35.2, ui_score: 35 },
+      forehead: { raw_score: 30, ui_score: 30 },
+      nose: { raw_score: 45.7, ui_score: 46 },
+      cheek: { raw_score: 32.1, ui_score: 32 },
+    })
+  })
+
+  it('lifts the overall score and skin age out of the array', () => {
+    const info = toScoreInfo(JSON_OUTPUT)
+    expect(info.all).toEqual({ score: 28.5 })
+    expect(info.skin_age).toBe(29)
+  })
+
+  it('keeps the skin type label where the classifier looks for it', () => {
+    const info = toScoreInfo(JSON_OUTPUT)
+    expect(info.hd_skin_type).toEqual({
+      whole: 'Combination',
+      t_zone: 'Oily',
+      u_zone: 'Dry & Redness',
+    })
+    // Combination counts as oily for our three-way classification.
+    expect(mapScoreInfo(toScoreInfo(JSON_OUTPUT)).condition).toBe('oily')
+  })
+
+  it('drops the resized source image, which is not a measurement', () => {
+    expect(toScoreInfo(JSON_OUTPUT).resize_image).toBeUndefined()
+  })
+
+  it('flattens a category that reports no region', () => {
+    // Their step-7 example shows SD categories arriving without a region.
+    const info = toScoreInfo([{ type: 'texture', ui_score: 68, raw_score: 57.33 }])
+    expect(info.texture).toEqual({ raw_score: 57.33, ui_score: 68 })
+  })
+
+  it('feeds the mapper a payload it reads the same as the archive form', () => {
+    const viaJson = mapScoreInfo(toScoreInfo(JSON_OUTPUT))
+    // whole-face scores, not the regional ones
+    expect(viaJson.metrics.wrinkles).toBe(25)
+    expect(viaJson.metrics.pores).toBe(35)
+    expect(viaJson.overall).toBe(29)
+    expect(viaJson.skinAge).toBe(29)
+  })
+
+  it('refuses an output array with nothing recognisable in it', () => {
+    expect(() => mapScoreInfo(toScoreInfo([{ type: 'resize_image' }]))).toThrow(UnreadableAnalysis)
   })
 })

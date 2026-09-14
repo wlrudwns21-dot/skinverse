@@ -39,7 +39,14 @@ export type PhotoErrorKey =
   | 'faceOutOfBound'
   | 'tooDark'
   | 'resolutionHigh'
+  | 'noFace'
+  | 'pose'
   | 'generic'
+
+const PHOTO_KEYS = new Set<string>([
+  'format', 'tooLarge', 'tooSmall', 'landscape', 'faceTooSmall',
+  'faceOutOfBound', 'tooDark', 'resolutionHigh', 'noFace', 'pose', 'generic',
+] satisfies PhotoErrorKey[])
 
 const FUNCTION_NAME = 'analyze-skin'
 
@@ -59,7 +66,14 @@ export async function analyseSkin(photo: File): Promise<AnalysisOutcome> {
     if (payload?.error === 'quota_exceeded') {
       return { kind: 'quota', message: payload.message ?? '' }
     }
-    if (payload?.photo) return { kind: 'photo', key: payload.photo }
+    // A key this build does not know about would index `photoError` to
+    // undefined and show the customer an empty banner, so fall back.
+    if (payload?.photo) {
+      return { kind: 'photo', key: PHOTO_KEYS.has(payload.photo) ? payload.photo : 'generic' }
+    }
+    // The server's own message is Korean; the app has the translation, so this
+    // only goes to the console for whoever is reading the logs.
+    if (payload?.message) console.warn('[analysis]', payload.message)
     return { kind: 'failed', message: payload?.message ?? '' }
   }
 

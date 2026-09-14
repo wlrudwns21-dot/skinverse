@@ -72,7 +72,8 @@ describe('messages', () => {
    */
   const PROBLEMS: ImageProblem[] = [
     'format', 'tooLarge', 'tooSmall', 'landscape',
-    'faceTooSmall', 'faceOutOfBound', 'tooDark', 'resolutionHigh', 'generic',
+    'faceTooSmall', 'faceOutOfBound', 'tooDark', 'resolutionHigh',
+    'noFace', 'pose', 'generic',
   ]
 
   it('has every problem written in every language', () => {

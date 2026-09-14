@@ -49,6 +49,8 @@ export type ImageProblem =
   | 'faceOutOfBound'
   | 'tooDark'
   | 'resolutionHigh'
+  | 'noFace'
+  | 'pose'
   | 'generic'
 
 export interface ImageCheck {

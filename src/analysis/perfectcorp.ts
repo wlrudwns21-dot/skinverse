@@ -58,7 +58,74 @@ export interface ScoreInfo {
 }
 
 function isScoreNode(value: unknown): value is ScoreNode {
-  return typeof value === 'object' && value !== null && 'raw_score' in (value as object)
+  if (typeof value !== 'object' || value === null) return false
+  return 'raw_score' in (value as object) || 'ui_score' in (value as object)
+}
+
+/**
+ * One entry of the `output` array returned when the task is run with
+ * `format: "json"`.
+ */
+export interface OutputEntry {
+  type?: string
+  /** Present only for the categories that report per-region. */
+  region?: string
+  raw_score?: number
+  ui_score?: number
+  /** Used by the `all` and `skin_age` entries, which carry no per-axis score. */
+  score?: number
+  /** Used by `skin_type` / `hd_skin_type`, which report a label. */
+  skin_type?: string
+}
+
+/**
+ * Fold the flat `output` array back into the nested `score_info.json` shape.
+ *
+ * The API can answer in either form: `format: "zip"` gives the nested JSON
+ * inside an archive, `format: "json"` gives this array inline. We ask for JSON
+ * — it saves downloading and unzipping an archive whose images we discard — and
+ * reshape it here, so both paths meet at the same tested mapper below.
+ */
+export function toScoreInfo(output: OutputEntry[]): ScoreInfo {
+  const info = {} as ScoreInfo
+  const bag = info as Record<string, unknown>
+
+  for (const entry of output) {
+    const type = entry.type
+    // `resize_image` is the resized source photo, not a measurement.
+    if (!type || type === 'resize_image') continue
+
+    if (type === 'skin_age') {
+      if (typeof entry.score === 'number') info.skin_age = entry.score
+      continue
+    }
+    if (type === 'all') {
+      if (typeof entry.score === 'number') info.all = { score: entry.score }
+      continue
+    }
+
+    // Skin type reports a label rather than a score; nest it under its region
+    // so the classifier finds it the same way it does in the archive form.
+    if (typeof entry.skin_type === 'string') {
+      const regions = (bag[type] ??= {}) as Record<string, unknown>
+      regions[entry.region ?? 'whole'] = entry.skin_type
+      continue
+    }
+
+    const node: ScoreNode = {}
+    if (typeof entry.raw_score === 'number') node.raw_score = entry.raw_score
+    if (typeof entry.ui_score === 'number') node.ui_score = entry.ui_score
+    if (!isScoreNode(node)) continue
+
+    if (entry.region) {
+      const regions = (bag[type] ??= {}) as Record<string, unknown>
+      regions[entry.region] = node
+    } else {
+      bag[type] = node
+    }
+  }
+
+  return info
 }
 
 /**
