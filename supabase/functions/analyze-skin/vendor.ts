@@ -24,24 +24,6 @@ export type { SkinAnalysis }
  * deploys and then fails in production.
  */
 
-export class VendorError extends Error {
-  constructor(
-    message: string,
-    /** What the customer is told; never leaks vendor internals. */
-    readonly userMessage: string,
-    readonly status = 502,
-    /**
-     * Which `photoError` string the app should show, when the failure is
-     * something about the photo the customer can actually fix. Translating on
-     * the client keeps all four languages in one place instead of here.
-     */
-    readonly photoKey: PhotoErrorKey | null = null,
-  ) {
-    super(message)
-    this.name = 'VendorError'
-  }
-}
-
 /** Keys of `photoError` in src/i18n/auth.ts. */
 export type PhotoErrorKey =
   | 'format'
@@ -53,6 +35,24 @@ export type PhotoErrorKey =
   | 'tooDark'
   | 'resolutionHigh'
   | 'generic'
+
+export class VendorError extends Error {
+  constructor(
+    message: string,
+    /** What the customer is told; never leaks vendor internals. */
+    readonly userMessage: string,
+    readonly status = 502,
+    /**
+     * Which `photoError` string the app should show, when the failure is
+     * something about the photo the customer can actually fix. Translating on
+     * the client keeps all languages in one place instead of here.
+     */
+    readonly photoKey: PhotoErrorKey | null = null,
+  ) {
+    super(message)
+    this.name = 'VendorError'
+  }
+}
 
 /**
  * Their documented rejection codes, mapped to advice the customer can act on.
@@ -138,7 +138,7 @@ export function readScoreZip(zip: Uint8Array): SkinAnalysis {
  * @param apiKey    PERFECTCORP_API_KEY
  * @param apiSecret PERFECTCORP_API_SECRET
  */
-export async function analyseWithPerfectCorp(
+export function analyseWithPerfectCorp(
   _image: Uint8Array,
   _mimeType: string,
   _apiKey: string,
@@ -154,8 +154,9 @@ export async function analyseWithPerfectCorp(
   //
   //        return readScoreZip(new Uint8Array(await res.arrayBuffer()))
   //
-  // Everything after step 4 is already done and tested. Throw VendorError with
-  // a customer-safe message on any failure along the way.
+  // On a documented rejection code, throw photoRejection(code) so the customer
+  // is told what to change about the photo. Everything after step 4 is already
+  // done and tested.
   throw new VendorError(
     'Perfect Corp call choreography not implemented',
     '피부 분석 서비스가 아직 연결되지 않았습니다.',
