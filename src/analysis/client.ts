@@ -22,7 +22,24 @@ export type AnalysisOutcome =
   | { kind: 'notConfigured' }
   /** Daily allowance spent. `message` is already customer-facing. */
   | { kind: 'quota'; message: string }
+  /**
+   * Something about the photo itself. `key` indexes `photoError`, so the app
+   * says it in the customer's language rather than showing the server's Korean.
+   */
+  | { kind: 'photo'; key: PhotoErrorKey }
   | { kind: 'failed'; message: string }
+
+/** Keys of `photoError` in ../i18n/auth. */
+export type PhotoErrorKey =
+  | 'format'
+  | 'tooLarge'
+  | 'tooSmall'
+  | 'landscape'
+  | 'faceTooSmall'
+  | 'faceOutOfBound'
+  | 'tooDark'
+  | 'resolutionHigh'
+  | 'generic'
 
 const FUNCTION_NAME = 'analyze-skin'
 
@@ -42,6 +59,7 @@ export async function analyseSkin(photo: File): Promise<AnalysisOutcome> {
     if (payload?.error === 'quota_exceeded') {
       return { kind: 'quota', message: payload.message ?? '' }
     }
+    if (payload?.photo) return { kind: 'photo', key: payload.photo }
     return { kind: 'failed', message: payload?.message ?? '' }
   }
 
@@ -55,6 +73,7 @@ export async function analyseSkin(photo: File): Promise<AnalysisOutcome> {
 interface ErrorBody {
   error?: string
   message?: string
+  photo?: PhotoErrorKey
 }
 
 async function readErrorBody(error: unknown): Promise<ErrorBody | null> {

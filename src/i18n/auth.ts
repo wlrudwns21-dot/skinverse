@@ -63,6 +63,13 @@ export interface AuthStrings {
   guestScanUsed: string
 
   // analysis
+  /** Why a photo was refused before it cost a call, or by the vendor after. */
+  photoError: Record<
+    | 'format' | 'tooLarge' | 'tooSmall' | 'landscape'
+    | 'faceTooSmall' | 'faceOutOfBound' | 'tooDark' | 'resolutionHigh' | 'generic',
+    string
+  >
+  photoTips: string[]
   skinAge: (age: number) => string
   demoResult: string
   photoNeeded: string
@@ -140,6 +147,24 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: '비회원은 하루 1회 체험할 수 있어요. 결과는 저장되지 않습니다.',
     guestScanUsed: '오늘 체험을 사용했어요 — 내일 다시 가능합니다',
 
+    photoError: {
+      format: 'JPG 또는 PNG 파일만 분석할 수 있어요.',
+      tooLarge: '사진 용량이 10MB를 넘습니다. 더 작은 사진을 올려주세요.',
+      tooSmall: '사진 해상도가 너무 낮습니다. 짧은 쪽이 480px 이상이어야 해요.',
+      landscape: '세로 사진일 때 결과가 더 정확합니다.',
+      faceTooSmall: '얼굴이 너무 작게 나왔어요. 얼굴 너비가 사진 너비의 60% 이상이 되도록 가까이서 찍어주세요.',
+      faceOutOfBound: '얼굴이 사진 밖으로 잘렸어요. 얼굴 전체가 들어오도록 다시 찍어주세요.',
+      tooDark: '사진이 너무 어둡습니다. 밝고 고른 조명에서 다시 찍어주세요.',
+      resolutionHigh: '사진 해상도가 너무 큽니다.',
+      generic: '이 사진으로는 분석이 어려워요. 다른 사진으로 시도해주세요.',
+    },
+    photoTips: [
+      '얼굴이 사진 가로폭의 60~80%를 차지하게',
+      '정면을 보고 입은 다물고 눈은 뜨기',
+      '밝고 고른 조명에서 (역광·과노출 피하기)',
+      '앞머리는 넘기고 안경은 벗기',
+      '메이크업을 지우면 더 정확합니다',
+    ],
     skinAge: (n) => 'AI 측정 피부 나이 ' + n + '세',
     demoResult: '샘플 결과 · 실제 측정 아님',
     photoNeeded: '사진을 올리면 실제 AI 분석이 실행됩니다. 없으면 샘플 결과를 보여드려요.',
@@ -203,6 +228,24 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: 'Guests get one trial per day. Results are not saved.',
     guestScanUsed: "Today's trial is used — come back tomorrow",
 
+    photoError: {
+      format: 'Only JPG and PNG files can be analysed.',
+      tooLarge: 'That photo is over 10MB. Please use a smaller one.',
+      tooSmall: 'That photo is too low-resolution — the short side needs to be at least 480px.',
+      landscape: 'Portrait photos give more accurate results.',
+      faceTooSmall: 'Your face is too small in the frame. Move closer so it fills at least 60% of the width.',
+      faceOutOfBound: 'Your face is cut off. Please retake with your whole face in frame.',
+      tooDark: 'The photo is too dark. Try again in brighter, even lighting.',
+      resolutionHigh: 'That photo is too high-resolution.',
+      generic: 'We could not analyse this photo. Please try another one.',
+    },
+    photoTips: [
+      'Face fills 60–80% of the frame width',
+      'Look straight ahead, mouth closed, eyes open',
+      'Bright, even lighting — avoid backlight and glare',
+      'Push your fringe back and take off glasses',
+      'Removing makeup gives more accurate results',
+    ],
     skinAge: (n) => 'Skin age ' + n,
     demoResult: 'Sample result · not a measurement',
     photoNeeded: 'Add a photo to run the real AI analysis. Without one we show a sample result.',
@@ -266,6 +309,24 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: '非会员每天可体验1次，结果不会保存。',
     guestScanUsed: '今日体验已使用 — 明天再来',
 
+    photoError: {
+      format: '仅支持 JPG 或 PNG 格式。',
+      tooLarge: '照片超过 10MB，请换一张更小的。',
+      tooSmall: '照片分辨率过低，短边需至少 480 像素。',
+      landscape: '竖向照片的结果更准确。',
+      faceTooSmall: '面部在画面中太小。请靠近一些，让面部宽度占画面宽度的 60% 以上。',
+      faceOutOfBound: '面部被裁切了，请重新拍摄完整的脸部。',
+      tooDark: '照片太暗，请在明亮均匀的光线下重拍。',
+      resolutionHigh: '照片分辨率过高。',
+      generic: '无法分析这张照片，请换一张试试。',
+    },
+    photoTips: [
+      '面部占画面宽度的 60~80%',
+      '正视镜头，闭嘴睁眼',
+      '光线明亮均匀，避免逆光和过曝',
+      '梳起刘海并摘下眼镜',
+      '卸妆后结果更准确',
+    ],
     skinAge: (n) => '肌肤年龄 ' + n + ' 岁',
     demoResult: '示例结果 · 非实际检测',
     photoNeeded: '上传照片即可进行真实AI分析，未上传时显示示例结果。',
@@ -329,6 +390,24 @@ export const authStrings: Record<Lang, AuthStrings> = {
     guestScanNotice: 'ผู้ที่ไม่ได้เป็นสมาชิกทดลองได้วันละ 1 ครั้ง ผลลัพธ์จะไม่ถูกบันทึก',
     guestScanUsed: 'ใช้สิทธิ์ทดลองของวันนี้แล้ว — พรุ่งนี้ลองใหม่',
 
+    photoError: {
+      format: 'รองรับเฉพาะไฟล์ JPG หรือ PNG เท่านั้น',
+      tooLarge: 'รูปมีขนาดเกิน 10MB กรุณาใช้รูปที่เล็กกว่านี้',
+      tooSmall: 'ความละเอียดต่ำเกินไป ด้านสั้นต้องมีอย่างน้อย 480 พิกเซล',
+      landscape: 'รูปแนวตั้งให้ผลลัพธ์แม่นยำกว่า',
+      faceTooSmall: 'ใบหน้าเล็กเกินไป กรุณาเข้าใกล้ให้ใบหน้ากว้างอย่างน้อย 60% ของภาพ',
+      faceOutOfBound: 'ใบหน้าถูกตัดขอบ กรุณาถ่ายใหม่ให้เห็นใบหน้าทั้งหมด',
+      tooDark: 'ภาพมืดเกินไป กรุณาถ่ายใหม่ในที่ที่มีแสงสว่างสม่ำเสมอ',
+      resolutionHigh: 'ความละเอียดของภาพสูงเกินไป',
+      generic: 'ไม่สามารถวิเคราะห์รูปนี้ได้ กรุณาลองรูปอื่น',
+    },
+    photoTips: [
+      'ใบหน้ากินพื้นที่ 60–80% ของความกว้างภาพ',
+      'มองตรง ปิดปาก ลืมตา',
+      'แสงสว่างสม่ำเสมอ เลี่ยงย้อนแสงและแสงจ้า',
+      'รวบผมหน้าและถอดแว่น',
+      'ล้างเครื่องสำอางออกจะแม่นยำกว่า',
+    ],
     skinAge: (n) => 'อายุผิว ' + n + ' ปี',
     demoResult: 'ผลตัวอย่าง · ไม่ใช่การวัดจริง',
     photoNeeded: 'เพิ่มรูปเพื่อวิเคราะห์ด้วย AI จริง หากไม่มีเราจะแสดงผลตัวอย่าง',

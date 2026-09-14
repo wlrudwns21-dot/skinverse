@@ -13,6 +13,7 @@ import { orderNoPrefix, shipping } from '../data/commerce'
 import { levels } from '../data/rewards'
 import { conditions, metricDefs } from '../data/skin'
 import { analyseSkin } from '../analysis/client'
+import { checkPhoto } from '../analysis/imageCheck'
 import type { Lang, Weather } from '../data/types'
 import { fetchWeather } from '../weather/remote'
 import { useGeolocation } from '../weather/useGeolocation'
@@ -313,8 +314,24 @@ function useStoreValue() {
 
   // ── scan ──────────────────────────────────────────────────────────────────
 
+  /**
+   * Take the selfie and check it before it can cost anything.
+   *
+   * The vendor bills per call and rejects photos that miss their spec, so the
+   * cheap checks a browser can do — format, size, pixel dimensions — run here.
+   * The verdict is stored rather than acted on immediately: the customer sees
+   * it under the photo, and `startScan` refuses to send a photo with a problem.
+   */
   const setPhoto = useCallback((photo: File | null) => {
-    setState((s) => ({ ...s, photo }))
+    setState((s) => ({ ...s, photo, photoCheck: null }))
+    if (!photo) return
+
+    void (async () => {
+      const check = await checkPhoto(photo)
+      // A newer photo may have landed while we were decoding this one; its own
+      // check is authoritative, so drop this stale verdict.
+      setState((s) => (s.photo === photo ? { ...s, photoCheck: check } : s))
+    })()
   }, [])
 
   /** Land on the results screen with a canned profile, clearly marked as such. */
@@ -347,6 +364,15 @@ function useStoreValue() {
     // Guests get one trial a day; the second attempt sells the signup instead.
     if (!isMember && s.guestScanUsed) {
       openGate('saveScan')
+      return
+    }
+
+    // A photo the vendor would reject must not start a scan: the call is billed
+    // whether it succeeds or not, and the customer would wait out the whole
+    // progress bar to be told something we already knew.
+    const problem = s.photoCheck?.problem
+    if (problem) {
+      toastMsg(a.photoError[problem])
       return
     }
 
@@ -402,6 +428,20 @@ function useStoreValue() {
             markGuestScanUsed()
             setState((cur) => ({ ...cur, guestScanUsed: true }))
           }
+          return
+        }
+
+        // The vendor refused the photo. Send them back to pick another one
+        // with the reason attached, rather than to a demo score they did not
+        // ask for — this one is fixable.
+        if (outcome?.kind === 'photo') {
+          setState((cur) => ({
+            ...cur,
+            scanStep: 'intro',
+            progress: 0,
+            photoCheck: { ok: false, problem: outcome.key },
+          }))
+          toastMsg(a.photoError[outcome.key])
           return
         }
 
@@ -829,6 +869,7 @@ function useStoreValue() {
     scanIsReal: state.scanIsReal,
     skinAge: state.liveSkinAge,
     setPhoto,
+    photoCheck: state.photoCheck,
     skinType: condition.type[lang],
     summary: condition.sum[lang],
     metrics,

@@ -21,8 +21,23 @@ export function ScanIntro() {
         </div>
       </div>
 
+      {/* What the pre-flight check found. A problem is a hard stop, shown in
+          red; a warning is advice the customer can ignore. */}
+      {st.photoCheck?.problem && (
+        <div style={s('background:#FBECEC;border:1px solid #E9C9C9;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#A5504B;line-height:1.5')}>
+          {st.a.photoError[st.photoCheck.problem]}
+        </div>
+      )}
+      {st.photoCheck?.warning && (
+        <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#9A8455;line-height:1.5')}>
+          {st.a.photoError[st.photoCheck.warning]}
+        </div>
+      )}
+
+      {/* These are the vendor's own photo requirements, not general advice —
+          a photo that misses them is rejected after we have been billed. */}
       <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px')}>
-        {[st.t.tip1, st.t.tip2, st.t.tip3].map((tip) => (
+        {st.a.photoTips.map((tip) => (
           <div key={tip} style={s('display:flex;gap:10px;font-size:13px')}>
             <span style={s('color:#2E6B58;font-weight:700')}>✓</span>
             <span>{tip}</span>
@@ -42,7 +57,15 @@ export function ScanIntro() {
         </div>
       )}
 
-      <div onClick={st.startScan} style={s('cursor:pointer;margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700')}>
+      <div
+        onClick={st.startScan}
+        style={s(
+          'cursor:pointer;margin-top:18px;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700' +
+            (st.photoCheck?.problem
+              ? ';background:#CFC7B8;color:#FFFFFF'
+              : ';background:#221C15;color:#F5F0E6'),
+        )}
+      >
         {st.t.beginScan}
       </div>
       <div style={s('text-align:center;font-size:11px;color:#A2957F;margin-top:10px')}>{st.t.demoNote}</div>

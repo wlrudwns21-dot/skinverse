@@ -4,6 +4,7 @@ import { shipping } from '../data/commerce'
 import type { CatalogProduct, StoreSettings } from '../catalog/types'
 import type { Lang, SkinConditionKey } from '../data/types'
 import type { Capability } from '../auth/capabilities'
+import type { ImageCheck } from '../analysis/imageCheck'
 import type { ChipKey } from '../i18n/chips'
 
 export type Screen =
@@ -81,6 +82,11 @@ export interface StoreState {
   /** The selfie the visitor picked, held only until the analysis is sent. */
   photo: File | null
   /**
+   * What the pre-flight check made of that selfie. A `problem` blocks the scan
+   * before it costs a billed call; a `warning` is shown but does not block.
+   */
+  photoCheck: ImageCheck | null
+  /**
    * Whether the score on screen came from the vendor or from the canned demo
    * profile. Shown to the customer — a made-up score presented as a measurement
    * would be the worst thing this app could do.
@@ -128,6 +134,7 @@ export const initialState: StoreState = {
   gate: null,
   guestScanUsed: false,
   photo: null,
+  photoCheck: null,
   scanIsReal: false,
   liveMetrics: null,
   liveOverall: null,

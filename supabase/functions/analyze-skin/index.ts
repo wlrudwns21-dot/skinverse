@@ -18,7 +18,11 @@ import {
  * and the analysis does not need it kept.
  */
 
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024
+/** The vendor's limit is "< 10MB"; sending more is a guaranteed rejection. */
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024
+
+/** The only formats they accept. Anything else fails at their end. */
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png']
 
 /** Daily call ceilings. Members get more because they are known and billable. */
 const MEMBER_DAILY_LIMIT = Number(Deno.env.get('ANALYSIS_MEMBER_DAILY_LIMIT') ?? '20')
@@ -74,6 +78,27 @@ Deno.serve(async (req) => {
     userId = data.user?.id ?? null
   }
 
+  // ── image ────────────────────────────────────────────────────────────────
+  // Before the quota, not after: a photo the vendor would refuse should not
+  // cost the caller one of their daily calls.
+  let image: Uint8Array
+  let mimeType = 'image/jpeg'
+  try {
+    const form = await req.formData()
+    const file = form.get('image')
+    if (!(file instanceof File)) return json({ error: 'image_required' }, 400)
+    if (file.size >= MAX_IMAGE_BYTES) {
+      return json({ error: 'image_too_large', photo: 'tooLarge' }, 413)
+    }
+    if (!ALLOWED_TYPES.includes(file.type.toLowerCase())) {
+      return json({ error: 'not_an_image', photo: 'format' }, 415)
+    }
+    mimeType = file.type
+    image = new Uint8Array(await file.arrayBuffer())
+  } catch {
+    return json({ error: 'bad_request' }, 400)
+  }
+
   // ── quota ────────────────────────────────────────────────────────────────
   const subject = await subjectFor(req, userId)
   const limit = userId ? MEMBER_DAILY_LIMIT : GUEST_DAILY_LIMIT
@@ -99,21 +124,6 @@ Deno.serve(async (req) => {
     )
   }
 
-  // ── image ────────────────────────────────────────────────────────────────
-  let image: Uint8Array
-  let mimeType = 'image/jpeg'
-  try {
-    const form = await req.formData()
-    const file = form.get('image')
-    if (!(file instanceof File)) return json({ error: 'image_required' }, 400)
-    if (file.size > MAX_IMAGE_BYTES) return json({ error: 'image_too_large' }, 413)
-    if (!file.type.startsWith('image/')) return json({ error: 'not_an_image' }, 415)
-    mimeType = file.type
-    image = new Uint8Array(await file.arrayBuffer())
-  } catch {
-    return json({ error: 'bad_request' }, 400)
-  }
-
   // ── vendor ───────────────────────────────────────────────────────────────
   const apiKey = Deno.env.get('PERFECTCORP_API_KEY')
   const apiSecret = Deno.env.get('PERFECTCORP_API_SECRET')
@@ -130,7 +140,10 @@ Deno.serve(async (req) => {
   } catch (err) {
     if (err instanceof VendorError) {
       console.error('vendor failed:', err.message)
-      return json({ error: 'vendor_failed', message: err.userMessage }, err.status)
+      return json(
+        { error: 'vendor_failed', message: err.userMessage, photo: err.photoKey ?? undefined },
+        err.status,
+      )
     }
     console.error('unexpected failure', err)
     return json({ error: 'analysis_failed', message: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.' }, 500)

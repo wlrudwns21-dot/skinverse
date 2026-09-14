@@ -30,10 +30,55 @@ export class VendorError extends Error {
     /** What the customer is told; never leaks vendor internals. */
     readonly userMessage: string,
     readonly status = 502,
+    /**
+     * Which `photoError` string the app should show, when the failure is
+     * something about the photo the customer can actually fix. Translating on
+     * the client keeps all four languages in one place instead of here.
+     */
+    readonly photoKey: PhotoErrorKey | null = null,
   ) {
     super(message)
     this.name = 'VendorError'
   }
+}
+
+/** Keys of `photoError` in src/i18n/auth.ts. */
+export type PhotoErrorKey =
+  | 'format'
+  | 'tooLarge'
+  | 'tooSmall'
+  | 'landscape'
+  | 'faceTooSmall'
+  | 'faceOutOfBound'
+  | 'tooDark'
+  | 'resolutionHigh'
+  | 'generic'
+
+/**
+ * Their documented rejection codes, mapped to advice the customer can act on.
+ *
+ * Anything not listed here is a fault on our side or theirs, not the photo's,
+ * so it stays a generic failure rather than blaming the customer's selfie.
+ */
+const PHOTO_ERRORS: Record<string, PhotoErrorKey> = {
+  error_below_min_image_size: 'tooSmall',
+  error_exceed_max_image_size: 'resolutionHigh',
+  error_src_face_too_small: 'faceTooSmall',
+  error_src_face_out_of_bound: 'faceOutOfBound',
+  error_lighting_dark: 'tooDark',
+}
+
+/** Turn a vendor error code into a VendorError the customer can act on. */
+export function photoRejection(code: string): VendorError {
+  const key = PHOTO_ERRORS[code]
+  return new VendorError(
+    `vendor rejected the photo: ${code}`,
+    // The app replaces this with its own translation; it is the fallback for a
+    // client too old to know the key.
+    '이 사진으로는 분석이 어려워요. 다른 사진으로 시도해주세요.',
+    422,
+    key ?? 'generic',
+  )
 }
 
 /**
