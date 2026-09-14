@@ -31,8 +31,16 @@ const GUEST_DAILY_LIMIT = Number(Deno.env.get('ANALYSIS_GUEST_DAILY_LIMIT') ?? '
 
 const CORS = {
   'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') ?? '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  // Listed generously on purpose. A header the browser intends to send that the
+  // preflight does not permit kills the request in the browser, before the
+  // handler runs — which looks identical to the function failing, except
+  // nothing server-side records it. `authorization` must be named explicitly:
+  // the `*` wildcard deliberately does not cover it.
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-supabase-api-version, ' +
+    'x-region, accept-profile, content-profile, x-requested-with',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 }
 
 const json = (body: unknown, status = 200) =>
@@ -100,6 +108,26 @@ Deno.serve(async (req) => {
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } })
 
+  /**
+   * TEMPORARY. Records how far a request got.
+   *
+   * The edge logs are not reachable from where this is being debugged, and a
+   * client-side error with no quota row is consistent with several unrelated
+   * causes. This distinguishes them. Remove once the path is confirmed.
+   */
+  const trace = async (stage: string, detail: Record<string, unknown> = {}) => {
+    await admin.from('fn_hits').insert({ stage, detail }).then(
+      () => {},
+      () => {},
+    )
+  }
+
+  await trace('entered', {
+    contentType: req.headers.get('content-type'),
+    hasAuth: !!req.headers.get('authorization'),
+    origin: req.headers.get('origin'),
+  })
+
   // Who is asking? An invalid or absent token is fine — that is a guest, and
   // guests get the smaller quota rather than a rejection.
   let userId: string | null = null
@@ -120,6 +148,12 @@ Deno.serve(async (req) => {
     const form = await req.formData()
     weather = readWeather(form.get('weather'))
     const file = form.get('image')
+    await trace('form-parsed', {
+      keys: [...form.keys()],
+      isFile: file instanceof File,
+      size: file instanceof File ? file.size : null,
+      type: file instanceof File ? file.type : null,
+    })
     if (!(file instanceof File)) return json({ error: 'image_required' }, 400)
     if (file.size >= MAX_IMAGE_BYTES) {
       return json({ error: 'image_too_large', photo: 'tooLarge' }, 413)
@@ -129,7 +163,8 @@ Deno.serve(async (req) => {
     }
     mimeType = file.type
     image = new Uint8Array(await file.arrayBuffer())
-  } catch {
+  } catch (err) {
+    await trace('form-parse-failed', { message: String(err) })
     return json({ error: 'bad_request' }, 400)
   }
 
@@ -181,10 +216,13 @@ Deno.serve(async (req) => {
 
   let analysis: SkinAnalysis
   try {
+    await trace('calling-vendor', { tier: TIER, bytes: image.byteLength })
     analysis = await analyseWithPerfectCorp(image, mimeType, apiKey)
+    await trace('vendor-ok', { overall: analysis.overall })
   } catch (err) {
     if (err instanceof VendorError) {
       console.error('vendor failed:', err.message)
+      await trace('vendor-failed', { message: err.message, status: err.status })
       if (!err.billed) await refund()
       return json(
         { error: 'vendor_failed', message: err.userMessage, photo: err.photoKey ?? undefined },
@@ -192,6 +230,7 @@ Deno.serve(async (req) => {
       )
     }
     console.error('unexpected failure', err)
+    await trace('unexpected-failure', { message: String(err) })
     // We do not know whether that cost anything, so the slot stays spent.
     return json({ error: 'analysis_failed', message: '분석에 실패했습니다. 잠시 후 다시 시도해주세요.' }, 500)
   }
