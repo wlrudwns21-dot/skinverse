@@ -1,0 +1,34 @@
+/* Ported verbatim from the Claude Design prototypes (Skinverse.dc.html /
+   Skinverse Admin.dc.html <helmet> blocks). The two prototypes share every
+   rule except the body background, which is set per route in App.tsx. */
+
+body {
+  margin: 0;
+  background: #E7E1D6;
+  font-family: 'Albert Sans', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Thai', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #221C15;
+}
+
+a { color: #2E6B58; text-decoration: none; }
+a:hover { color: #1F4A3D; }
+
+input, select, button { font-family: inherit; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes scanline { 0% { top: 6%; } 50% { top: 90%; } 100% { top: 6%; } }
+
+/* The admin prototype uses a shorter rise distance than the store. */
+@keyframes riseAdmin { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* The toasts are centred with `transform: translateX(-50%)`, which plain `rise`
+   would overwrite: its `to { transform: none }` wins under `animation-fill-mode:
+   both`, leaving the toast pinned to the centre line instead of straddling it
+   (visible in the prototype as a toast hanging off the right edge). These
+   keyframes carry the centring through every frame. */
+@keyframes toastRise {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  to { opacity: 1; transform: translateX(-50%); }
+}

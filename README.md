@@ -1,25 +1,96 @@
-# CODING AGENTS: READ THIS FIRST
+# Skinverse
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+AI 피부 분석 기반 K-뷰티 해외 직구 플랫폼. `project/`의 Claude Design 프로토타입
+(`Skinverse.dc.html`, `Skinverse Admin.dc.html`)을 React로 구현한 것입니다.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+- **고객용 스토어** (`/`) — 모바일 웹, 430px 고정폭
+- **관리자 콘솔** (`/admin`) — 데스크톱, 최대 1280px
 
-## What you should do — IMPORTANT
+기본 언어는 **한국어**이며 헤더의 🌐 칩 또는 마이페이지 > 언어에서 English ·
+中文 · ไทย로 전환됩니다.
 
-**Read the chat transcripts first.** There are 2 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+## 실행
 
-**Read `project/Skinverse.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+```bash
+npm install
+npm run dev        # http://localhost:5173  (관리자: /admin)
+npm run build      # 타입 체크 + 프로덕션 빌드
+npm run typecheck
+```
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+React 19 + Vite + TypeScript. 런타임 의존성은 React와 react-router-dom뿐입니다.
 
-## About the design files
+## 샘플 데이터 교체
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+실제 데이터로 한 번에 바꿀 수 있도록 **모든 더미 데이터는 `src/data/` 안에만**
+있습니다. 화면 코드에는 데이터가 한 줄도 하드코딩되어 있지 않으므로, 아래 파일의
+export만 교체하면 됩니다. 타입은 `src/data/types.ts`에 정의되어 있어 형태가 어긋나면
+`npm run typecheck`에서 바로 잡힙니다.
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+| 파일 | 내용 |
+| --- | --- |
+| `products.ts` | 상품 카탈로그 (가격, 성분, 추천 사유, 그라디언트 썸네일) |
+| `skin.ts` | AI 스캔 결과 3종 시나리오, 6개 진단 항목 정의 |
+| `cities.ts` | 도시별 기온·습도·UV, 배송 가능 국가 |
+| `rewards.ts` | 일일/주간 미션, 교환 리워드, 레벨 구간 |
+| `commerce.ts` | 배송사·배송비·도착 예정일, 적립률/사용한도, 주문번호 접두사 |
+| `account.ts` | 데모 회원 프로필, 시작 포인트, 스캔 이력, 기본 언어·도시 |
+| `admin.ts` | 주문·상품·회원·미션설정·리워드재고·CS·KPI·매출·퍼널 |
 
-## Bundle contents
+번역 문구는 `src/i18n/{en,ko,zh,th}.ts`에 있고 `Strings` 인터페이스가 4개 언어의
+키를 강제합니다. 키를 추가하면 네 파일 모두 채워야 컴파일됩니다.
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `AI 피부관리 직구몰 플랫폼` project files (HTML prototypes, assets, components)
+## 구조
+
+```
+src/
+  StoreApp.tsx        고객용 셸 (헤더 + 화면 + 탭바 + 토스트 + PayPal 모달)
+  AdminApp.tsx        관리자 셸 (사이드바 + 뷰 + 토스트)
+  store/              고객용 상태 — 프로토타입 renderVals()를 옮긴 파생 로직
+  admin/              관리자 상태와 6개 뷰
+  screens/            홈 · 스캔 · 쇼핑 · 장바구니 · 결제 3단계 · 루틴 · 미션 · 마이페이지
+  components/         헤더, 탭바, 토스트, PayPal 모달, 셀피 업로드 슬롯
+  data/               샘플 데이터 (위 표)
+  i18n/               4개 언어 문자열
+  lib/css.ts          인라인 CSS 문자열 → React style 객체 변환
+```
+
+### 인라인 스타일에 대해
+
+프로토타입은 모든 규칙을 `style="..."` 문자열로 표현합니다. 픽셀 단위로 동일하게
+옮기기 위해 그 문자열을 그대로 유지하고, `s()` 헬퍼가 런타임에 React style 객체로
+변환합니다 (문자열 단위로 캐시되어 블록당 1회만 파싱). 손으로 camelCase 객체로
+바꿨다면 700여 개 블록에서 시각적 오차가 생길 수 있는 지점이었습니다.
+
+## 프로토타입과 의도적으로 다른 부분
+
+셋 다 원본의 시각적 의도를 살리기 위한 수정이며, 되돌리기 쉽습니다.
+
+1. **토스트 중앙 정렬** — 원본은 `transform:translateX(-50%)`로 가운데 정렬하면서
+   동시에 `animation:rise ... both`를 적용합니다. `rise`의 `to { transform: none }`이
+   채움 모드 때문에 정렬을 덮어써서 토스트가 중앙선에서 오른쪽으로 밀려 잘립니다.
+   정렬을 유지하는 `toastRise` 키프레임을 따로 두었습니다.
+2. **헤더 한 줄 유지** — 430px 폭에 브랜드 + 4개 컨트롤은 영어 기준으로도 약
+   17px 모자랍니다 (한국어는 약 29px). 언어 선택기를 🌐 칩 폭(46px)으로 줄이고
+   포인트·가방 칩에 `white-space:nowrap`을 넣어 (원본이 마이페이지 버튼에만 적용해 둔
+   것과 동일한 처리) 모든 칩이 한 줄로 유지되도록 했습니다. 언어 전체 이름은
+   마이페이지 > 언어에서 그대로 볼 수 있습니다. 브랜드 태그라인
+   `K-BEAUTY · AI SKIN LAB`은 폭이 부족하면 말줄임 처리됩니다.
+3. **셀피 업로드 슬롯** — `project/image-slot.js`(1,225줄)는 디자인 캔버스 편집기용
+   기능(리프레임 핸들, Unsplash 크레딧, 사이드카 저장, 캔버스 재인코딩)이 대부분입니다.
+   제품 동작에 해당하는 부분만 `components/ImageSlot.tsx`로 옮겼습니다 — 빈 상태
+   플레이스홀더, 클릭/드래그 업로드, 드롭 하이라이트, `clip-path` 마스크, cover 맞춤.
+
+## 아직 데모인 것
+
+프로토타입과 동일하게 동작하되 실제 연동은 되어 있지 않은 부분입니다.
+
+- **AI 스캔** — 3.5초 애니메이션 후 `data/skin.ts`의 고정 결과를 보여줍니다.
+- **날씨** — `data/cities.ts`의 정적 값. 습도·UV 기반 루틴 분기 로직은 실제로 동작합니다.
+- **PayPal** — 샌드박스 UI 모사. 1.5초 후 주문이 생성되며 실제 결제는 없습니다.
+- **상태 저장** — 메모리에만 있어 새로고침 시 초기화됩니다. 장바구니·포인트·언어를
+  유지하려면 `store/StoreContext.tsx`에 영속화를 추가하면 됩니다.
+- **인증** — 없습니다. `/admin`은 접근 제어 없이 열립니다.
+
+원본 핸드오프 안내는 `HANDOFF.md`, 디자인 원본은 `project/`, 대화 기록은 `chats/`에
+그대로 두었습니다.
