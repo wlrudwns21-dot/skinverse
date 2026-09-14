@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Albert+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EFEBE2;font-family:'Albert Sans','Noto Sans KR',sans-serif;-webkit-font-smoothing:antialiased;color:#221C15}
+a{color:#2E6B58;text-decoration:none}a:hover{color:#1F4A3D}
+input,select,button{font-family:inherit}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="display:flex;min-height:100vh;max-width:1280px;margin:0 auto;background:#F8F5EF;box-shadow:0 0 60px rgba(60,45,25,0.1)">
+
+<div style="width:216px;flex-shrink:0;background:#221C15;color:#D8CFBF;display:flex;flex-direction:column;padding:22px 0">
+  <div style="padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,0.1)">
+    <div style="font-family:Marcellus,serif;font-size:19px;letter-spacing:0.06em;color:#F5F0E6">SKINVERSE</div>
+    <div style="font-size:10px;letter-spacing:0.14em;color:#8A7D6C;margin-top:3px">ADMIN CONSOLE · 관리자</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:2px;padding:14px 10px;flex:1">
+    <sc-for list="{{ menu }}" as="m" hint-placeholder-count="6">
+      <div onClick="{{ m.go }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:600;background:{{ m.bg }};color:{{ m.color }}">
+        <span>{{ m.label }}</span>
+        <sc-if value="{{ m.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="background:#C25E43;color:#FFF;border-radius:999px;font-size:10px;font-weight:700;padding:2px 7px">{{ m.badge }}</span></sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <div style="padding:14px 20px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px">
+    <a href="Skinverse.dc.html" style="color:#C7B99E;font-weight:600">↗ 스토어 보기 · View store</a>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+      <div style="width:28px;height:28px;border-radius:50%;background:#2E6B58;color:#F3EFE6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">관</div>
+      <div><div style="color:#F5F0E6;font-weight:600">운영자</div><div style="font-size:10.5px;color:#8A7D6C">admin@skinverse.kr</div></div>
+    </div>
+  </div>
+</div>
+
+<div style="flex:1;min-width:0;padding:26px 28px 40px">
+
+<sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+  <div style="animation:rise .3s ease both">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <div style="font-family:Marcellus,serif;font-size:24px">대시보드</div>
+      <div style="font-size:12px;color:#8A7D6C">2026년 9월 14일 (일) · 오늘 기준</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:16px">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px">
+          <div style="font-size:12px;color:#8A7D6C">{{ k.label }}</div>
+          <div style="font-family:Marcellus,serif;font-size:26px;margin-top:6px">{{ k.value }}</div>
+          <div style="font-size:11.5px;font-weight:700;margin-top:4px;color:{{ k.deltaColor }}">{{ k.delta }} vs 어제</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;margin-top:12px">
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px">
+        <div style="font-size:13px;font-weight:700">국가별 매출 (7일) · Sales by country</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+          <sc-for list="{{ countrySales }}" as="c" hint-placeholder-count="5">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="font-weight:600">{{ c.name }}</span><span style="color:#6E6252">{{ c.amt }}</span></div>
+              <div style="height:8px;background:#EFE9DD;border-radius:99px;overflow:hidden"><div style="height:100%;width:{{ c.w }};background:#2E6B58;border-radius:99px"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px">
+        <div style="font-size:13px;font-weight:700">AI 스캔 → 구매 전환</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+          <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="4">
+            <div style="background:#EAF1EC;border-radius:8px;padding:9px 12px;font-size:12px;display:flex;justify-content:space-between;width:{{ f.w }};min-width:170px;box-sizing:border-box">
+              <span style="font-weight:600;color:#2C4A3E">{{ f.label }}</span><b>{{ f.n }}</b>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:11.5px;color:#8A7D6C;margin-top:10px">스캔 완료 고객 전환율 <b style="color:#2E6B58">24.9%</b> (미스캔 대비 3.1×)</div>
+      </div>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px;margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:700">최근 주문</div><div onClick="{{ goOrders }}" style="cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600">전체 보기 →</div></div>
+      <div style="margin-top:8px;overflow-x:auto">
+        <div style="min-width:640px">
+          <div style="display:grid;grid-template-columns:1.2fr 1fr 0.9fr 0.8fr 1fr;gap:8px;font-size:11px;color:#8A7D6C;font-weight:700;letter-spacing:0.04em;padding:8px 6px;border-bottom:1px solid #ECE6DA">
+            <span>주문번호</span><span>고객 / 국가</span><span>금액</span><span>배송</span><span>상태</span>
+          </div>
+          <sc-for list="{{ recentOrders }}" as="o" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 0.9fr 0.8fr 1fr;gap:8px;font-size:12.5px;padding:10px 6px;border-bottom:1px solid #F1ECE2;align-items:center">
+              <b>{{ o.no }}</b><span>{{ o.customer }}</span><span>{{ o.amt }}</span><span style="color:#6E6252">{{ o.carrier }}</span>
+              <span style="{{ o.stStyle }}">{{ o.stLabel }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:rise .3s ease both">
+    <div style="font-family:Marcellus,serif;font-size:24px">주문 관리</div>
+    <div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap">
+      <sc-for list="{{ orderChips }}" as="c" hint-placeholder-count="5">
+        <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:6px 16px 16px;overflow-x:auto">
+      <div style="min-width:760px">
+        <div style="display:grid;grid-template-columns:1.1fr 1.1fr 0.7fr 0.9fr 1fr 1.1fr;gap:8px;font-size:11px;color:#8A7D6C;font-weight:700;padding:10px 6px;border-bottom:1px solid #ECE6DA">
+          <span>주문번호 / 일시</span><span>고객 / 국가</span><span>금액</span><span>배송 방법</span><span>운송장</span><span>상태 변경</span>
+        </div>
+        <sc-for list="{{ orderList }}" as="o" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:1.1fr 1.1fr 0.7fr 0.9fr 1fr 1.1fr;gap:8px;font-size:12.5px;padding:11px 6px;border-bottom:1px solid #F1ECE2;align-items:center">
+            <div><b>{{ o.no }}</b><div style="font-size:11px;color:#8A7D6C">{{ o.date }}</div></div>
+            <div>{{ o.name }}<div style="font-size:11px;color:#8A7D6C">{{ o.country }}</div></div>
+            <b>{{ o.amt }}</b>
+            <span style="color:#6E6252">{{ o.carrier }}</span>
+            <span style="font-size:11.5px;color:#6E6252">{{ o.tracking }}</span>
+            <select value="{{ o.status }}" onChange="{{ o.setStatus }}" style="border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:12px;background:#FFFFFF;outline:none;cursor:pointer;max-width:130px">
+              <option value="paid">결제완료</option><option value="preparing">배송준비</option><option value="shipped">발송완료</option><option value="delivered">배송완료</option><option value="cancelled">취소</option>
+            </select>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isProducts }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:rise .3s ease both">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div style="font-family:Marcellus,serif;font-size:24px">상품 관리</div>
+      <div style="font-size:12px;color:#8A7D6C">재고 5개 이하 <b style="color:#C25E43">{{ lowStockN }}건</b></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+      <sc-for list="{{ prodList }}" as="p" hint-placeholder-count="6">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px 14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <div style="width:52px;height:52px;border-radius:10px;background:{{ p.grad }};flex-shrink:0"></div>
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:10px;color:#8A7D6C;letter-spacing:0.1em">{{ p.brand }}</div>
+            <div style="font-size:13.5px;font-weight:600">{{ p.name }}</div>
+            <div style="font-size:11.5px;color:#A2957F">{{ p.kind }} · {{ p.ml }} · ${{ p.price }}</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:11px;color:#8A7D6C;font-weight:700">재고</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+              <div onClick="{{ p.dec }}" style="cursor:pointer;width:24px;height:24px;border:1px solid #D8CFBF;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700">−</div>
+              <b style="min-width:30px;text-align:center;font-size:14px;color:{{ p.stockColor }}">{{ p.stock }}</b>
+              <div onClick="{{ p.inc }}" style="cursor:pointer;width:24px;height:24px;border:1px solid #D8CFBF;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700">+</div>
+            </div>
+          </div>
+          <div style="text-align:center;min-width:70px">
+            <div style="font-size:11px;color:#8A7D6C;font-weight:700">이달 판매</div>
+            <b style="font-size:14px">{{ p.sold }}</b>
+          </div>
+          <div onClick="{{ p.toggle }}" style="cursor:pointer;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;{{ p.activeStyle }}">{{ p.activeLabel }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isUsers }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:rise .3s ease both">
+    <div style="font-family:Marcellus,serif;font-size:24px">회원 관리</div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:6px 16px 16px;margin-top:14px;overflow-x:auto">
+      <div style="min-width:700px">
+        <div style="display:grid;grid-template-columns:1.3fr 0.8fr 0.7fr 0.8fr 0.9fr 1fr;gap:8px;font-size:11px;color:#8A7D6C;font-weight:700;padding:10px 6px;border-bottom:1px solid #ECE6DA">
+          <span>회원</span><span>국가</span><span>레벨</span><span>포인트</span><span>스캔 / 주문</span><span>포인트 지급</span>
+        </div>
+        <sc-for list="{{ userList }}" as="u" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:1.3fr 0.8fr 0.7fr 0.8fr 0.9fr 1fr;gap:8px;font-size:12.5px;padding:11px 6px;border-bottom:1px solid #F1ECE2;align-items:center">
+            <div><b>{{ u.name }}</b><div style="font-size:11px;color:#8A7D6C">{{ u.email }}</div></div>
+            <span>{{ u.country }}</span>
+            <span style="background:#EAF1EC;color:#2E6B58;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;justify-self:start">{{ u.level }}</span>
+            <b>{{ u.pts }} P</b>
+            <span style="color:#6E6252">{{ u.activity }}</span>
+            <div onClick="{{ u.grant }}" style="cursor:pointer;background:#221C15;color:#F5F0E6;border-radius:999px;padding:7px 0;font-size:11.5px;font-weight:700;text-align:center;max-width:110px">+100 P 지급</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isMissions }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:rise .3s ease both">
+    <div style="font-family:Marcellus,serif;font-size:24px">미션 · 포인트 설정</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:14px">
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px">
+        <div style="font-size:13px;font-weight:700">미션 보상 (P)</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+          <sc-for list="{{ missionCfg }}" as="m" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="flex:1"><div style="font-size:13px;font-weight:600;color:{{ m.txtColor }}">{{ m.label }}</div><div style="font-size:11px;color:#A2957F">{{ m.cat }}</div></div>
+              <input type="number" value="{{ m.pts }}" onChange="{{ m.setPts }}" style="width:64px;border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:13px;font-weight:700;text-align:right;outline:none;background:#FFFFFF">
+              <div onClick="{{ m.toggle }}" style="cursor:pointer;width:40px;height:24px;border-radius:99px;background:{{ m.togBg }};position:relative;transition:background .2s;flex-shrink:0"><div style="position:absolute;top:3px;left:{{ m.togLeft }};width:18px;height:18px;border-radius:50%;background:#FFF;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px">
+          <div style="font-size:13px;font-weight:700">구매 적립 · 사용 규칙</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;font-size:13px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>구매 $1당 적립</span><div style="display:flex;align-items:center;gap:6px"><input type="number" value="{{ earnRate }}" onChange="{{ setEarnRate }}" style="width:56px;border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:13px;font-weight:700;text-align:right;outline:none"><span style="color:#8A7D6C">P</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>포인트 사용 한도 (주문액 대비)</span><div style="display:flex;align-items:center;gap:6px"><input type="number" value="{{ useCap }}" onChange="{{ setUseCap }}" style="width:56px;border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:13px;font-weight:700;text-align:right;outline:none"><span style="color:#8A7D6C">%</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>스트릭 보너스 (일일 미션 전체 달성)</span><div style="display:flex;align-items:center;gap:6px"><input type="number" value="{{ streakBonus }}" onChange="{{ setStreakBonus }}" style="width:56px;border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:13px;font-weight:700;text-align:right;outline:none"><span style="color:#8A7D6C">P</span></div></div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px">
+          <div style="font-size:13px;font-weight:700">교환 리워드 재고</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+            <sc-for list="{{ rewardCfg }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+                <span style="font-weight:600">{{ r.name }} <span style="color:#A2957F;font-weight:400">· {{ r.cost }} P</span></span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div onClick="{{ r.dec }}" style="cursor:pointer;width:22px;height:22px;border:1px solid #D8CFBF;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">−</div>
+                  <b style="min-width:26px;text-align:center;color:{{ r.color }}">{{ r.stock }}</b>
+                  <div onClick="{{ r.inc }}" style="cursor:pointer;width:22px;height:22px;border:1px solid #D8CFBF;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">+</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCs }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:rise .3s ease both">
+    <div style="font-family:Marcellus,serif;font-size:24px">CS 문의</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+      <sc-for list="{{ csList }}" as="c" hint-placeholder-count="5">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+            <div style="flex:1;min-width:220px">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span style="background:#F1EAF3;color:#6B4B78;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700">{{ c.cat }}</span>
+                <b style="font-size:13.5px">{{ c.title }}</b>
+              </div>
+              <div style="font-size:12px;color:#6E6252;margin-top:6px;line-height:1.5">{{ c.body }}</div>
+              <div style="font-size:11px;color:#A2957F;margin-top:6px">{{ c.who }}</div>
+            </div>
+            <div onClick="{{ c.toggle }}" style="cursor:pointer;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;white-space:nowrap;{{ c.btnStyle }}">{{ c.btnLabel }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#221C15;color:#F5F0E6;border-radius:999px;padding:10px 18px;font-size:12.5px;font-weight:600;z-index:60;white-space:nowrap;animation:rise .25s ease both;box-shadow:0 8px 24px rgba(0,0,0,0.25)">{{ toast }}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { view:'dash', orderFilter:'all', toast:'',
+    orders:[
+      {no:'SV-2609-4821',date:'09-14 10:42',name:'Yuki Tanaka',country:'🇯🇵 Japan',amt:74,carrier:'DHL',tracking:'—',status:'paid'},
+      {no:'SV-2609-4820',date:'09-14 09:15',name:'Li Wei',country:'🇨🇳 China',amt:51,carrier:'EMS',tracking:'—',status:'preparing'},
+      {no:'SV-2609-4818',date:'09-13 22:03',name:'Ploy S.',country:'🇹🇭 Thailand',amt:98,carrier:'DHL',tracking:'DHL 4402 8871',status:'shipped'},
+      {no:'SV-2609-4815',date:'09-13 18:37',name:'Emma Chen',country:'🇸🇬 Singapore',amt:42,carrier:'EMS',tracking:'EM 552 918 KR',status:'shipped'},
+      {no:'SV-2609-4809',date:'09-12 14:11',name:'Sarah Kim',country:'🇺🇸 USA',amt:126,carrier:'DHL',tracking:'DHL 4402 6650',status:'delivered'},
+      {no:'SV-2609-4801',date:'09-11 20:49',name:'Aiko Mori',country:'🇯🇵 Japan',amt:37,carrier:'EMS',tracking:'—',status:'cancelled'}],
+    products:[
+      {id:'p1',brand:'LUMIVE',name:'Hyaluron Barrier Serum',kind:'Serum',ml:'50ml',price:28,stock:142,sold:312,active:true,g:'linear-gradient(150deg,#DDEAE3,#8FBCA6)'},
+      {id:'p2',brand:'HANJUN',name:'Cica Calming Cream',kind:'Cream',ml:'60ml',price:24,stock:87,sold:268,active:true,g:'linear-gradient(150deg,#E7EBDD,#A9B98A)'},
+      {id:'p3',brand:'ONYU',name:'Green Tea Pore Toner',kind:'Toner',ml:'200ml',price:19,stock:4,sold:190,active:true,g:'linear-gradient(150deg,#E3EDE0,#93B58E)'},
+      {id:'p4',brand:'SOLBIT',name:'Vitamin C Glow Ampoule',kind:'Ampoule',ml:'30ml',price:32,stock:56,sold:241,active:true,g:'linear-gradient(150deg,#F4E8D7,#DBB27A)'},
+      {id:'p5',brand:'MIREU',name:'Rice Ceramide Sleep Mask',kind:'Mask',ml:'80ml',price:22,stock:0,sold:154,active:false,g:'linear-gradient(150deg,#F0EBE1,#C9BA9B)'},
+      {id:'p6',brand:'HAERIM',name:'Sun Barrier Fluid SPF50+',kind:'SPF',ml:'50ml',price:18,stock:203,sold:388,active:true,g:'linear-gradient(150deg,#F3E9DC,#E0C08E)'}],
+    users:[
+      {id:'u1',name:'Yuki Tanaka',email:'yuki.t@mail.jp',country:'🇯🇵 Japan',level:'Radiant',pts:1240,activity:'12회 / 5건'},
+      {id:'u2',name:'Li Wei',email:'liwei88@mail.cn',country:'🇨🇳 China',level:'Dewy',pts:820,activity:'8회 / 3건'},
+      {id:'u3',name:'Ploy S.',email:'ploy.s@mail.th',country:'🇹🇭 Thailand',level:'Luminary',pts:4310,activity:'31회 / 14건'},
+      {id:'u4',name:'Emma Chen',email:'emma.c@mail.sg',country:'🇸🇬 Singapore',level:'Dewy',pts:655,activity:'6회 / 2건'},
+      {id:'u5',name:'Sarah Kim',email:'sarahk@mail.us',country:'🇺🇸 USA',level:'Glow Starter',pts:180,activity:'2회 / 1건'},
+      {id:'u6',name:'Aiko Mori',email:'aiko.m@mail.jp',country:'🇯🇵 Japan',level:'Radiant',pts:2050,activity:'19회 / 7건'}],
+    missions:[
+      {id:'m1',label:'아침 루틴 완료',cat:'일일',pts:20,on:true},{id:'m2',label:'선크림 바르기',cat:'일일',pts:10,on:true},
+      {id:'m3',label:'물 1.5L 마시기',cat:'일일',pts:10,on:true},{id:'m4',label:'저녁 루틴 완료',cat:'일일',pts:20,on:true},
+      {id:'w1',label:'시트 마스크 2회 사용',cat:'주간',pts:50,on:true},{id:'w2',label:'주간 AI 피부 스캔',cat:'주간',pts:30,on:true}],
+    rewards:[
+      {id:'r1',name:'시카 크림 샘플 5ml',cost:300,stock:42},{id:'r2',name:'글로우 앰플 샘플 3ml',cost:500,stock:18},
+      {id:'r3',name:'시트 마스크 3매',cost:800,stock:3},{id:'r4',name:'$5 할인 쿠폰',cost:500,stock:999}],
+    earnRate:5, useCap:30, streakBonus:0,
+    cs:[
+      {id:'c1',cat:'배송',title:'통관에서 멈춰 있어요',body:'DHL 트래킹이 3일째 통관 단계에서 안 움직여요. 확인 부탁드립니다.',who:'Ploy S. · 🇹🇭 · 09-14',done:false},
+      {id:'c2',cat:'제품',title:'앰플 사용 순서 문의',body:'비타민C 앰플을 토너 전에 쓰나요, 후에 쓰나요? AI 루틴에는 3단계로 나와요.',who:'Li Wei · 🇨🇳 · 09-13',done:false},
+      {id:'c3',cat:'포인트',title:'스캔 미션 포인트가 안 들어왔어요',body:'주간 스캔을 완료했는데 +30P가 반영되지 않았습니다.',who:'Emma Chen · 🇸🇬 · 09-13',done:true},
+      {id:'c4',cat:'결제',title:'PayPal 이중 결제 확인 요청',body:'같은 주문이 두 번 결제된 것 같아요. 환불 가능한가요?',who:'Sarah Kim · 🇺🇸 · 09-12',done:true}] };
+
+  stMeta = { paid:['결제완료','#B08133','#FBF3E4'], preparing:['배송준비','#6B4B78','#F1EAF3'], shipped:['발송완료','#2E6B58','#EAF1EC'], delivered:['배송완료','#6E6252','#F1EEE6'], cancelled:['취소','#C25E43','#FBE9E3'] };
+  toastMsg(m){ clearTimeout(this._tt); this.setState({toast:m}); this._tt = setTimeout(()=>this.setState({toast:''}), 2400); }
+  componentWillUnmount(){ clearTimeout(this._tt); }
+  upd(key, id, fn){ this.setState({[key]: this.state[key].map(x => x.id===id||x.no===id ? fn(x) : x)}); }
+
+  renderVals(){
+    const st = this.state, go = v => () => this.setState({view:v});
+    const pendingCs = st.cs.filter(c=>!c.done).length;
+    const newOrders = st.orders.filter(o=>o.status==='paid'||o.status==='preparing').length;
+    const menu = [
+      ['dash','대시보드',0],['orders','주문 관리',newOrders],['products','상품 관리',st.products.filter(p=>p.stock<=5).length],
+      ['users','회원 관리',0],['missions','미션 · 포인트',0],['cs','CS 문의',pendingCs]
+    ].map(([id,label,badge]) => ({label, badge, hasBadge:badge>0, go:go(id),
+      bg: st.view===id?'rgba(255,255,255,0.12)':'transparent', color: st.view===id?'#F5F0E6':'#B0A490'}));
+
+    const oview = o => { const m = this.stMeta[o.status];
+      return {...o, amt:'$'+o.amt.toFixed(2), customer:o.name+' '+o.country.split(' ')[0], stLabel:m[0],
+        stStyle:'justify-self:start;background:'+m[2]+';color:'+m[1]+';border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700',
+        setStatus:e=>{ this.upd('orders', o.no, x=>({...x, status:e.target.value, tracking: e.target.value==='shipped'&&x.tracking==='—' ? (x.carrier==='DHL'?'DHL 4402 '+Math.floor(1000+Math.random()*9000):'EM '+Math.floor(100+Math.random()*900)+' '+Math.floor(100+Math.random()*900)+' KR') : x.tracking}));
+          this.toastMsg(o.no+' → '+this.stMeta[e.target.value][0]); }}; };
+    const orderList = (st.orderFilter==='all' ? st.orders : st.orders.filter(o=>o.status===st.orderFilter)).map(oview);
+    const orderChips = [['all','전체'],['paid','결제완료'],['preparing','배송준비'],['shipped','발송완료'],['delivered','배송완료'],['cancelled','취소']].map(([id,label]) => ({label,
+      pick:()=>this.setState({orderFilter:id}),
+      style:'cursor:pointer;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;'+(st.orderFilter===id?'background:#221C15;color:#F5F0E6':'background:#FFFFFF;border:1px solid #D8CFBF;color:#4A4234')}));
+
+    const sales = [['🇯🇵 Japan',3120],['🇨🇳 China',2440],['🇹🇭 Thailand',1180],['🇸🇬 Singapore',960],['🇺🇸 USA',870]];
+    const mx = sales[0][1];
+    const countrySales = sales.map(([name,v]) => ({name, amt:'$'+v.toLocaleString(), w:Math.round(v/mx*100)+'%'}));
+    const fun = [['방문',4820],['AI 스캔 완료',1930],['장바구니 담기',742],['구매 완료',481]];
+    const funnel = fun.map(([label,n],i) => ({label, n:n.toLocaleString(), w:(100-i*20)+'%'}));
+
+    return {
+      menu, goOrders:go('orders'),
+      isDash:st.view==='dash', isOrders:st.view==='orders', isProducts:st.view==='products', isUsers:st.view==='users', isMissions:st.view==='missions', isCs:st.view==='cs',
+      kpis:[
+        {label:'오늘 매출', value:'$1,284', delta:'+18%', deltaColor:'#2E6B58'},
+        {label:'오늘 주문', value:'23건', delta:'+4건', deltaColor:'#2E6B58'},
+        {label:'AI 스캔 (오늘)', value:'147회', delta:'+31%', deltaColor:'#2E6B58'},
+        {label:'신규 가입', value:'38명', delta:'−5%', deltaColor:'#C25E43'}],
+      countrySales, funnel, recentOrders: st.orders.slice(0,5).map(oview),
+      orderList, orderChips,
+      lowStockN: st.products.filter(p=>p.stock<=5).length,
+      prodList: st.products.map(p => ({...p, grad:p.g, stockColor:p.stock<=5?'#C25E43':'#221C15',
+        inc:()=>this.upd('products',p.id,x=>({...x,stock:x.stock+10})), dec:()=>this.upd('products',p.id,x=>({...x,stock:Math.max(0,x.stock-10)})),
+        toggle:()=>{this.upd('products',p.id,x=>({...x,active:!x.active})); this.toastMsg(p.name+(p.active?' — 판매 중지':' — 판매 재개'));},
+        activeLabel:p.active?'판매중':'판매중지', activeStyle:p.active?'background:#EAF1EC;color:#2E6B58':'background:#EFE9DD;color:#8A7D6C'})),
+      userList: st.users.map(u => ({...u, pts:u.pts.toLocaleString(),
+        grant:()=>{this.upd('users',u.id,x=>({...x,pts:x.pts+100})); this.toastMsg(u.name+'님에게 100P 지급 완료');}})),
+      missionCfg: st.missions.map(m => ({...m, txtColor:m.on?'#221C15':'#B0A490',
+        setPts:e=>this.upd('missions',m.id,x=>({...x,pts:Math.max(0,parseInt(e.target.value)||0)})),
+        toggle:()=>this.upd('missions',m.id,x=>({...x,on:!x.on})),
+        togBg:m.on?'#2E6B58':'#D8CFBF', togLeft:m.on?'19px':'3px'})),
+      earnRate:st.earnRate, setEarnRate:e=>this.setState({earnRate:Math.max(0,parseInt(e.target.value)||0)}),
+      useCap:st.useCap, setUseCap:e=>this.setState({useCap:Math.max(0,parseInt(e.target.value)||0)}),
+      streakBonus:st.streakBonus, setStreakBonus:e=>this.setState({streakBonus:Math.max(0,parseInt(e.target.value)||0)}),
+      rewardCfg: st.rewards.map(r => ({...r, color:r.stock<=5?'#C25E43':'#221C15',
+        inc:()=>this.upd('rewards',r.id,x=>({...x,stock:x.stock+10})), dec:()=>this.upd('rewards',r.id,x=>({...x,stock:Math.max(0,x.stock-10)}))})),
+      csList: st.cs.map(c => ({...c, toggle:()=>this.upd('cs',c.id,x=>({...x,done:!x.done})),
+        btnLabel:c.done?'답변완료 ✓':'답변 대기', btnStyle:c.done?'background:#EAF1EC;color:#2E6B58':'background:#221C15;color:#F5F0E6'})),
+      toast:st.toast, toastOn:!!st.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

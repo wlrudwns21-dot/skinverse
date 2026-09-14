@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Albert+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#E7E1D6;font-family:'Albert Sans','Noto Sans KR','Noto Sans SC','Noto Sans Thai',sans-serif;-webkit-font-smoothing:antialiased;color:#221C15}
+a{color:#2E6B58;text-decoration:none}a:hover{color:#1F4A3D}
+input,select,button{font-family:inherit}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes scanline{0%{top:6%}50%{top:90%}100%{top:6%}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;justify-content:center;background:radial-gradient(120% 80% at 50% 0%, #F0EBE1 0%, #E7E1D6 60%)">
+<div style="width:100%;max-width:430px;min-height:100vh;background:#F8F5EF;box-shadow:0 0 60px rgba(60,45,25,0.12);display:flex;flex-direction:column;position:relative">
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:18px 16px 14px;position:sticky;top:0;background:rgba(248,245,239,0.92);backdrop-filter:blur(8px);z-index:20;border-bottom:1px solid #ECE6DA">
+  <div onClick="{{ goHome }}" style="cursor:pointer;line-height:1">
+    <div style="font-family:Marcellus,serif;font-size:21px;letter-spacing:0.06em">SKINVERSE</div>
+    <div style="font-size:10px;color:#8A7D6C;letter-spacing:0.14em;margin-top:2px">K-BEAUTY · AI SKIN LAB</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:7px">
+    <select value="{{ lang }}" onChange="{{ setLang }}" style="border:1px solid #D8CFBF;border-radius:999px;padding:6px 8px;font-size:11px;font-weight:600;background:#FFFFFF;outline:none;cursor:pointer;max-width:78px">
+      <option value="en">🌐 EN</option><option value="ko">🌐 한국어</option><option value="zh">🌐 中文</option><option value="th">🌐 ไทย</option>
+    </select>
+    <div onClick="{{ goMissions }}" style="cursor:pointer;background:#221C15;color:#F3E9D6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600">{{ pointsS }} P</div>
+    <div onClick="{{ goCart }}" style="cursor:pointer;position:relative;border:1px solid #D8CFBF;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;background:#FFFFFF">{{ t.bag }}
+      <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-5px;right:-5px;background:#C25E43;color:#FFF;border-radius:999px;font-size:10px;min-width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;padding:0 3px">{{ cartCount }}</span></sc-if>
+    </div>
+    <div onClick="{{ goMy }}" style="cursor:pointer;background:#2E6B58;color:#F3EFE6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0">{{ t.myPage }}</div>
+  </div>
+</div>
+
+<div style="flex:1;padding:0 0 96px">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div style="background:#221C15;color:#F5F0E6;border-radius:20px;padding:24px 22px;position:relative;overflow:hidden">
+      <div style="position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#3C6B58 0%,transparent 70%);opacity:.6"></div>
+      <div style="font-size:11px;letter-spacing:0.14em;color:#C7B99E">{{ t.kicker }}</div>
+      <div style="font-family:Marcellus,serif;font-size:27px;line-height:1.25;margin:10px 0 6px">{{ t.heroT }}</div>
+      <div style="font-size:13px;color:#BDB2A0;line-height:1.5">{{ t.heroSub }}</div>
+      <div onClick="{{ goScan }}" style="cursor:pointer;display:inline-block;margin-top:16px;background:#F5F0E6;color:#221C15;border-radius:999px;padding:11px 20px;font-size:13px;font-weight:700">{{ t.startBtn }} →</div>
+    </div>
+
+    <div onClick="{{ goRoutine }}" style="cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div>
+        <div style="font-size:12px;color:#8A7D6C">{{ t.todayIn }} {{ cityName }}</div>
+        <div style="font-size:14px;font-weight:600;margin-top:3px">{{ wLine }}</div>
+        <div style="font-size:12px;color:#2E6B58;margin-top:3px;font-weight:500">{{ wHint }}</div>
+      </div>
+      <div style="color:#B0A490;font-size:18px">→</div>
+    </div>
+
+    <sc-if value="{{ scanned }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ goScan }}" style="cursor:pointer;margin-top:14px;background:#EAF1EC;border:1px solid #CFE0D4;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px">
+        <div style="{{ dialSmStyle }}"><div style="width:40px;height:40px;border-radius:50%;background:#EAF1EC;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">{{ overall }}</div></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">{{ t.skinScore }} {{ overall }} — {{ skinType }}</div>
+          <div style="font-size:12px;color:#5E7A6C;margin-top:2px">{{ t.viewReport }} →</div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ notScanned }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:14px;border:1px dashed #D3C9B7;border-radius:16px;padding:14px 16px;font-size:12px;color:#8A7D6C;line-height:1.5">{{ t.noScan }}</div>
+    </sc-if>
+
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px">
+      <div style="font-family:Marcellus,serif;font-size:18px">{{ t.matched }}</div>
+      <div onClick="{{ goShop }}" style="cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600">{{ t.allProducts }} →</div>
+    </div>
+    <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px">
+      <sc-for list="{{ homeRecs }}" as="p" hint-placeholder-count="3">
+        <div onClick="{{ p.open }}" style="cursor:pointer;min-width:150px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:10px">
+          <div style="height:110px;border-radius:10px;background:{{ p.grad }};display:flex;align-items:flex-end;padding:8px;box-sizing:border-box">
+            <span style="background:rgba(255,255,255,0.85);border-radius:6px;font-size:10px;padding:3px 6px;font-weight:600;color:#4A4234">{{ p.kind }}</span>
+          </div>
+          <div style="font-size:10px;color:#8A7D6C;letter-spacing:0.1em;margin-top:8px">{{ p.brand }}</div>
+          <div style="font-size:12px;font-weight:600;line-height:1.3;margin-top:2px">{{ p.name }}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-size:13px;font-weight:700">{{ p.priceS }}</span>
+            <span style="font-size:10px;font-weight:700;color:#2E6B58;background:#EAF1EC;border-radius:6px;padding:2px 6px">{{ p.matchS }} {{ t.match }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div onClick="{{ goMissions }}" style="cursor:pointer;margin-top:16px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:13px;font-weight:700">{{ t.todayMissions }} {{ dailyDoneS }}</div>
+        <div style="font-size:12px;color:#8A7D6C;margin-top:2px">🔥 {{ streakLine }} · Lv. {{ levelName }}</div>
+      </div>
+      <div style="background:#C29A5B;color:#FFF;border-radius:999px;font-size:11px;font-weight:700;padding:6px 10px">{{ t.earnP }} →</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isScanIntro }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:24px 20px;animation:rise .4s ease both">
+    <div style="font-family:Marcellus,serif;font-size:24px">{{ t.scanTitle }}</div>
+    <div style="font-size:13px;color:#8A7D6C;margin-top:4px">{{ t.scanSub }}</div>
+    <div style="display:flex;justify-content:center;margin:22px 0">
+      <div style="width:210px;height:270px;position:relative">
+        <image-slot id="selfie" mask="ellipse(50% 50% at 50% 50%)" placeholder="{{ t.selfiePh }}"></image-slot>
+        <div style="position:absolute;inset:-8px;border:1.5px dashed #B9AC93;border-radius:50%;pointer-events:none"></div>
+      </div>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:10px;font-size:13px"><span style="color:#2E6B58;font-weight:700">✓</span><span>{{ t.tip1 }}</span></div>
+      <div style="display:flex;gap:10px;font-size:13px"><span style="color:#2E6B58;font-weight:700">✓</span><span>{{ t.tip2 }}</span></div>
+      <div style="display:flex;gap:10px;font-size:13px"><span style="color:#2E6B58;font-weight:700">✓</span><span>{{ t.tip3 }}</span></div>
+    </div>
+    <div onClick="{{ startScan }}" style="cursor:pointer;margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700">{{ t.beginScan }}</div>
+    <div style="text-align:center;font-size:11px;color:#A2957F;margin-top:10px">{{ t.demoNote }}</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isScanning }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:40px 20px;display:flex;flex-direction:column;align-items:center;animation:rise .3s ease both">
+    <div style="width:220px;height:280px;border-radius:110px;background:linear-gradient(160deg,#EDE6D8,#DDD2BE);position:relative;overflow:hidden;border:1px solid #D8CDB8">
+      <div style="position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,#2E6B58,transparent);box-shadow:0 0 14px #2E6B58;animation:scanline 2.4s ease-in-out infinite"></div>
+      <div style="position:absolute;inset:14px;border:1px dashed rgba(46,107,88,0.4);border-radius:100px"></div>
+    </div>
+    <div style="margin-top:26px;width:56px;height:56px;border-radius:50%;border:3px solid #E4DCCB;border-top-color:#2E6B58;animation:spin 1s linear infinite"></div>
+    <div style="font-family:Marcellus,serif;font-size:26px;margin-top:18px">{{ progress }}%</div>
+    <div style="font-size:13px;color:#6E6252;margin-top:6px;animation:pulse 1.6s ease infinite">{{ scanStatus }}</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isScanResults }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:24px 20px;animation:rise .4s ease both">
+    <div style="text-align:center">
+      <div style="display:inline-flex;{{ dialStyle }}">
+        <div style="width:112px;height:112px;border-radius:50%;background:#F8F5EF;margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-family:Marcellus,serif;font-size:36px;line-height:1">{{ overall }}</div>
+          <div style="font-size:10px;color:#8A7D6C;letter-spacing:0.12em;margin-top:2px">{{ t.skinScoreU }}</div>
+        </div>
+      </div>
+      <div style="font-size:16px;font-weight:700;margin-top:12px">{{ skinType }}</div>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:18px;display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="6">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+            <span style="font-weight:600">{{ m.nameL }}</span>
+            <span style="font-weight:700;color:{{ m.color }}">{{ m.score }} · {{ m.label }}</span>
+          </div>
+          <div style="height:6px;background:#EFE9DD;border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;width:{{ m.w }};background:{{ m.color }};transition:width .8s ease"></div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="background:#EAF1EC;border-radius:16px;padding:16px;margin-top:12px;font-size:13px;line-height:1.6;color:#2C4A3E"><b>{{ t.insight }}</b><br>{{ summary }}</div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <div onClick="{{ goShop }}" style="cursor:pointer;flex:1;background:#221C15;color:#F5F0E6;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700">{{ t.matchedBtn }}</div>
+      <div onClick="{{ goRoutine }}" style="cursor:pointer;flex:1;background:#FFFFFF;border:1px solid #D8CFBF;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700">{{ t.routineBtn }}</div>
+    </div>
+    <div onClick="{{ startScan }}" style="cursor:pointer;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px;text-decoration:underline">{{ t.rescan }}</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isShop }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div style="font-family:Marcellus,serif;font-size:22px">{{ t.shopTitle }}</div>
+    <div style="font-size:12px;color:#8A7D6C;margin-top:2px">{{ t.shopSub }} 🇰🇷</div>
+    <div style="display:flex;gap:8px;overflow-x:auto;margin:14px 0;padding-bottom:4px">
+      <sc-for list="{{ chips }}" as="c" hint-placeholder-count="4">
+        <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <sc-for list="{{ shopList }}" as="p" hint-placeholder-count="6">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:10px;display:flex;flex-direction:column">
+          <div onClick="{{ p.open }}" style="cursor:pointer;height:120px;border-radius:10px;background:{{ p.grad }};display:flex;align-items:flex-end;padding:8px;box-sizing:border-box">
+            <span style="background:rgba(255,255,255,0.85);border-radius:6px;font-size:10px;padding:3px 6px;font-weight:600;color:#4A4234">{{ p.kind }} · {{ p.ml }}</span>
+          </div>
+          <div onClick="{{ p.open }}" style="cursor:pointer;flex:1">
+            <div style="font-size:10px;color:#8A7D6C;letter-spacing:0.1em;margin-top:8px">{{ p.brand }}</div>
+            <div style="font-size:12.5px;font-weight:600;line-height:1.3;margin-top:2px">{{ p.name }}</div>
+            <div style="font-size:11px;color:#A2957F">{{ p.sub }}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div><div style="font-size:14px;font-weight:700">{{ p.priceS }}</div><div style="font-size:10px;font-weight:700;color:#2E6B58">{{ p.matchS }} {{ t.match }}</div></div>
+            <div onClick="{{ p.add }}" style="cursor:pointer;background:#221C15;color:#F5F0E6;border-radius:999px;font-size:11px;font-weight:700;padding:8px 12px">+ {{ t.bag }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div onClick="{{ goShop }}" style="cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:12px">← {{ t.shopTitle }}</div>
+    <div style="height:230px;border-radius:18px;background:{{ selGrad }};display:flex;align-items:flex-end;padding:14px;box-sizing:border-box">
+      <span style="background:rgba(255,255,255,0.88);border-radius:8px;font-size:12px;padding:5px 10px;font-weight:600;color:#4A4234">{{ selKind }} · {{ selMl }}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:16px;gap:10px">
+      <div>
+        <div style="font-size:11px;color:#8A7D6C;letter-spacing:0.12em">{{ selBrand }}</div>
+        <div style="font-family:Marcellus,serif;font-size:22px;line-height:1.2;margin-top:2px">{{ selName }}</div>
+        <div style="font-size:13px;color:#A2957F;margin-top:2px">{{ selSub }}</div>
+      </div>
+      <div style="text-align:right"><div style="font-size:20px;font-weight:700">{{ selPrice }}</div><div style="font-size:11px;font-weight:700;color:#2E6B58;background:#EAF1EC;border-radius:6px;padding:3px 7px;margin-top:4px">{{ selMatch }} {{ t.match }}</div></div>
+    </div>
+    <div style="background:#EAF1EC;border-radius:14px;padding:14px;margin-top:14px;font-size:13px;line-height:1.55;color:#2C4A3E"><b>{{ t.whyT }}</b><br>{{ selWhy }}</div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px;margin-top:10px;font-size:13px"><b>{{ t.ingT }}</b><div style="color:#6E6252;margin-top:4px;line-height:1.5">{{ selIng }}</div></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <div onClick="{{ selAdd }}" style="cursor:pointer;flex:1;background:#FFFFFF;border:1.5px solid #221C15;border-radius:999px;padding:14px;text-align:center;font-size:13px;font-weight:700">{{ t.addBag }}</div>
+      <div onClick="{{ selBuy }}" style="cursor:pointer;flex:1;background:#221C15;color:#F5F0E6;border-radius:999px;padding:14px;text-align:center;font-size:13px;font-weight:700">{{ t.buyNow }}</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCart }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div style="font-family:Marcellus,serif;font-size:22px">{{ t.cartTitle }}</div>
+    <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px dashed #D3C9B7;border-radius:16px;padding:30px;text-align:center;font-size:13px;color:#8A7D6C;margin-top:16px">{{ t.cartEmpty }}<div onClick="{{ goShop }}" style="cursor:pointer;color:#2E6B58;font-weight:700;margin-top:8px">{{ t.browse }} →</div></div>
+    </sc-if>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+      <sc-for list="{{ cartItems }}" as="it" hint-placeholder-count="2">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center">
+          <div style="width:56px;height:56px;border-radius:10px;background:{{ it.grad }};flex-shrink:0"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:10px;color:#8A7D6C;letter-spacing:0.1em">{{ it.brand }}</div>
+            <div style="font-size:13px;font-weight:600;line-height:1.3">{{ it.name }}</div>
+            <div style="font-size:13px;font-weight:700;margin-top:2px">{{ it.lineS }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div onClick="{{ it.dec }}" style="cursor:pointer;width:26px;height:26px;border:1px solid #D8CFBF;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700">−</div>
+            <div style="font-size:13px;font-weight:700;min-width:14px;text-align:center">{{ it.qty }}</div>
+            <div onClick="{{ it.inc }}" style="cursor:pointer;width:26px;height:26px;border:1px solid #D8CFBF;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700">+</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px;margin-top:14px;font-size:13px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between"><span style="color:#6E6252">{{ t.subtotal }}</span><b>{{ subS }}</b></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#6E6252">{{ t.intlShip }}</span><b>{{ shipS }}</b></div>
+        <div style="display:flex;justify-content:space-between;color:#C29A5B"><span>{{ t.earnPreview }}</span><b>+{{ earnPreview }} P</b></div>
+      </div>
+      <div onClick="{{ goCheckout }}" style="cursor:pointer;margin-top:14px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700">{{ t.checkout }}</div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCk1 }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div onClick="{{ goCart }}" style="cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:10px">← {{ t.bag }}</div>
+    <div style="font-family:Marcellus,serif;font-size:22px">{{ t.shipTitle }} <span style="font-size:13px;color:#A2957F;font-family:'Albert Sans'">· 1/2</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+      <div><div style="font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px">{{ t.fullName }}</div>
+        <input value="{{ nameVal }}" onChange="{{ setName }}" style="width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none"></div>
+      <div><div style="font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px">{{ t.country }}</div>
+        <select value="{{ countryVal }}" onChange="{{ setCountry }}" style="width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none">
+          <option>Japan</option><option>China</option><option>Thailand</option><option>Singapore</option><option>United States</option><option>France</option><option>United Arab Emirates</option>
+        </select></div>
+      <div><div style="font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px">{{ t.address }}</div>
+        <input value="{{ addrVal }}" onChange="{{ setAddr }}" style="width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none"></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin:16px 0 8px">{{ t.shipMethod }}</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div onClick="{{ pickDhl }}" style="cursor:pointer;background:#FFFFFF;border:1.5px solid {{ dhlBorder }};border-radius:14px;padding:13px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div><b style="font-size:13px">DHL Express</b><div style="font-size:12px;color:#8A7D6C">{{ t.dhlDesc }}</div></div><b style="font-size:13px">$12.00</b>
+      </div>
+      <div onClick="{{ pickEms }}" style="cursor:pointer;background:#FFFFFF;border:1.5px solid {{ emsBorder }};border-radius:14px;padding:13px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div><b style="font-size:13px">K-Packet / EMS</b><div style="font-size:12px;color:#8A7D6C">{{ t.emsDesc }}</div></div><b style="font-size:13px">$8.00</b>
+      </div>
+    </div>
+    <div onClick="{{ toPayment }}" style="cursor:pointer;margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700">{{ t.toPayment }}</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCk2 }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div onClick="{{ backShip }}" style="cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:10px">← {{ t.shipTitle }}</div>
+    <div style="font-family:Marcellus,serif;font-size:22px">{{ t.payTitle }} <span style="font-size:13px;color:#A2957F;font-family:'Albert Sans'">· 2/2</span></div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px;margin-top:14px;font-size:13px;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;justify-content:space-between"><span style="color:#6E6252">{{ t.subtotal }}</span><b>{{ subS }}</b></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:#6E6252">{{ t.shipFee }} ({{ shipName }})</span><b>{{ shipS }}</b></div>
+      <div style="display:flex;justify-content:space-between;color:#2E6B58"><span>{{ t.ptsDisc }}</span><b>{{ discS }}</b></div>
+      <div style="border-top:1px solid #ECE6DA;margin-top:4px;padding-top:8px;display:flex;justify-content:space-between;font-size:15px"><b>{{ t.total }}</b><b>{{ totalS }}</b></div>
+    </div>
+    <div onClick="{{ togglePoints }}" style="cursor:pointer;background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b style="font-size:13px">{{ usePtsLine }}</b><div style="font-size:12px;color:#9A8455">{{ t.ptsNote }}</div></div>
+      <div style="width:44px;height:26px;border-radius:99px;background:{{ togBg }};position:relative;transition:background .2s;flex-shrink:0"><div style="position:absolute;top:3px;left:{{ togLeft }};width:20px;height:20px;border-radius:50%;background:#FFF;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)"></div></div>
+    </div>
+    <div onClick="{{ openPaypal }}" style="cursor:pointer;margin-top:16px;background:#0B3D91;color:#FFFFFF;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700">{{ t.payWith }} <i>PayPal</i> · Sandbox</div>
+    <div style="text-align:center;font-size:11px;color:#A2957F;margin-top:10px">{{ t.testNote }}</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCk3 }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:40px 20px;text-align:center;animation:rise .4s ease both">
+    <div style="width:72px;height:72px;border-radius:50%;background:#2E6B58;color:#FFF;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto">✓</div>
+    <div style="font-family:Marcellus,serif;font-size:24px;margin-top:16px">{{ t.confirmed }}</div>
+    <div style="font-size:13px;color:#8A7D6C;margin-top:4px">{{ t.confirmedSub }} 🇰🇷</div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:18px;font-size:13px;text-align:left;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between"><span style="color:#6E6252">{{ t.orderNo }}</span><b>{{ orderNo }}</b></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:#6E6252">{{ t.paidVia }}</span><b>{{ orderTotal }}</b></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:#6E6252">{{ t.delivery }}</span><b>{{ orderEta }}</b></div>
+      <div style="display:flex;justify-content:space-between;color:#C29A5B"><span>{{ t.ptsEarned }}</span><b>+{{ orderEarn }} P</b></div>
+    </div>
+    <div onClick="{{ goShop }}" style="cursor:pointer;margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:14px;font-size:13px;font-weight:700">{{ t.contShop }}</div>
+    <div onClick="{{ goMy }}" style="cursor:pointer;margin-top:10px;font-size:13px;color:#2E6B58;font-weight:600">{{ t.viewMy }}</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isRoutine }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><div style="font-family:Marcellus,serif;font-size:22px">{{ t.routineTitle }}</div><div style="font-size:12px;color:#8A7D6C">{{ t.routineSub }}</div></div>
+      <select value="{{ cityName }}" onChange="{{ setCity }}" style="border:1px solid #D8CFBF;border-radius:10px;padding:8px 10px;font-size:12px;background:#FFFFFF;outline:none">
+        <option>Tokyo</option><option>Shanghai</option><option>Bangkok</option><option>Singapore</option><option>New York</option><option>Paris</option><option>Dubai</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700">{{ wTemp }}°</div><div style="font-size:11px;color:#8A7D6C">{{ t.temp }}</div></div>
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700">{{ wHum }}%</div><div style="font-size:11px;color:#8A7D6C">{{ t.humidity }}</div></div>
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:{{ uvColor }}">{{ wUv }}</div><div style="font-size:11px;color:#8A7D6C">UV</div></div>
+    </div>
+    <div style="background:#221C15;color:#EFE8DA;border-radius:14px;padding:14px;margin-top:10px;font-size:13px;line-height:1.55"><b style="color:#C7B99E">{{ t.adjust }}</b><br>{{ wAdvice }}</div>
+    <div style="font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px">{{ t.morning }} ☀</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ amSteps }}" as="s" hint-placeholder-count="5">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center">
+          <div style="width:26px;height:26px;border-radius:50%;background:#EAF1EC;color:#2E6B58;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ s.n }}</div>
+          <div><div style="font-size:13px;font-weight:600">{{ s.name }}</div><div style="font-size:11.5px;color:#8A7D6C">{{ s.note }}</div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px">{{ t.evening }} ☾</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ pmSteps }}" as="s" hint-placeholder-count="4">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center">
+          <div style="width:26px;height:26px;border-radius:50%;background:#F1EAF3;color:#6B4B78;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ s.n }}</div>
+          <div><div style="font-size:13px;font-weight:600">{{ s.name }}</div><div style="font-size:11.5px;color:#8A7D6C">{{ s.note }}</div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div onClick="{{ goMissions }}" style="cursor:pointer;margin-top:16px;background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center"><b>{{ t.completeCta }}</b><span style="font-weight:700;color:#C29A5B">→</span></div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isMissions }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div style="background:linear-gradient(140deg,#221C15,#3A3226);color:#F5F0E6;border-radius:18px;padding:18px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div style="font-size:11px;letter-spacing:0.14em;color:#C7B99E">{{ t.glowPts }}</div><div style="font-family:Marcellus,serif;font-size:34px;margin-top:4px">{{ pointsS }} P</div></div>
+        <div style="text-align:right;font-size:12px"><div style="background:rgba(255,255,255,0.12);border-radius:99px;padding:5px 10px;font-weight:700">Lv. {{ levelName }}</div><div style="margin-top:6px;color:#C7B99E">🔥 {{ streakLine }}</div></div>
+      </div>
+      <div style="margin-top:14px;font-size:11px;color:#C7B99E;display:flex;justify-content:space-between"><span>{{ levelName }}</span><span>{{ nextLevelS }}</span></div>
+      <div style="height:6px;background:rgba(255,255,255,0.15);border-radius:99px;margin-top:5px;overflow:hidden"><div style="height:100%;width:{{ levelPct }};background:#C29A5B;border-radius:99px"></div></div>
+    </div>
+    <div style="font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px">{{ t.daily }} <span style="font-size:12px;color:#A2957F;font-family:'Albert Sans'">{{ dailyDoneS }}</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ dailyList }}" as="m" hint-placeholder-count="4">
+        <div onClick="{{ m.claim }}" style="cursor:pointer;background:{{ m.bg }};border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+          <div style="width:24px;height:24px;border-radius:8px;background:{{ m.boxBg }};color:#FFF;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ m.mark }}</div>
+          <div style="flex:1;font-size:13px;font-weight:600;{{ m.txtStyle }}">{{ m.label }}</div>
+          <div style="font-size:12px;font-weight:700;color:#C29A5B">+{{ m.pts }} P</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px">{{ t.weekly }}</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ weeklyList }}" as="m" hint-placeholder-count="2">
+        <div onClick="{{ m.claim }}" style="cursor:pointer;background:{{ m.bg }};border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+          <div style="width:24px;height:24px;border-radius:8px;background:{{ m.boxBg }};color:#FFF;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ m.mark }}</div>
+          <div style="flex:1;font-size:13px;font-weight:600;{{ m.txtStyle }}">{{ m.label }}</div>
+          <div style="font-size:12px;font-weight:700;color:#C29A5B">+{{ m.pts }} P</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px">{{ t.redeem }}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <sc-for list="{{ rewardList }}" as="r" hint-placeholder-count="4">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px">
+          <div style="font-size:13px;font-weight:600;line-height:1.3">{{ r.label }}</div>
+          <div onClick="{{ r.redeem }}" style="cursor:pointer;margin-top:10px;text-align:center;border-radius:999px;padding:8px;font-size:12px;font-weight:700;{{ r.btnStyle }}">{{ r.btn }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isMy }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px;animation:rise .4s ease both">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:58px;height:58px;border-radius:50%;background:#2E6B58;color:#F3EFE6;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600">YT</div>
+      <div><div style="font-family:Marcellus,serif;font-size:20px">{{ nameVal }}</div><div style="font-size:12px;color:#8A7D6C">Lv. {{ levelName }} · {{ pointsS }} P · 🔥 {{ streakLine }}</div></div>
+    </div>
+    <div style="font-family:Marcellus,serif;font-size:16px;margin:20px 2px 8px">{{ t.skinHistory }}</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ history }}" as="h" hint-placeholder-count="3">
+        <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13px;font-weight:600">{{ h.date }}</div><div style="font-size:11.5px;color:#8A7D6C">{{ h.type }}</div></div>
+          <div style="font-size:16px;font-weight:700;color:{{ h.color }}">{{ h.score }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-family:Marcellus,serif;font-size:16px;margin:18px 2px 8px">{{ t.orders }}</div>
+    <sc-if value="{{ hasOrder }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:13px;font-weight:600">{{ orderNo }}</div><div style="font-size:11.5px;color:#8A7D6C">{{ t.inTransit }} — {{ orderEta }}</div></div>
+        <div style="font-size:13px;font-weight:700">{{ orderTotal }}</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ noOrder }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px dashed #D3C9B7;border-radius:12px;padding:16px;font-size:12px;color:#8A7D6C;text-align:center">{{ t.noOrders }}</div>
+    </sc-if>
+    <div style="font-family:Marcellus,serif;font-size:16px;margin:18px 2px 8px">{{ t.settings }}</div>
+    <div style="background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;overflow:hidden;font-size:13px">
+      <div style="padding:13px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #F1ECE2"><span>{{ t.language }}</span>
+        <select value="{{ lang }}" onChange="{{ setLang }}" style="border:1px solid #D8CFBF;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:600;background:#FFFFFF;outline:none;cursor:pointer">
+          <option value="en">English</option><option value="ko">한국어</option><option value="zh">中文</option><option value="th">ไทย</option>
+        </select></div>
+      <div style="padding:13px 14px;display:flex;justify-content:space-between;border-bottom:1px solid #F1ECE2"><span>{{ t.currency }}</span><b>USD $</b></div>
+      <div style="padding:13px 14px;display:flex;justify-content:space-between;border-bottom:1px solid #F1ECE2"><span>{{ t.shipRegion }}</span><b>{{ countryVal }}</b></div>
+      <div onClick="{{ toggleNotif }}" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center"><span>{{ t.reminders }}</span>
+        <div style="width:40px;height:24px;border-radius:99px;background:{{ notifBg }};position:relative;transition:background .2s"><div style="position:absolute;top:3px;left:{{ notifLeft }};width:18px;height:18px;border-radius:50%;background:#FFF;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)"></div></div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+
+<div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-top:1px solid #ECE6DA;display:flex;z-index:30">
+  <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="5">
+    <div onClick="{{ tab.go }}" style="cursor:pointer;flex:1;text-align:center;padding:10px 2px 14px;position:relative">
+      <div style="position:absolute;top:0;left:25%;right:25%;height:2.5px;border-radius:99px;background:{{ tab.bar }}"></div>
+      <div style="font-size:12px;font-weight:700;color:{{ tab.color }};margin-top:6px">{{ tab.label }}</div>
+    </div>
+  </sc-for>
+</div>
+
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:#221C15;color:#F5F0E6;border-radius:999px;padding:10px 18px;font-size:12.5px;font-weight:600;z-index:60;white-space:nowrap;max-width:88vw;overflow:hidden;text-overflow:ellipsis;animation:rise .25s ease both;box-shadow:0 8px 24px rgba(0,0,0,0.25)">{{ toast }}</div>
+</sc-if>
+
+<sc-if value="{{ ppOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,16,10,0.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px">
+    <div style="width:100%;max-width:340px;background:#FFFFFF;border-radius:20px;padding:22px;animation:rise .3s ease both">
+      <div style="font-size:18px;font-weight:800;color:#0B3D91;font-style:italic">PayPal <span style="font-size:11px;color:#8A7D6C;font-style:normal;font-weight:600">SANDBOX</span></div>
+      <div style="font-size:12px;color:#6E6252;margin-top:10px">{{ t.loggedInAs }}<br><b>sb-buyer@skinverse.test</b></div>
+      <div style="border:1px solid #E5E0D4;border-radius:12px;padding:12px 14px;margin-top:12px;display:flex;justify-content:space-between;font-size:14px"><span>Skinverse Order</span><b>{{ totalS }}</b></div>
+      <sc-if value="{{ ppIdle }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ paypalPay }}" style="cursor:pointer;margin-top:14px;background:#FFC439;border-radius:999px;padding:13px;text-align:center;font-size:14px;font-weight:800;color:#111">{{ t.payNow }}</div>
+        <div onClick="{{ closePaypal }}" style="cursor:pointer;text-align:center;font-size:12px;color:#8A7D6C;margin-top:12px">{{ t.cancel }}</div>
+      </sc-if>
+      <sc-if value="{{ ppBusy }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px"><div style="width:18px;height:18px;border-radius:50%;border:2.5px solid #E4DCCB;border-top-color:#0B3D91;animation:spin .8s linear infinite"></div><span style="font-size:13px;font-weight:600;color:#0B3D91">{{ t.processing }}</span></div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:930},&quot;language&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ko&quot;,&quot;zh&quot;,&quot;th&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo scenario&quot;},&quot;skinCondition&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dehydrated&quot;,&quot;oily&quot;,&quot;balanced&quot;],&quot;default&quot;:&quot;dehydrated&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo scenario&quot;},&quot;defaultCity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Tokyo&quot;,&quot;Shanghai&quot;,&quot;Bangkok&quot;,&quot;Singapore&quot;,&quot;New York&quot;,&quot;Paris&quot;,&quot;Dubai&quot;],&quot;default&quot;:&quot;Tokyo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo scenario&quot;},&quot;startingPoints&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1240,&quot;min&quot;:0,&quot;max&quot;:10000,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo scenario&quot;}}">
+class Component extends DCLogic {
+  state = { screen:'home', scanStep:'intro', progress:0, scanned:false, pd:0, streak:6, streakAwarded:false,
+    cart:{}, selId:null, cityO:null, filter:'All', done:{m2:true}, redeemed:{}, chkStep:1, langO:null,
+    name:'Yuki Tanaka', addr:'2-11-3 Jinnan, Shibuya City, Tokyo 150-0041', country:'Japan',
+    ship:'dhl', usePoints:true, pp:false, ppBusy:false, order:null, toast:'', notif:true };
+
+  L = {
+  en:{myPage:'My Page',bag:'Bag',match:'match',kicker:'AI SKIN ANALYSIS',heroT:'Your skin, decoded in 40 seconds.',heroSub:'6-point diagnosis, matched K-beauty routine, shipped worldwide from Seoul.',startBtn:'Start Analysis',todayIn:'Today in',skinScore:'Skin Score',skinScoreU:'SKIN SCORE',viewReport:'View full report',noScan:'No analysis yet. Run your first scan to unlock matched products and a weather-tuned routine.',matched:'Matched for you',allProducts:'All products',todayMissions:"Today's missions",earnP:'Earn P',
+    scanTitle:'AI Skin Analysis',scanSub:'6-point diagnostic mapped to your climate.',selfiePh:'Drop a selfie (optional)',tip1:'Even, natural light',tip2:'Bare skin, no makeup',tip3:'Face centered, hair back',beginScan:'Begin Scan',demoNote:'Demo mode — works without a photo',
+    s1:'Mapping facial zones',s2:'Measuring hydration & texture',s3:'Comparing 1.2M skin profiles',s4:'Building your routine',insight:'AI Insight',matchedBtn:'Matched products',routineBtn:'Build routine',rescan:'Rescan',
+    low:'Low',fair:'Fair',good:'Good',shopTitle:'Shop',shopSub:'Matched to your scan · ships from Seoul',addBag:'Add to Bag',buyNow:'Buy Now',whyT:'Why it matched you',ingT:'Key ingredients',
+    cartTitle:'Your Bag',cartEmpty:'Your bag is empty',browse:'Browse matched products',subtotal:'Subtotal',intlShip:'Intl. shipping from Seoul',earnPreview:"Points you'll earn",checkout:'Checkout',
+    shipTitle:'Shipping',fullName:'FULL NAME',country:'COUNTRY / REGION',address:'ADDRESS',shipMethod:'SHIPPING METHOD',dhlDesc:'3–5 business days · tracked · customs handled',emsDesc:'7–14 business days · tracked',toPayment:'Continue to Payment',
+    payTitle:'Payment',shipFee:'Shipping',ptsDisc:'Points discount',total:'Total',usePts:(p,d)=>'Use '+p+' P → save '+d,ptsNote:'Use points (up to 30% of order)',payWith:'Pay with',testNote:'Test payment — no real charge',loggedInAs:'Logged in as',payNow:'Pay Now',cancel:'Cancel',processing:'Processing payment…',
+    confirmed:'Order confirmed',confirmedSub:'Shipping from Seoul',orderNo:'Order no.',paidVia:'Paid via PayPal',delivery:'Delivery',ptsEarned:'Points earned',contShop:'Continue shopping',viewMy:'View in My Page',
+    routineTitle:'Climate Routine',routineSub:'Tuned to your scan + local weather',temp:'Temp',humidity:'Humidity',adjust:"Today's adjustment",morning:'Morning',evening:'Evening',completeCta:"Complete today's routine → earn P",
+    glowPts:'GLOW POINTS',daily:'Daily missions',weekly:'Weekly',redeem:'Redeem',redeemed:'Redeemed ✓',toLv:(p,n)=>p+' P to '+n,maxLv:'Max level',streakLine:d=>d+'-day streak',
+    skinHistory:'Skin history',orders:'Orders',inTransit:'In transit',noOrders:'No orders yet',settings:'Settings',language:'Language',currency:'Currency',shipRegion:'Shipping region',reminders:'Routine reminders',firstScan:'First analysis',latest:'Latest',scanN:'Scan',
+    tabs:['Home','Analysis','Shop','Routine','Rewards'],
+    hintHumid:'High humidity — gel textures today',hintDry:'Dry air — add facial oil',hintMild:'Mild day — standard routine',
+    advHumid:h=>'Humidity is '+h+'% — switch to gel textures and skip heavy occlusives today. ',advDry:h=>'Air is dry ('+h+'%) — add a facial oil over moisturizer and run a humidifier at night. ',advMild:'Comfortable humidity — keep your standard layering. ',advUvHi:u=>'UV '+u+' is very high: SPF50+, reapply every 3h outdoors.',advUvMid:u=>'UV '+u+': SPF50+ before going out.',advUvLo:'UV is moderate — one SPF application covers the day.',
+    st1:'Low-pH Gel Cleanser',st1n:'lukewarm water, 60s',st2h:'Hydrating Mist Toner',st2d:'Essence Toner ×2 layers',st2n:"pat, don't rub",target:'Target:',lowestNote:'lowest score —',st4h:'Oil-free Gel Moisturizer',st4d:'Ceramide Cream',st4hn:h=>'lightweight for '+h+'% humidity',st4dn:'seals in hydration',spfRe:' — reapply 2PM',uvIn:(u,c)=>'UV index '+u+' in '+c,
+    pm1:'Double Cleanse (balm → gel)',pm1h:'sweat + sebum day',pm1n:'removes SPF fully',pm2:'Treatment Essence',pm2n:'prep for actives',pm3n:'PM absorption is higher',pm4a:'Rice Ceramide Sleep Mask',pm4b:'Barrier Night Cream',pm4n:'2–3× per week',
+    tAdded:'Added to bag',tNoPts:'Not enough points',tEarn:p=>'+'+p+' P earned',tStreak:(p,d)=>'+'+p+' P · Streak day '+d+'!',tScanM:'+30 P — Weekly scan mission cleared',tRedeem:n=>n+' — added to your next order'},
+  ko:{myPage:'마이페이지',bag:'가방',match:'매치',kicker:'AI 피부 분석',heroT:'40초 만에 읽어내는 당신의 피부.',heroSub:'6개 항목 진단, 맞춤 K-뷰티 루틴, 서울에서 전 세계 배송.',startBtn:'분석 시작',todayIn:'오늘의 날씨 ·',skinScore:'피부 점수',skinScoreU:'피부 점수',viewReport:'전체 리포트 보기',noScan:'아직 분석 기록이 없어요. 첫 스캔을 하면 맞춤 제품과 날씨 루틴이 열립니다.',matched:'맞춤 추천',allProducts:'전체 제품',todayMissions:'오늘의 미션',earnP:'포인트 받기',
+    scanTitle:'AI 피부 분석',scanSub:'거주지 기후까지 반영하는 6개 항목 진단.',selfiePh:'셀피를 끌어다 놓기 (선택)',tip1:'밝고 고른 자연광에서',tip2:'메이크업 없는 맨 피부로',tip3:'얼굴 정면, 머리는 뒤로',beginScan:'스캔 시작',demoNote:'데모 모드 — 사진 없이도 진행됩니다',
+    s1:'얼굴 영역 매핑 중',s2:'수분·결 측정 중',s3:'120만 피부 프로필 비교 중',s4:'맞춤 루틴 생성 중',insight:'AI 인사이트',matchedBtn:'맞춤 제품 보기',routineBtn:'루틴 만들기',rescan:'다시 분석하기',
+    low:'낮음',fair:'보통',good:'좋음',shopTitle:'쇼핑',shopSub:'분석 결과 기반 추천 · 서울에서 발송',addBag:'담기',buyNow:'바로구매',whyT:'추천 이유',ingT:'주요 성분',
+    cartTitle:'장바구니',cartEmpty:'장바구니가 비어 있어요',browse:'맞춤 제품 둘러보기',subtotal:'소계',intlShip:'국제배송 (서울 발송)',earnPreview:'적립 예정 포인트',checkout:'결제하기',
+    shipTitle:'배송 정보',fullName:'이름',country:'국가 / 지역',address:'주소',shipMethod:'배송 방법',dhlDesc:'영업일 3–5일 · 추적 · 통관 대행',emsDesc:'영업일 7–14일 · 추적',toPayment:'결제 단계로',
+    payTitle:'결제',shipFee:'배송비',ptsDisc:'포인트 할인',total:'총액',usePts:(p,d)=>p+' P 사용 → '+d+' 절약',ptsNote:'포인트 사용 (주문액의 최대 30%)',payWith:'결제:',testNote:'실제 결제되지 않는 테스트입니다',loggedInAs:'로그인 계정',payNow:'지금 결제',cancel:'취소',processing:'결제 처리 중…',
+    confirmed:'주문 완료',confirmedSub:'서울에서 발송됩니다',orderNo:'주문번호',paidVia:'PayPal 결제금액',delivery:'배송 예정',ptsEarned:'적립 완료',contShop:'쇼핑 계속하기',viewMy:'마이페이지에서 보기',
+    routineTitle:'날씨 맞춤 루틴',routineSub:'분석 결과 + 현지 날씨 반영',temp:'기온',humidity:'습도',adjust:'오늘의 조정',morning:'아침',evening:'저녁',completeCta:'오늘 루틴 완료하고 포인트 받기',
+    glowPts:'글로우 포인트',daily:'오늘의 미션',weekly:'주간 미션',redeem:'포인트 교환',redeemed:'교환 완료 ✓',toLv:(p,n)=>n+'까지 '+p+' P',maxLv:'최고 레벨',streakLine:d=>'연속 '+d+'일',
+    skinHistory:'피부 기록',orders:'주문 내역',inTransit:'배송 중',noOrders:'아직 주문이 없어요',settings:'설정',language:'언어',currency:'통화',shipRegion:'배송 지역',reminders:'루틴 알림',firstScan:'첫 분석',latest:'최신',scanN:'스캔',
+    tabs:['홈','분석','쇼핑','루틴','리워드'],
+    hintHumid:'습도 높음 — 오늘은 젤 타입 추천',hintDry:'건조한 공기 — 오일 추가 추천',hintMild:'무난한 날 — 기본 루틴',
+    advHumid:h=>'습도가 '+h+'%예요 — 오늘은 젤 제형으로 바꾸고 무거운 크림은 생략하세요. ',advDry:h=>'공기가 건조해요('+h+'%) — 수분크림 위에 페이셜 오일을 덧바르고 밤에는 가습기를 켜세요. ',advMild:'쾌적한 습도 — 평소 레이어링을 유지하세요. ',advUvHi:u=>'UV '+u+' 매우 높음: SPF50+, 외출 시 3시간마다 재도포.',advUvMid:u=>'UV '+u+': 외출 전 SPF50+ 필수.',advUvLo:'UV 보통 — 아침 선크림 한 번이면 충분해요.',
+    st1:'약산성 젤 클렌저',st1n:'미온수로 60초',st2h:'수분 미스트 토너',st2d:'에센스 토너 2회 레이어링',st2n:'문지르지 말고 두드리기',target:'집중 케어:',lowestNote:'최저 점수 —',st4h:'오일프리 젤 수분크림',st4d:'세라마이드 크림',st4hn:h=>'습도 '+h+'%에 맞춘 가벼운 제형',st4dn:'수분을 밀봉',spfRe:' — 오후 2시 재도포',uvIn:(u,c)=>c+' UV 지수 '+u,
+    pm1:'이중 세안 (밤 → 젤)',pm1h:'땀·피지 많은 날',pm1n:'선크림까지 완전 제거',pm2:'트리트먼트 에센스',pm2n:'액티브 흡수 준비',pm3n:'저녁 흡수율이 더 높아요',pm4a:'라이스 세라마이드 슬리핑 마스크',pm4b:'배리어 나이트 크림',pm4n:'주 2–3회',
+    tAdded:'장바구니에 담았어요',tNoPts:'포인트가 부족해요',tEarn:p=>'+'+p+' P 적립',tStreak:(p,d)=>'+'+p+' P · 연속 '+d+'일 달성!',tScanM:'+30 P — 주간 스캔 미션 완료',tRedeem:n=>n+' — 다음 주문에 동봉'},
+  zh:{myPage:'我的',bag:'购物袋',match:'匹配',kicker:'AI 肌肤分析',heroT:'40秒读懂你的肌肤。',heroSub:'6项诊断，专属K-beauty护肤方案，首尔直邮全球。',startBtn:'开始分析',todayIn:'今日天气 ·',skinScore:'肌肤评分',skinScoreU:'肌肤评分',viewReport:'查看完整报告',noScan:'还没有分析记录。完成首次扫描即可解锁匹配产品和天气定制护肤方案。',matched:'为你匹配',allProducts:'全部商品',todayMissions:'今日任务',earnP:'赚积分',
+    scanTitle:'AI 肌肤分析',scanSub:'结合居住地气候的6项诊断。',selfiePh:'拖入自拍照（可选）',tip1:'均匀自然光线',tip2:'素颜无妆',tip3:'面部居中，头发后梳',beginScan:'开始扫描',demoNote:'演示模式 — 无照片也可进行',
+    s1:'正在映射面部区域',s2:'正在测量水分与肤质',s3:'正在比对120万肌肤档案',s4:'正在生成专属方案',insight:'AI 洞察',matchedBtn:'匹配产品',routineBtn:'创建方案',rescan:'重新分析',
+    low:'偏低',fair:'一般',good:'良好',shopTitle:'商店',shopSub:'基于扫描结果推荐 · 首尔发货',addBag:'加入购物袋',buyNow:'立即购买',whyT:'为什么匹配你',ingT:'核心成分',
+    cartTitle:'购物袋',cartEmpty:'购物袋是空的',browse:'浏览匹配产品',subtotal:'小计',intlShip:'首尔国际直邮',earnPreview:'预计获得积分',checkout:'去结算',
+    shipTitle:'配送信息',fullName:'姓名',country:'国家 / 地区',address:'地址',shipMethod:'配送方式',dhlDesc:'3–5个工作日 · 可追踪 · 代办清关',emsDesc:'7–14个工作日 · 可追踪',toPayment:'继续付款',
+    payTitle:'付款',shipFee:'运费',ptsDisc:'积分抵扣',total:'总计',usePts:(p,d)=>'使用 '+p+' 积分 → 省 '+d,ptsNote:'使用积分（最高抵订单30%）',payWith:'使用',testNote:'测试付款 — 不会真实扣款',loggedInAs:'当前登录',payNow:'立即支付',cancel:'取消',processing:'正在处理付款…',
+    confirmed:'订单已确认',confirmedSub:'从首尔发货',orderNo:'订单号',paidVia:'PayPal 支付',delivery:'预计送达',ptsEarned:'已获得积分',contShop:'继续购物',viewMy:'在我的页面查看',
+    routineTitle:'气候护肤方案',routineSub:'结合扫描结果与当地天气',temp:'气温',humidity:'湿度',adjust:'今日调整',morning:'早间',evening:'晚间',completeCta:'完成今日护肤 → 赚积分',
+    glowPts:'焕光积分',daily:'今日任务',weekly:'每周任务',redeem:'积分兑换',redeemed:'已兑换 ✓',toLv:(p,n)=>'距 '+n+' 还需 '+p+' 积分',maxLv:'最高等级',streakLine:d=>'连续 '+d+' 天',
+    skinHistory:'肌肤记录',orders:'订单',inTransit:'运送中',noOrders:'暂无订单',settings:'设置',language:'语言',currency:'货币',shipRegion:'配送地区',reminders:'护肤提醒',firstScan:'首次分析',latest:'最新',scanN:'扫描',
+    tabs:['首页','分析','商店','方案','奖励'],
+    hintHumid:'湿度高 — 今日建议啫喱质地',hintDry:'空气干燥 — 建议加护肤油',hintMild:'天气温和 — 常规护肤即可',
+    advHumid:h=>'湿度 '+h+'% — 今天改用啫喱质地，跳过厚重面霜。',advDry:h=>'空气干燥（'+h+'%）— 在面霜后叠加护肤油，夜间开加湿器。',advMild:'湿度舒适 — 保持常规叠加护肤。',advUvHi:u=>'UV '+u+' 极高：SPF50+，户外每3小时补涂。',advUvMid:u=>'UV '+u+'：出门前涂SPF50+。',advUvLo:'UV 中等 — 早间防晒一次即可。',
+    st1:'弱酸性洁面啫喱',st1n:'温水，60秒',st2h:'保湿喷雾爽肤水',st2d:'精华水 ×2 层叠加',st2n:'轻拍，勿揉搓',target:'重点护理：',lowestNote:'最低分 —',st4h:'无油啫喱面霜',st4d:'神经酰胺面霜',st4hn:h=>'适合 '+h+'% 湿度的轻薄质地',st4dn:'锁住水分',spfRe:' — 下午2点补涂',uvIn:(u,c)=>c+' UV 指数 '+u,
+    pm1:'双重清洁（卸妆膏 → 啫喱）',pm1h:'出汗出油的一天',pm1n:'彻底卸除防晒',pm2:'精华液',pm2n:'为活性成分打底',pm3n:'夜间吸收更好',pm4a:'大米神经酰胺睡眠面膜',pm4b:'屏障晚霜',pm4n:'每周2–3次',
+    tAdded:'已加入购物袋',tNoPts:'积分不足',tEarn:p=>'+'+p+' 积分已到账',tStreak:(p,d)=>'+'+p+' 积分 · 连续第 '+d+' 天！',tScanM:'+30 积分 — 每周扫描任务完成',tRedeem:n=>n+' — 将随下个订单寄出'},
+  th:{myPage:'ของฉัน',bag:'ตะกร้า',match:'ตรงกัน',kicker:'วิเคราะห์ผิวด้วย AI',heroT:'อ่านผิวของคุณใน 40 วินาที',heroSub:'วินิจฉัย 6 ด้าน รูทีน K-beauty เฉพาะคุณ ส่งตรงจากโซลทั่วโลก',startBtn:'เริ่มวิเคราะห์',todayIn:'วันนี้ที่',skinScore:'คะแนนผิว',skinScoreU:'คะแนนผิว',viewReport:'ดูรายงานฉบับเต็ม',noScan:'ยังไม่มีประวัติการวิเคราะห์ สแกนครั้งแรกเพื่อปลดล็อกสินค้าที่เหมาะกับคุณและรูทีนตามสภาพอากาศ',matched:'คัดมาเพื่อคุณ',allProducts:'สินค้าทั้งหมด',todayMissions:'ภารกิจวันนี้',earnP:'รับแต้ม',
+    scanTitle:'วิเคราะห์ผิวด้วย AI',scanSub:'วินิจฉัย 6 ด้าน อิงสภาพอากาศที่คุณอยู่',selfiePh:'วางรูปเซลฟี่ (ไม่บังคับ)',tip1:'แสงธรรมชาติสม่ำเสมอ',tip2:'ผิวเปล่า ไม่แต่งหน้า',tip3:'หน้าตรงกลาง รวบผมไปด้านหลัง',beginScan:'เริ่มสแกน',demoNote:'โหมดสาธิต — ไม่มีรูปก็ใช้งานได้',
+    s1:'กำลังแมปโซนใบหน้า',s2:'กำลังวัดความชุ่มชื้นและผิวสัมผัส',s3:'กำลังเทียบโปรไฟล์ผิว 1.2 ล้านราย',s4:'กำลังสร้างรูทีนของคุณ',insight:'AI วิเคราะห์',matchedBtn:'สินค้าที่เหมาะ',routineBtn:'สร้างรูทีน',rescan:'สแกนใหม่',
+    low:'ต่ำ',fair:'พอใช้',good:'ดี',shopTitle:'ร้านค้า',shopSub:'แนะนำจากผลสแกน · ส่งจากโซล',addBag:'ใส่ตะกร้า',buyNow:'ซื้อเลย',whyT:'ทำไมถึงเหมาะกับคุณ',ingT:'ส่วนผสมหลัก',
+    cartTitle:'ตะกร้าของคุณ',cartEmpty:'ตะกร้ายังว่างอยู่',browse:'ดูสินค้าที่เหมาะกับคุณ',subtotal:'ยอดรวม',intlShip:'ค่าส่งระหว่างประเทศจากโซล',earnPreview:'แต้มที่จะได้รับ',checkout:'ชำระเงิน',
+    shipTitle:'การจัดส่ง',fullName:'ชื่อ-นามสกุล',country:'ประเทศ / ภูมิภาค',address:'ที่อยู่',shipMethod:'วิธีจัดส่ง',dhlDesc:'3–5 วันทำการ · ติดตามได้ · จัดการศุลกากรให้',emsDesc:'7–14 วันทำการ · ติดตามได้',toPayment:'ไปหน้าชำระเงิน',
+    payTitle:'ชำระเงิน',shipFee:'ค่าส่ง',ptsDisc:'ส่วนลดแต้ม',total:'ยอดสุทธิ',usePts:(p,d)=>'ใช้ '+p+' แต้ม → ประหยัด '+d,ptsNote:'ใช้แต้ม (สูงสุด 30% ของยอดสั่งซื้อ)',payWith:'ชำระด้วย',testNote:'การชำระเงินทดสอบ — ไม่มีการเรียกเก็บจริง',loggedInAs:'เข้าสู่ระบบเป็น',payNow:'จ่ายตอนนี้',cancel:'ยกเลิก',processing:'กำลังดำเนินการชำระเงิน…',
+    confirmed:'ยืนยันคำสั่งซื้อแล้ว',confirmedSub:'จัดส่งจากโซล',orderNo:'เลขที่คำสั่งซื้อ',paidVia:'ชำระผ่าน PayPal',delivery:'กำหนดส่ง',ptsEarned:'แต้มที่ได้รับ',contShop:'ช้อปต่อ',viewMy:'ดูในหน้าของฉัน',
+    routineTitle:'รูทีนตามสภาพอากาศ',routineSub:'ปรับตามผลสแกน + อากาศท้องถิ่น',temp:'อุณหภูมิ',humidity:'ความชื้น',adjust:'การปรับวันนี้',morning:'เช้า',evening:'เย็น',completeCta:'ทำรูทีนวันนี้ครบ → รับแต้ม',
+    glowPts:'แต้มโกลว์',daily:'ภารกิจรายวัน',weekly:'รายสัปดาห์',redeem:'แลกของรางวัล',redeemed:'แลกแล้ว ✓',toLv:(p,n)=>'อีก '+p+' แต้ม ถึง '+n,maxLv:'เลเวลสูงสุด',streakLine:d=>'ต่อเนื่อง '+d+' วัน',
+    skinHistory:'ประวัติผิว',orders:'คำสั่งซื้อ',inTransit:'กำลังจัดส่ง',noOrders:'ยังไม่มีคำสั่งซื้อ',settings:'ตั้งค่า',language:'ภาษา',currency:'สกุลเงิน',shipRegion:'พื้นที่จัดส่ง',reminders:'แจ้งเตือนรูทีน',firstScan:'วิเคราะห์ครั้งแรก',latest:'ล่าสุด',scanN:'สแกน',
+    tabs:['หน้าแรก','วิเคราะห์','ร้านค้า','รูทีน','รางวัล'],
+    hintHumid:'ความชื้นสูง — วันนี้ใช้เนื้อเจล',hintDry:'อากาศแห้ง — เพิ่มเฟเชียลออยล์',hintMild:'อากาศดี — รูทีนปกติ',
+    advHumid:h=>'ความชื้น '+h+'% — วันนี้เปลี่ยนเป็นเนื้อเจล งดครีมหนักๆ ',advDry:h=>'อากาศแห้ง ('+h+'%) — ทาออยล์ทับมอยส์เจอไรเซอร์ และเปิดเครื่องทำความชื้นตอนกลางคืน ',advMild:'ความชื้นกำลังดี — เลเยอร์ตามปกติ ',advUvHi:u=>'UV '+u+' สูงมาก: SPF50+ ทาซ้ำทุก 3 ชม. เมื่ออยู่กลางแจ้ง',advUvMid:u=>'UV '+u+': ทา SPF50+ ก่อนออกจากบ้าน',advUvLo:'UV ปานกลาง — ทากันแดดครั้งเดียวพอ',
+    st1:'เจลล้างหน้า pH ต่ำ',st1n:'น้ำอุ่น 60 วินาที',st2h:'โทนเนอร์มิสต์เพิ่มความชุ่มชื้น',st2d:'เอสเซนส์โทนเนอร์ ×2 ชั้น',st2n:'ตบเบาๆ อย่าถู',target:'เน้นดูแล:',lowestNote:'คะแนนต่ำสุด —',st4h:'เจลมอยส์เจอไรเซอร์ไร้น้ำมัน',st4d:'ครีมเซราไมด์',st4hn:h=>'เนื้อบางเบาสำหรับความชื้น '+h+'%',st4dn:'กักเก็บความชุ่มชื้น',spfRe:' — ทาซ้ำบ่ายสอง',uvIn:(u,c)=>'ดัชนี UV '+u+' ที่ '+c,
+    pm1:'ดับเบิลคลีนซิ่ง (บาล์ม → เจล)',pm1h:'วันที่เหงื่อและความมันเยอะ',pm1n:'ล้างกันแดดออกหมดจด',pm2:'ทรีตเมนต์เอสเซนส์',pm2n:'เตรียมผิวรับแอคทีฟ',pm3n:'กลางคืนดูดซึมดีกว่า',pm4a:'สลีปปิ้งมาสก์ข้าว-เซราไมด์',pm4b:'ไนท์ครีมฟื้นฟูเกราะผิว',pm4n:'สัปดาห์ละ 2–3 ครั้ง',
+    tAdded:'ใส่ตะกร้าแล้ว',tNoPts:'แต้มไม่พอ',tEarn:p=>'+'+p+' แต้ม',tStreak:(p,d)=>'+'+p+' แต้ม · ต่อเนื่องวันที่ '+d+'!',tScanM:'+30 แต้ม — ภารกิจสแกนรายสัปดาห์สำเร็จ',tRedeem:n=>n+' — แนบไปกับคำสั่งซื้อถัดไป'}};
+
+  data = {
+    cities:{ Tokyo:{t:31,h:78,uv:8}, Shanghai:{t:29,h:82,uv:7}, Bangkok:{t:34,h:75,uv:11}, Singapore:{t:32,h:88,uv:10}, 'New York':{t:24,h:52,uv:6}, Paris:{t:21,h:48,uv:5}, Dubai:{t:39,h:30,uv:11} },
+    conds:{
+      dehydrated:{overall:62,m:{hydration:42,elasticity:71,pores:55,pigmentation:63,wrinkles:78,sensitivity:47},
+        type:{en:'Dehydrated · Sensitive-prone',ko:'수분 부족 · 민감성',zh:'缺水 · 易敏感',th:'ผิวขาดน้ำ · แพ้ง่าย'},
+        sum:{en:'Your moisture barrier is running low — water loss is elevated, which amplifies sensitivity. Focus on humectant layering and barrier repair for 4 weeks, and keep actives gentle.',
+          ko:'수분 장벽이 약해져 수분 손실이 높고 민감도가 올라간 상태예요. 앞으로 4주간 보습 레이어링과 장벽 회복에 집중하고, 액티브 성분은 순하게 유지하세요.',
+          zh:'你的水分屏障偏弱 — 经皮失水偏高，会放大敏感。接下来4周专注保湿叠加与屏障修护，活性成分保持温和。',
+          th:'เกราะความชุ่มชื้นของคุณอ่อนแอ — ผิวสูญเสียน้ำสูงจึงไวต่อการระคายเคือง โฟกัสการเลเยอร์มอยส์เจอไรเซอร์และฟื้นฟูเกราะผิว 4 สัปดาห์ และใช้แอคทีฟอ่อนโยน'}},
+      oily:{overall:68,m:{hydration:58,elasticity:74,pores:38,pigmentation:66,wrinkles:82,sensitivity:60},
+        type:{en:'Oily · Congestion-prone',ko:'지성 · 모공 관리 필요',zh:'油性 · 易堵塞毛孔',th:'ผิวมัน · รูขุมขนอุดตันง่าย'},
+        sum:{en:'Sebum output is high and pores show congestion around the T-zone. Prioritize gentle PHA exfoliation and lightweight hydration — do not strip the skin, it rebounds with more oil.',
+          ko:'피지 분비가 많고 T존 모공에 막힘이 보여요. 순한 PHA 각질 케어와 가벼운 수분 공급을 우선하세요 — 과하게 닦아내면 오히려 유분이 늘어납니다.',
+          zh:'皮脂分泌旺盛，T区毛孔有堵塞。优先温和PHA去角质与轻盈补水 — 不要过度清洁，否则会反弹出更多油。',
+          th:'ผิวผลิตซีบัมมากและรูขุมขนบริเวณทีโซนอุดตัน ให้เน้นผลัดเซลล์ผิวด้วย PHA อ่อนโยนและเติมน้ำแบบบางเบา — อย่าล้างจนผิวแห้งตึง เพราะผิวจะยิ่งผลิตน้ำมัน'}},
+      balanced:{overall:81,m:{hydration:72,elasticity:80,pores:70,pigmentation:74,wrinkles:84,sensitivity:76},
+        type:{en:'Balanced · Maintenance',ko:'균형 잡힌 피부 · 유지 관리',zh:'均衡 · 保养维持',th:'ผิวสมดุล · ดูแลรักษา'},
+        sum:{en:'Skin is in healthy equilibrium. Maintain the barrier with consistent SPF and antioxidant support — prevention is the whole game from here.',
+          ko:'피부가 건강한 균형 상태예요. 꾸준한 자외선 차단과 항산화 케어로 장벽을 유지하세요 — 지금부터는 예방이 전부입니다.',
+          zh:'肌肤处于健康平衡状态。坚持防晒与抗氧化护理来维持屏障 — 从现在起，预防就是一切。',
+          th:'ผิวอยู่ในสมดุลที่ดี รักษาเกราะผิวด้วยกันแดดสม่ำเสมอและสารต้านอนุมูลอิสระ — จากนี้ไปการป้องกันคือทุกอย่าง'}}},
+    mdefs:[{k:'hydration',n:{en:'Hydration',ko:'수분',zh:'水分',th:'ความชุ่มชื้น'}},{k:'elasticity',n:{en:'Elasticity',ko:'탄력',zh:'弹性',th:'ความยืดหยุ่น'}},{k:'pores',n:{en:'Pores',ko:'모공',zh:'毛孔',th:'รูขุมขน'}},{k:'pigmentation',n:{en:'Pigmentation',ko:'색소침착',zh:'色素沉着',th:'จุดด่างดำ'}},{k:'wrinkles',n:{en:'Fine Lines',ko:'주름',zh:'细纹',th:'ริ้วรอย'}},{k:'sensitivity',n:{en:'Sensitivity',ko:'민감도',zh:'敏感度',th:'ความบอบบาง'}}],
+    products:[
+      {id:'p1',brand:'LUMIVE',name:'Hyaluron Barrier Serum',price:28,tag:'Hydration',metric:'hydration',ml:'50ml',kind:'Serum',g:'linear-gradient(150deg,#DDEAE3,#8FBCA6)',ing:'Hyaluronic Acid 5-complex · Panthenol · Beta-Glucan',
+        sub:{en:'Barrier hydration serum',ko:'히알루론 배리어 세럼',zh:'玻尿酸屏障精华',th:'เซรั่มเติมน้ำเสริมเกราะผิว'},
+        why:{en:'Layers five molecular weights of hyaluronic acid to refill the moisture your scan flagged as depleted.',ko:'다섯 가지 분자량의 히알루론산을 층층이 채워, 스캔에서 부족하다고 나온 수분을 보충합니다.',zh:'五种分子量的玻尿酸层层补水，补足扫描显示不足的水分。',th:'ไฮยาลูรอน 5 ขนาดโมเลกุลเติมความชุ่มชื้นที่ผลสแกนระบุว่าขาด'}},
+      {id:'p2',brand:'HANJUN',name:'Cica Calming Cream',price:24,tag:'Soothing',metric:'sensitivity',ml:'60ml',kind:'Cream',g:'linear-gradient(150deg,#E7EBDD,#A9B98A)',ing:'Centella 71% · Madecassoside · Ceramide NP',
+        sub:{en:'Centella calming cream',ko:'시카 진정 크림',zh:'积雪草舒缓面霜',th:'ครีมใบบัวบกปลอบประโลมผิว'},
+        why:{en:'Centella-dense formula calms the reactivity pattern the scan detected across your cheeks.',ko:'고농축 센텔라 성분이 스캔에서 감지된 볼 부위의 민감 반응을 진정시킵니다.',zh:'高浓度积雪草配方，舒缓扫描在脸颊检测到的敏感反应。',th:'สูตรใบบัวบกเข้มข้นช่วยลดความไวของผิวบริเวณแก้มที่สแกนพบ'}},
+      {id:'p3',brand:'ONYU',name:'Green Tea Pore Toner',price:19,tag:'Pore',metric:'pores',ml:'200ml',kind:'Toner',g:'linear-gradient(150deg,#E3EDE0,#93B58E)',ing:'Green Tea Water 80% · PHA 2% · Zinc PCA',
+        sub:{en:'PHA pore-care toner',ko:'그린티 모공 토너',zh:'绿茶毛孔爽肤水',th:'โทนเนอร์ชาเขียวดูแลรูขุมขน'},
+        why:{en:'Mild PHA keeps T-zone congestion clear without stripping — matched to your pore score.',ko:'순한 PHA가 자극 없이 T존 막힘을 관리해요 — 모공 점수에 맞춘 추천.',zh:'温和PHA疏通T区堵塞而不刺激 — 匹配你的毛孔评分。',th:'PHA อ่อนโยนช่วยให้ทีโซนโล่งโดยไม่ทำร้ายผิว — จับคู่กับคะแนนรูขุมขนของคุณ'}},
+      {id:'p4',brand:'SOLBIT',name:'Vitamin C Glow Ampoule',price:32,tag:'Brightening',metric:'pigmentation',ml:'30ml',kind:'Ampoule',g:'linear-gradient(150deg,#F4E8D7,#DBB27A)',ing:'Ascorbic Acid 12% · Ferulic Acid · Niacinamide 2%',
+        sub:{en:'Vitamin C brightening ampoule',ko:'비타민C 글로우 앰플',zh:'维C焕亮安瓶',th:'แอมพูลวิตามินซีผิวโกลว์'},
+        why:{en:'Targets the uneven-tone zones your scan mapped along the cheekbones.',ko:'스캔이 광대 부위에 표시한 톤 불균형 구역을 집중 케어합니다.',zh:'针对扫描在颧骨区域标记的肤色不均。',th:'จัดการโทนสีผิวไม่สม่ำเสมอบริเวณโหนกแก้มตามที่สแกนพบ'}},
+      {id:'p5',brand:'MIREU',name:'Rice Ceramide Sleep Mask',price:22,tag:'Hydration',metric:'hydration',ml:'80ml',kind:'Mask',g:'linear-gradient(150deg,#F0EBE1,#C9BA9B)',ing:'Rice Extract · Ceramide NP · Squalane',
+        sub:{en:'Overnight barrier mask',ko:'라이스 세라마이드 슬리핑 마스크',zh:'大米神经酰胺睡眠面膜',th:'สลีปปิ้งมาสก์ข้าว-เซราไมด์'},
+        why:{en:'Overnight occlusive layer that locks in your PM routine while barrier recovery peaks.',ko:'장벽 회복이 가장 활발한 밤 시간, 저녁 루틴을 밀봉해 지켜줍니다.',zh:'夜间封闭层锁住晚间护肤，在屏障修护高峰期发挥作用。',th:'ชั้นล็อกความชุ่มชื้นข้ามคืน เก็บรูทีนกลางคืนไว้ขณะผิวฟื้นฟูสูงสุด'}},
+      {id:'p6',brand:'HAERIM',name:'Sun Barrier Fluid SPF50+',price:18,tag:'SPF',metric:'uv',ml:'50ml',kind:'SPF',g:'linear-gradient(150deg,#F3E9DC,#E0C08E)',ing:'Hybrid filters · PA++++ · No white cast',
+        sub:{en:'Daily fluid sunscreen',ko:'선 배리어 플루이드 SPF50+',zh:'轻盈防晒乳 SPF50+',th:'กันแดดเนื้อฟลูอิด SPF50+'},
+        why:{en:'The UV index in your city is high — daily broad-spectrum protection is non-negotiable.',ko:'거주 도시의 UV 지수가 높아요 — 매일의 광범위 자외선 차단은 필수입니다.',zh:'你所在城市UV指数偏高 — 每日广谱防晒不可省略。',th:'ดัชนี UV ในเมืองของคุณสูง — กันแดดแบบครอบคลุมทุกวันคือสิ่งจำเป็น'}}],
+    daily:[{id:'m1',pts:20,l:{en:'Complete AM routine',ko:'아침 루틴 완료',zh:'完成早间护肤',th:'ทำรูทีนเช้าครบ'}},{id:'m2',pts:10,l:{en:'Apply SPF 50+',ko:'선크림 바르기',zh:'涂抹 SPF50+',th:'ทากันแดด SPF50+'}},{id:'m3',pts:10,l:{en:'Drink 1.5L water',ko:'물 1.5L 마시기',zh:'喝水1.5升',th:'ดื่มน้ำ 1.5 ลิตร'}},{id:'m4',pts:20,l:{en:'Complete PM routine',ko:'저녁 루틴 완료',zh:'完成晚间护肤',th:'ทำรูทีนเย็นครบ'}}],
+    weekly:[{id:'w1',pts:50,l:{en:'Use sheet mask 2×',ko:'시트 마스크 2회 사용',zh:'敷面膜2次',th:'มาสก์แผ่น 2 ครั้ง'}},{id:'w2',pts:30,l:{en:'Weekly AI skin scan',ko:'주간 AI 피부 스캔',zh:'每周AI肌肤扫描',th:'สแกนผิว AI รายสัปดาห์'}}],
+    rewards:[{id:'r1',cost:300,l:{en:'Cica Cream Sample 5ml',ko:'시카 크림 샘플 5ml',zh:'积雪草面霜小样 5ml',th:'เทสเตอร์ครีมซิก้า 5ml'}},{id:'r2',cost:500,l:{en:'Glow Ampoule Sample 3ml',ko:'글로우 앰플 샘플 3ml',zh:'焕亮安瓶小样 3ml',th:'เทสเตอร์แอมพูล 3ml'}},{id:'r3',cost:800,l:{en:'Sheet Mask 3-Pack',ko:'시트 마스크 3매',zh:'面膜3片装',th:'มาสก์แผ่น 3 ชิ้น'}},{id:'r4',cost:500,l:{en:'$5 Off Coupon',ko:'5달러 할인 쿠폰',zh:'5美元优惠券',th:'คูปองลด $5'}}],
+    levels:[[0,'Glow Starter'],[500,'Dewy'],[1500,'Radiant'],[4000,'Luminary']] };
+
+  lang(){ return this.state.langO ?? (this.props.language ?? 'en'); }
+  T(){ return this.L[this.lang()] || this.L.en; }
+  points(){ return (this.props.startingPoints ?? 1240) + this.state.pd; }
+  toastMsg(m){ clearTimeout(this._tt); this.setState({toast:m}); this._tt = setTimeout(()=>this.setState({toast:''}), 2600); }
+  componentWillUnmount(){ clearInterval(this._iv); clearTimeout(this._tt); clearTimeout(this._pt); }
+
+  startScan(){
+    clearInterval(this._iv);
+    this.setState({screen:'scan', scanStep:'scanning', progress:0});
+    this._iv = setInterval(()=>{
+      const p = this.state.progress + 2;
+      if(p >= 100){
+        clearInterval(this._iv);
+        const first = !this.state.scanned;
+        this.setState({progress:100, scanStep:'results', scanned:true,
+          done: first ? {...this.state.done, w2:true} : this.state.done,
+          pd: first ? this.state.pd + 30 : this.state.pd});
+        if(first) this.toastMsg(this.T().tScanM);
+      } else this.setState({progress:p});
+    }, 70);
+  }
+
+  claim(m){
+    if(this.state.done[m.id]) return;
+    const T = this.T();
+    const done = {...this.state.done, [m.id]:true};
+    let streak = this.state.streak, sa = this.state.streakAwarded, msg = T.tEarn(m.pts);
+    if(this.data.daily.every(d=>done[d.id]) && !sa){ streak++; sa = true; msg = T.tStreak(m.pts, streak); }
+    this.setState({done, pd:this.state.pd + m.pts, streak, streakAwarded:sa});
+    this.toastMsg(msg);
+  }
+
+  redeem(r){
+    if(this.state.redeemed[r.id]) return;
+    const T = this.T();
+    if(this.points() < r.cost){ this.toastMsg(T.tNoPts); return; }
+    this.setState({redeemed:{...this.state.redeemed,[r.id]:true}, pd:this.state.pd - r.cost});
+    this.toastMsg(T.tRedeem(r.l[this.lang()]));
+  }
+
+  addCart(id){ const c = {...this.state.cart}; c[id] = (c[id]||0)+1; this.setState({cart:c}); this.toastMsg(this.T().tAdded); }
+  setQty(id,d){ const c = {...this.state.cart}; c[id] = (c[id]||0)+d; if(c[id] <= 0) delete c[id]; this.setState({cart:c}); }
+
+  totals(){
+    const sub = Object.entries(this.state.cart).reduce((s,[id,q]) => s + this.data.products.find(p=>p.id===id).price*q, 0);
+    const ship = Object.keys(this.state.cart).length ? (this.state.ship==='dhl' ? 12 : 8) : 0;
+    const ptsUsed = this.state.usePoints ? Math.min(this.points(), Math.floor(sub*0.3)*100) : 0;
+    const disc = ptsUsed/100, total = Math.max(0, sub + ship - disc);
+    return {sub, ship, ptsUsed, disc, total};
+  }
+
+  pay(){
+    this.setState({ppBusy:true});
+    this._pt = setTimeout(()=>{
+      const t = this.totals(), earn = Math.round(t.total*5);
+      const eta = this.state.ship==='dhl' ? 'Sep 17 – Sep 19' : 'Sep 21 – Sep 28';
+      this.setState({ppBusy:false, pp:false, chkStep:3, cart:{}, pd:this.state.pd + earn - t.ptsUsed,
+        order:{no:'SV-2609-' + Math.floor(1000+Math.random()*9000), total:'$'+t.total.toFixed(2), earn, eta}});
+    }, 1500);
+  }
+
+  renderVals(){
+    const st = this.state, D = this.data, lg = this.lang(), T = this.T();
+    const cond = D.conds[this.props.skinCondition ?? 'dehydrated'] || D.conds.dehydrated;
+    const city = st.cityO ?? (this.props.defaultCity ?? 'Tokyo');
+    const w = D.cities[city] || D.cities.Tokyo;
+    const pts = this.points();
+    const go = s => () => this.setState({screen:s});
+    const tt = this.totals();
+
+    const metrics = D.mdefs.map(d => {
+      const s = cond.m[d.k];
+      return {nameL:d.n[lg], score:s, w:s+'%', color: s<50?'#C25E43': s<70?'#B08133':'#2E6B58', label: s<50?T.low: s<70?T.fair:T.good};
+    });
+    const lowest = D.mdefs.reduce((a,b) => cond.m[a.k] <= cond.m[b.k] ? a : b);
+    const targetProd = D.products.find(p => p.metric === lowest.k) || D.products[0];
+
+    const pview = p => ({...p, grad:p.g, sub:p.sub[lg], priceS:'$'+p.price, matchS:(p.metric==='uv' ? Math.min(98,58+w.uv*4) : Math.min(98,138-cond.m[p.metric]))+'%',
+      open:()=>this.setState({screen:'detail', selId:p.id}), add:()=>this.addCart(p.id)});
+    const all = D.products.map(pview).sort((a,b)=>parseInt(b.matchS)-parseInt(a.matchS));
+    const shopList = st.filter==='All' ? all : all.filter(p=>p.tag===st.filter);
+    const sel = all.find(p=>p.id===st.selId) || all[0];
+
+    const chipL = {All:{en:'All',ko:'전체',zh:'全部',th:'ทั้งหมด'},Hydration:{en:'Hydration',ko:'수분',zh:'补水',th:'เติมน้ำ'},Soothing:{en:'Soothing',ko:'진정',zh:'舒缓',th:'ปลอบประโลม'},Pore:{en:'Pore',ko:'모공',zh:'毛孔',th:'รูขุมขน'},Brightening:{en:'Brightening',ko:'미백',zh:'焕亮',th:'ผิวกระจ่างใส'},SPF:{en:'SPF',ko:'자외선 차단',zh:'防晒',th:'กันแดด'}};
+    const chips = Object.keys(chipL).map(c => ({label:chipL[c][lg], pick:()=>this.setState({filter:c}),
+      style: 'cursor:pointer;white-space:nowrap;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;' + (st.filter===c ? 'background:#221C15;color:#F5F0E6' : 'background:#FFFFFF;border:1px solid #D8CFBF;color:#4A4234')}));
+
+    const mview = m => { const done = !!st.done[m.id]; return {pts:m.pts, label:m.l[lg], claim:()=>this.claim(m),
+      bg: done?'#F1EEE6':'#FFFFFF', boxBg: done?'#2E6B58':'#D8CFBF', mark: done?'✓':'', txtStyle: done?'color:#8A7D6C;text-decoration:line-through':''}; };
+    const dailyList = D.daily.map(mview), weeklyList = D.weekly.map(mview);
+    const dailyDone = D.daily.filter(d=>st.done[d.id]).length;
+
+    const rewardList = D.rewards.map(r => { const rd = !!st.redeemed[r.id], can = pts >= r.cost;
+      return {label:r.l[lg], redeem:()=>this.redeem(r), btn: rd?T.redeemed:r.cost+' P',
+        btnStyle: rd?'background:#EAF1EC;color:#2E6B58': can?'background:#221C15;color:#F5F0E6':'background:#EFE9DD;color:#B0A490'}; });
+
+    let li = 0; D.levels.forEach((l,i)=>{ if(pts >= l[0]) li = i; });
+    const next = D.levels[li+1];
+    const levelPct = next ? Math.min(100, Math.round((pts - D.levels[li][0])/(next[0]-D.levels[li][0])*100))+'%' : '100%';
+
+    const humid = w.h >= 70, dry = w.h < 45;
+    const wAdvice = (humid ? T.advHumid(w.h) : dry ? T.advDry(w.h) : T.advMild)
+      + (w.uv >= 8 ? T.advUvHi(w.uv) : w.uv >= 6 ? T.advUvMid(w.uv) : T.advUvLo);
+    const amSteps = [
+      {n:1,name:T.st1,note:T.st1n},
+      {n:2,name: humid?T.st2h:T.st2d,note:T.st2n},
+      {n:3,name:T.target+' '+targetProd.name,note:T.lowestNote+' '+lowest.n[lg]},
+      {n:4,name: humid?T.st4h:T.st4d,note: humid?T.st4hn(w.h):T.st4dn},
+      {n:5,name:'SPF50+ PA++++'+(w.uv>=8?T.spfRe:''),note:T.uvIn(w.uv, city)}];
+    const pmSteps = [
+      {n:1,name:T.pm1,note: humid?T.pm1h:T.pm1n},
+      {n:2,name:T.pm2,note:T.pm2n},
+      {n:3,name:T.target+' '+targetProd.name,note:T.pm3n},
+      {n:4,name: dry||cond.m.hydration<60 ? T.pm4a:T.pm4b,note:T.pm4n}];
+
+    const histBase = [{date:'Aug 30 · '+T.scanN+' #2', type:cond.type[lg], score:cond.overall-4, color:'#B08133'},{date:'Aug 16 · '+T.scanN+' #1', type:T.firstScan, score:cond.overall-7, color:'#C25E43'}];
+    const history = st.scanned ? [{date:'Sep 13 · '+T.latest, type:cond.type[lg], score:cond.overall, color:'#2E6B58'}, ...histBase] : histBase;
+
+    const tabs = ['home','scan','shop','routine','missions'].map((id,i) => {
+      const active = st.screen===id || (id==='shop'&&st.screen==='detail');
+      return {label:T.tabs[i], go:go(id), bar: active?'#221C15':'transparent', color: active?'#221C15':'#A2957F'}; });
+
+    return {
+      lang:lg, setLang:e=>this.setState({langO:e.target.value}), t:T,
+      pointsS: pts.toLocaleString(), streakLine:T.streakLine(st.streak), hasCart: Object.keys(st.cart).length>0, cartEmpty: Object.keys(st.cart).length===0,
+      cartCount: Object.values(st.cart).reduce((a,b)=>a+b,0),
+      goHome:go('home'), goScan:go('scan'), goShop:go('shop'), goRoutine:go('routine'), goMissions:go('missions'), goMy:go('my'), goCart:go('cart'),
+      goCheckout:()=>this.setState({screen:'checkout', chkStep:1}),
+      isHome:st.screen==='home', isShop:st.screen==='shop', isDetail:st.screen==='detail', isCart:st.screen==='cart',
+      isRoutine:st.screen==='routine', isMissions:st.screen==='missions', isMy:st.screen==='my',
+      isScanIntro:st.screen==='scan'&&st.scanStep==='intro', isScanning:st.screen==='scan'&&st.scanStep==='scanning',
+      isScanResults:st.screen==='scan'&&st.scanStep==='results',
+      isCk1:st.screen==='checkout'&&st.chkStep===1, isCk2:st.screen==='checkout'&&st.chkStep===2, isCk3:st.screen==='checkout'&&st.chkStep===3,
+      startScan:()=>this.startScan(), progress:st.progress,
+      scanStatus: st.progress<30?T.s1:st.progress<60?T.s2:st.progress<90?T.s3:T.s4,
+      scanned:st.scanned, notScanned:!st.scanned,
+      overall:cond.overall, skinType:cond.type[lg], summary:cond.sum[lg], metrics,
+      dialStyle:'width:132px;height:132px;border-radius:50%;padding:10px;box-sizing:border-box;background:conic-gradient(#2E6B58 '+(cond.overall*3.6)+'deg,#E8E1D3 0deg)',
+      dialSmStyle:'width:48px;height:48px;border-radius:50%;padding:4px;box-sizing:border-box;background:conic-gradient(#2E6B58 '+(cond.overall*3.6)+'deg,#D5E2D9 0deg);flex-shrink:0',
+      homeRecs: all.slice(0,4), shopList, chips,
+      selGrad:sel.grad, selKind:sel.kind, selMl:sel.ml, selBrand:sel.brand, selName:sel.name, selSub:sel.sub, selPrice:sel.priceS,
+      selMatch:sel.matchS, selWhy:sel.why[lg], selIng:sel.ing, selAdd:sel.add, selBuy:()=>{this.addCart(sel.id); this.setState({screen:'cart'});},
+      cartItems: Object.entries(st.cart).map(([id,qty]) => { const p = all.find(x=>x.id===id);
+        return {brand:p.brand, name:p.name, grad:p.grad, qty, lineS:'$'+(p.price*qty).toFixed(2), inc:()=>this.setQty(id,1), dec:()=>this.setQty(id,-1)}; }),
+      subS:'$'+tt.sub.toFixed(2), shipS:'$'+tt.ship.toFixed(2), discS:'−$'+tt.disc.toFixed(2), totalS:'$'+tt.total.toFixed(2),
+      usePtsLine:T.usePts(tt.ptsUsed.toLocaleString(), '$'+tt.disc.toFixed(2)), earnPreview:Math.round((tt.sub+tt.ship)*5),
+      shipName: st.ship==='dhl'?'DHL Express':'K-Packet/EMS',
+      nameVal:st.name, setName:e=>this.setState({name:e.target.value}),
+      addrVal:st.addr, setAddr:e=>this.setState({addr:e.target.value}),
+      countryVal:st.country, setCountry:e=>this.setState({country:e.target.value}),
+      pickDhl:()=>this.setState({ship:'dhl'}), pickEms:()=>this.setState({ship:'ems'}),
+      dhlBorder: st.ship==='dhl'?'#221C15':'#ECE6DA', emsBorder: st.ship==='ems'?'#221C15':'#ECE6DA',
+      toPayment:()=>this.setState({chkStep:2}), backShip:()=>this.setState({chkStep:1}),
+      togglePoints:()=>this.setState({usePoints:!st.usePoints}),
+      togBg: st.usePoints?'#2E6B58':'#D8CFBF', togLeft: st.usePoints?'21px':'3px',
+      openPaypal:()=>this.setState({pp:true}), closePaypal:()=>this.setState({pp:false}),
+      ppOpen:st.pp, ppIdle:!st.ppBusy, ppBusy:st.ppBusy, paypalPay:()=>this.pay(),
+      orderNo: st.order?st.order.no:'', orderTotal: st.order?st.order.total:'', orderEarn: st.order?st.order.earn:'', orderEta: st.order?st.order.eta:'',
+      hasOrder:!!st.order, noOrder:!st.order,
+      cityName:city, setCity:e=>this.setState({cityO:e.target.value}),
+      wTemp:w.t, wHum:w.h, wUv:w.uv, uvColor: w.uv>=8?'#C25E43':w.uv>=6?'#B08133':'#2E6B58',
+      wLine: w.t+'°C · '+T.humidity+' '+w.h+'% · UV '+w.uv,
+      wHint: humid?T.hintHumid:dry?T.hintDry:T.hintMild,
+      wAdvice, amSteps, pmSteps,
+      dailyList, weeklyList, dailyDoneS:dailyDone+'/4', rewardList,
+      levelName:D.levels[li][1], nextLevelS: next? T.toLv((next[0]-pts).toLocaleString(), next[1]) : T.maxLv, levelPct,
+      history, tabs, toast:st.toast, toastOn:!!st.toast,
+      toggleNotif:()=>this.setState({notif:!st.notif}), notifBg: st.notif?'#2E6B58':'#D8CFBF', notifLeft: st.notif?'19px':'3px'
+    };
+  }
+}
+</script>
+</body>
+</html>
