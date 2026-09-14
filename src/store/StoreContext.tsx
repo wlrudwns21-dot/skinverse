@@ -989,6 +989,7 @@ function useStoreValue() {
     goShop: go('shop'),
     goRoutine: go('routine'),
     goMissions: go('missions'),
+    goStories: go('stories'),
     goMy: guard('myPage', () => setState((s) => ({ ...s, screen: 'my' }))),
     goCart: go('cart'),
     goSupport: guard('myPage', () => setState((s) => ({ ...s, screen: 'support' }))),

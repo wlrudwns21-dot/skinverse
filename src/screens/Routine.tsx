@@ -1,5 +1,7 @@
 import { cityNames, CURRENT_LOCATION } from '../data/cities'
+import { storiesHomeCta } from '../data/stories'
 import { PlanBasis } from '../components/PlanBasis'
+import { CoreTipCard } from './Stories'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
@@ -127,6 +129,19 @@ export function Routine() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* The one principle behind the steps above, in full. A routine tells you
+          what to do; this is the reason it works, and the routine screen is the
+          moment a customer is actually thinking about it. */}
+      <div style={s('margin-top:18px')}>
+        <CoreTipCard lang={st.lang} onOpen={st.goStories} />
+        <div
+          onClick={st.goStories}
+          style={s('cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:#2E6B58;margin-top:10px')}
+        >
+          {storiesHomeCta[st.lang]} →
+        </div>
       </div>
 
       <div

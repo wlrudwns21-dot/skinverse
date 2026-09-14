@@ -17,6 +17,7 @@ export type Screen =
   | 'checkout'
   | 'routine'
   | 'missions'
+  | 'stories'
   | 'my'
   | 'auth'
   | 'support'
