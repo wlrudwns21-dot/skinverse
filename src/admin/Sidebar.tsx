@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { adminOperator } from '../data/admin'
 import { s } from '../lib/css'
 import { useAdmin } from './AdminContext'
 
@@ -33,13 +32,16 @@ export function Sidebar() {
       <div style={s('padding:14px 20px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px')}>
         <Link to="/" style={s('color:#C7B99E;font-weight:600')}>↗ 스토어 보기 · View store</Link>
         <div style={s('margin-top:10px;display:flex;align-items:center;gap:8px')}>
-          <div style={s('width:28px;height:28px;border-radius:50%;background:#2E6B58;color:#F3EFE6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700')}>
-            {adminOperator.initial}
+          <div style={s('width:28px;height:28px;border-radius:50%;background:#2E6B58;color:#F3EFE6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0')}>
+            관
           </div>
-          <div>
-            <div style={s('color:#F5F0E6;font-weight:600')}>{adminOperator.name}</div>
-            <div style={s('font-size:10.5px;color:#8A7D6C')}>{adminOperator.email}</div>
+          <div style={s('min-width:0')}>
+            <div style={s('color:#F5F0E6;font-weight:600')}>운영자</div>
+            <div style={s('font-size:10.5px;color:#8A7D6C;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>{admin.email}</div>
           </div>
+        </div>
+        <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:12px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;padding:8px;text-align:center;font-size:11.5px;font-weight:600;color:#B0A490')}>
+          로그아웃
         </div>
       </div>
     </div>

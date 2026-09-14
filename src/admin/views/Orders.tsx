@@ -18,6 +18,12 @@ export function Orders() {
         ))}
       </div>
 
+      {admin.orderList.length === 0 && (
+        <div style={s('border:1px dashed #D3C9B7;border-radius:12px;padding:22px;text-align:center;font-size:12.5px;color:#8A7D6C;line-height:1.6')}>
+          {admin.hasOrders ? '이 상태의 주문이 없습니다.' : '아직 주문이 없습니다. 스토어에서 결제가 완료되면 여기에 나타납니다.'}
+        </div>
+      )}
+
       <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:6px 16px 16px;overflow-x:auto')}>
         <div style={s('min-width:760px')}>
           <div style={s(ROW_COLS + ';font-size:11px;color:#8A7D6C;font-weight:700;padding:10px 6px;border-bottom:1px solid #ECE6DA')}>

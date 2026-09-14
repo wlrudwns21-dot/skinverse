@@ -1,5 +1,6 @@
 import { s } from '../../lib/css'
 import { useAdmin } from '../AdminContext'
+import { LocalOnlyNotice } from './LocalOnlyNotice'
 
 export function Inquiries() {
   const admin = useAdmin()
@@ -7,6 +8,8 @@ export function Inquiries() {
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>
       <div style={s('font-family:Marcellus,serif;font-size:24px')}>CS 문의</div>
+
+      <LocalOnlyNotice what="문의 목록" />
 
       <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:14px')}>
         {admin.csList.map((c) => (
