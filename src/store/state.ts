@@ -3,6 +3,7 @@ import type { ShipMethod } from '../data/commerce'
 import { pointsRules, shipping } from '../data/commerce'
 import { products } from '../data/products'
 import type { Lang, SkinConditionKey } from '../data/types'
+import type { Capability } from '../auth/capabilities'
 import type { ChipKey } from '../i18n/chips'
 
 export type Screen =
@@ -15,8 +16,10 @@ export type Screen =
   | 'routine'
   | 'missions'
   | 'my'
+  | 'auth'
 
 export type ScanStep = 'intro' | 'scanning' | 'results'
+export type AuthMode = 'signup' | 'login'
 
 export interface PlacedOrder {
   no: string
@@ -25,58 +28,80 @@ export interface PlacedOrder {
   eta: string
 }
 
+export interface ScanRecord {
+  skinCondition: SkinConditionKey
+  overall: number
+  createdAt: string
+}
+
 export interface StoreState {
   screen: Screen
+  /** Where to return after the auth screen closes. */
+  returnTo: Screen
+  authMode: AuthMode
   scanStep: ScanStep
-  /** 0–100 during the scan animation. */
   progress: number
+  /** A scan result is on screen. For guests this never survives a refresh. */
   scanned: boolean
-  /** Points earned/spent since the session started, added to the starting balance. */
-  pd: number
-  streak: number
-  /** Guards the once-per-session streak bonus. */
-  streakAwarded: boolean
   cart: Record<string, number>
   selId: string | null
   city: string
   filter: ChipKey
-  done: Record<string, boolean>
-  redeemed: Record<string, boolean>
   chkStep: 1 | 2 | 3
   lang: Lang
   skinCondition: SkinConditionKey
+
+  /** Authoritative point balance: the member's profile, or 0 for a guest. */
+  points: number
+  streak: number
+  /** Mission ids cleared today. Guests can never fill this. */
+  done: Record<string, boolean>
+  redeemed: Record<string, boolean>
+  /** Scan history from the member's account, newest first. */
+  history: ScanRecord[]
+  savedRoutineCount: number
+
   name: string
   addr: string
   country: string
   ship: ShipMethod
   usePoints: boolean
-  /** PayPal sandbox modal open. */
   pp: boolean
   ppBusy: boolean
   order: PlacedOrder | null
   toast: string
   notif: boolean
+
+  /** Which member-only capability the guest just bumped into, if any. */
+  gate: Capability | null
+  /** True once a guest has spent today's single trial scan. */
+  guestScanUsed: boolean
 }
 
 export const initialState: StoreState = {
   screen: 'home',
+  returnTo: 'home',
+  authMode: 'signup',
   scanStep: 'intro',
   progress: 0,
   scanned: false,
-  pd: 0,
-  streak: demoAccount.streak,
-  streakAwarded: false,
   cart: {},
   selId: null,
   city: demoScenario.city,
   filter: 'All',
-  done: { ...demoAccount.doneMissions },
-  redeemed: {},
   chkStep: 1,
   lang: demoScenario.language,
   skinCondition: demoScenario.skinCondition,
-  name: demoAccount.name,
-  addr: demoAccount.addr,
+
+  points: 0,
+  streak: 0,
+  done: {},
+  redeemed: {},
+  history: [],
+  savedRoutineCount: 0,
+
+  name: '',
+  addr: '',
   country: demoAccount.country,
   ship: 'dhl',
   usePoints: true,
@@ -84,11 +109,10 @@ export const initialState: StoreState = {
   ppBusy: false,
   order: null,
   toast: '',
-  notif: demoAccount.routineReminders,
-}
+  notif: true,
 
-export function pointsOf(state: StoreState): number {
-  return demoAccount.startingPoints + state.pd
+  gate: null,
+  guestScanUsed: false,
 }
 
 export interface Totals {
@@ -106,7 +130,7 @@ export function totalsOf(state: StoreState): Totals {
   }, 0)
   const ship = Object.keys(state.cart).length ? shipping[state.ship].fee : 0
   const cap = Math.floor(sub * pointsRules.useCap) * pointsRules.pointsPerDollar
-  const ptsUsed = state.usePoints ? Math.min(pointsOf(state), cap) : 0
+  const ptsUsed = state.usePoints ? Math.min(state.points, cap) : 0
   const disc = ptsUsed / pointsRules.pointsPerDollar
   const total = Math.max(0, sub + ship - disc)
   return { sub, ship, ptsUsed, disc, total }

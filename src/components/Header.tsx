@@ -27,9 +27,13 @@ export function Header() {
           ))}
         </select>
 
-        <div onClick={st.goMissions} style={s('cursor:pointer;background:#221C15;color:#F3E9D6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0')}>
-          {st.pointsS} P
-        </div>
+        {/* Points are a member concept — a guest has no balance to show, and the
+            freed width is what lets the signup button read clearly. */}
+        {st.isMember && (
+          <div onClick={st.goMissions} style={s('cursor:pointer;background:#221C15;color:#F3E9D6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0')}>
+            {st.pointsS} P
+          </div>
+        )}
 
         <div onClick={st.goCart} style={s('cursor:pointer;position:relative;border:1px solid #D8CFBF;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;background:#FFFFFF;white-space:nowrap;flex-shrink:0')}>
           {st.t.bag}
@@ -40,9 +44,15 @@ export function Header() {
           )}
         </div>
 
-        <div onClick={st.goMy} style={s('cursor:pointer;background:#2E6B58;color:#F3EFE6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0')}>
-          {st.t.myPage}
-        </div>
+        {st.isMember ? (
+          <div onClick={st.goMy} style={s('cursor:pointer;background:#2E6B58;color:#F3EFE6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0')}>
+            {st.t.myPage}
+          </div>
+        ) : (
+          <div onClick={() => st.goAuth('signup')} style={s('cursor:pointer;background:#2E6B58;color:#F3EFE6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0')}>
+            {st.a.signUp}
+          </div>
+        )}
       </div>
     </div>
   )

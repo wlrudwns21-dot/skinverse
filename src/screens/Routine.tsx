@@ -71,7 +71,21 @@ export function Routine() {
         ))}
       </div>
 
-      <div onClick={st.goMissions} style={s('cursor:pointer;margin-top:16px;background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center')}>
+      <div
+        onClick={st.saveRoutine}
+        style={s('cursor:pointer;margin-top:16px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700')}
+      >
+        {st.a.saveRoutineCta}
+        {!st.isMember && <span style={s('font-size:11px;font-weight:600;opacity:.7')}> · {st.a.signUp}</span>}
+      </div>
+
+      {st.isMember && st.savedRoutineCount > 0 && (
+        <div style={s('text-align:center;font-size:12px;color:#8A7D6C;margin-top:10px')}>
+          {st.a.savedRoutines(st.savedRoutineCount)}
+        </div>
+      )}
+
+      <div onClick={st.goMissions} style={s('cursor:pointer;margin-top:12px;background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center')}>
         <b>{st.t.completeCta}</b>
         <span style={s('font-weight:700;color:#C29A5B')}>→</span>
       </div>

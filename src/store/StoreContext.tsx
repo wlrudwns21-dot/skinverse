@@ -8,30 +8,31 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { demoAccount, latestScanDate, scanHistory } from '../data/account'
 import { cities, defaultCity } from '../data/cities'
 import { orderNoPrefix, pointsRules, shipping } from '../data/commerce'
 import { products } from '../data/products'
 import { dailyMissions, levels, rewards, weeklyMissions } from '../data/rewards'
 import { conditions, metricDefs } from '../data/skin'
 import type { Lang, Mission, Product, Reward } from '../data/types'
+import { can, guestScanUsedToday, markGuestScanUsed, type Capability } from '../auth/capabilities'
+import { useAuth } from '../auth/AuthContext'
 import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
+import { authT } from '../i18n/auth'
 import { strings, type Strings } from '../i18n'
+import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
+import * as remote from './remote'
 import {
   initialState,
-  pointsOf,
   totalsOf,
   usd,
+  type AuthMode,
   type ScanStep,
   type Screen,
   type StoreState,
 } from './state'
 
-/** How long the whole scan animation runs: 50 ticks × 70ms ≈ 3.5s. */
 const SCAN_TICK_MS = 70
 const SCAN_TICK_STEP = 2
-/** Points granted the first time a scan completes (clears the weekly `w2` mission). */
-const FIRST_SCAN_POINTS = 30
 const TOAST_MS = 2600
 const PAYPAL_MS = 1500
 
@@ -47,7 +48,6 @@ export interface ProductView {
   ing: string
   priceS: string
   matchS: string
-  /** Numeric match used for sorting; the UI only shows `matchS`. */
   matchN: number
   open: () => void
   add: () => void
@@ -76,10 +76,28 @@ export interface RoutineStep {
   note: string
 }
 
-function useStoreValue() {
-  const [state, setState] = useState<StoreState>(initialState)
+interface Prefs {
+  lang: Lang
+  city: string
+}
 
-  // Timers and the latest state/strings, for callbacks that outlive a render.
+function useStoreValue() {
+  const auth = useAuth()
+  const isMember = auth.isMember
+
+  const [state, setState] = useState<StoreState>(() => {
+    // UI preferences and a guest bag are restored before the first paint, so a
+    // refresh does not visibly reset the app.
+    const prefs = readLocal<Partial<Prefs>>(LOCAL_KEYS.prefs, {})
+    return {
+      ...initialState,
+      lang: prefs.lang ?? initialState.lang,
+      city: prefs.city ?? initialState.city,
+      cart: readLocal<Record<string, number>>(LOCAL_KEYS.cart, {}),
+      guestScanUsed: guestScanUsedToday(),
+    }
+  })
+
   const stateRef = useRef(state)
   stateRef.current = state
   const scanTimer = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -87,6 +105,7 @@ function useStoreValue() {
   const payTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const t = useMemo(() => strings(state.lang), [state.lang])
+  const a = useMemo(() => authT(state.lang), [state.lang])
   const tRef = useRef<Strings>(t)
   tRef.current = t
 
@@ -105,123 +124,338 @@ function useStoreValue() {
     toastTimer.current = setTimeout(() => setState((s) => ({ ...s, toast: '' })), TOAST_MS)
   }, [])
 
+  // ── preferences follow the visitor ────────────────────────────────────────
+
+  useEffect(() => {
+    writeLocal(LOCAL_KEYS.prefs, { lang: state.lang, city: state.city } satisfies Prefs)
+  }, [state.lang, state.city])
+
+  /** A guest's bag lives in the browser; a member's lives in Postgres. */
+  useEffect(() => {
+    if (!isMember) writeLocal(LOCAL_KEYS.cart, state.cart)
+  }, [isMember, state.cart])
+
+  // ── sign-in / sign-out ────────────────────────────────────────────────────
+
+  const hydratedFor = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!isMember || !auth.profile) {
+      // Signed out: drop everything that belonged to the account and fall back
+      // to the guest bag that is still in localStorage.
+      if (hydratedFor.current !== null) {
+        hydratedFor.current = null
+        setState((s) => ({
+          ...s,
+          points: 0,
+          streak: 0,
+          done: {},
+          redeemed: {},
+          history: [],
+          savedRoutineCount: 0,
+          scanned: false,
+          order: null,
+          name: '',
+          addr: '',
+          cart: readLocal<Record<string, number>>(LOCAL_KEYS.cart, {}),
+          guestScanUsed: guestScanUsedToday(),
+          screen: 'home',
+        }))
+      }
+      return
+    }
+
+    if (hydratedFor.current === auth.profile.id) return
+    hydratedFor.current = auth.profile.id
+
+    const profile = auth.profile
+    let cancelled = false
+
+    void (async () => {
+      // Anything the visitor put in their bag before signing up comes with them.
+      const guestCart = readLocal<Record<string, number>>(LOCAL_KEYS.cart, {})
+      if (Object.keys(guestCart).length) {
+        await remote.mergeGuestCart(guestCart)
+        writeLocal(LOCAL_KEYS.cart, {})
+      }
+
+      const snap = await remote.loadMemberSnapshot()
+      if (cancelled) return
+
+      const done: Record<string, boolean> = {}
+      for (const id of snap.claimedToday) done[id] = true
+      const redeemed: Record<string, boolean> = {}
+      for (const id of snap.redeemed) redeemed[id] = true
+
+      setState((s) => ({
+        ...s,
+        points: profile.points,
+        streak: profile.streak,
+        name: profile.name,
+        addr: profile.address,
+        country: profile.country,
+        lang: profile.language,
+        city: profile.city,
+        skinCondition: profile.skin_condition,
+        notif: profile.routine_reminders,
+        cart: snap.cart,
+        done,
+        redeemed,
+        history: snap.scanHistory.map((h) => ({
+          skinCondition: h.skin_condition,
+          overall: h.overall,
+          createdAt: h.created_at,
+        })),
+        savedRoutineCount: snap.savedRoutineCount,
+        scanned: !!snap.latestScan,
+        scanStep: snap.latestScan ? 'results' : 'intro',
+        order: snap.latestOrder
+          ? {
+              no: snap.latestOrder.order_no,
+              total: usd(Number(snap.latestOrder.total)),
+              earn: snap.latestOrder.points_earned,
+              eta: snap.latestOrder.eta,
+            }
+          : null,
+      }))
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [isMember, auth.profile])
+
+  // ── the membership gate ───────────────────────────────────────────────────
+
+  const openGate = useCallback((capability: Capability) => {
+    setState((s) => ({ ...s, gate: capability }))
+  }, [])
+
+  const closeGate = useCallback(() => setState((s) => ({ ...s, gate: null })), [])
+
+  /** Run `action` if the visitor may, otherwise raise the signup prompt. */
+  const guard = useCallback(
+    (capability: Capability, action: () => void) => () => {
+      if (can(capability, isMember)) action()
+      else openGate(capability)
+    },
+    [isMember, openGate],
+  )
+
   const go = useCallback((screen: Screen) => () => setState((s) => ({ ...s, screen })), [])
 
+  const goAuth = useCallback(
+    (mode: AuthMode = 'signup') =>
+      setState((s) => ({
+        ...s,
+        screen: 'auth',
+        authMode: mode,
+        gate: null,
+        returnTo: s.screen === 'auth' ? s.returnTo : s.screen,
+      })),
+    [],
+  )
+
+  const leaveAuth = useCallback(
+    () => setState((s) => ({ ...s, screen: s.returnTo === 'auth' ? 'home' : s.returnTo })),
+    [],
+  )
+
+  // ── scan ──────────────────────────────────────────────────────────────────
+
   const startScan = useCallback(() => {
-    // Whether this is the very first scan is fixed the moment it starts, so the
-    // first-scan bonus can be decided here rather than inside the tick.
-    const first = !stateRef.current.scanned
+    const s = stateRef.current
+
+    // Guests get one trial a day; the second attempt sells the signup instead.
+    if (!isMember && s.guestScanUsed) {
+      openGate('saveScan')
+      return
+    }
+
     if (scanTimer.current) clearInterval(scanTimer.current)
-    setState((s) => ({ ...s, screen: 'scan', scanStep: 'scanning' as ScanStep, progress: 0 }))
+    setState((cur) => ({ ...cur, screen: 'scan', scanStep: 'scanning' as ScanStep, progress: 0 }))
 
     scanTimer.current = setInterval(() => {
       const next = stateRef.current.progress + SCAN_TICK_STEP
-      if (next >= 100) {
-        if (scanTimer.current) clearInterval(scanTimer.current)
-        setState((s) => ({
-          ...s,
-          progress: 100,
-          scanStep: 'results',
-          scanned: true,
-          done: first ? { ...s.done, w2: true } : s.done,
-          pd: first ? s.pd + FIRST_SCAN_POINTS : s.pd,
-        }))
-        if (first) toastMsg(tRef.current.tScanM)
+      if (next < 100) {
+        setState((cur) => ({ ...cur, progress: next }))
+        return
+      }
+
+      if (scanTimer.current) clearInterval(scanTimer.current)
+      const cond = conditions[stateRef.current.skinCondition]
+      setState((cur) => ({ ...cur, progress: 100, scanStep: 'results', scanned: true }))
+
+      if (isMember) {
+        void remote.saveScan(stateRef.current.skinCondition, cond.overall, cond.m).then(() => {
+          setState((cur) => ({
+            ...cur,
+            history: [
+              {
+                skinCondition: cur.skinCondition,
+                overall: cond.overall,
+                createdAt: new Date().toISOString(),
+              },
+              ...cur.history,
+            ],
+          }))
+        })
       } else {
-        setState((s) => ({ ...s, progress: next }))
+        markGuestScanUsed()
+        setState((cur) => ({ ...cur, guestScanUsed: true }))
+        toastMsg(a.guestScanNotice)
       }
     }, SCAN_TICK_MS)
-  }, [toastMsg])
+  }, [isMember, openGate, toastMsg, a])
+
+  // ── missions and rewards ──────────────────────────────────────────────────
 
   const claim = useCallback(
     (mission: Mission) => {
+      if (!isMember) {
+        openGate('claimMission')
+        return
+      }
       const s = stateRef.current
       if (s.done[mission.id]) return
       const T = tRef.current
-      const done = { ...s.done, [mission.id]: true }
 
-      // Clearing the last daily mission of the day advances the streak, once.
-      let streak = s.streak
-      let streakAwarded = s.streakAwarded
-      let msg = T.tEarn(mission.pts)
-      if (dailyMissions.every((d) => done[d.id]) && !streakAwarded) {
-        streak++
-        streakAwarded = true
-        msg = T.tStreak(mission.pts, streak)
-      }
+      void (async () => {
+        const res = await remote.claimMission(mission.id, mission.pts, stateRef.current.points)
+        if (!res.ok) return
 
-      setState((cur) => ({ ...cur, done, pd: cur.pd + mission.pts, streak, streakAwarded }))
-      toastMsg(msg)
+        const done = { ...stateRef.current.done, [mission.id]: true }
+        let streak = stateRef.current.streak
+        let msg = T.tEarn(mission.pts)
+
+        // Clearing the last daily mission advances the streak.
+        if (dailyMissions.every((d) => done[d.id])) {
+          streak += 1
+          msg = T.tStreak(mission.pts, streak)
+          await remote.bumpStreak(streak)
+        }
+
+        setState((cur) => ({ ...cur, done, points: res.points, streak }))
+        void auth.refreshProfile()
+        toastMsg(msg)
+      })()
     },
-    [toastMsg],
+    [isMember, openGate, toastMsg, auth],
   )
 
   const redeem = useCallback(
     (reward: Reward) => {
+      if (!isMember) {
+        openGate('redeem')
+        return
+      }
       const s = stateRef.current
       if (s.redeemed[reward.id]) return
       const T = tRef.current
-      if (pointsOf(s) < reward.cost) {
+
+      if (s.points < reward.cost) {
         toastMsg(T.tNoPts)
         return
       }
-      setState((cur) => ({
-        ...cur,
-        redeemed: { ...cur.redeemed, [reward.id]: true },
-        pd: cur.pd - reward.cost,
-      }))
-      toastMsg(T.tRedeem(reward.l[s.lang]))
+
+      void (async () => {
+        const res = await remote.redeemReward(reward.id, reward.cost, stateRef.current.points)
+        if (!res.ok) {
+          toastMsg(T.tNoPts)
+          return
+        }
+        setState((cur) => ({
+          ...cur,
+          redeemed: { ...cur.redeemed, [reward.id]: true },
+          points: res.points,
+        }))
+        void auth.refreshProfile()
+        toastMsg(T.tRedeem(reward.l[stateRef.current.lang]))
+      })()
     },
-    [toastMsg],
+    [isMember, openGate, toastMsg, auth],
   )
+
+  // ── cart ──────────────────────────────────────────────────────────────────
 
   const addCart = useCallback(
     (id: string) => {
-      setState((s) => ({ ...s, cart: { ...s.cart, [id]: (s.cart[id] ?? 0) + 1 } }))
+      setState((s) => {
+        const qty = (s.cart[id] ?? 0) + 1
+        if (isMember) void remote.upsertCartItem(id, qty)
+        return { ...s, cart: { ...s.cart, [id]: qty } }
+      })
       toastMsg(tRef.current.tAdded)
     },
-    [toastMsg],
+    [isMember, toastMsg],
   )
 
-  const setQty = useCallback((id: string, delta: number) => {
-    setState((s) => {
-      const cart = { ...s.cart }
-      const next = (cart[id] ?? 0) + delta
-      if (next <= 0) delete cart[id]
-      else cart[id] = next
-      return { ...s, cart }
-    })
-  }, [])
+  const setQty = useCallback(
+    (id: string, delta: number) => {
+      setState((s) => {
+        const cart = { ...s.cart }
+        const next = (cart[id] ?? 0) + delta
+        if (next <= 0) {
+          delete cart[id]
+          if (isMember) void remote.removeCartItem(id)
+        } else {
+          cart[id] = next
+          if (isMember) void remote.upsertCartItem(id, next)
+        }
+        return { ...s, cart }
+      })
+    },
+    [isMember],
+  )
+
+  // ── checkout ──────────────────────────────────────────────────────────────
 
   const pay = useCallback(() => {
     setState((s) => ({ ...s, ppBusy: true }))
     payTimer.current = setTimeout(() => {
-      const s = stateRef.current
-      const totals = totalsOf(s)
-      const earn = Math.round(totals.total * pointsRules.earnPerDollar)
-      setState((cur) => ({
-        ...cur,
-        ppBusy: false,
-        pp: false,
-        chkStep: 3,
-        cart: {},
-        pd: cur.pd + earn - totals.ptsUsed,
-        order: {
-          no: orderNoPrefix + Math.floor(1000 + Math.random() * 9000),
-          total: usd(totals.total),
-          earn,
-          eta: shipping[s.ship].eta,
-        },
-      }))
-    }, PAYPAL_MS)
-  }, [])
+      void (async () => {
+        const s = stateRef.current
+        const totals = totalsOf(s)
+        const earn = Math.round(totals.total * pointsRules.earnPerDollar)
+        const orderNo = orderNoPrefix + Math.floor(1000 + Math.random() * 9000)
+        const eta = shipping[s.ship].eta
 
-  // ---------------------------------------------------------------- derived
+        const res = await remote.placeOrder({
+          orderNo,
+          subtotal: totals.sub,
+          shipping: totals.ship,
+          pointsUsed: totals.ptsUsed,
+          total: totals.total,
+          pointsEarned: earn,
+          shipMethod: s.ship,
+          eta,
+          name: s.name,
+          country: s.country,
+          address: s.addr,
+          cart: s.cart,
+          currentPoints: s.points,
+        })
+
+        setState((cur) => ({
+          ...cur,
+          ppBusy: false,
+          pp: false,
+          chkStep: 3,
+          cart: {},
+          points: res.points,
+          order: { no: orderNo, total: usd(totals.total), earn, eta },
+        }))
+        void auth.refreshProfile()
+      })()
+    }, PAYPAL_MS)
+  }, [auth])
+
+  // ── derived ───────────────────────────────────────────────────────────────
 
   const lang: Lang = state.lang
   const condition = conditions[state.skinCondition] ?? conditions.dehydrated
   const weather = cities[state.city] ?? cities[defaultCity]
-  const points = pointsOf(state)
+  const points = state.points
   const totals = totalsOf(state)
 
   const metrics = metricDefs.map((def) => {
@@ -235,8 +469,7 @@ function useStoreValue() {
     }
   })
 
-  /** The weakest axis drives both the routine's "target" step and its product. */
-  const lowest = metricDefs.reduce((a, b) => (condition.m[a.k] <= condition.m[b.k] ? a : b))
+  const lowest = metricDefs.reduce((x, y) => (condition.m[x.k] <= condition.m[y.k] ? x : y))
   const targetProduct = products.find((p) => p.metric === lowest.k) ?? products[0]
 
   const toView = (p: Product): ProductView => {
@@ -262,7 +495,7 @@ function useStoreValue() {
     }
   }
 
-  const all = products.map(toView).sort((a, b) => b.matchN - a.matchN)
+  const all = products.map(toView).sort((x, y) => y.matchN - x.matchN)
   const byTag = new Map(products.map((p) => [p.id, p.tag]))
   const shopList = state.filter === 'All' ? all : all.filter((p) => byTag.get(p.id) === state.filter)
   const sel = all.find((p) => p.id === state.selId) ?? all[0]
@@ -345,23 +578,38 @@ function useStoreValue() {
     { n: 4, name: dry || condition.m.hydration < 60 ? t.pm4a : t.pm4b, note: t.pm4n },
   ]
 
-  const pastScans = scanHistory.map((h) => ({
-    date: h.date + ' · ' + t.scanN + ' #' + h.scanNo,
-    type: h.typeKey === 'first' ? t.firstScan : condition.type[lang],
-    score: condition.overall + h.offset,
-    color: h.color,
-  }))
-  const history = state.scanned
-    ? [
-        {
-          date: latestScanDate + ' · ' + t.latest,
-          type: condition.type[lang],
-          score: condition.overall,
-          color: '#2E6B58',
-        },
-        ...pastScans,
-      ]
-    : pastScans
+  const saveCurrentRoutine = () => {
+    void (async () => {
+      const ok = await remote.saveRoutine({
+        city: state.city,
+        skinCondition: state.skinCondition,
+        temp: weather.t,
+        humidity: weather.h,
+        uv: weather.uv,
+        advice: wAdvice,
+        amSteps,
+        pmSteps,
+      })
+      if (ok) {
+        setState((s) => ({ ...s, savedRoutineCount: s.savedRoutineCount + 1 }))
+        toastMsg(a.routineSaved)
+      }
+    })()
+  }
+
+  const history = state.history.map((h) => {
+    const cond = conditions[h.skinCondition] ?? condition
+    const date = new Date(h.createdAt)
+    return {
+      date: date.toLocaleDateString(lang === 'en' ? 'en-US' : lang, {
+        month: 'short',
+        day: 'numeric',
+      }),
+      type: cond.type[lang],
+      score: h.overall,
+      color: h.overall < 50 ? '#C25E43' : h.overall < 70 ? '#B08133' : '#2E6B58',
+    }
+  })
 
   const tabScreens: Screen[] = ['home', 'scan', 'shop', 'routine', 'missions']
   const tabs = tabScreens.map((id, i) => {
@@ -376,13 +624,13 @@ function useStoreValue() {
   })
 
   const cartItems = Object.entries(state.cart).map(([id, qty]) => {
-    const p = all.find((x) => x.id === id)!
-    const price = products.find((x) => x.id === id)!.price
+    const p = all.find((x) => x.id === id)
+    const price = products.find((x) => x.id === id)?.price ?? 0
     return {
       id,
-      brand: p.brand,
-      name: p.name,
-      grad: p.grad,
+      brand: p?.brand ?? '',
+      name: p?.name ?? '',
+      grad: p?.grad ?? '',
       qty,
       lineS: usd(price * qty),
       inc: () => setQty(id, 1),
@@ -393,31 +641,45 @@ function useStoreValue() {
   return {
     state,
     t,
+    a,
     lang,
-    setLang: (value: Lang) => setState((s) => ({ ...s, lang: value })),
+    isMember,
+    authLoading: auth.loading,
+    profile: auth.profile,
+    signOut: () => void auth.signOut(),
+    setLang: (value: Lang) => {
+      setState((s) => ({ ...s, lang: value }))
+      if (isMember) void auth.updateProfile({ language: value })
+    },
 
-    // header / points
+    // membership gate
+    gate: state.gate,
+    closeGate,
+    goAuth,
+    leaveAuth,
+    guard,
+    can: (capability: Capability) => can(capability, isMember),
+
     pointsS: points.toLocaleString(),
     streakLine: t.streakLine(state.streak),
     hasCart: Object.keys(state.cart).length > 0,
     cartEmpty: Object.keys(state.cart).length === 0,
-    cartCount: Object.values(state.cart).reduce((a, b) => a + b, 0),
+    cartCount: Object.values(state.cart).reduce((x, y) => x + y, 0),
 
-    // navigation
     goHome: go('home'),
     goScan: go('scan'),
     goShop: go('shop'),
     goRoutine: go('routine'),
     goMissions: go('missions'),
-    goMy: go('my'),
+    goMy: guard('myPage', () => setState((s) => ({ ...s, screen: 'my' }))),
     goCart: go('cart'),
-    goCheckout: () => setState((s) => ({ ...s, screen: 'checkout', chkStep: 1 })),
+    goCheckout: guard('checkout', () => setState((s) => ({ ...s, screen: 'checkout', chkStep: 1 }))),
 
-    // scan
     startScan,
     progress: state.progress,
     scanStatus:
       state.progress < 30 ? t.s1 : state.progress < 60 ? t.s2 : state.progress < 90 ? t.s3 : t.s4,
+    guestScanUsed: state.guestScanUsed,
     overall: condition.overall,
     skinType: condition.type[lang],
     summary: condition.sum[lang],
@@ -431,13 +693,11 @@ function useStoreValue() {
       condition.overall * 3.6 +
       'deg,#D5E2D9 0deg);flex-shrink:0',
 
-    // shop
     homeRecs: all.slice(0, 4),
     shopList,
     chips,
     sel,
 
-    // cart / checkout
     cartItems,
     subS: usd(totals.sub),
     shipS: usd(totals.ship),
@@ -453,7 +713,10 @@ function useStoreValue() {
     pickEms: () => setState((s) => ({ ...s, ship: 'ems' })),
     dhlBorder: state.ship === 'dhl' ? '#221C15' : '#ECE6DA',
     emsBorder: state.ship === 'ems' ? '#221C15' : '#ECE6DA',
-    toPayment: () => setState((s) => ({ ...s, chkStep: 2 })),
+    toPayment: () => {
+      if (isMember) void auth.updateProfile({ name: state.name, address: state.addr, country: state.country })
+      setState((s) => ({ ...s, chkStep: 2 }))
+    },
     backShip: () => setState((s) => ({ ...s, chkStep: 1 })),
     togglePoints: () => setState((s) => ({ ...s, usePoints: !s.usePoints })),
     togBg: state.usePoints ? '#2E6B58' : '#D8CFBF',
@@ -462,8 +725,10 @@ function useStoreValue() {
     closePaypal: () => setState((s) => ({ ...s, pp: false })),
     pay,
 
-    // routine
-    setCity: (value: string) => setState((s) => ({ ...s, city: value })),
+    setCity: (value: string) => {
+      setState((s) => ({ ...s, city: value }))
+      if (isMember) void auth.updateProfile({ city: value })
+    },
     weather,
     uvColor: weather.uv >= 8 ? '#C25E43' : weather.uv >= 6 ? '#B08133' : '#2E6B58',
     wLine: weather.t + '°C · ' + t.humidity + ' ' + weather.h + '% · UV ' + weather.uv,
@@ -471,26 +736,28 @@ function useStoreValue() {
     wAdvice,
     amSteps,
     pmSteps,
+    saveRoutine: guard('saveRoutine', saveCurrentRoutine),
+    savedRoutineCount: state.savedRoutineCount,
 
-    // missions / rewards
     dailyList,
     weeklyList,
     dailyDoneS: dailyDone + '/' + dailyMissions.length,
     rewardList,
     levelName: levels[levelIndex][1],
-    nextLevelS: nextLevel
-      ? t.toLv((nextLevel[0] - points).toLocaleString(), nextLevel[1])
-      : t.maxLv,
+    nextLevelS: nextLevel ? t.toLv((nextLevel[0] - points).toLocaleString(), nextLevel[1]) : t.maxLv,
     levelPct,
 
-    // my page
     history,
-    startingPoints: demoAccount.startingPoints,
-    toggleNotif: () => setState((s) => ({ ...s, notif: !s.notif })),
+    toggleNotif: () => {
+      const next = !state.notif
+      setState((s) => ({ ...s, notif: next }))
+      if (isMember) void auth.updateProfile({ routine_reminders: next })
+    },
     notifBg: state.notif ? '#2E6B58' : '#D8CFBF',
     notifLeft: state.notif ? '19px' : '3px',
 
     tabs,
+    toastMsg,
   }
 }
 

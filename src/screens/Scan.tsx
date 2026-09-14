@@ -26,6 +26,14 @@ export function ScanIntro() {
         ))}
       </div>
 
+      {/* Guests may try the analysis once a day; the notice sets that
+          expectation before they spend it rather than after. */}
+      {!st.isMember && (
+        <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:12px 14px;margin-top:14px;font-size:12.5px;color:#9A8455;line-height:1.5')}>
+          {st.guestScanUsed ? st.a.guestScanUsed : st.a.guestScanNotice}
+        </div>
+      )}
+
       <div onClick={st.startScan} style={s('cursor:pointer;margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700')}>
         {st.t.beginScan}
       </div>
@@ -93,6 +101,16 @@ export function ScanResults() {
           {st.t.routineBtn}
         </div>
       </div>
+
+      {!st.isMember && (
+        <div
+          onClick={() => st.goAuth('signup')}
+          style={s('cursor:pointer;background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 14px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px')}
+        >
+          <div style={s('font-size:12.5px;color:#9A8455;line-height:1.45')}>{st.a.gateSaveScan}</div>
+          <span style={s('font-weight:700;color:#C29A5B;flex-shrink:0')}>→</span>
+        </div>
+      )}
 
       <div onClick={st.startScan} style={s('cursor:pointer;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px;text-decoration:underline')}>
         {st.t.rescan}
