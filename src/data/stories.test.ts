@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { NAME, WORDMARK } from './brand'
 import type { Lang, Localized } from './types'
 import {
   categoryNames,
@@ -56,6 +57,18 @@ describe('stories', () => {
     expectComplete('empty', storiesEmpty)
     expectComplete('homeCta', storiesHomeCta)
     expectComplete('toRoutine', storiesToRoutine)
+  })
+
+  /**
+   * The byline used to credit "the Seoul lab" — a placeholder that read like
+   * another company's masthead on our own guides. It carries our name in every
+   * language, and this is what stops one slipping back in.
+   */
+  it('signs the byline with our own name, in every language', () => {
+    for (const lang of LANGS) {
+      const line = storiesSub[lang]
+      expect(line.includes(WORDMARK) || line.includes(NAME), `${lang}: ${line}`).toBe(true)
+    }
   })
 
   it('gives every story a distinct id', () => {

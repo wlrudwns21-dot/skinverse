@@ -2,6 +2,7 @@ import type { Lang } from '../data/types'
 import { langOptions } from '../i18n'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
+import { WORDMARK } from '../data/brand'
 
 export function Header() {
   const st = useStore()
@@ -12,7 +13,7 @@ export function Header() {
           their designed single-line shape — Korean and Thai labels are wider
           than the English the prototype was laid out against. */}
       <div onClick={st.goHome} style={s('cursor:pointer;line-height:1;min-width:0')}>
-        <div style={s('font-family:Marcellus,serif;font-size:21px;letter-spacing:0.06em;white-space:nowrap;overflow:hidden')}>SKINVERSE</div>
+        <div style={s('font-family:Marcellus,serif;font-size:21px;letter-spacing:0.06em;white-space:nowrap;overflow:hidden')}>{WORDMARK}</div>
         <div style={s('font-size:10px;color:#8A7D6C;letter-spacing:0.14em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>K-BEAUTY · AI SKIN LAB</div>
       </div>
 

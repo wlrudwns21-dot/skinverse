@@ -66,6 +66,18 @@ export function Home() {
         </div>
       )}
 
+      {/* Today's missions, straight under the score. The score is the reason
+          someone opened the app; the missions are the one thing on this screen
+          they can act on right now, and they were sitting below a product shelf
+          most visits never reached. */}
+      <div onClick={st.goMissions} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px')}>
+        <div style={s('min-width:0')}>
+          <div style={s('font-size:13px;font-weight:700')}>{st.t.todayMissions} {st.dailyDoneS}</div>
+          <div style={s('font-size:12px;color:#8A7D6C;margin-top:2px')}>🔥 {st.streakLine} · Lv. {st.levelName}</div>
+        </div>
+        <div style={s('background:#C29A5B;color:#FFF;border-radius:999px;font-size:11px;font-weight:700;padding:6px 10px;flex-shrink:0')}>{st.t.earnP} →</div>
+      </div>
+
       {/* Skin Stories, above the shelf. Most visits are not a scan and not a
           purchase, so what a customer can do *today* has to be within reach —
           burying the reading under the product strip made it the last thing on
@@ -125,14 +137,6 @@ export function Home() {
             </div>
           </div>
         ))}
-      </div>
-
-      <div onClick={st.goMissions} style={s('cursor:pointer;margin-top:16px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between')}>
-        <div>
-          <div style={s('font-size:13px;font-weight:700')}>{st.t.todayMissions} {st.dailyDoneS}</div>
-          <div style={s('font-size:12px;color:#8A7D6C;margin-top:2px')}>🔥 {st.streakLine} · Lv. {st.levelName}</div>
-        </div>
-        <div style={s('background:#C29A5B;color:#FFF;border-radius:999px;font-size:11px;font-weight:700;padding:6px 10px')}>{st.t.earnP} →</div>
       </div>
     </div>
   )

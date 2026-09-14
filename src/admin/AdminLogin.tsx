@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { s } from '../lib/css'
 import { useAdmin } from './AdminContext'
+import { WORDMARK } from '../data/brand'
 
 const field =
   'width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none'
@@ -11,7 +12,7 @@ function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div style={s('min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#EFEBE2')}>
       <div style={s('width:100%;max-width:380px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:20px;padding:28px 24px;box-shadow:0 8px 40px rgba(60,45,25,0.10)')}>
-        <div style={s('font-family:Marcellus,serif;font-size:21px;letter-spacing:0.06em')}>SKINVERSE</div>
+        <div style={s('font-family:Marcellus,serif;font-size:21px;letter-spacing:0.06em')}>{WORDMARK}</div>
         <div style={s('font-size:10px;letter-spacing:0.14em;color:#8A7D6C;margin-top:3px')}>ADMIN CONSOLE · 관리자</div>
         <div style={s('height:1px;background:#ECE6DA;margin:18px 0')} />
         {children}

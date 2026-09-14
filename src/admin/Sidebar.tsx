@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { s } from '../lib/css'
 import { useAdmin } from './AdminContext'
+import { WORDMARK } from '../data/brand'
 
 export function Sidebar() {
   const admin = useAdmin()
@@ -8,7 +9,7 @@ export function Sidebar() {
   return (
     <div style={s('width:216px;flex-shrink:0;background:#221C15;color:#D8CFBF;display:flex;flex-direction:column;padding:22px 0')}>
       <div style={s('padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,0.1)')}>
-        <div style={s('font-family:Marcellus,serif;font-size:19px;letter-spacing:0.06em;color:#F5F0E6')}>SKINVERSE</div>
+        <div style={s('font-family:Marcellus,serif;font-size:19px;letter-spacing:0.06em;color:#F5F0E6')}>{WORDMARK}</div>
         <div style={s('font-size:10px;letter-spacing:0.14em;color:#8A7D6C;margin-top:3px')}>ADMIN CONSOLE · 관리자</div>
       </div>
 

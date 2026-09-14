@@ -1,6 +1,7 @@
 import { paypalSandboxAccount } from '../data/commerce'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
+import { NAME } from '../data/brand'
 
 export function PaypalModal() {
   const st = useStore()
@@ -20,7 +21,7 @@ export function PaypalModal() {
         </div>
 
         <div style={s('border:1px solid #E5E0D4;border-radius:12px;padding:12px 14px;margin-top:12px;display:flex;justify-content:space-between;font-size:14px')}>
-          <span>Skinverse Order</span>
+          <span>{NAME} Order</span>
           <b>{st.totalS}</b>
         </div>
 

@@ -1,7 +1,8 @@
+import { NAME, WORDMARK } from './brand'
 import type { Lang, Localized } from './types'
 
 /**
- * Skin Stories — the guides, cases and expert notes from the Seoul lab.
+ * Skin Stories — the guides, cases and expert notes from our own lab.
  *
  * One of them is marked `coreTip`: the single routine principle the routine
  * screen surfaces inline, because a customer reading their own routine is the
@@ -222,11 +223,16 @@ export const storiesTitle: Localized = {
   th: 'เรื่องเล่าผิว',
 }
 
+/**
+ * The byline. It carries our own name, interpolated rather than typed out:
+ * these are our guides, and crediting a generic "Seoul lab" read like someone
+ * else's masthead on our content.
+ */
 export const storiesSub: Localized = {
-  ko: '서울 랩이 전하는 가이드 · 사례 · 전문가 노트',
-  en: 'Guides, cases and expert notes from the Seoul lab',
-  zh: '来自首尔实验室的指南、案例与专家笔记',
-  th: 'คู่มือ กรณีศึกษา และบันทึกผู้เชี่ยวชาญจากแล็บโซล',
+  ko: `${WORDMARK} 랩이 전하는 가이드 · 사례 · 전문가 노트`,
+  en: `Guides, cases and expert notes from the ${NAME} lab`,
+  zh: `来自 ${WORDMARK} 实验室的指南、案例与专家笔记`,
+  th: `คู่มือ กรณีศึกษา และบันทึกผู้เชี่ยวชาญจากแล็บ ${WORDMARK}`,
 }
 
 export const coreTipLabel: Localized = {
