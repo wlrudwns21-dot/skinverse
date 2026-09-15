@@ -16,13 +16,24 @@ import { WORDMARK } from '../data/brand'
  */
 
 /**
- * The shortest the splash is ever shown.
+ * The shortest the splash is ever shown: long enough to have seen the name.
  *
- * Below about a second and a half a brand animation reads as a flicker or a
- * rendering fault rather than an intro — worse than no splash at all. This is
- * the floor; `ready` decides everything above it.
+ * This was 1,600ms, taken from the study's "minimum exposure" note, and it was
+ * wrong — the wordmark does not start rising until 1,880ms and the tagline
+ * under it does not settle until 3,120ms. On any load that finished quickly
+ * the splash played the scan rings and then cut before a single letter had
+ * arrived: all setup, no payoff, which is the one thing a brand intro must not
+ * do.
+ *
+ * So the floor is the end of the brand lockup. What the study means by cutting
+ * early is skipping phase G — the progress bar from 2,700ms, which exists only
+ * to occupy someone who is still waiting — and that is still skipped.
+ *
+ *   letters   1,880 → 2,800   (last of nine starts at 2,240, runs 560)
+ *   rule      2,440 → 3,060
+ *   tagline   2,600 → 3,120   ← the last thing to land
  */
-const MIN_MS = 1600
+const BRAND_MS = 3120
 
 /**
  * The full sequence, and the ceiling.
@@ -37,8 +48,9 @@ const TOTAL_MS = 3520
 const FADE_MS = 320
 
 /**
- * Reduced motion gets a shorter floor. The hold exists to let the animation
- * play; with the animation off, holding a static frame is only a delay.
+ * Reduced motion gets a much shorter floor, and does not miss anything by it:
+ * with the animation off the wordmark is on screen from the first frame, so
+ * there is no reveal left to wait for — only a delay.
  */
 const MIN_MS_STILL = 700
 
@@ -87,7 +99,7 @@ export function Splash({ ready }: { ready: boolean }) {
     if (gone) return
 
     const scale = timeScale(root.current)
-    const floor = (prefersStill() ? MIN_MS_STILL : MIN_MS) * scale
+    const floor = (prefersStill() ? MIN_MS_STILL : BRAND_MS) * scale
     const elapsed = Date.now() - startedAt.current
     // Wait out the floor, then go as soon as the app is ready — but never hold
     // past the end of the sequence, whatever loading is still doing.
