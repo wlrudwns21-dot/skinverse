@@ -3,6 +3,7 @@ import { CatalogProvider } from './catalog/CatalogContext'
 import { GatePrompt } from './components/GatePrompt'
 import { Header } from './components/Header'
 import { PaypalModal } from './components/PaypalModal'
+import { Splash } from './components/Splash'
 import { TabBar } from './components/TabBar'
 import { Toast } from './components/Toast'
 import { s } from './lib/css'
@@ -78,6 +79,14 @@ function StoreShell() {
         <GatePrompt />
         <PaypalModal />
       </div>
+
+      {/* Over the shell rather than instead of it, so the app is already laid
+          out and settled behind the fade — the splash covers the loading, and
+          what it uncovers is finished rather than still assembling.
+
+          The storefront only: an operator opening the admin console is at work,
+          and a three-second brand film is not what they came for. */}
+      <Splash ready={!st.authLoading && !st.catalogLoading} />
     </div>
   )
 }
