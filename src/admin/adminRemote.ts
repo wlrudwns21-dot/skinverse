@@ -11,16 +11,46 @@ import type { AdminOrder, OrderStatus } from '../data/types'
 
 export interface AdminMember {
   id: string
-  name: string
+  /** The real address, joined from auth.users by an admin-only function. */
   email: string
+  /** Null until they have clicked the link in the confirmation mail. */
+  emailConfirmedAt: string | null
+  lastSignInAt: string | null
+  /** 'email', or the social provider if one is ever turned on. */
+  provider: string
+
+  /**
+   * What they typed on the signup form, as they typed it.
+   *
+   * Kept apart from the live profile below rather than folded into it: the
+   * member can change any of it afterwards, and the difference between what
+   * they signed up with and what they have now is often the whole answer to a
+   * support question.
+   */
+  signup: {
+    name: string | null
+    country: string | null
+    city: string | null
+    language: string | null
+    timezone: string | null
+  }
+
+  name: string
   country: string
+  city: string
+  language: string
+  timezone: string
+  skinCondition: string
   points: number
   streak: number
-  language: string
+  routineReminders: boolean
   created_at: string
+
   /** Derived: how many scans and orders this member has. */
   scanCount: number
   orderCount: number
+  lastScanAt: string | null
+  totalSpent: number
 }
 
 export interface AdminStats {
@@ -109,45 +139,48 @@ export async function updateOrderStatus(
 export async function loadMembers(): Promise<AdminMember[]> {
   if (!supabase) return []
 
-  const [profiles, scans, orders] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('id, name, country, points, streak, language, created_at')
-      .order('created_at', { ascending: false })
-      .limit(200),
-    supabase.from('scans').select('user_id'),
-    supabase.from('orders').select('user_id'),
-  ])
-
-  if (profiles.error) {
-    console.error('[skinverse] 회원 조회 실패', profiles.error.message)
+  // One call, because the email lives in auth.users and the rest lives in
+  // public — `admin_member_directory` is the only place the two are joined,
+  // and it refuses anyone who is not an operator.
+  const { data, error } = await supabase.rpc('admin_member_directory')
+  if (error) {
+    console.error('[skinverse] 회원 조회 실패', error.message)
     return []
   }
 
-  const scanCounts = new Map<string, number>()
-  for (const r of scans.data ?? []) {
-    const id = r.user_id as string
-    scanCounts.set(id, (scanCounts.get(id) ?? 0) + 1)
-  }
-  const orderCounts = new Map<string, number>()
-  for (const r of orders.data ?? []) {
-    const id = r.user_id as string
-    orderCounts.set(id, (orderCounts.get(id) ?? 0) + 1)
-  }
+  type Row = Record<string, unknown>
+  const str = (v: unknown) => (typeof v === 'string' && v.length > 0 ? v : null)
 
-  return (profiles.data ?? []).map((p) => ({
-    id: p.id as string,
-    name: (p.name as string) || '—',
-    // auth.users is not readable from the browser, so the profile carries the
-    // name and the email stays with the account. Shown as the id's short form.
-    email: (p.id as string).slice(0, 8),
-    country: p.country as string,
-    points: p.points as number,
-    streak: p.streak as number,
-    language: p.language as string,
-    created_at: p.created_at as string,
-    scanCount: scanCounts.get(p.id as string) ?? 0,
-    orderCount: orderCounts.get(p.id as string) ?? 0,
+  return ((data ?? []) as Row[]).map((r) => ({
+    id: r.id as string,
+    email: str(r.email) ?? '—',
+    emailConfirmedAt: str(r.email_confirmed_at),
+    lastSignInAt: str(r.last_sign_in_at),
+    provider: str(r.provider) ?? 'email',
+
+    signup: {
+      name: str(r.signup_name),
+      country: str(r.signup_country),
+      city: str(r.signup_city),
+      language: str(r.signup_language),
+      timezone: str(r.signup_timezone),
+    },
+
+    name: str(r.name) ?? '—',
+    country: str(r.country) ?? '—',
+    city: str(r.city) ?? '—',
+    language: str(r.language) ?? '—',
+    timezone: str(r.timezone) ?? '—',
+    skinCondition: str(r.skin_condition) ?? '—',
+    points: Number(r.points ?? 0),
+    streak: Number(r.streak ?? 0),
+    routineReminders: r.routine_reminders === true,
+    created_at: (r.created_at as string) ?? '',
+
+    scanCount: Number(r.scan_count ?? 0),
+    orderCount: Number(r.order_count ?? 0),
+    lastScanAt: str(r.last_scan_at),
+    totalSpent: Number(r.total_spent ?? 0),
   }))
 }
 

@@ -387,6 +387,11 @@ function useAdminValue() {
       activeStyle: p.active ? 'background:#EAF1EC;color:#2E6B58' : 'background:#EFE9DD;color:#8A7D6C',
     })),
 
+    /**
+     * The member directory. The raw record travels with each row so the detail
+     * panel can show the signup form and the live profile side by side — the
+     * difference between the two is usually what a support question is about.
+     */
     userList: members.map((m) => ({
       id: m.id,
       name: m.name,
@@ -396,6 +401,7 @@ function useAdminValue() {
       ptsS: m.points.toLocaleString(),
       activity: m.scanCount + '회 / ' + m.orderCount + '건',
       grant: () => void grant(m.id),
+      record: m,
     })),
     grantPoints: GRANT_POINTS,
 
