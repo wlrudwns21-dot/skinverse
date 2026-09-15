@@ -1406,9 +1406,6 @@ function useStoreValue() {
     },
     /** Straight to the result on file, from the camera screen. */
     showLastResult: () => setState((s) => ({ ...s, screen: 'scan', scanStep: 'results' })),
-    /** Straight to the camera, from the result screen. */
-    startNewScan: () => setState((s) => ({ ...s, screen: 'scan', scanStep: 'intro' })),
-    scanAgainLabel: a.scanAgain,
     goShop: go('shop'),
     goRoutine: go('routine'),
     goMissions: go('missions'),

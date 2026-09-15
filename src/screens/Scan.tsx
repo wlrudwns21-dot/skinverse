@@ -309,15 +309,13 @@ export function ScanResults() {
         </div>
       )}
 
-      {/* Another analysis when one is available; otherwise what the allowance
-          says, so the offer and the answer are the same sentence. */}
-      {st.scansLeft === 0 ? (
+      {/* No rescan link. With one analysis a day, the offer is wrong almost
+          every time it is shown — a customer reading their result has just
+          spent today's. What is left is the one thing that link was really
+          being asked: when can I do this again. That is a line, not a button. */}
+      {st.scansLeft === 0 && (
         <div style={s('text-align:center;font-size:12px;color:#A2957F;margin-top:14px')}>
           {st.quotaLine}
-        </div>
-      ) : (
-        <div onClick={st.startNewScan} style={s('cursor:pointer;text-align:center;font-size:12px;color:#2E6B58;font-weight:600;margin-top:14px;text-decoration:underline')}>
-          {st.scanAgainLabel}
         </div>
       )}
     </div>
