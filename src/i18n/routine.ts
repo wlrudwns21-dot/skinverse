@@ -54,6 +54,35 @@ export interface RoutineStrings {
   /** Heading above the three band chips. */
   basis: string
   basisHint: string
+
+  /** The checklist: ticking steps off, and what the record adds up to. */
+  check: {
+    title: string
+    sub: string
+    /** "아침 루틴은 오전 4시–12시에 체크할 수 있어요" */
+    windowShut: (slot: string) => string
+    amWindow: string
+    pmWindow: string
+    doneToday: (done: number, total: number) => string
+    allDone: string
+    /** The adherence chart. */
+    historyTitle: string
+    historySub: string
+    streak: (days: number) => string
+    bestStreak: (days: number) => string
+    rate: (pct: number) => string
+    noHistory: string
+    /** The legend for the scan scores drawn over the bars. */
+    scanDot: string
+    memberOnly: string
+  }
+
+  /** The weather reading's age, and the control that refreshes it. */
+  refresh: string
+  refreshing: string
+  measuredJustNow: string
+  measuredMinutesAgo: (minutes: number) => string
+  measuredHoursAgo: (hours: number) => string
 }
 
 export const routineStrings: Record<Lang, RoutineStrings> = {
@@ -119,6 +148,28 @@ export const routineStrings: Record<Lang, RoutineStrings> = {
     },
     basis: '오늘의 판단 기준',
     basisHint: '아래 세 가지 측정값이 각 단계를 결정합니다.',
+    check: {
+      title: '오늘의 루틴 체크',
+      sub: '각 단계는 해당 시간대에만 체크할 수 있어요.',
+      windowShut: (slot) => `${slot}에 체크할 수 있어요`,
+      amWindow: '오전 4시–12시',
+      pmWindow: '오후 5시–자정',
+      doneToday: (done, total) => `오늘 ${total}단계 중 ${done}단계`,
+      allDone: '오늘 루틴 완료 🎉',
+      historyTitle: '루틴 달성도',
+      historySub: '매일의 달성률과 그때의 분석 점수',
+      streak: (days) => `연속 ${days}일`,
+      bestStreak: (days) => `최고 ${days}일`,
+      rate: (pct) => `전체 달성률 ${pct}%`,
+      noHistory: '체크를 시작하면 여기에 기록이 쌓입니다.',
+      scanDot: '● AI 분석 점수',
+      memberOnly: '루틴 체크는 회원만 이용할 수 있어요.',
+    },
+    refresh: '새로고침',
+    refreshing: '불러오는 중…',
+    measuredJustNow: '방금 측정',
+    measuredMinutesAgo: (m) => `${m}분 전 측정`,
+    measuredHoursAgo: (h) => `${h}시간 전 측정`,
   },
 
   en: {
@@ -183,6 +234,28 @@ export const routineStrings: Record<Lang, RoutineStrings> = {
     },
     basis: "Today's inputs",
     basisHint: 'These three readings decide every step below.',
+    check: {
+      title: "Today's routine",
+      sub: 'Each step can be ticked only during its own part of the day.',
+      windowShut: (slot) => `Can be ticked ${slot}`,
+      amWindow: '4am–noon',
+      pmWindow: '5pm–midnight',
+      doneToday: (done, total) => `${done} of ${total} today`,
+      allDone: 'Routine complete today 🎉',
+      historyTitle: 'Routine adherence',
+      historySub: 'What you did each day, and what the scans said',
+      streak: (days) => `${days}-day streak`,
+      bestStreak: (days) => `Best ${days}`,
+      rate: (pct) => `${pct}% overall`,
+      noHistory: 'Start ticking steps off and the record builds here.',
+      scanDot: '● Analysis score',
+      memberOnly: 'Ticking the routine off is for members.',
+    },
+    refresh: 'Refresh',
+    refreshing: 'Updating…',
+    measuredJustNow: 'Just measured',
+    measuredMinutesAgo: (m) => `Measured ${m} min ago`,
+    measuredHoursAgo: (h) => `Measured ${h}h ago`,
   },
 
   zh: {
@@ -247,6 +320,28 @@ export const routineStrings: Record<Lang, RoutineStrings> = {
     },
     basis: '今日判断依据',
     basisHint: '以下三项数值决定每个步骤。',
+    check: {
+      title: '今日护理打卡',
+      sub: '每个步骤只能在对应时段勾选。',
+      windowShut: (slot) => `可在${slot}勾选`,
+      amWindow: '凌晨4点–中午',
+      pmWindow: '下午5点–午夜',
+      doneToday: (done, total) => `今日 ${done}/${total} 步`,
+      allDone: '今日护理已完成 🎉',
+      historyTitle: '护理达成度',
+      historySub: '每天的完成率，以及当时的检测分数',
+      streak: (days) => `连续 ${days} 天`,
+      bestStreak: (days) => `最佳 ${days} 天`,
+      rate: (pct) => `总体完成率 ${pct}%`,
+      noHistory: '开始打卡后，记录会累积在这里。',
+      scanDot: '● AI 检测分数',
+      memberOnly: '护理打卡仅限会员使用。',
+    },
+    refresh: '刷新',
+    refreshing: '更新中…',
+    measuredJustNow: '刚刚测量',
+    measuredMinutesAgo: (m) => `${m} 分钟前测量`,
+    measuredHoursAgo: (h) => `${h} 小时前测量`,
   },
 
   th: {
@@ -311,6 +406,28 @@ export const routineStrings: Record<Lang, RoutineStrings> = {
     },
     basis: 'เกณฑ์ของวันนี้',
     basisHint: 'ค่าทั้งสามนี้กำหนดทุกขั้นตอนด้านล่าง',
+    check: {
+      title: 'รูทีนวันนี้',
+      sub: 'แต่ละขั้นตอนติ๊กได้เฉพาะช่วงเวลาของมัน',
+      windowShut: (slot) => `ติ๊กได้ช่วง${slot}`,
+      amWindow: 'ตี 4 – เที่ยง',
+      pmWindow: '17:00 – เที่ยงคืน',
+      doneToday: (done, total) => `วันนี้ ${done} จาก ${total} ขั้น`,
+      allDone: 'ทำรูทีนครบแล้ววันนี้ 🎉',
+      historyTitle: 'ความสม่ำเสมอของรูทีน',
+      historySub: 'สิ่งที่ทำในแต่ละวัน และคะแนนสแกนในตอนนั้น',
+      streak: (days) => `ต่อเนื่อง ${days} วัน`,
+      bestStreak: (days) => `สูงสุด ${days} วัน`,
+      rate: (pct) => `โดยรวม ${pct}%`,
+      noHistory: 'เริ่มติ๊กแล้วบันทึกจะสะสมที่นี่',
+      scanDot: '● คะแนนวิเคราะห์',
+      memberOnly: 'การติ๊กรูทีนสำหรับสมาชิกเท่านั้น',
+    },
+    refresh: 'รีเฟรช',
+    refreshing: 'กำลังอัปเดต…',
+    measuredJustNow: 'วัดเมื่อครู่',
+    measuredMinutesAgo: (m) => `วัดเมื่อ ${m} นาทีที่แล้ว`,
+    measuredHoursAgo: (h) => `วัดเมื่อ ${h} ชม. ที่แล้ว`,
   },
 }
 

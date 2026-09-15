@@ -68,6 +68,11 @@ export interface AuthStrings {
    * member who has already had their scans today.
    */
   dailyLimitReached: string
+  /** How much of today's allowance is left, shown on the home screen. */
+  scansLeftToday: (left: number, limit: number) => string
+  scansSpentToday: string
+  /** On the results screen, when another scan is available. */
+  scanAgain: string
 
   // analysis
   /** Why a photo was refused before it cost a call, or by the vendor after. */
@@ -176,6 +181,9 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateCta: '회원가입하기', gateLater: '나중에',
 
     dailyLimitReached: '오늘 분석 횟수를 모두 사용했어요 — 내일 다시 가능합니다',
+    scansLeftToday: (left, limit) => `오늘 분석 ${left}/${limit}회 남음`,
+    scansSpentToday: '오늘 분석을 모두 사용했어요 · 내일 0시에 초기화',
+    scanAgain: '다시 분석하기',
 
     photoError: {
       format: 'JPG 또는 PNG 파일만 분석할 수 있어요.',
@@ -276,6 +284,9 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateCta: 'Sign up', gateLater: 'Later',
 
     dailyLimitReached: 'You have used today’s analyses — come back tomorrow',
+    scansLeftToday: (left, limit) => `${left} of ${limit} analyses left today`,
+    scansSpentToday: "Today's analyses are used · resets at midnight",
+    scanAgain: 'Scan again',
 
     photoError: {
       format: 'Only JPG and PNG files can be analysed.',
@@ -376,6 +387,9 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateCta: '立即注册', gateLater: '稍后',
 
     dailyLimitReached: '今日检测次数已用完 — 明天再来',
+    scansLeftToday: (left, limit) => `今日剩余检测 ${left}/${limit} 次`,
+    scansSpentToday: '今日检测已用完 · 午夜重置',
+    scanAgain: '重新检测',
 
     photoError: {
       format: '仅支持 JPG 或 PNG 格式。',
@@ -476,6 +490,9 @@ export const authStrings: Record<Lang, AuthStrings> = {
     gateCta: 'สมัครสมาชิก', gateLater: 'ไว้ภายหลัง',
 
     dailyLimitReached: 'ใช้สิทธิ์วิเคราะห์ของวันนี้ครบแล้ว — พรุ่งนี้ลองใหม่',
+    scansLeftToday: (left, limit) => `เหลือ ${left}/${limit} ครั้งวันนี้`,
+    scansSpentToday: 'ใช้สิทธิ์วันนี้ครบแล้ว · รีเซ็ตตอนเที่ยงคืน',
+    scanAgain: 'สแกนอีกครั้ง',
 
     photoError: {
       format: 'รองรับเฉพาะไฟล์ JPG หรือ PNG เท่านั้น',

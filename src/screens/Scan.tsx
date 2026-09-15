@@ -16,6 +16,22 @@ export function ScanIntro() {
       <div style={s('font-family:Marcellus,serif;font-size:24px')}>{st.t.scanTitle}</div>
       <div style={s('font-size:13px;color:#8A7D6C;margin-top:4px')}>{st.t.scanSub}</div>
 
+      {/* Coming here on a new day opens the camera rather than the old report,
+          because a new day is the reason to scan again — but the report is one
+          tap away, not lost. */}
+      <div style={s('display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap')}>
+        {st.quotaLine && (
+          <span style={s('font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 10px;' + (st.scansLeft === 0 ? 'background:#FBF3E4;color:#9A8455' : 'background:#EAF1EC;color:#2E6B58'))}>
+            {st.quotaLine}
+          </span>
+        )}
+        {st.state.scanned && (
+          <span onClick={st.showLastResult} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600;text-decoration:underline')}>
+            {st.t.viewReport} →
+          </span>
+        )}
+      </div>
+
       <div style={s('display:flex;justify-content:center;margin:22px 0 14px')}>
         <div style={s('width:210px;height:270px;position:relative')}>
           <ImageSlot
@@ -287,9 +303,17 @@ export function ScanResults() {
         </div>
       )}
 
-      <div onClick={st.startScan} style={s('cursor:pointer;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px;text-decoration:underline')}>
-        {st.t.rescan}
-      </div>
+      {/* Another analysis when one is available; otherwise what the allowance
+          says, so the offer and the answer are the same sentence. */}
+      {st.scansLeft === 0 ? (
+        <div style={s('text-align:center;font-size:12px;color:#A2957F;margin-top:14px')}>
+          {st.quotaLine}
+        </div>
+      ) : (
+        <div onClick={st.startNewScan} style={s('cursor:pointer;text-align:center;font-size:12px;color:#2E6B58;font-weight:600;margin-top:14px;text-decoration:underline')}>
+          {st.scanAgainLabel}
+        </div>
+      )}
     </div>
   )
 }

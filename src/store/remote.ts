@@ -4,6 +4,7 @@ import type { MetricKey, SkinConditionKey, Weather } from '../data/types'
 import type { SkinTypeReading } from '../analysis/perfectcorp'
 import type { ScanRecord } from './state'
 import type { RoutineStepRecord } from './types'
+import { localDay } from '../routine/checklist'
 
 /**
  * Every read and write a signed-in member makes against Postgres.
@@ -87,12 +88,7 @@ const EMPTY: MemberSnapshot = {
 }
 
 /** Local calendar day as YYYY-MM-DD — mission claims reset at the member's midnight. */
-export function localToday(): string {
-  const now = new Date()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${now.getFullYear()}-${month}-${day}`
-}
+export const localToday = () => localDay(new Date())
 
 /** One round trip per table, in parallel, to fill the store on sign-in. */
 export async function loadMemberSnapshot(): Promise<MemberSnapshot> {
@@ -145,6 +141,166 @@ export async function loadMemberSnapshot(): Promise<MemberSnapshot> {
     latestOrder: order ?? null,
     savedRoutineCount: routines.count ?? 0,
   }
+}
+
+// ── the analysis allowance ──────────────────────────────────────────────────
+
+export interface AnalysisQuota {
+  used: number
+  limit: number
+  /** The instant the allowance comes back — the member's own next midnight. */
+  resetsAt: string
+}
+
+/**
+ * How many analyses the member has left today.
+ *
+ * Read through `my_analysis_quota()`, which builds its subject from `auth.uid()`
+ * rather than taking one as an argument, so it can only ever answer about the
+ * caller. The day it counts against is the member's own, not UTC — the same
+ * definition the edge function claims against, so the screen and the server
+ * cannot disagree about when tomorrow starts.
+ */
+export async function loadAnalysisQuota(): Promise<AnalysisQuota | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.rpc('my_analysis_quota')
+  if (error) {
+    console.error('[skinverse] 남은 분석 횟수를 불러오지 못했습니다', error.message)
+    return null
+  }
+  const row = data as { used?: number; limit?: number; resets_at?: string } | null
+  if (!row || typeof row.used !== 'number' || typeof row.limit !== 'number') return null
+  return { used: row.used, limit: row.limit, resetsAt: row.resets_at ?? '' }
+}
+
+// ── the routine, day by day ─────────────────────────────────────────────────
+
+export interface RoutineCheckRow {
+  day: string
+  slot: 'am' | 'pm'
+  stepKey: string
+}
+
+export interface RoutineExtraRow {
+  id: string
+  slot: 'am' | 'pm'
+  preset: string
+}
+
+/**
+ * How many days of routine history to read back.
+ *
+ * Long enough that a month's habit is visible in the chart, short enough that
+ * it is one small query on every load.
+ */
+export const ROUTINE_HISTORY_DAYS = 30
+
+export async function loadRoutineLog(since: string): Promise<RoutineCheckRow[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('routine_checks')
+    .select('day, slot, step_key')
+    .gte('day', since)
+  if (error) {
+    console.error('[skinverse] 루틴 기록을 불러오지 못했습니다', error.message)
+    return []
+  }
+  return (data ?? []).map((row) => ({
+    day: row.day as string,
+    slot: row.slot as 'am' | 'pm',
+    stepKey: row.step_key as string,
+  }))
+}
+
+export async function loadRoutineExtras(): Promise<RoutineExtraRow[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('routine_extras')
+    .select('id, slot, preset')
+    .order('created_at')
+  if (error) {
+    console.error('[skinverse] 추가한 루틴 단계를 불러오지 못했습니다', error.message)
+    return []
+  }
+  return (data ?? []).map((row) => ({
+    id: row.id as string,
+    slot: row.slot as 'am' | 'pm',
+    preset: row.preset as string,
+  }))
+}
+
+/**
+ * Tick a step off.
+ *
+ * The day comes from the client because it is the member's local calendar day
+ * that matters: an evening routine finished at 11pm in Seoul belongs to that
+ * evening, and a server computing it in UTC would file it under tomorrow.
+ */
+export async function checkRoutineStep(
+  day: string,
+  slot: 'am' | 'pm',
+  stepKey: string,
+): Promise<boolean> {
+  if (!supabase) return false
+  const { data: auth } = await supabase.auth.getUser()
+  if (!auth.user) return false
+  const { error } = await supabase
+    .from('routine_checks')
+    .insert({ user_id: auth.user.id, day, slot, step_key: stepKey })
+  // A duplicate means it was already ticked, which is the state we wanted.
+  if (error && error.code !== '23505') {
+    console.error('[skinverse] 루틴 체크를 저장하지 못했습니다', error.message)
+    return false
+  }
+  return true
+}
+
+export async function uncheckRoutineStep(
+  day: string,
+  slot: 'am' | 'pm',
+  stepKey: string,
+): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase
+    .from('routine_checks')
+    .delete()
+    .eq('day', day)
+    .eq('slot', slot)
+    .eq('step_key', stepKey)
+  if (error) {
+    console.error('[skinverse] 루틴 체크를 지우지 못했습니다', error.message)
+    return false
+  }
+  return true
+}
+
+export async function addRoutineExtra(
+  slot: 'am' | 'pm',
+  preset: string,
+): Promise<RoutineExtraRow | null> {
+  if (!supabase) return null
+  const { data: auth } = await supabase.auth.getUser()
+  if (!auth.user) return null
+  const { data, error } = await supabase
+    .from('routine_extras')
+    .insert({ user_id: auth.user.id, slot, preset })
+    .select('id, slot, preset')
+    .maybeSingle()
+  if (error || !data) {
+    if (error) console.error('[skinverse] 루틴 단계를 추가하지 못했습니다', error.message)
+    return null
+  }
+  return { id: data.id as string, slot: data.slot as 'am' | 'pm', preset: data.preset as string }
+}
+
+export async function removeRoutineExtra(id: string): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase.from('routine_extras').delete().eq('id', id)
+  if (error) {
+    console.error('[skinverse] 루틴 단계를 빼지 못했습니다', error.message)
+    return false
+  }
+  return true
 }
 
 // ── cart ────────────────────────────────────────────────────────────────────

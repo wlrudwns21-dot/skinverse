@@ -31,8 +31,15 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png']
  * There is no guest ceiling because there is no guest path: every call is
  * billed against a prepaid balance, so an unauthenticated caller would be
  * spending the operator's money anonymously.
+ *
+ * The number lives in `store_settings` so the app can show the customer what
+ * they have left — a limit only the server knows is a limit the screen has to
+ * guess at, and a wrong guess is a refusal that arrives by surprise. The
+ * environment variable still wins when set, as an operator override that does
+ * not need a database write.
  */
-const MEMBER_DAILY_LIMIT = Number(Deno.env.get('ANALYSIS_MEMBER_DAILY_LIMIT') ?? '20')
+const LIMIT_OVERRIDE = Number(Deno.env.get('ANALYSIS_MEMBER_DAILY_LIMIT') ?? '')
+const DEFAULT_DAILY_LIMIT = 1
 
 const CORS = {
   'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') ?? '*',
@@ -143,6 +150,18 @@ Deno.serve(async (req) => {
   // ── quota ────────────────────────────────────────────────────────────────
   const subject = `user:${userId}`
 
+  let dailyLimit = DEFAULT_DAILY_LIMIT
+  if (Number.isFinite(LIMIT_OVERRIDE) && LIMIT_OVERRIDE > 0) {
+    dailyLimit = LIMIT_OVERRIDE
+  } else {
+    const { data: settings } = await admin
+      .from('store_settings')
+      .select('analysis_daily_limit')
+      .maybeSingle()
+    const configured = settings?.analysis_daily_limit
+    if (typeof configured === 'number' && configured > 0) dailyLimit = configured
+  }
+
   // Called on `public`, not `private`: PostgREST only serves schemas on its
   // exposed list, and whether `private` is on it is a dashboard setting rather
   // than something the schema can guarantee. The public wrappers are SECURITY
@@ -150,7 +169,7 @@ Deno.serve(async (req) => {
   // from a browser than it was before.
   const { data: allowed, error: quotaError } = await admin.rpc('claim_analysis_call', {
     p_subject: subject,
-    p_limit: MEMBER_DAILY_LIMIT,
+    p_limit: dailyLimit,
   })
 
   if (quotaError) {
@@ -162,7 +181,7 @@ Deno.serve(async (req) => {
       {
         error: 'quota_exceeded',
         message: '오늘 분석 횟수를 모두 사용했습니다. 내일 다시 이용해주세요.',
-        limit: MEMBER_DAILY_LIMIT,
+        limit: dailyLimit,
       },
       429,
     )

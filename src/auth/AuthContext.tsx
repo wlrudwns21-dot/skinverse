@@ -22,6 +22,21 @@ export interface Profile {
   city: string
   skin_condition: SkinConditionKey
   routine_reminders: boolean
+  /**
+   * The member's IANA timezone, which decides when their analysis allowance
+   * resets. Stored rather than read per request so the boundary is a property
+   * of the account, not of whatever clock the current request claimed.
+   */
+  timezone: string
+}
+
+/** The browser's own zone, or Seoul when it will not say. */
+export function deviceTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Seoul'
+  } catch {
+    return 'Asia/Seoul'
+  }
 }
 
 export interface AuthResult {
@@ -101,6 +116,7 @@ function useAuthValue() {
           language: input.language,
           country: input.country,
           city: input.city,
+          timezone: deviceTimezone(),
         },
       },
     })

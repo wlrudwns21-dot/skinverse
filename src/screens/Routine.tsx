@@ -1,6 +1,8 @@
 import { cityNames, CURRENT_LOCATION } from '../data/cities'
 import { storiesHomeCta } from '../data/stories'
 import { PlanBasis } from '../components/PlanBasis'
+import { RoutineAdherence } from '../components/RoutineAdherence'
+import { RoutineCheck } from '../components/RoutineCheck'
 import { CoreTipCard } from './Stories'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
@@ -38,6 +40,17 @@ export function Routine() {
           {st.weatherIsLive ? '● ' + st.a.liveWeather : st.a.sampleWeather}
         </span>
         <span style={s('font-size:12px;color:#8A7D6C')}>{st.placeLabel}</span>
+        {st.weatherAgo && (
+          <span style={s('font-size:11.5px;color:#B9AC93')}>· {st.weatherAgo}</span>
+        )}
+        {/* The reading refreshes itself every two hours; this is for the
+            visitor who has just walked outside and does not want to wait. */}
+        <span
+          onClick={st.refreshWeather}
+          style={s('cursor:pointer;font-size:11.5px;font-weight:700;color:#2E6B58;border:1px solid #CFE0D4;background:#EAF1EC;border-radius:999px;padding:3px 10px')}
+        >
+          {st.weatherBusy ? st.refreshingLabel : '↻ ' + st.refreshLabel}
+        </span>
         {!st.usingLocation && (
           <span onClick={st.requestLocation} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600;text-decoration:underline')}>
             📍 {st.a.useMyLocation}
@@ -105,31 +118,34 @@ export function Routine() {
           know why gets the measurements in the units they were taken in. */}
       <PlanBasis plan={st.plan} weather={st.weatherNow} lang={st.lang} t={st.basisT} />
 
-      <div style={s('font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px')}>{st.t.morning} ☀</div>
-      <div style={s('display:flex;flex-direction:column;gap:8px')}>
-        {st.amSteps.map((step) => (
-          <div key={step.n} style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center')}>
-            <div style={s('width:26px;height:26px;border-radius:50%;background:#EAF1EC;color:#2E6B58;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0')}>{step.n}</div>
-            <div>
-              <div style={s('font-size:13px;font-weight:600')}>{step.name}</div>
-              <div style={s('font-size:11.5px;color:#8A7D6C')}>{step.note}</div>
-            </div>
+      {/* Today's progress, before the steps themselves — a customer coming
+          back at 9pm wants to know what is left, not to re-read the list. */}
+      <div style={s('background:#221C15;color:#F0EADC;border-radius:14px;padding:14px 16px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
+        <div style={s('min-width:0')}>
+          <div style={s('font-size:13px;font-weight:700')}>
+            {st.todayAdherence.done === st.todayAdherence.total && st.todayAdherence.total > 0
+              ? st.checkT.allDone
+              : st.checkT.doneToday(st.todayAdherence.done, st.todayAdherence.total)}
           </div>
-        ))}
+          <div style={s('font-size:11.5px;color:#9A8F7C;margin-top:2px')}>{st.checkT.sub}</div>
+        </div>
+        <div style={s('width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:conic-gradient(#C29A5B ' + st.todayAdherence.pct + '%, rgba(255,255,255,0.14) 0)')}>
+          <div style={s('width:34px;height:34px;border-radius:50%;background:#221C15;display:flex;align-items:center;justify-content:center')}>
+            {st.todayAdherence.pct}%
+          </div>
+        </div>
       </div>
 
-      <div style={s('font-family:Marcellus,serif;font-size:17px;margin:18px 2px 8px')}>{st.t.evening} ☾</div>
-      <div style={s('display:flex;flex-direction:column;gap:8px')}>
-        {st.pmSteps.map((step) => (
-          <div key={step.n} style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center')}>
-            <div style={s('width:26px;height:26px;border-radius:50%;background:#F1EAF3;color:#6B4B78;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0')}>{step.n}</div>
-            <div>
-              <div style={s('font-size:13px;font-weight:600')}>{step.name}</div>
-              <div style={s('font-size:11.5px;color:#8A7D6C')}>{step.note}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {!st.isMember && (
+        <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:12px;padding:11px 14px;margin-top:10px;font-size:12.5px;color:#9A8455;line-height:1.5')}>
+          {st.checkT.memberOnly}
+        </div>
+      )}
+
+      <RoutineCheck slot="am" steps={st.amList} heading={st.t.morning + ' ☀'} />
+      <RoutineCheck slot="pm" steps={st.pmList} heading={st.t.evening + ' ☾'} />
+
+      <RoutineAdherence />
 
       {/* The one principle behind the steps above, in full. A routine tells you
           what to do; this is the reason it works, and the routine screen is the

@@ -24,11 +24,19 @@ const keyFor = (lat: number, lon: number) => `${lat.toFixed(2)},${lon.toFixed(2)
 /**
  * Returns null rather than throwing — every caller already has a sensible
  * fallback, and a weather outage must not take the routine screen down.
+ *
+ * @param force skip the cache. Set when the visitor pressed refresh: they are
+ *              asking for the current reading, and handing back one from nine
+ *              minutes ago makes the button look broken even though it worked.
  */
-export async function fetchWeather(lat: number, lon: number): Promise<Weather | null> {
+export async function fetchWeather(
+  lat: number,
+  lon: number,
+  force = false,
+): Promise<Weather | null> {
   const key = keyFor(lat, lon)
   const hit = cache.get(key)
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.value
+  if (!force && hit && Date.now() - hit.at < CACHE_MS) return hit.value
 
   const url =
     `${ENDPOINT}?latitude=${lat}&longitude=${lon}` +

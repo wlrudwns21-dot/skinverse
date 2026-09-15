@@ -25,8 +25,16 @@ export function Home() {
         <div style={s('font-family:Marcellus,serif;font-size:27px;line-height:1.25;margin:10px 0 6px')}>{st.t.heroT}</div>
         <div style={s('font-size:13px;color:#BDB2A0;line-height:1.5')}>{st.t.heroSub}</div>
         <div onClick={st.goScan} style={s('cursor:pointer;display:inline-block;margin-top:16px;background:#F5F0E6;color:#221C15;border-radius:999px;padding:11px 20px;font-size:13px;font-weight:700')}>
-          {st.t.startBtn} →
+          {st.scansLeft === 0 && st.state.scanned ? st.t.viewReport : st.t.startBtn} →
         </div>
+        {/* What today actually allows, before the tap rather than after it.
+            An allowance the server enforces and the screen never mentions is
+            a refusal the customer meets by surprise. */}
+        {st.quotaLine && (
+          <div style={s(`font-size:11.5px;margin-top:10px;font-weight:600;color:${st.scansLeft === 0 ? '#C7B99E' : '#9ECFB4'}`)}>
+            {st.quotaLine}
+          </div>
+        )}
       </div>
 
       <div onClick={st.goRoutine} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px')}>

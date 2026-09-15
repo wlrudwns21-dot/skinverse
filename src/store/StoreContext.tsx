@@ -20,13 +20,27 @@ import { useGeolocation } from '../weather/useGeolocation'
 import { useCatalog } from '../catalog/CatalogContext'
 import type { CatalogMission, CatalogProduct, CatalogReward } from '../catalog/types'
 import { can, type Capability } from '../auth/capabilities'
-import { useAuth } from '../auth/AuthContext'
+import { deviceTimezone, useAuth } from '../auth/AuthContext'
 import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
 import { authT } from '../i18n/auth'
 import { routineT } from '../i18n/routine'
 import { buildPlan } from '../routine/rules'
 import { fallingAxes, rank, type ReasonKind } from '../routine/recommend'
 import { axisSeries, buildReport, cumulative, MOVE_THRESHOLD, trendSeries } from '../insights/report'
+import {
+  adherenceFor,
+  checkId,
+  dayOffset,
+  isOpen,
+  localDay,
+  openSlot,
+  overallRate,
+  streakOf,
+  type CheckLog,
+  type Checkable,
+  type Slot,
+} from '../routine/checklist'
+import { MAX_EXTRAS_PER_SLOT, presetById, presetsFor } from '../routine/extras'
 import { describeAll } from '../insights/describe'
 import { insightT } from '../i18n/insights'
 import { strings, type Strings } from '../i18n'
@@ -85,8 +99,33 @@ export interface RewardView {
 
 export interface RoutineStep {
   n: number
+  /**
+   * Stable across plan changes, unlike the name.
+   *
+   * The weather can turn the morning cleanse from a gel into a balm overnight;
+   * it is still the morning cleanse, and a tick against it should survive. Key
+   * on the step, never on the variant the engine picked today.
+   */
+  key: string
   name: string
   note: string
+}
+
+/** A routine step as the checklist needs it: ticked, and whether it can be. */
+export interface RoutineStepView extends RoutineStep {
+  slot: Slot
+  done: boolean
+  /** False outside the slot's window — shown, but not claimable. */
+  open: boolean
+  /** Added by the member rather than the engine, so it can be removed. */
+  extraId: string | null
+  /**
+   * Whether the row responds to a tap at all. Claiming a step needs its window
+   * open; undoing one never does — an accidental tap at 11:59 should not be
+   * stuck on the record until tomorrow, and unticking can only lower a score.
+   */
+  canToggle: boolean
+  toggle: () => void
 }
 
 interface Prefs {
@@ -248,6 +287,15 @@ function useStoreValue() {
         writeLocal(LOCAL_KEYS.cart, {})
       }
 
+      // Keep the stored zone in step with the device, so the allowance resets
+      // at the midnight the member is actually living in. A traveller's day
+      // boundary moves with them; someone who never leaves home writes this
+      // once and never again.
+      const zone = deviceTimezone()
+      if (profileRef.current && profileRef.current.timezone !== zone) {
+        void auth.updateProfile({ timezone: zone })
+      }
+
       const snap = await remote.loadMemberSnapshot()
       const profile = profileRef.current
       // Let the next run try again rather than leaving the member looking like
@@ -322,6 +370,19 @@ function useStoreValue() {
   // the screen falls back to the city's stored numbers rather than going blank.
   const geoCoords = geo.coords
   const selectedCity = state.city
+
+  /**
+   * Bumped to ask for a fresh reading of the same place.
+   *
+   * The fetch used to run once per place and never again, so a session left
+   * open all day was still advising on the morning's weather at dusk — a
+   * routine that follows the weather has to actually follow it.
+   */
+  const [weatherNonce, setWeatherNonce] = useState(0)
+  /** When the reading on screen was taken, so the screen can say. */
+  const [weatherAt, setWeatherAt] = useState<number | null>(null)
+  const [weatherBusy, setWeatherBusy] = useState(false)
+
   useEffect(() => {
     const place =
       selectedCity === CURRENT_LOCATION
@@ -329,16 +390,177 @@ function useStoreValue() {
         : { lat: (cities[selectedCity] ?? cities[defaultCity]).lat, lon: (cities[selectedCity] ?? cities[defaultCity]).lon }
     if (!place) {
       setLiveWeather(null)
+      setWeatherAt(null)
       return
     }
 
     let cancelled = false
-    setLiveWeather(null)
-    void fetchWeather(place.lat, place.lon).then((w) => {
-      if (!cancelled) setLiveWeather(w)
+    setWeatherBusy(true)
+    void fetchWeather(place.lat, place.lon, weatherNonce > 0).then((w) => {
+      if (cancelled) return
+      setWeatherBusy(false)
+      // A failed refresh keeps the last good reading rather than blanking the
+      // screen: a number from twenty minutes ago beats no number at all, and
+      // the timestamp beside it says how old it is.
+      if (w) {
+        setLiveWeather(w)
+        setWeatherAt(Date.now())
+      } else if (weatherNonce === 0) {
+        setLiveWeather(null)
+        setWeatherAt(null)
+      }
     })
     return () => { cancelled = true }
-  }, [selectedCity, geoCoords])
+  }, [selectedCity, geoCoords, weatherNonce])
+
+  /**
+   * Every two hours, unattended.
+   *
+   * Weather does not move minute to minute, and the routine only branches on
+   * bands — two hours is fine enough to catch an afternoon that turned, and
+   * coarse enough that a page left open overnight makes twelve calls, not
+   * hundreds.
+   */
+  const WEATHER_REFRESH_MS = 2 * 60 * 60 * 1000
+  useEffect(() => {
+    const timer = setInterval(() => setWeatherNonce((n) => n + 1), WEATHER_REFRESH_MS)
+    return () => clearInterval(timer)
+  }, [WEATHER_REFRESH_MS])
+
+  /**
+   * The refresh button. When the routine is following the visitor's own
+   * location, "update" means asking the device where they are now as well —
+   * someone who has travelled wants the weather where they are, not where the
+   * browser last saw them.
+   */
+  const refreshWeather = useCallback(() => {
+    if (stateRef.current.city === CURRENT_LOCATION) geo.request()
+    setWeatherNonce((n) => n + 1)
+  }, [geo])
+
+  // ── the analysis allowance, and the routine log ───────────────────────────
+
+  const [quota, setQuota] = useState<remote.AnalysisQuota | null>(null)
+  const [routineLog, setRoutineLog] = useState<CheckLog>({})
+  const [extras, setExtras] = useState<remote.RoutineExtraRow[]>([])
+
+  /**
+   * The clock, as state, ticked every minute.
+   *
+   * The routine's windows open and close on the hour; without a tick the
+   * checkboxes would stay disabled until something else happened to re-render,
+   * so a customer who opened the app at 4:59pm would be told the evening was
+   * not open at 5:30. A minute is finer than any boundary here.
+   */
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const today = localDay(now)
+
+  const refreshQuota = useCallback(async () => {
+    if (!isMember) {
+      setQuota(null)
+      return
+    }
+    setQuota(await remote.loadAnalysisQuota())
+  }, [isMember])
+
+  /**
+   * `startScan` is memoised and must not be rebuilt whenever the allowance
+   * changes — rebuilding it mid-scan would strand the progress timer's closure.
+   * A ref lets it reach the current version without taking it as a dependency.
+   */
+  const refreshQuotaRef = useRef(refreshQuota)
+  refreshQuotaRef.current = refreshQuota
+
+  useEffect(() => {
+    if (!memberId) {
+      setQuota(null)
+      setRoutineLog({})
+      setExtras([])
+      return
+    }
+
+    let cancelled = false
+    void (async () => {
+      const since = dayOffset(new Date(), -(remote.ROUTINE_HISTORY_DAYS - 1))
+      const [q, rows, extraRows] = await Promise.all([
+        remote.loadAnalysisQuota(),
+        remote.loadRoutineLog(since),
+        remote.loadRoutineExtras(),
+      ])
+      if (cancelled) return
+
+      const byDay: Record<string, Set<string>> = {}
+      for (const row of rows) {
+        ;(byDay[row.day] ??= new Set()).add(checkId(row.slot, row.stepKey))
+      }
+      setQuota(q)
+      setRoutineLog(byDay)
+      setExtras(extraRows)
+    })()
+    return () => { cancelled = true }
+  }, [memberId])
+
+  /**
+   * The allowance comes back at the member's own midnight, and a session left
+   * open across it should notice. Re-reading whenever the local day changes is
+   * enough — the reset is a date boundary, not a timer.
+   */
+  const lastDay = useRef(today)
+  useEffect(() => {
+    if (lastDay.current === today) return
+    lastDay.current = today
+    void refreshQuota()
+  }, [today, refreshQuota])
+
+  /** Tick a routine step off, or take it back. Optimistic; reverted on failure. */
+  const toggleRoutineStep = useCallback(
+    (slot: Slot, key: string) => {
+      const id = checkId(slot, key)
+      const day = localDay(new Date())
+      const had = routineLog[day]?.has(id) ?? false
+
+      setRoutineLog((log) => {
+        const next = new Set(log[day] ?? [])
+        if (had) next.delete(id)
+        else next.add(id)
+        return { ...log, [day]: next }
+      })
+
+      void (had
+        ? remote.uncheckRoutineStep(day, slot, key)
+        : remote.checkRoutineStep(day, slot, key)
+      ).then((ok) => {
+        if (ok) return
+        // Put it back: a tick that did not persist must not look like one that did.
+        setRoutineLog((log) => {
+          const next = new Set(log[day] ?? [])
+          if (had) next.add(id)
+          else next.delete(id)
+          return { ...log, [day]: next }
+        })
+      })
+    },
+    [routineLog],
+  )
+
+  const addExtra = useCallback(
+    (slot: Slot, preset: string) => {
+      void remote.addRoutineExtra(slot, preset).then((row) => {
+        if (row) setExtras((current) => [...current, row])
+      })
+    },
+    [],
+  )
+
+  const removeExtra = useCallback((id: string) => {
+    setExtras((current) => current.filter((row) => row.id !== id))
+    void remote.removeRoutineExtra(id)
+  }, [])
 
   // ── the membership gate ───────────────────────────────────────────────────
 
@@ -466,6 +688,11 @@ function useStoreValue() {
 
       void (async () => {
         const outcome = pending ? await pending : null
+
+        // Whatever happened, the allowance moved: a success spent one, and a
+        // failure before the vendor charged us handed one back. Re-read it so
+        // the count on the home screen is the count the server would enforce.
+        void refreshQuotaRef.current()
 
         if (outcome?.kind === 'quota') {
           setState((cur) => ({ ...cur, scanStep: 'intro', progress: 0 }))
@@ -857,20 +1084,23 @@ function useStoreValue() {
   const wAdvice = [bands.humidity.why, bands.uv.why, bands.temp.why].join(' ')
 
   const amSteps: RoutineStep[] = [
-    { n: 1, name: r.step.amCleanse[plan.am.cleanse], note: r.note.amCleanse },
-    { n: 2, name: r.step.amToner[plan.am.toner], note: r.note.amToner },
+    { n: 1, key: 'cleanse', name: r.step.amCleanse[plan.am.cleanse], note: r.note.amCleanse },
+    { n: 2, key: 'toner', name: r.step.amToner[plan.am.toner], note: r.note.amToner },
     {
       n: 3,
+      key: 'treatment',
       name: r.step.amTreatment + ': ' + targetProduct.name,
       note: r.note.weakest(lowest.n[lang]),
     },
     {
       n: 4,
+      key: 'moisturiser',
       name: r.step.amMoisturiser[plan.am.moisturiser],
       note: bands.humidity.label + ' · ' + bands.humidity.value,
     },
     {
       n: 5,
+      key: 'spf',
       name: r.step.amSpf[plan.am.spf],
       note: 'UV ' + weather.uv + ' · ' + bands.uv.label,
     },
@@ -878,21 +1108,101 @@ function useStoreValue() {
   const pmSteps: RoutineStep[] = [
     {
       n: 1,
+      key: 'cleanse',
       name: r.step.pmCleanse[plan.pm.cleanse],
       note: bands.temp.label + ' · ' + bands.temp.value,
     },
-    { n: 2, name: r.step.pmEssence, note: r.note.pmEssence },
+    { n: 2, key: 'essence', name: r.step.pmEssence, note: r.note.pmEssence },
     {
       n: 3,
+      key: 'treatment',
       name: r.step.pmTreatment + ': ' + targetProduct.name,
       note: r.note.pmTreatment,
     },
     {
       n: 4,
+      key: 'moisturiser',
       name: r.step.pmNight[plan.pm.night],
       note: bands.humidity.label + ' · ' + bands.humidity.value,
     },
   ]
+
+  // ── the routine as a checklist ────────────────────────────────────────────
+
+  /**
+   * The member's own additions, appended after the engine's steps.
+   *
+   * Their key is prefixed so it can never collide with a base step, and a
+   * preset the app no longer ships is dropped rather than rendered blank —
+   * the row is data from the database, and the catalogue is code.
+   */
+  const extrasFor = (slot: Slot) =>
+    extras
+      .filter((row) => row.slot === slot)
+      .map((row) => ({ row, preset: presetById(row.preset) }))
+      .filter((entry): entry is { row: remote.RoutineExtraRow; preset: NonNullable<typeof entry.preset> } =>
+        entry.preset !== undefined,
+      )
+
+  const ticked = routineLog[today] ?? new Set<string>()
+
+  const toStepView = (slot: Slot, base: RoutineStep[]): RoutineStepView[] => {
+    const open = isOpen(slot, now)
+    const own = extrasFor(slot).map((entry, index) => ({
+      n: base.length + index + 1,
+      key: `extra:${entry.preset.id}`,
+      name: entry.preset.name[lang],
+      note: entry.preset.note[lang],
+      extraId: entry.row.id,
+    }))
+
+    return [...base.map((step) => ({ ...step, extraId: null as string | null })), ...own].map(
+      (step) => ({
+        ...step,
+        slot,
+        open,
+        done: ticked.has(checkId(slot, step.key)),
+        toggle: () => guard('saveRoutine', () => toggleRoutineStep(slot, step.key))(),
+        // Claiming needs the window open; taking a tick back never does.
+        canToggle: open || ticked.has(checkId(slot, step.key)),
+      }),
+    )
+  }
+
+  const amList = toStepView('am', amSteps)
+  const pmList = toStepView('pm', pmSteps)
+
+  /** What the routine asks of today, for the adherence maths. */
+  const todaysSteps: Checkable[] = [...amList, ...pmList].map((step) => ({
+    slot: step.slot,
+    key: step.key,
+  }))
+
+  const windowNow = openSlot(now)
+
+  /**
+   * The last month, newest last, as the chart draws it.
+   *
+   * Every day in the range is present even when nothing was ticked — a gap
+   * rendered as a missing bar reads as "no data", and the honest reading is a
+   * day that was skipped.
+   */
+  const adherenceDays = Array.from({ length: remote.ROUTINE_HISTORY_DAYS }, (_, i) =>
+    adherenceFor(dayOffset(now, -(remote.ROUTINE_HISTORY_DAYS - 1 - i)), todaysSteps, routineLog),
+  )
+
+  const todayAdherence = adherenceDays[adherenceDays.length - 1]
+  const routineStreak = streakOf(adherenceDays)
+  const routineRate = overallRate(adherenceDays)
+
+  /** Which presets are still addable, per slot. */
+  const addableExtras = (slot: Slot) => {
+    const taken = new Set(extras.filter((row) => row.slot === slot).map((row) => row.preset))
+    return presetsFor(slot).filter((preset) => !taken.has(preset.id))
+  }
+
+  const extrasAtLimit = (slot: Slot) =>
+    extras.filter((row) => row.slot === slot).length >= MAX_EXTRAS_PER_SLOT
 
   const saveCurrentRoutine = () => {
     void (async () => {
@@ -1069,7 +1379,29 @@ function useStoreValue() {
     cartCount: Object.values(state.cart).reduce((x, y) => x + y, 0),
 
     goHome: go('home'),
-    goScan: go('scan'),
+    /**
+     * The scan tab, routed by what the member can actually do right now.
+     *
+     * With an analysis available they came to take one, so this opens the
+     * camera even when a previous result is on file — a new day is the whole
+     * reason to scan again. With the allowance spent, the result they already
+     * paid for is the useful thing to show, and the camera would only lead to
+     * a refusal. Either screen links to the other.
+     */
+    goScan: () => {
+      const left = quota ? quota.limit - quota.used : null
+      const available = left === null || left > 0
+      setState((s) => ({
+        ...s,
+        screen: 'scan',
+        scanStep: available || !s.scanned ? 'intro' : 'results',
+      }))
+    },
+    /** Straight to the result on file, from the camera screen. */
+    showLastResult: () => setState((s) => ({ ...s, screen: 'scan', scanStep: 'results' })),
+    /** Straight to the camera, from the result screen. */
+    startNewScan: () => setState((s) => ({ ...s, screen: 'scan', scanStep: 'intro' })),
+    scanAgainLabel: a.scanAgain,
     goShop: go('shop'),
     goRoutine: go('routine'),
     goMissions: go('missions'),
@@ -1215,6 +1547,61 @@ function useStoreValue() {
     sinceFirstLabel: ins.sinceFirst,
     cumulativeLine,
     vsLast,
+
+    // ── the weather reading, and how to ask for a fresh one ────────────────
+    refreshWeather,
+    weatherBusy,
+    weatherAgo:
+      weatherAt === null
+        ? ''
+        : (() => {
+            const minutes = Math.floor((now.getTime() - weatherAt) / 60_000)
+            if (minutes < 1) return r.measuredJustNow
+            if (minutes < 60) return r.measuredMinutesAgo(minutes)
+            return r.measuredHoursAgo(Math.floor(minutes / 60))
+          })(),
+    refreshLabel: r.refresh,
+    refreshingLabel: r.refreshing,
+
+    // ── today's allowance ──────────────────────────────────────────────────
+    quota,
+    /** How many analyses are left. Null while unknown, so the UI can stay quiet. */
+    scansLeft: quota ? Math.max(0, quota.limit - quota.used) : null,
+    quotaLine:
+      quota === null
+        ? ''
+        : quota.limit - quota.used > 0
+          ? a.scansLeftToday(Math.max(0, quota.limit - quota.used), quota.limit)
+          : a.scansSpentToday,
+    refreshQuota,
+
+    // ── the routine as a checklist ─────────────────────────────────────────
+    amList,
+    pmList,
+    windowNow,
+    checkT: r.check,
+    slotWindowLabel: { am: r.check.amWindow, pm: r.check.pmWindow },
+    todayAdherence,
+    routineStreak,
+    routineRate,
+    adherenceDays,
+    /**
+     * Scan scores keyed to the local day they were taken, so the adherence
+     * chart can draw the result beside the effort. Same day key as the ticks,
+     * which is what lets the two line up at all.
+     */
+    adherenceScans: state.history
+      .map((scan) => ({
+        day: localDay(new Date(scan.createdAt)),
+        overall: scan.overall,
+        colour: scoreColour(scan.overall),
+      }))
+      .filter((entry) => entry.day >= adherenceDays[0].day),
+    addableExtras,
+    extrasAtLimit,
+    addExtra: (slot: Slot, preset: string) =>
+      guard('saveRoutine', () => addExtra(slot, preset))(),
+    removeExtra,
   }
 }
 
