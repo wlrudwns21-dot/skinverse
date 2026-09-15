@@ -26,7 +26,14 @@ import { authT } from '../i18n/auth'
 import { routineT } from '../i18n/routine'
 import { buildPlan } from '../routine/rules'
 import { fallingAxes, rank, type ReasonKind } from '../routine/recommend'
-import { axisSeries, buildReport, cumulative, MOVE_THRESHOLD, trendSeries } from '../insights/report'
+import {
+  axisChanges,
+  axisSeries,
+  buildReport,
+  cumulative,
+  MOVE_THRESHOLD,
+  trendSeries,
+} from '../insights/report'
 import {
   adherenceFor,
   checkId,
@@ -1539,6 +1546,15 @@ function useStoreValue() {
 
     tabs,
     toastMsg,
+
+    /**
+     * Every measurement's trajectory, for the per-item view on the report.
+     *
+     * Built from the same series the chart draws, so the report and My Page
+     * can never tell the customer two different stories about one axis.
+     */
+    axisChanges: axisChanges(trendPoints),
+    axisTrendT: ins.axisTrend,
 
     trendFor,
     trendAxes,

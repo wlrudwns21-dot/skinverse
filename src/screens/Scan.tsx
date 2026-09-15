@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { CameraCapture } from '../components/CameraCapture'
 import { ConcernReport } from '../components/ConcernReport'
 import { ImageSlot } from '../components/ImageSlot'
+import { AxisTrends } from '../components/AxisTrends'
 import { SkinMap } from '../components/SkinMap'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
@@ -259,6 +260,11 @@ export function ScanResults() {
           t={st.detailT}
         />
       )}
+
+      {/* How each measurement has moved across every scan on file. The bars
+          above say where the skin stands; this says whether it is going
+          anywhere, which is the question a returning customer actually has. */}
+      <AxisTrends changes={st.axisChanges} lang={st.lang} t={st.axisTrendT} />
 
       {/* What the numbers say beyond the bars: what is behind, what moved, and
           whether the weather explains it better than the routine does. */}

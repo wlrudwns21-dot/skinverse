@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type { MetricKey, Weather } from '../data/types'
 import type { ScanRecord } from '../store/state'
 import {
+  axisChange,
+  axisChanges,
   axisSeries,
   buildReport,
   cumulative,
@@ -347,5 +349,87 @@ describe('cumulative', () => {
     )
     expect(total?.days).toBe(1)
     expect(total?.scans).toBe(2)
+  })
+})
+
+describe('axisChange', () => {
+  const series = (...hydration: number[]) =>
+    trendSeries(
+      hydration.map((h, i) =>
+        scan({ createdAt: at(hydration.length - i), metrics: M({ hydration: h }) }),
+      ),
+    )
+
+  it('says nothing from a single reading', () => {
+    expect(axisChange(series(60), 'hydration')).toBeNull()
+    expect(axisChange([], 'hydration')).toBeNull()
+  })
+
+  it('measures first to latest, and the last step separately', () => {
+    const change = axisChange(series(50, 58, 66, 74), 'hydration')
+    expect(change).toMatchObject({
+      readings: 4,
+      first: 50,
+      latest: 74,
+      delta: 24,
+      direction: 'up',
+      step: 8,
+      stepDirection: 'up',
+      best: 74,
+      worst: 50,
+    })
+  })
+
+  /**
+   * The point of the per-axis view: a customer working on one thing wants that
+   * thing's line, and the overall average can sit still while it climbs.
+   */
+  it('reports a rise even when the reading dipped along the way', () => {
+    const change = axisChange(series(50, 70, 55, 72), 'hydration')
+    expect(change).toMatchObject({ delta: 22, direction: 'up', best: 72, worst: 50 })
+    // The last step was upward even though the one before it was a fall.
+    expect(change?.step).toBe(17)
+  })
+
+  it('withholds a direction inside the noise floor, on both the total and the step', () => {
+    const change = axisChange(series(70, 70 + MOVE_THRESHOLD - 1), 'hydration')
+    expect(change?.direction).toBeNull()
+    expect(change?.stepDirection).toBeNull()
+    expect(change?.delta).toBe(MOVE_THRESHOLD - 1)
+  })
+
+  it('hands back the whole series oldest first, for a sparkline', () => {
+    expect(axisChange(series(50, 58, 66), 'hydration')?.series).toEqual([50, 58, 66])
+  })
+
+  it('skips scans with no per-axis metrics rather than reading them as zero', () => {
+    const points = trendSeries([
+      scan({ createdAt: at(9), metrics: null }),
+      scan({ createdAt: at(5), metrics: M({ hydration: 60 }) }),
+      scan({ createdAt: at(1), metrics: M({ hydration: 68 }) }),
+    ])
+    expect(axisChange(points, 'hydration')).toMatchObject({ readings: 2, first: 60, latest: 68 })
+  })
+})
+
+describe('axisChanges', () => {
+  it('leads with whatever fell furthest, so the worst news is not buried', () => {
+    const points = trendSeries([
+      scan({
+        createdAt: at(20),
+        metrics: M({ hydration: 50, elasticity: 80, pores: 70 }),
+      }),
+      scan({
+        createdAt: at(1),
+        metrics: M({ hydration: 70, elasticity: 60, pores: 70 }),
+      }),
+    ])
+    const ordered = axisChanges(points)
+    expect(ordered[0]).toMatchObject({ axis: 'elasticity', delta: -20 })
+    expect(ordered[ordered.length - 1]).toMatchObject({ axis: 'hydration', delta: 20 })
+  })
+
+  it('is empty until there is a second reading to compare with', () => {
+    expect(axisChanges(trendSeries([scan()]))).toEqual([])
   })
 })

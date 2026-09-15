@@ -93,6 +93,24 @@ export interface InsightStrings {
   vsLastUp: (delta: number) => string
   vsLastDown: (delta: number) => string
   vsLastFlat: string
+
+  /** The per-measurement change view on the full report. */
+  axisTrend: {
+    title: string
+    sub: string
+    range: (readings: number, worst: number, best: number) => string
+    firstToLatest: (first: number, latest: number) => string
+    totalUp: (delta: number) => string
+    totalDown: (delta: number) => string
+    totalFlat: string
+    stepUp: (delta: number) => string
+    stepDown: (delta: number) => string
+    stepFlat: string
+    /** Shown when only one scan exists, so there is nothing to compare. */
+    needsTwo: string
+    /** Says plainly that this covers the six kept axes, not all sixteen concerns. */
+    scopeNote: string
+  }
 }
 
 const ko: InsightStrings = {
@@ -188,6 +206,20 @@ const ko: InsightStrings = {
   vsLastUp: (d) => `지난 분석보다 +${d}`,
   vsLastDown: (d) => `지난 분석보다 −${d}`,
   vsLastFlat: '지난 분석과 비슷',
+  axisTrend: {
+    title: '항목별 변화',
+    sub: '분석할 때마다 각 항목이 어떻게 움직였는지',
+    range: (n, worst, best) => `${n}회 측정 · 최저 ${worst} · 최고 ${best}`,
+    firstToLatest: (first, latest) => `${first} → ${latest}`,
+    totalUp: (d) => `첫 분석 이후 +${d}`,
+    totalDown: (d) => `첫 분석 이후 −${d}`,
+    totalFlat: '첫 분석 이후 큰 변화 없음',
+    stepUp: (d) => `지난번 대비 +${d}`,
+    stepDown: (d) => `지난번 대비 −${d}`,
+    stepFlat: '지난번과 비슷',
+    needsTwo: '두 번째 분석부터 항목별 변화를 볼 수 있어요.',
+    scopeNote: '기록으로 남는 6개 항목입니다. 아래 16개 세부 항목은 이번 분석의 측정값이에요.',
+  },
 }
 
 const en: InsightStrings = {
@@ -283,6 +315,20 @@ const en: InsightStrings = {
   vsLastUp: (d) => `+${d} on your last scan`,
   vsLastDown: (d) => `−${d} on your last scan`,
   vsLastFlat: 'Level with your last scan',
+  axisTrend: {
+    title: 'Change by measurement',
+    sub: 'How each one has moved, scan by scan',
+    range: (n, worst, best) => `${n} readings · low ${worst} · high ${best}`,
+    firstToLatest: (first, latest) => `${first} → ${latest}`,
+    totalUp: (d) => `+${d} since your first scan`,
+    totalDown: (d) => `−${d} since your first scan`,
+    totalFlat: 'Level since your first scan',
+    stepUp: (d) => `+${d} on last time`,
+    stepDown: (d) => `−${d} on last time`,
+    stepFlat: 'Level with last time',
+    needsTwo: 'Change by measurement opens up on your second scan.',
+    scopeNote: 'The six measurements kept in your history. The sixteen below are from this scan only.',
+  },
 }
 
 const zh: InsightStrings = {
@@ -378,6 +424,20 @@ const zh: InsightStrings = {
   vsLastUp: (d) => `较上次 +${d}`,
   vsLastDown: (d) => `较上次 −${d}`,
   vsLastFlat: '与上次持平',
+  axisTrend: {
+    title: '各项变化',
+    sub: '每次检测中各项的走向',
+    range: (n, worst, best) => `检测 ${n} 次 · 最低 ${worst} · 最高 ${best}`,
+    firstToLatest: (first, latest) => `${first} → ${latest}`,
+    totalUp: (d) => `自首次检测 +${d}`,
+    totalDown: (d) => `自首次检测 −${d}`,
+    totalFlat: '自首次检测基本持平',
+    stepUp: (d) => `较上次 +${d}`,
+    stepDown: (d) => `较上次 −${d}`,
+    stepFlat: '与上次持平',
+    needsTwo: '第二次检测后即可查看各项变化。',
+    scopeNote: '这是记入历史的 6 个项目。下方 16 项仅为本次检测的测量值。',
+  },
 }
 
 const th: InsightStrings = {
@@ -473,6 +533,20 @@ const th: InsightStrings = {
   vsLastUp: (d) => `+${d} จากครั้งก่อน`,
   vsLastDown: (d) => `−${d} จากครั้งก่อน`,
   vsLastFlat: 'เท่ากับครั้งก่อน',
+  axisTrend: {
+    title: 'การเปลี่ยนแปลงรายค่า',
+    sub: 'แต่ละค่าขยับอย่างไรในแต่ละครั้ง',
+    range: (n, worst, best) => `วัด ${n} ครั้ง · ต่ำสุด ${worst} · สูงสุด ${best}`,
+    firstToLatest: (first, latest) => `${first} → ${latest}`,
+    totalUp: (d) => `+${d} นับจากครั้งแรก`,
+    totalDown: (d) => `−${d} นับจากครั้งแรก`,
+    totalFlat: 'คงที่นับจากครั้งแรก',
+    stepUp: (d) => `+${d} จากครั้งก่อน`,
+    stepDown: (d) => `−${d} จากครั้งก่อน`,
+    stepFlat: 'เท่ากับครั้งก่อน',
+    needsTwo: 'ดูการเปลี่ยนแปลงรายค่าได้ตั้งแต่การวิเคราะห์ครั้งที่สอง',
+    scopeNote: 'หกค่าที่เก็บในประวัติ ส่วนสิบหกรายการด้านล่างมาจากการสแกนครั้งนี้เท่านั้น',
+  },
 }
 
 const table: Record<Lang, InsightStrings> = { ko, en, zh, th }

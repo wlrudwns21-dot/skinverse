@@ -366,3 +366,68 @@ export function cumulative(points: TrendPoint[]): Cumulative | null {
     direction: Math.abs(delta) >= MOVE_THRESHOLD ? move(delta) : null,
   }
 }
+
+/**
+ * One axis's whole trajectory, for the per-item view on the report.
+ *
+ * `cumulative` answers "is my skin better?" for the overall score. This answers
+ * it for the thing the customer is actually working on, which is usually a
+ * single axis — and it is a different question. Hydration can climb eleven
+ * points while the overall sits still, because the other five axes did not
+ * move; a report that only shows the average tells that customer their effort
+ * did nothing.
+ *
+ * `best` and `worst` are the range actually reached, so a customer can see
+ * whether today is a peak, a dip, or unremarkable.
+ */
+export interface AxisChange {
+  axis: MetricKey
+  /** Readings that carried this axis. Two is the minimum for any of this to mean anything. */
+  readings: number
+  first: number
+  latest: number
+  /** Latest minus first. */
+  delta: number
+  /** Null inside the noise floor, matching every other finding in this file. */
+  direction: Direction | null
+  /** Latest minus the reading before it, and its direction. */
+  step: number
+  stepDirection: Direction | null
+  best: number
+  worst: number
+  /** Every reading oldest first, for a sparkline. */
+  series: number[]
+}
+
+export function axisChange(points: TrendPoint[], axis: MetricKey): AxisChange | null {
+  const usable = axisSeries(points, axis)
+  if (usable.length < 2) return null
+
+  const series = usable.map((p) => p.metrics![axis])
+  const first = series[0]
+  const latest = series[series.length - 1]
+  const previous = series[series.length - 2]
+  const delta = latest - first
+  const step = latest - previous
+
+  return {
+    axis,
+    readings: series.length,
+    first,
+    latest,
+    delta,
+    direction: Math.abs(delta) >= MOVE_THRESHOLD ? move(delta) : null,
+    step,
+    stepDirection: Math.abs(step) >= MOVE_THRESHOLD ? move(step) : null,
+    best: Math.max(...series),
+    worst: Math.min(...series),
+    series,
+  }
+}
+
+/** Every axis that has enough history to say anything about, worst movement first. */
+export function axisChanges(points: TrendPoint[]): AxisChange[] {
+  return AXES.map((axis) => axisChange(points, axis))
+    .filter((change): change is AxisChange => change !== null)
+    .sort((a, b) => a.delta - b.delta)
+}
