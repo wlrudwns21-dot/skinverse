@@ -1,6 +1,7 @@
 import { cityNames, CURRENT_LOCATION } from '../data/cities'
 import { storiesHomeCta } from '../data/stories'
 import { PlanBasis } from '../components/PlanBasis'
+import { RefreshIcon } from '../components/RefreshIcon'
 import { RoutineAdherence } from '../components/RoutineAdherence'
 import { RoutineCheck } from '../components/RoutineCheck'
 import { CoreTipCard } from './Stories'
@@ -47,9 +48,10 @@ export function Routine() {
             visitor who has just walked outside and does not want to wait. */}
         <span
           onClick={st.refreshWeather}
-          style={s('cursor:pointer;font-size:11.5px;font-weight:700;color:#2E6B58;border:1px solid #CFE0D4;background:#EAF1EC;border-radius:999px;padding:3px 10px')}
+          style={s('cursor:pointer;font-size:11.5px;font-weight:700;color:#2E6B58;border:1px solid #CFE0D4;background:#EAF1EC;border-radius:999px;padding:3px 10px;display:inline-flex;align-items:center;gap:5px')}
         >
-          {st.weatherBusy ? st.refreshingLabel : '↻ ' + st.refreshLabel}
+          {!st.weatherBusy && <RefreshIcon />}
+          {st.weatherBusy ? st.refreshingLabel : st.refreshLabel}
         </span>
         {!st.usingLocation && (
           <span onClick={st.requestLocation} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600;text-decoration:underline')}>
