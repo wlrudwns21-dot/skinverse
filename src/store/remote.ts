@@ -1,5 +1,4 @@
 import { supabase } from '../lib/supabase'
-import { products } from '../data/products'
 import type { MetricKey, SkinConditionKey, Weather } from '../data/types'
 import type { SkinTypeReading } from '../analysis/perfectcorp'
 import type { ScanRecord } from './state'
@@ -87,16 +86,26 @@ const EMPTY: MemberSnapshot = {
   savedRoutineCount: 0,
 }
 
-/** Local calendar day as YYYY-MM-DD — mission claims reset at the member's midnight. */
+/**
+ * The device's own idea of today.
+ *
+ * Only a fallback now. The server stamps a claim with the day it computes from
+ * the member's stored timezone, so reading today's claims by the device clock
+ * would show an empty mission list to anyone whose phone disagrees — and the
+ * two must not disagree about a row that is already written.
+ */
 export const localToday = () => localDay(new Date())
 
 /** One round trip per table, in parallel, to fill the store on sign-in. */
 export async function loadMemberSnapshot(): Promise<MemberSnapshot> {
   if (!supabase) return EMPTY
 
+  const { data: serverDay } = await supabase.rpc('my_day')
+  const today = typeof serverDay === 'string' ? serverDay : localToday()
+
   const [cart, claims, redemptions, scans, orders, routines] = await Promise.all([
     supabase.from('cart_items').select('product_id, qty'),
-    supabase.from('mission_claims').select('mission_id').eq('claimed_on', localToday()),
+    supabase.from('mission_claims').select('mission_id').eq('claimed_on', today),
     supabase.from('redemptions').select('reward_id'),
     supabase
       .from('scans')
@@ -368,124 +377,147 @@ export async function saveScan(
 // ── missions and rewards ────────────────────────────────────────────────────
 
 /**
- * Claim a mission and credit the points.
+ * Points move in the database, never here.
  *
- * The unique (user, mission, day) constraint is what actually prevents double
- * claiming — a duplicate insert fails and we credit nothing, so a double-tap or
- * a replayed request cannot mint points.
+ * These three used to read the balance, add to it, and write the result back.
+ * That made the browser the authority on how many points someone has — and a
+ * browser is a UI, not a permission. `profiles.points` is no longer writable
+ * from a client at all; `claim_mission` and `redeem_reward` are the only ways
+ * it changes, and they read the amount from the missions and rewards tables
+ * rather than being told it.
+ *
+ * So the caller says *which* mission. It does not say what that is worth.
  */
-export async function claimMission(
-  missionId: string,
-  points: number,
-  currentPoints: number,
-): Promise<{ ok: boolean; points: number }> {
-  if (!supabase) return { ok: false, points: currentPoints }
-  const { data: auth } = await supabase.auth.getUser()
-  if (!auth.user) return { ok: false, points: currentPoints }
 
-  const { error } = await supabase
-    .from('mission_claims')
-    .insert({ user_id: auth.user.id, mission_id: missionId, points, claimed_on: localToday() })
-  if (error) return { ok: false, points: currentPoints }
+/** Why the server turned a claim or a redemption down. */
+export type PointsRefusal =
+  | 'not_signed_in'
+  | 'no_profile'
+  | 'unknown_mission'
+  | 'already_claimed'
+  | 'unknown_reward'
+  | 'already_redeemed'
+  | 'insufficient_points'
+  | 'out_of_stock'
+  | 'unavailable'
 
-  const next = currentPoints + points
-  await supabase.from('profiles').update({ points: next }).eq('id', auth.user.id)
-  return { ok: true, points: next }
+export interface PointsResult {
+  ok: boolean
+  /** The authoritative balance the server settled on. */
+  points: number
+  streak?: number
+  /** How many points that move was actually worth, per the server. */
+  earned?: number
+  reason?: PointsRefusal
 }
 
-export async function redeemReward(
-  rewardId: string,
-  cost: number,
-  currentPoints: number,
-): Promise<{ ok: boolean; points: number }> {
-  if (!supabase) return { ok: false, points: currentPoints }
-  if (currentPoints < cost) return { ok: false, points: currentPoints }
-  const { data: auth } = await supabase.auth.getUser()
-  if (!auth.user) return { ok: false, points: currentPoints }
-
-  const { error } = await supabase
-    .from('redemptions')
-    .insert({ user_id: auth.user.id, reward_id: rewardId, cost })
-  if (error) return { ok: false, points: currentPoints }
-
-  const next = currentPoints - cost
-  await supabase.from('profiles').update({ points: next }).eq('id', auth.user.id)
-  return { ok: true, points: next }
+/** Read `{ ok, points, ... }` out of an RPC answer without trusting its shape. */
+function readPoints(data: unknown, fallback: number): PointsResult {
+  const row = (data ?? {}) as Record<string, unknown>
+  const points = typeof row.points === 'number' ? row.points : fallback
+  return {
+    ok: row.ok === true,
+    points,
+    streak: typeof row.streak === 'number' ? row.streak : undefined,
+    earned: typeof row.earned === 'number' ? row.earned : undefined,
+    reason: typeof row.reason === 'string' ? (row.reason as PointsRefusal) : undefined,
+  }
 }
 
-export async function bumpStreak(streak: number): Promise<void> {
-  if (!supabase) return
-  const { data: auth } = await supabase.auth.getUser()
-  if (!auth.user) return
-  await supabase.from('profiles').update({ streak }).eq('id', auth.user.id)
+export async function claimMission(missionId: string, currentPoints: number): Promise<PointsResult> {
+  if (!supabase) return { ok: false, points: currentPoints, reason: 'unavailable' }
+
+  const { data, error } = await supabase.rpc('claim_mission', { p_mission_id: missionId })
+  if (error) {
+    console.error('[skinverse] 미션 적립 실패', error.message)
+    return { ok: false, points: currentPoints, reason: 'unavailable' }
+  }
+  return readPoints(data, currentPoints)
+}
+
+export async function redeemReward(rewardId: string, currentPoints: number): Promise<PointsResult> {
+  if (!supabase) return { ok: false, points: currentPoints, reason: 'unavailable' }
+
+  const { data, error } = await supabase.rpc('redeem_reward', { p_reward_id: rewardId })
+  if (error) {
+    console.error('[skinverse] 리워드 교환 실패', error.message)
+    return { ok: false, points: currentPoints, reason: 'unavailable' }
+  }
+  return readPoints(data, currentPoints)
 }
 
 // ── orders ──────────────────────────────────────────────────────────────────
 
 export interface PlaceOrderInput {
-  orderNo: string
-  subtotal: number
-  shipping: number
-  pointsUsed: number
-  total: number
-  pointsEarned: number
   shipMethod: 'dhl' | 'ems'
-  eta: string
   name: string
   country: string
   address: string
-  cart: Record<string, number>
+  usePoints: boolean
   currentPoints: number
 }
 
-/** Write the order and its lines, then settle the member's point balance. */
-export async function placeOrder(input: PlaceOrderInput): Promise<{ ok: boolean; points: number }> {
-  if (!supabase) return { ok: false, points: input.currentPoints }
-  const { data: auth } = await supabase.auth.getUser()
-  if (!auth.user) return { ok: false, points: input.currentPoints }
+/** Why the server would not place the order. */
+export type OrderRefusal =
+  | 'not_signed_in'
+  | 'no_profile'
+  | 'missing_address'
+  | 'address_too_long'
+  | 'unknown_ship_method'
+  | 'cart_empty'
+  | 'unavailable'
 
-  const { data: order, error } = await supabase
-    .from('orders')
-    .insert({
-      user_id: auth.user.id,
-      order_no: input.orderNo,
-      subtotal: input.subtotal,
-      shipping: input.shipping,
-      points_used: input.pointsUsed,
-      total: input.total,
-      points_earned: input.pointsEarned,
-      ship_method: input.shipMethod,
-      eta: input.eta,
-      ship_name: input.name,
-      ship_country: input.country,
-      ship_address: input.address,
-    })
-    .select('id')
-    .single()
+export interface PlacedOrderResult {
+  ok: boolean
+  points: number
+  orderNo?: string
+  total?: number
+  pointsEarned?: number
+  eta?: string
+  reason?: OrderRefusal
+}
 
-  if (error || !order) {
-    console.error('[skinverse] 주문 저장 실패', error?.message)
-    return { ok: false, points: input.currentPoints }
+/**
+ * Place the order — as a request, not as a set of figures.
+ *
+ * What is deliberately absent from the arguments: the subtotal, the postage,
+ * the points spent, the total, the points earned, and the basket itself. All
+ * six used to be posted from here, which meant a five-hundred-dollar order
+ * could be written down as costing a cent and nothing would have noticed.
+ *
+ * `place_order` reads the basket out of `cart_items`, prices it from
+ * `products`, takes postage from `shipping_methods` and the point rules from
+ * `store_settings`, and returns what it decided. The screen shows the server's
+ * answer rather than its own arithmetic.
+ */
+export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrderResult> {
+  if (!supabase) return { ok: false, points: input.currentPoints, reason: 'unavailable' }
+
+  const { data, error } = await supabase.rpc('place_order', {
+    p_ship_method: input.shipMethod,
+    p_ship_name: input.name,
+    p_ship_country: input.country,
+    p_ship_address: input.address,
+    p_use_points: input.usePoints,
+  })
+
+  if (error) {
+    console.error('[skinverse] 주문 저장 실패', error.message)
+    return { ok: false, points: input.currentPoints, reason: 'unavailable' }
   }
 
-  const lines = Object.entries(input.cart).map(([productId, qty]) => {
-    const product = products.find((p) => p.id === productId)
-    return {
-      order_id: order.id as string,
-      product_id: productId,
-      brand: product?.brand ?? '',
-      product_name: product?.name ?? '',
-      unit_price: product?.price ?? 0,
-      qty,
-    }
-  })
-  if (lines.length) await supabase.from('order_items').insert(lines)
+  const row = (data ?? {}) as Record<string, unknown>
+  const num = (v: unknown) => (typeof v === 'number' ? v : undefined)
 
-  await clearCart()
-
-  const next = Math.max(0, input.currentPoints - input.pointsUsed + input.pointsEarned)
-  await supabase.from('profiles').update({ points: next }).eq('id', auth.user.id)
-  return { ok: true, points: next }
+  return {
+    ok: row.ok === true,
+    points: num(row.points) ?? input.currentPoints,
+    orderNo: typeof row.orderNo === 'string' ? row.orderNo : undefined,
+    total: num(row.total),
+    pointsEarned: num(row.pointsEarned),
+    eta: typeof row.eta === 'string' ? row.eta : undefined,
+    reason: typeof row.reason === 'string' ? (row.reason as OrderRefusal) : undefined,
+  }
 }
 
 // ── saved routines ──────────────────────────────────────────────────────────

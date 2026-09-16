@@ -175,6 +175,8 @@ export interface Strings {
   // Toasts
   tAdded: string
   tNoPts: string
+  tSoldOut: string
+  tOrderFailed: string
   tEarn: (points: number) => string
   tStreak: (points: number, day: number) => string
   tScanM: string

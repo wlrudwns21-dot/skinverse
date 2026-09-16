@@ -9,7 +9,6 @@ import {
   type ReactNode,
 } from 'react'
 import { cities, CURRENT_LOCATION, defaultCity } from '../data/cities'
-import { orderNoPrefix, shipping } from '../data/commerce'
 import { levels } from '../data/rewards'
 import { conditions, metricDefs } from '../data/skin'
 import { analyseSkin } from '../analysis/client'
@@ -791,19 +790,24 @@ function useStoreValue() {
       const T = tRef.current
 
       void (async () => {
-        const res = await remote.claimMission(mission.id, mission.pts, stateRef.current.points)
-        if (!res.ok) return
+        const res = await remote.claimMission(mission.id, stateRef.current.points)
+
+        // Already claimed today, per the server's calendar rather than this
+        // device's. Mark it done so the screen stops offering it again.
+        if (!res.ok) {
+          if (res.reason === 'already_claimed') {
+            setState((cur) => ({ ...cur, done: { ...cur.done, [mission.id]: true }, points: res.points }))
+          }
+          return
+        }
 
         const done = { ...stateRef.current.done, [mission.id]: true }
-        let streak = stateRef.current.streak
-        let msg = T.tEarn(mission.pts)
-
-        // Clearing the last daily mission advances the streak.
-        if (dailyMissions.every((d) => done[d.id])) {
-          streak += 1
-          msg = T.tStreak(mission.pts, streak)
-          await remote.bumpStreak(streak)
-        }
+        // The server decides what the mission was worth and whether that
+        // finished the day — the screen reports its answer rather than its own.
+        const earned = res.earned ?? mission.pts
+        const streak = res.streak ?? stateRef.current.streak
+        const msg =
+          streak !== stateRef.current.streak ? T.tStreak(earned, streak) : T.tEarn(earned)
 
         setState((cur) => ({ ...cur, done, points: res.points, streak }))
         void auth.refreshProfile()
@@ -829,9 +833,12 @@ function useStoreValue() {
       }
 
       void (async () => {
-        const res = await remote.redeemReward(reward.id, reward.cost, stateRef.current.points)
+        const res = await remote.redeemReward(reward.id, stateRef.current.points)
         if (!res.ok) {
-          toastMsg(T.tNoPts)
+          // The balance the server came back with is the real one, even when it
+          // refuses — the screen may have been showing a stale number.
+          setState((cur) => ({ ...cur, points: res.points }))
+          toastMsg(res.reason === 'out_of_stock' ? T.tSoldOut : T.tNoPts)
           return
         }
         setState((cur) => ({
@@ -885,27 +892,26 @@ function useStoreValue() {
     payTimer.current = setTimeout(() => {
       void (async () => {
         const s = stateRef.current
-        const totals = totalsOf(s, productsRef.current, settingsRef.current)
-        const earn = Math.round(totals.total * settingsRef.current.earnPerDollar)
-        const orderNo = orderNoPrefix + Math.floor(1000 + Math.random() * 9000)
-        const eta = shipping[s.ship].eta
 
+        // No figures are sent: what this order costs is the server's to decide,
+        // from the basket it holds and the prices in its own tables.
         const res = await remote.placeOrder({
-          orderNo,
-          subtotal: totals.sub,
-          shipping: totals.ship,
-          pointsUsed: totals.ptsUsed,
-          total: totals.total,
-          pointsEarned: earn,
           shipMethod: s.ship,
-          eta,
           name: s.name,
           country: s.country,
           address: s.addr,
-          cart: s.cart,
+          usePoints: s.usePoints,
           currentPoints: s.points,
         })
 
+        if (!res.ok) {
+          setState((cur) => ({ ...cur, ppBusy: false, pp: false, points: res.points }))
+          toastMsg(tRef.current.tOrderFailed)
+          return
+        }
+
+        // The receipt shows what was actually written down, not what this
+        // screen worked out a moment ago.
         setState((cur) => ({
           ...cur,
           ppBusy: false,
@@ -913,7 +919,12 @@ function useStoreValue() {
           chkStep: 3,
           cart: {},
           points: res.points,
-          order: { no: orderNo, total: usd(totals.total), earn, eta },
+          order: {
+            no: res.orderNo ?? '',
+            total: usd(res.total ?? 0),
+            earn: res.pointsEarned ?? 0,
+            eta: res.eta ?? '',
+          },
         }))
         void auth.refreshProfile()
       })()
@@ -941,7 +952,7 @@ function useStoreValue() {
   weatherRef.current = weather
   const placeLabel = usingLocation ? a.currentLocation : state.city
   const points = state.points
-  const totals = totalsOf(state, products, settings)
+  const totals = totalsOf(state, products, settings, catalog.shipping)
 
   const liveMetrics = state.liveMetrics
   const overallScore = state.liveOverall ?? condition.overall
@@ -1462,7 +1473,7 @@ function useStoreValue() {
     totalS: usd(totals.total),
     usePtsLine: t.usePts(totals.ptsUsed.toLocaleString(), usd(totals.disc)),
     earnPreview: Math.round((totals.sub + totals.ship) * settings.earnPerDollar),
-    shipName: shipping[state.ship].label,
+    shipName: catalog.shipping[state.ship].label,
     setName: (value: string) => setState((s) => ({ ...s, name: value })),
     setAddr: (value: string) => setState((s) => ({ ...s, addr: value })),
     setCountry: (value: string) => setState((s) => ({ ...s, country: value })),

@@ -1,7 +1,8 @@
 import { supabase } from '../lib/supabase'
 import { products as seedProducts } from '../data/products'
 import { dailyMissions, rewards as seedRewards, weeklyMissions } from '../data/rewards'
-import { pointsRules } from '../data/commerce'
+import { pointsRules, shipping as seedShipping } from '../data/commerce'
+import type { ShipMethod } from '../data/commerce'
 import {
   toCatalogProduct,
   type CatalogMission,
@@ -11,11 +12,25 @@ import {
   type StoreSettings,
 } from './types'
 
+export interface ShipRate {
+  label: string
+  fee: number
+  eta: string
+}
+
 export interface Catalog {
   products: CatalogProduct[]
   missions: CatalogMission[]
   rewards: CatalogReward[]
   settings: StoreSettings
+  /**
+   * Postage, from the same table `place_order` charges from.
+   *
+   * Read rather than hard-coded so the checkout cannot quote one fee and the
+   * server bill another — the price on the screen and the price in the order
+   * have to come from one place.
+   */
+  shipping: Record<ShipMethod, ShipRate>
 }
 
 /**
@@ -35,16 +50,18 @@ export const SEED_CATALOG: Catalog = {
     useCapPct: Math.round(pointsRules.useCap * 100),
     streakBonus: 0,
   },
+  shipping: seedShipping,
 }
 
 export async function loadCatalog(): Promise<Catalog> {
   if (!supabase) return SEED_CATALOG
 
-  const [products, missions, rewards, settings] = await Promise.all([
+  const [products, missions, rewards, settings, ship] = await Promise.all([
     supabase.from('products').select('*').order('sort'),
     supabase.from('missions').select('*').order('sort'),
     supabase.from('rewards').select('*').order('sort'),
     supabase.from('store_settings').select('*').maybeSingle(),
+    supabase.from('shipping_methods').select('id, label, fee, eta').order('sort'),
   ])
 
   if (products.error) {
@@ -75,7 +92,29 @@ export async function loadCatalog(): Promise<Catalog> {
           streakBonus: settings.data.streak_bonus as number,
         }
       : SEED_CATALOG.settings,
+    shipping: readShipping(ship.data),
   }
+}
+
+/**
+ * Fold the shipping rows into the shape the checkout wants.
+ *
+ * A method missing from the table keeps its seed rate rather than becoming
+ * free: a zero here would be quoted to the customer and then contradicted by
+ * the server, which is the one outcome worth ruling out.
+ */
+function readShipping(rows: unknown): Record<ShipMethod, ShipRate> {
+  const rates = { ...SEED_CATALOG.shipping }
+  for (const row of (rows ?? []) as Record<string, unknown>[]) {
+    const id = row.id as ShipMethod
+    if (!(id in rates)) continue
+    rates[id] = {
+      label: (row.label as string) ?? rates[id].label,
+      fee: typeof row.fee === 'number' ? row.fee : Number(row.fee ?? rates[id].fee),
+      eta: (row.eta as string) ?? rates[id].eta,
+    }
+  }
+  return rates
 }
 
 // ── operator writes ─────────────────────────────────────────────────────────

@@ -186,16 +186,26 @@ export interface Totals {
 /** 100 points buy $1 of discount. */
 export const POINTS_PER_DOLLAR = 100
 
+/**
+ * What the checkout screen shows before anything is committed.
+ *
+ * A preview, not a decision: `place_order` recomputes every one of these from
+ * the database when the order is actually placed. The two must agree, so the
+ * arithmetic here is mirrored line for line in that function — and the rates
+ * are passed in from the catalog rather than read from `src/data`, so both
+ * sides are quoting the same table.
+ */
 export function totalsOf(
   state: StoreState,
   products: CatalogProduct[],
   settings: StoreSettings,
+  rates: Record<ShipMethod, { fee: number }> = shipping,
 ): Totals {
   const sub = Object.entries(state.cart).reduce((acc, [id, qty]) => {
     const product = products.find((p) => p.id === id)
     return acc + (product ? product.price * qty : 0)
   }, 0)
-  const ship = Object.keys(state.cart).length ? shipping[state.ship].fee : 0
+  const ship = Object.keys(state.cart).length ? rates[state.ship].fee : 0
   const cap = Math.floor(sub * (settings.useCapPct / 100)) * POINTS_PER_DOLLAR
   const ptsUsed = state.usePoints ? Math.min(state.points, cap) : 0
   const disc = ptsUsed / POINTS_PER_DOLLAR

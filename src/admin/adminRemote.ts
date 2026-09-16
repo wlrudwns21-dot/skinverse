@@ -184,14 +184,33 @@ export async function loadMembers(): Promise<AdminMember[]> {
   }))
 }
 
-export async function grantPoints(userId: string, amount: number, current: number): Promise<boolean> {
-  if (!supabase) return false
-  const { error } = await supabase
-    .from('profiles')
-    .update({ points: Math.max(0, current + amount) })
-    .eq('id', userId)
-  if (error) console.error('[skinverse] 포인트 지급 실패', error.message)
-  return !error
+/**
+ * Adjust a member's balance.
+ *
+ * The console used to read the balance, add to it and write the sum back,
+ * which is the same shape as the bug that let members set their own points —
+ * an operator's browser deciding what a balance should be. It sends the
+ * adjustment now, and `grant_points` checks the caller is an operator, applies
+ * it under a lock, and returns what the balance actually became.
+ */
+export async function grantPoints(userId: string, amount: number): Promise<number | null> {
+  if (!supabase) return null
+
+  const { data, error } = await supabase.rpc('grant_points', {
+    p_user: userId,
+    p_amount: amount,
+  })
+  if (error) {
+    console.error('[skinverse] 포인트 지급 실패', error.message)
+    return null
+  }
+
+  const row = (data ?? {}) as Record<string, unknown>
+  if (row.ok !== true) {
+    console.error('[skinverse] 포인트 지급 거부', row.reason)
+    return null
+  }
+  return typeof row.points === 'number' ? row.points : null
 }
 
 export async function loadStats(): Promise<AdminStats> {

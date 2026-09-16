@@ -168,14 +168,14 @@ function useAdminValue() {
   const grant = async (id: string) => {
     const member = members.find((m) => m.id === id)
     if (!member) return
-    const ok = await remote.grantPoints(id, GRANT_POINTS, member.points)
-    if (!ok) {
+    const balance = await remote.grantPoints(id, GRANT_POINTS)
+    if (balance === null) {
       toastMsg(member.name + ' — 지급 실패')
       return
     }
-    setMembers((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, points: m.points + GRANT_POINTS } : m)),
-    )
+    // The row shows what the server settled on, not what this console assumed
+    // the balance was before the click.
+    setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, points: balance } : m)))
     toastMsg(member.name + '님에게 ' + GRANT_POINTS + 'P 지급 완료')
   }
 

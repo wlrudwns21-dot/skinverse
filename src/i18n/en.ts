@@ -73,6 +73,8 @@ export const en: Strings = {
   pm4a: 'Rice Ceramide Sleep Mask', pm4b: 'Barrier Night Cream', pm4n: '2–3× per week',
 
   tAdded: 'Added to bag', tNoPts: 'Not enough points',
+  tSoldOut: 'This reward has run out',
+  tOrderFailed: 'The order could not be placed. Please check your bag',
   tEarn: (p) => '+' + p + ' P earned',
   tStreak: (p, d) => '+' + p + ' P · Streak day ' + d + '!',
   tScanM: '+30 P — Weekly scan mission cleared',
