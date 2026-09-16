@@ -257,11 +257,17 @@ export async function loadStats(): Promise<AdminStats> {
 
 export type AdminRole = 'master' | 'admin'
 
+export type AdminStatus = 'pending' | 'active' | 'rejected'
+
 export interface Operator {
   email: string
   role: AdminRole
   note: string
+  status: AdminStatus
   created_at: string
+  applied_at: string
+  decided_at: string | null
+  decided_by: string | null
 }
 
 /** The caller's own role, or null if they are not an operator at all. */
@@ -275,18 +281,71 @@ export async function myRole(): Promise<AdminRole | null> {
   return (data as AdminRole | null) ?? null
 }
 
+/**
+ * The caller's application status: pending, active, rejected, or null if they
+ * have never applied. Distinct from the role, which is null until approved.
+ */
+export async function myAdminStatus(): Promise<AdminStatus | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.rpc('my_admin_status')
+  if (error) {
+    console.error('[skinverse] 신청 상태 확인 실패', error.message)
+    return null
+  }
+  return (data as AdminStatus | null) ?? null
+}
+
+/**
+ * Apply for an operator account.
+ *
+ * The row is written by the applicant, so it is the database that decides what
+ * they are allowed to write: the insert policy permits their own address, as a
+ * plain admin, pending — and nothing else. Applying as an active master is
+ * refused by the policy, not by this function.
+ */
+export async function applyForOperator(note: string): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: '연결 없음' }
+  const { data: auth } = await supabase.auth.getUser()
+  const email = auth.user?.email
+  if (!email) return { ok: false, error: '로그인이 필요합니다' }
+
+  const { error } = await supabase
+    .from('admin_users')
+    .insert({ email: email.toLowerCase(), role: 'admin', status: 'pending', note })
+  if (error) {
+    // A duplicate means they have already applied, which is the state we wanted.
+    if (error.code === '23505') return { ok: true }
+    return { ok: false, error: error.message }
+  }
+  return { ok: true }
+}
+
 /** RLS returns nothing at all unless the caller is a master. */
 export async function listOperators(): Promise<Operator[]> {
   if (!supabase) return []
   const { data, error } = await supabase
     .from('admin_users')
-    .select('email, role, note, created_at')
-    .order('created_at')
+    .select('email, role, note, status, created_at, applied_at, decided_at, decided_by')
+    .order('applied_at')
   if (error) {
     console.error('[skinverse] 운영자 목록 조회 실패', error.message)
     return []
   }
   return (data ?? []) as Operator[]
+}
+
+/** Approve or turn down an application. Master only, enforced by RLS. */
+export async function decideApplication(
+  email: string,
+  status: Exclude<AdminStatus, 'pending'>,
+  decidedBy: string,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: '연결 없음' }
+  const { error } = await supabase
+    .from('admin_users')
+    .update({ status, decided_at: new Date().toISOString(), decided_by: decidedBy })
+    .eq('email', email)
+  return error ? { ok: false, error: error.message } : { ok: true }
 }
 
 export async function addOperator(

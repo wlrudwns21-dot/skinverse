@@ -34,7 +34,48 @@ export function Access() {
         <b> 일반 관리자</b>는 주문 · 상품 · 회원 · CS 운영만 가능합니다.
         <br />
         아직 가입하지 않은 이메일도 미리 등록할 수 있고, 해당 주소로 가입하는 순간 권한이 적용됩니다.
+        <br />
+        운영자가 <b>직접 신청</b>할 수도 있습니다. 모든 신청은 일반 관리자로 접수되며, 승인 전까지는 어떤
+        데이터에도 접근할 수 없습니다.
       </div>
+
+      {/* Applications first. Anything waiting on a decision is the only thing
+          on this screen that someone else is blocked by. */}
+      {admin.pendingOperators.length > 0 && (
+        <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:16px;margin-top:14px')}>
+          <div style={s('font-size:13px;font-weight:700;color:#8A6D32')}>
+            승인 대기 {admin.pendingOperators.length}건
+          </div>
+          <div style={s('font-size:11.5px;color:#9A8455;margin-top:3px;line-height:1.5')}>
+            신청한 계정은 승인 전까지 콘솔의 어떤 데이터에도 접근할 수 없습니다.
+          </div>
+
+          <div style={s('display:flex;flex-direction:column;gap:8px;margin-top:12px')}>
+            {admin.pendingOperators.map((p) => (
+              <div key={p.email} style={s('background:#FFFFFF;border:1px solid #EBD9B8;border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap')}>
+                <div style={s('flex:1;min-width:180px')}>
+                  <div style={s('font-size:13px;font-weight:700;word-break:break-all')}>{p.email}</div>
+                  <div style={s('font-size:11.5px;color:#8A7D6C;margin-top:2px')}>
+                    {p.note || '—'} · {new Date(p.appliedAt).toLocaleDateString('ko-KR')} 신청
+                  </div>
+                </div>
+                <div
+                  onClick={p.approve}
+                  style={s('cursor:pointer;background:#2E6B58;color:#FFFFFF;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700')}
+                >
+                  승인
+                </div>
+                <div
+                  onClick={p.reject}
+                  style={s('cursor:pointer;background:#FFFFFF;border:1px solid #D8CFBF;color:#8A7D6C;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700')}
+                >
+                  반려
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px;margin-top:14px')}>
         <div style={s('font-size:13px;font-weight:700')}>운영자 추가</div>
@@ -70,11 +111,20 @@ export function Access() {
             <span>이메일</span><span>권한</span><span>메모</span><span>관리</span>
           </div>
 
-          {admin.operators.map((o) => (
+          {admin.operators
+            .filter((o) => o.status !== 'pending')
+            .map((o) => (
             <div key={o.email} style={s(ROW_COLS + ';font-size:12.5px;padding:11px 6px;border-bottom:1px solid #F1ECE2;align-items:center')}>
               <div style={s('min-width:0')}>
                 <b style={s('overflow:hidden;text-overflow:ellipsis;display:block')}>{o.email}</b>
-                {o.isSelf && <div style={s('font-size:11px;color:#2E6B58;font-weight:700')}>본인</div>}
+                <div style={s('font-size:11px;display:flex;gap:6px;flex-wrap:wrap')}>
+                  {o.isSelf && <span style={s('color:#2E6B58;font-weight:700')}>본인</span>}
+                  {/* A turned-down application keeps its row so a master can
+                      see it was decided, and delete it to let them re-apply. */}
+                  {o.status === 'rejected' && (
+                    <span style={s('color:#A64B32;font-weight:700')}>{o.statusLabel}</span>
+                  )}
+                </div>
               </div>
 
               <select
@@ -95,9 +145,9 @@ export function Access() {
                 삭제
               </div>
             </div>
-          ))}
+            ))}
 
-          {admin.operators.length === 0 && (
+          {admin.operators.filter((o) => o.status !== 'pending').length === 0 && (
             <div style={s('padding:22px;text-align:center;font-size:12.5px;color:#8A7D6C')}>
               등록된 운영자가 없습니다.
             </div>

@@ -58,6 +58,13 @@ function useAdminValue() {
 
   // Live from Postgres.
   const [role, setRole] = useState<remote.AdminRole | null | undefined>(undefined)
+  /**
+   * Where the caller's application stands, which the role cannot say: the role
+   * is null both for someone who never applied and for someone still waiting,
+   * and those two people need very different screens.
+   */
+  const [applicationStatus, setApplicationStatus] = useState<remote.AdminStatus | null>(null)
+  const [applying, setApplying] = useState(false)
   const [operators, setOperators] = useState<remote.Operator[]>([])
   const [orders, setOrders] = useState<AdminOrder[]>([])
   const [members, setMembers] = useState<remote.AdminMember[]>([])
@@ -90,14 +97,26 @@ function useAdminValue() {
     if (auth.loading) return
     if (!auth.isMember) {
       setRole(undefined)
+      setApplicationStatus(null)
       return
     }
     let cancelled = false
-    void remote.myRole().then((r) => {
-      if (!cancelled) setRole(r)
+    void Promise.all([remote.myRole(), remote.myAdminStatus()]).then(([r, st]) => {
+      if (cancelled) return
+      setRole(r)
+      setApplicationStatus(st)
     })
     return () => { cancelled = true }
   }, [auth.loading, auth.isMember])
+
+  /** Ask to become an operator. Always lands as a pending plain admin. */
+  const apply = useCallback(async (note: string) => {
+    setApplying(true)
+    const res = await remote.applyForOperator(note)
+    setApplying(false)
+    if (res.ok) setApplicationStatus('pending')
+    return res
+  }, [])
 
   const refresh = useCallback(async () => {
     setLoadingData(true)
@@ -234,6 +253,13 @@ function useAdminValue() {
     if (!res.ok) return toastMsg(res.error ?? '변경 실패')
     await reloadOperators()
     toastMsg(email + ' → ' + (r === 'master' ? '마스터' : '일반 관리자'))
+  }
+
+  const decide = async (email: string, status: 'active' | 'rejected') => {
+    const res = await remote.decideApplication(email, status, auth.user?.email ?? '')
+    if (!res.ok) return toastMsg(res.error ?? '처리 실패')
+    await reloadOperators()
+    toastMsg(email + (status === 'active' ? ' 승인됨' : ' 반려됨'))
   }
 
   const removeOperator = async (email: string) => {
@@ -441,10 +467,28 @@ function useAdminValue() {
       ...o,
       isSelf: o.email.toLowerCase() === (auth.user?.email ?? '').toLowerCase(),
       roleLabel: o.role === 'master' ? '마스터' : '일반 관리자',
+      status: o.status,
+      statusLabel:
+        o.status === 'active' ? '활성' : o.status === 'pending' ? '승인 대기' : '반려됨',
       setRole: (r: remote.AdminRole) => void changeOperatorRole(o.email, r),
       remove: () => void removeOperator(o.email),
     })),
     addOperator: (email: string, r: remote.AdminRole, note: string) => void addOperator(email, r, note),
+
+    // ── applications ───────────────────────────────────────────────────────
+    applicationStatus,
+    applying,
+    apply,
+    /** Waiting on a master, listed oldest first so nobody is left behind. */
+    pendingOperators: operators
+      .filter((o) => o.status === 'pending')
+      .map((o) => ({
+        email: o.email,
+        note: o.note,
+        appliedAt: o.applied_at,
+        approve: () => void decide(o.email, 'active'),
+        reject: () => void decide(o.email, 'rejected'),
+      })),
 
   }
 }
