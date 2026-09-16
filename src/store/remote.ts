@@ -465,6 +465,7 @@ export type OrderRefusal =
   | 'address_too_long'
   | 'unknown_ship_method'
   | 'cart_empty'
+  | 'insufficient_stock'
   | 'unavailable'
 
 export interface PlacedOrderResult {
@@ -475,6 +476,10 @@ export interface PlacedOrderResult {
   pointsEarned?: number
   eta?: string
   reason?: OrderRefusal
+  /** Which line ran out, when that is why the order was refused. */
+  productId?: string
+  /** How many of it are actually left — 0 when it sold out entirely. */
+  available?: number
 }
 
 /**
@@ -517,6 +522,8 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrderRes
     pointsEarned: num(row.pointsEarned),
     eta: typeof row.eta === 'string' ? row.eta : undefined,
     reason: typeof row.reason === 'string' ? (row.reason as OrderRefusal) : undefined,
+    productId: typeof row.productId === 'string' ? row.productId : undefined,
+    available: num(row.available),
   }
 }
 

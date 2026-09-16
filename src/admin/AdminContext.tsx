@@ -17,10 +17,14 @@ import * as catalogRemote from '../catalog/remote'
 import type { StoreSettings } from '../catalog/types'
 import * as remote from './adminRemote'
 
-export type AdminView = 'dash' | 'orders' | 'products' | 'users' | 'missions' | 'cs' | 'access'
+export type AdminView =
+  | 'dash' | 'orders' | 'products' | 'users' | 'missions' | 'cs' | 'access' | 'audit'
 
 /** Views only a master may open: the operator list and the point economy. */
-const MASTER_ONLY: ReadonlySet<AdminView> = new Set<AdminView>(['missions', 'access'])
+// `audit` is master-only for a reason worth stating: the log is how you
+// investigate an operator, so it must not be readable by the operator being
+// investigated. RLS enforces that too — this only hides the menu item.
+const MASTER_ONLY: ReadonlySet<AdminView> = new Set<AdminView>(['missions', 'access', 'audit'])
 
 const TOAST_MS = 2400
 const STOCK_STEP = 10
@@ -286,6 +290,7 @@ function useAdminValue() {
       ['missions', '미션 · 포인트', 0],
       ['cs', 'CS 문의', pendingCs],
       ['access', '권한 관리', 0],
+      ['audit', '감사 로그', 0],
     ] as [AdminView, string, number][]
   )
     .filter(([id]) => isMaster || !MASTER_ONLY.has(id))
@@ -390,6 +395,7 @@ function useAdminValue() {
     isMissions: view === 'missions',
     isCs: view === 'cs',
     isAccess: view === 'access',
+    isAudit: view === 'audit',
 
     kpis,
     countrySales,

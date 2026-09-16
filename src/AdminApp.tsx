@@ -4,6 +4,7 @@ import { AdminLogin } from './admin/AdminLogin'
 import { CatalogProvider } from './catalog/CatalogContext'
 import { Sidebar } from './admin/Sidebar'
 import { Access } from './admin/views/Access'
+import { Audit } from './admin/views/Audit'
 import { Dashboard } from './admin/views/Dashboard'
 import { Inquiries } from './admin/views/Inquiries'
 import { MissionConfig } from './admin/views/MissionConfig'
@@ -22,6 +23,7 @@ function CurrentView() {
   if (admin.isUsers) return <Users />
   if (admin.isMissions) return <MissionConfig />
   if (admin.isAccess) return <Access />
+  if (admin.isAudit) return <Audit />
   return <Inquiries />
 }
 

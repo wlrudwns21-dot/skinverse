@@ -69,6 +69,15 @@ interface SignUpInput {
   email: string
   password: string
   name: string
+  /**
+   * Proof the caller is a person, when CAPTCHA is configured.
+   *
+   * Passed through to Supabase Auth, which verifies it against Cloudflare
+   * server-side — this app never decides whether a token is good, it only
+   * carries it. Absent when no site key is set, in which case Auth is not
+   * checking either.
+   */
+  captchaToken?: string
   language?: Lang
   country?: string
   city?: string
@@ -137,6 +146,7 @@ function useAuthValue() {
       password: input.password,
       // Read by the handle_new_user() trigger to seed the profile row.
       options: {
+        captchaToken: input.captchaToken || undefined,
         data: {
           name: input.name,
           language: input.language ?? 'ko',
@@ -160,9 +170,17 @@ function useAuthValue() {
     return { ok: true }
   }, [])
 
-  const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+  const signIn = useCallback(async (
+    email: string,
+    password: string,
+    captchaToken?: string,
+  ): Promise<AuthResult> => {
     if (!supabase) return { ok: false, error: 'not-configured' }
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: { captchaToken: captchaToken || undefined },
+    })
     return error ? { ok: false, error: error.message } : { ok: true }
   }, [])
 

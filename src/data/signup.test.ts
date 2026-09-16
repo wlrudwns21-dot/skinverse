@@ -115,6 +115,16 @@ describe('birth dates', () => {
     expect(ageOn('2027-01-01', TODAY)).toBeNull()
   })
 
+  /**
+   * Korea's PIPA needs a guardian's consent under 14, and there is no flow for
+   * that — so 14 is where the floor has to be. Pinned here because lowering it
+   * back to the usual 13 is a legal decision, not a tweak.
+   */
+  it('refuses a 13-year-old, who would need a guardian in Korea', () => {
+    expect(MIN_AGE).toBe(14)
+    expect(isBirthDate(`${TODAY.getFullYear() - 13}-01-01`, TODAY)).toBe(false)
+  })
+
   it('holds the floor and the ceiling', () => {
     const born = (age: number) => `${TODAY.getFullYear() - age}-01-01`
     expect(isBirthDate(born(MIN_AGE - 1), TODAY)).toBe(false)

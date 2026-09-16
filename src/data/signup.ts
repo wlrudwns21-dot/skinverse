@@ -115,13 +115,22 @@ export function normalisePhone(value: string): string {
 }
 
 /**
- * Old enough to hold an account, young enough to be a person.
+ * Old enough to hold an account without a guardian's say-so.
  *
- * Thirteen is the floor most consumer services use, and it is also the point
- * below which we would be taking skin measurements from a child. The upper
- * bound only catches typos like a year of 1080.
+ * Fourteen, not the thirteen most consumer services use, because Korea's
+ * Personal Information Protection Act requires a legal guardian's consent to
+ * collect personal data from anyone under 14 — and this signup collects a
+ * name, a phone number, an address and a birth date, then goes on to measure
+ * the person's face.
+ *
+ * There is no guardian-consent flow here, so the only honest floor is the one
+ * above which consent is not needed. Building that flow is what would let this
+ * come back down to 13; lowering the number on its own would put the code in
+ * contradiction with both the law and our own privacy policy.
+ *
+ * The upper bound only catches typos like a year of 1080.
  */
-export const MIN_AGE = 13
+export const MIN_AGE = 14
 export const MAX_AGE = 120
 
 export function ageOn(birth: string, today: Date): number | null {

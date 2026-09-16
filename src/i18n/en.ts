@@ -75,6 +75,8 @@ export const en: Strings = {
   tAdded: 'Added to bag', tNoPts: 'Not enough points',
   tSoldOut: 'This reward has run out',
   tOrderFailed: 'The order could not be placed. Please check your bag',
+  tStockShort: (name, left) =>
+    left > 0 ? `Only ${left} of ${name} left` : `${name} has sold out`,
   tEarn: (p) => '+' + p + ' P earned',
   tStreak: (p, d) => '+' + p + ' P · Streak day ' + d + '!',
   tScanM: '+30 P — Weekly scan mission cleared',

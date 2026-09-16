@@ -207,6 +207,15 @@ export function MyPage() {
       >
         {st.a.logOut}
       </div>
+
+      {/* Findable after signup too, not only at the moment of agreeing. */}
+      <div style={s('display:flex;justify-content:center;gap:14px;margin-top:20px;font-size:12px;color:#8A7D6C')}>
+        <span onClick={() => st.goLegal('terms')} style={s('cursor:pointer')}>이용약관</span>
+        <span style={s('color:#D8CFBF')}>·</span>
+        <span onClick={() => st.goLegal('privacy')} style={s('cursor:pointer;font-weight:700;color:#6E6252')}>
+          개인정보처리방침
+        </span>
+      </div>
     </div>
   )
 }

@@ -75,6 +75,8 @@ export const th: Strings = {
   tAdded: 'ใส่ตะกร้าแล้ว', tNoPts: 'แต้มไม่พอ',
   tSoldOut: 'ของรางวัลนี้หมดแล้ว',
   tOrderFailed: 'สั่งซื้อไม่สำเร็จ กรุณาตรวจสอบตะกร้า',
+  tStockShort: (name, left) =>
+    left > 0 ? `${name} เหลือ ${left} ชิ้น` : `${name} หมดแล้ว`,
   tEarn: (p) => '+' + p + ' แต้ม',
   tStreak: (p, d) => '+' + p + ' แต้ม · ต่อเนื่องวันที่ ' + d + '!',
   tScanM: '+30 แต้ม — ภารกิจสแกนรายสัปดาห์สำเร็จ',

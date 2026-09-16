@@ -11,6 +11,7 @@ import { Auth } from './screens/Auth'
 import { Cart } from './screens/Cart'
 import { CheckoutConfirmed, CheckoutPayment, CheckoutShipping } from './screens/Checkout'
 import { Home } from './screens/Home'
+import { Legal } from './screens/Legal'
 import { Missions } from './screens/Missions'
 import { MyPage } from './screens/MyPage'
 import { Routine } from './screens/Routine'
@@ -53,6 +54,8 @@ function CurrentScreen() {
       return <MyPage />
     case 'support':
       return <Support />
+    case 'legal':
+      return <Legal />
   }
 }
 

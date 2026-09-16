@@ -57,6 +57,7 @@ import {
   totalsOf,
   usd,
   type AuthMode,
+  type LegalDocId,
   type ScanStep,
   type Screen,
   type StoreState,
@@ -193,6 +194,9 @@ function useStoreValue() {
   productsRef.current = products
   const settingsRef = useRef(settings)
   settingsRef.current = settings
+  /** Re-read the catalogue without making `pay` depend on the provider's identity. */
+  const catalogRef = useRef(catalog.refresh)
+  catalogRef.current = catalog.refresh
 
   const [liveWeather, setLiveWeather] = useState<Weather | null>(null)
   /**
@@ -602,6 +606,29 @@ function useStoreValue() {
     [],
   )
 
+  /**
+   * Open a legal document, remembering where to come back to.
+   *
+   * Reachable from the signup form, so `returnTo` must not be overwritten when
+   * the reader is already on a screen they were sent to — going back from the
+   * terms should land on the form they were filling in, not two steps further.
+   */
+  const goLegal = useCallback(
+    (doc: LegalDocId) =>
+      setState((s) => ({
+        ...s,
+        screen: 'legal',
+        legalDoc: doc,
+        returnTo: s.screen === 'legal' ? s.returnTo : s.screen,
+      })),
+    [],
+  )
+
+  const leaveLegal = useCallback(
+    () => setState((s) => ({ ...s, screen: s.returnTo === 'legal' ? 'home' : s.returnTo })),
+    [],
+  )
+
   const leaveAuth = useCallback(
     () => setState((s) => ({ ...s, screen: s.returnTo === 'auth' ? 'home' : s.returnTo })),
     [],
@@ -906,6 +933,17 @@ function useStoreValue() {
 
         if (!res.ok) {
           setState((cur) => ({ ...cur, ppBusy: false, pp: false, points: res.points }))
+
+          // Someone else took the last one while this basket sat open. Name the
+          // product and how many are left — "주문 실패" tells them nothing they
+          // can act on, and the bag is still exactly as they left it.
+          if (res.reason === 'insufficient_stock') {
+            const sold = productsRef.current.find((p) => p.id === res.productId)
+            toastMsg(tRef.current.tStockShort(sold?.name ?? '', res.available ?? 0))
+            void catalogRef.current()
+            return
+          }
+
           toastMsg(tRef.current.tOrderFailed)
           return
         }
@@ -1389,6 +1427,8 @@ function useStoreValue() {
     gate: state.gate,
     closeGate,
     goAuth,
+    goLegal,
+    leaveLegal,
     leaveAuth,
     guard,
     can: (capability: Capability) => can(capability, isMember),

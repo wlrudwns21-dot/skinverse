@@ -395,3 +395,54 @@ export async function removeOperator(email: string): Promise<{ ok: boolean; erro
   const { error } = await supabase.from('admin_users').delete().eq('email', email)
   return error ? { ok: false, error: error.message } : { ok: true }
 }
+
+// ── audit log ───────────────────────────────────────────────────────────────
+
+export type AuditAction =
+  | 'points.change'
+  | 'operator.add'
+  | 'operator.change'
+  | 'operator.remove'
+  | 'order.update'
+
+export interface AuditEntry {
+  id: number
+  at: string
+  /** The operator's email, or 'system' when no signed-in caller was involved. */
+  actor: string
+  action: string
+  /** A member id, an order number, or an operator's address. */
+  subject: string | null
+  detail: Record<string, unknown>
+}
+
+/**
+ * The trail, newest first.
+ *
+ * RLS restricts this to masters — the log is how you investigate an operator,
+ * so the operator being investigated must not be able to read it. A plain
+ * admin calling this gets an empty list rather than an error.
+ */
+export async function loadAuditLog(limit = 200): Promise<AuditEntry[]> {
+  if (!supabase) return []
+
+  const { data, error } = await supabase
+    .from('audit_log')
+    .select('id, at, actor, action, subject, detail')
+    .order('at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('[skinverse] 감사 로그를 불러오지 못했습니다', error.message)
+    return []
+  }
+
+  return (data ?? []).map((r) => ({
+    id: r.id as number,
+    at: r.at as string,
+    actor: (r.actor as string) ?? 'system',
+    action: (r.action as string) ?? '',
+    subject: (r.subject as string) ?? null,
+    detail: (r.detail as Record<string, unknown>) ?? {},
+  }))
+}

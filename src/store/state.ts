@@ -21,6 +21,7 @@ export type Screen =
   | 'my'
   | 'auth'
   | 'support'
+  | 'legal'
 
 /**
  * `failed` is a real destination, not a detour to the demo.
@@ -31,6 +32,8 @@ export type Screen =
  */
 export type ScanStep = 'intro' | 'scanning' | 'results' | 'failed'
 export type AuthMode = 'signup' | 'login'
+/** Which of the two legal documents the legal screen opens on. */
+export type LegalDocId = 'terms' | 'privacy'
 
 export interface PlacedOrder {
   no: string
@@ -63,6 +66,7 @@ export interface StoreState {
   /** Where to return after the auth screen closes. */
   returnTo: Screen
   authMode: AuthMode
+  legalDoc: LegalDocId
   scanStep: ScanStep
   progress: number
   /** A scan result is on screen. For guests this never survives a refresh. */
@@ -133,6 +137,7 @@ export const initialState: StoreState = {
   screen: 'home',
   returnTo: 'home',
   authMode: 'login',
+  legalDoc: 'terms',
   scanStep: 'intro',
   progress: 0,
   scanned: false,

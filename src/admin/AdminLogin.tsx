@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
+import { captchaEnabled } from '../auth/captcha'
+import { Captcha, type CaptchaHandle } from '../components/Captcha'
 import { s } from '../lib/css'
 import { useAdmin } from './AdminContext'
 import { WORDMARK } from '../data/brand'
@@ -68,6 +70,8 @@ export function AdminLogin() {
   const [busy, setBusy] = useState(false)
   const [sentTo, setSentTo] = useState('')
   const [note, setNote] = useState(readNote)
+  const [captcha, setCaptcha] = useState('')
+  const captchaRef = useRef<CaptchaHandle | null>(null)
 
   if (admin.authLoading || (admin.isSignedIn && admin.role === undefined)) {
     return (
@@ -198,12 +202,17 @@ export function AdminLogin() {
     setError('')
     if (!/^\S+@\S+\.\S+$/.test(email)) return setError('올바른 이메일 주소를 입력해주세요')
     if (!password) return setError('비밀번호를 입력해주세요')
+    if (captchaEnabled && !captcha) return setError('보안 확인을 완료해주세요')
 
     if (!isSignUp) {
       setBusy(true)
-      const res = await auth.signIn(email, password)
+      const res = await auth.signIn(email, password, captcha)
       setBusy(false)
-      if (!res.ok) setError('이메일 또는 비밀번호가 올바르지 않습니다')
+      if (!res.ok) {
+        // Single-use: the failed attempt consumed it.
+        captchaRef.current?.reset()
+        setError('이메일 또는 비밀번호가 올바르지 않습니다')
+      }
       return
     }
 
@@ -215,10 +224,11 @@ export function AdminLogin() {
     // An operator account is an account, nothing more — no address, no birth
     // date. The console has no use for them and asking would be collecting
     // personal data for no reason.
-    const res = await auth.signUp({ email, password, name: name.trim() })
+    const res = await auth.signUp({ email, password, name: name.trim(), captchaToken: captcha })
     setBusy(false)
 
     if (!res.ok) {
+      captchaRef.current?.reset()
       setError(
         res.error?.toLowerCase().includes('already')
           ? '이미 가입된 이메일입니다. 로그인해주세요.'
@@ -347,6 +357,12 @@ export function AdminLogin() {
       {error && (
         <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;color:#A64B32;border-radius:12px;padding:11px 14px;margin-top:12px;font-size:12.5px')}>
           {error}
+        </div>
+      )}
+
+      {captchaEnabled && (
+        <div style={s('margin-top:14px')}>
+          <Captcha onToken={setCaptcha} handleRef={captchaRef} />
         </div>
       )}
 

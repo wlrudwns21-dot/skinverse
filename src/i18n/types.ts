@@ -177,6 +177,7 @@ export interface Strings {
   tNoPts: string
   tSoldOut: string
   tOrderFailed: string
+  tStockShort: (name: string, left: number) => string
   tEarn: (points: number) => string
   tStreak: (points: number, day: number) => string
   tScanM: string

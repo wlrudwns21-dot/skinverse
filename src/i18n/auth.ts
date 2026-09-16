@@ -43,6 +43,7 @@ export interface AuthStrings {
   errBirthDate: string
   errAddress: string
   errCustomsCode: string
+  errCaptcha: string
   signUpTitle: string
   signUpSub: string
   logInTitle: string
@@ -181,6 +182,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     errBirthDate: '생년월일을 다시 확인해주세요 (만 13세 이상)',
     errAddress: '주소를 입력해주세요',
     errCustomsCode: '개인통관고유부호는 P + 숫자 12자리입니다',
+    errCaptcha: '보안 확인을 완료해주세요',
     signUpTitle: 'Skinverse 시작하기',
     signUpSub: '가입하면 분석 기록과 포인트가 저장되고, 구매와 루틴 저장을 이용할 수 있습니다.',
     logInTitle: '다시 오셨네요', logInSub: '이메일로 로그인해주세요.',
@@ -297,6 +299,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     errBirthDate: 'Please check the date of birth (13 or over)',
     errAddress: 'Please enter an address',
     errCustomsCode: 'The customs code is a P followed by 12 digits',
+    errCaptcha: 'Please complete the security check',
     signUpTitle: 'Get started with Skinverse',
     signUpSub: 'Members keep their scan history and points, and can buy products and save routines.',
     logInTitle: 'Welcome back', logInSub: 'Log in with your email.',
@@ -413,6 +416,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     errBirthDate: '请检查出生日期（须满 13 周岁）',
     errAddress: '请输入地址',
     errCustomsCode: '个人通关码为 P + 12 位数字',
+    errCaptcha: '请完成安全验证',
     signUpTitle: '开始使用 Skinverse',
     signUpSub: '注册后可保存分析记录与积分，并可购买商品、保存护肤方案。',
     logInTitle: '欢迎回来', logInSub: '请使用邮箱登录。',
@@ -529,6 +533,7 @@ export const authStrings: Record<Lang, AuthStrings> = {
     errBirthDate: 'กรุณาตรวจสอบวันเกิด (อายุ 13 ปีขึ้นไป)',
     errAddress: 'กรุณากรอกที่อยู่',
     errCustomsCode: 'รหัสศุลกากรคือ P ตามด้วยตัวเลข 12 หลัก',
+    errCaptcha: 'กรุณายืนยันความปลอดภัยให้เสร็จ',
     signUpTitle: 'เริ่มต้นกับ Skinverse',
     signUpSub: 'สมาชิกจะเก็บประวัติการวิเคราะห์และแต้มไว้ ซื้อสินค้าและบันทึกรูทีนได้',
     logInTitle: 'ยินดีต้อนรับกลับมา', logInSub: 'เข้าสู่ระบบด้วยอีเมลของคุณ',

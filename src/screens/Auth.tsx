@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { shippingCountries } from '../data/cities'
 import {
   dialCodeFor,
@@ -11,6 +11,8 @@ import {
   normaliseCustomsCode,
   normalisePhone,
 } from '../data/signup'
+import { Captcha, type CaptchaHandle } from '../components/Captcha'
+import { captchaEnabled } from '../auth/captcha'
 import { s } from '../lib/css'
 import { useAuth } from '../auth/AuthContext'
 import { useStore } from '../store/StoreContext'
@@ -53,6 +55,10 @@ export function Auth() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [sentTo, setSentTo] = useState('')
+  const [captcha, setCaptcha] = useState('')
+  // A Turnstile token is single-use, so a refused attempt must clear the widget
+  // — otherwise the second try sends a token the server has already spent.
+  const captchaRef = useRef<CaptchaHandle | null>(null)
 
   const submit = async () => {
     setError('')
@@ -70,6 +76,9 @@ export function Auth() {
       // now rather than at the customs desk.
       if (!isCustomsCode(customs)) return setError(a.errCustomsCode)
     }
+    // Checked last, so the form's own complaints come first — being told to
+    // solve a puzzle and then that the address is missing is two trips.
+    if (captchaEnabled && !captcha) return setError(a.errCaptcha)
 
     setBusy(true)
     const res = isSignUp
@@ -87,11 +96,16 @@ export function Auth() {
           gender,
           birthDate: birth,
           customsCode: normaliseCustomsCode(customs),
+          captchaToken: captcha,
         })
-      : await auth.signIn(email, password)
+      : await auth.signIn(email, password, captcha)
     setBusy(false)
 
-    if (!res.ok) return setError(translateError(res.error ?? '', a))
+    if (!res.ok) {
+      // The token is spent whether or not the attempt succeeded.
+      captchaRef.current?.reset()
+      return setError(translateError(res.error ?? '', a))
+    }
     // Email confirmation is on: tell them to go check, rather than silently
     // leaving them signed out.
     if (res.needsEmailConfirm) return setSentTo(email)
@@ -307,6 +321,35 @@ export function Auth() {
           </>
         )}
       </div>
+
+      {captchaEnabled && (
+        <div style={s('margin-top:14px')}>
+          <Captcha onToken={setCaptcha} handleRef={captchaRef} />
+        </div>
+      )}
+
+      {/* Shown at the point the data is actually handed over, not buried in a
+          footer. The wording says what pressing the button means, which is the
+          honest version of a pre-ticked consent box. */}
+      {isSignUp && (
+        <div style={s('font-size:11.5px;color:#8A7D6C;line-height:1.6;margin-top:14px;text-align:center')}>
+          회원가입을 누르면{' '}
+          <span
+            onClick={() => st.goLegal('terms')}
+            style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+          >
+            이용약관
+          </span>
+          과{' '}
+          <span
+            onClick={() => st.goLegal('privacy')}
+            style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+          >
+            개인정보처리방침
+          </span>
+          에 동의하는 것으로 봅니다.
+        </div>
+      )}
 
       {error && (
         <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;color:#A64B32;border-radius:12px;padding:11px 14px;margin-top:12px;font-size:12.5px;line-height:1.4')}>
