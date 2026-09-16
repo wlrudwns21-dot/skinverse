@@ -198,6 +198,15 @@ function useStoreValue() {
   const catalogRef = useRef(catalog.refresh)
   catalogRef.current = catalog.refresh
 
+  /**
+   * Whether this member has asked to be deleted and is waiting.
+   *
+   * Kept in the store rather than fetched by the screen so the answer survives
+   * navigating away and back — a member who asked, wandered off and returned
+   * should not be offered the withdrawal button a second time.
+   */
+  const [deletionPending, setDeletionPending] = useState(false)
+
   const [liveWeather, setLiveWeather] = useState<Weather | null>(null)
   /**
    * The reading as of this render. `startScan` is memoised and would otherwise
@@ -221,6 +230,18 @@ function useStoreValue() {
     },
     [],
   )
+
+  useEffect(() => {
+    if (!isMember) {
+      setDeletionPending(false)
+      return
+    }
+    let cancelled = false
+    void remote.myDeletionRequest().then((r) => {
+      if (!cancelled) setDeletionPending(r !== null)
+    })
+    return () => { cancelled = true }
+  }, [isMember])
 
   const toastMsg = useCallback((msg: string) => {
     if (toastTimer.current) clearTimeout(toastTimer.current)
@@ -1418,6 +1439,24 @@ function useStoreValue() {
     authLoading: auth.loading,
     profile: auth.profile,
     signOut: () => void auth.signOut(),
+
+    deletionPending,
+    requestDeletion: (reason: string) => {
+      void (async () => {
+        const ok = await remote.requestAccountDeletion(reason)
+        if (!ok) return toastMsg(tRef.current.tOrderFailed)
+        setDeletionPending(true)
+        toastMsg(tRef.current.tLeaveRequested)
+      })()
+    },
+    cancelDeletion: () => {
+      void (async () => {
+        const ok = await remote.cancelAccountDeletion()
+        if (!ok) return
+        setDeletionPending(false)
+        toastMsg(tRef.current.tLeaveCancelled)
+      })()
+    },
     setLang: (value: Lang) => {
       setState((s) => ({ ...s, lang: value }))
       if (isMember) void auth.updateProfile({ language: value })

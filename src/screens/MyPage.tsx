@@ -208,6 +208,8 @@ export function MyPage() {
         {st.a.logOut}
       </div>
 
+      <Withdraw />
+
       {/* Findable after signup too, not only at the moment of agreeing. */}
       <div style={s('display:flex;justify-content:center;gap:14px;margin-top:20px;font-size:12px;color:#8A7D6C')}>
         <span onClick={() => st.goLegal('terms')} style={s('cursor:pointer')}>이용약관</span>
@@ -215,6 +217,102 @@ export function MyPage() {
         <span onClick={() => st.goLegal('privacy')} style={s('cursor:pointer;font-weight:700;color:#6E6252')}>
           개인정보처리방침
         </span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 회원 탈퇴.
+ *
+ * Two steps on purpose. The deletion is irreversible and takes the scan history
+ * with it, so it should not be one tap away — and the confirmation is where the
+ * member finds out what actually survives, which is the part people are
+ * surprised by afterwards rather than before.
+ */
+function Withdraw() {
+  const st = useStore()
+  const [open, setOpen] = useState(false)
+  const [reason, setReason] = useState('')
+
+  if (st.deletionPending) {
+    return (
+      <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:14px 16px;margin-top:20px')}>
+        <div style={s('font-size:13px;font-weight:700;color:#8A6D32')}>탈퇴 요청 처리 중</div>
+        <div style={s('font-size:12px;color:#9A8455;margin-top:6px;line-height:1.6')}>
+          요청이 접수되었습니다. 배송 중인 주문이 있는지 확인한 뒤 처리해드립니다.
+          <br />
+          처리가 끝나기 전까지는 취소하실 수 있습니다.
+        </div>
+        <div
+          onClick={st.cancelDeletion}
+          style={s('cursor:pointer;margin-top:12px;background:#FFFFFF;border:1px solid #D8CFBF;border-radius:999px;padding:11px;text-align:center;font-size:12.5px;font-weight:700;color:#4A4234')}
+        >
+          탈퇴 요청 취소
+        </div>
+      </div>
+    )
+  }
+
+  if (!open) {
+    return (
+      <div style={s('text-align:center;margin-top:22px')}>
+        <span
+          onClick={() => setOpen(true)}
+          style={s('cursor:pointer;font-size:12px;color:#A2957F;text-decoration:underline')}
+        >
+          회원 탈퇴
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div style={s('background:#FFFFFF;border:1px solid #EFCFC3;border-radius:14px;padding:16px;margin-top:20px')}>
+      <div style={s('font-size:13.5px;font-weight:700;color:#A64B32')}>정말 탈퇴하시겠어요?</div>
+
+      <div style={s('font-size:12px;color:#6E6252;margin-top:10px;line-height:1.7')}>
+        <b>삭제되는 것</b>
+        <br />
+        계정과 로그인 정보, 피부 분석 기록 전체, 루틴 기록, 장바구니, 보유 포인트
+      </div>
+
+      {/* Said plainly here rather than buried in the privacy policy, because
+          "왜 아직 내 이름이 남아 있냐"는 탈퇴 후에 나오는 질문입니다. */}
+      <div style={s('font-size:12px;color:#6E6252;margin-top:10px;line-height:1.7')}>
+        <b>법령에 따라 보관되는 것</b>
+        <br />
+        주문·결제 기록 5년, 문의 기록 3년 (전자상거래법). 이 기록은 계정과의 연결이
+        끊긴 상태로 보관되며, 로그인해서 볼 수는 없습니다.
+      </div>
+
+      <div style={s('background:#FBE9E3;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:#A64B32;line-height:1.5')}>
+        보유하신 포인트는 즉시 소멸하며 복구되지 않습니다.
+      </div>
+
+      <div style={s('margin-top:14px')}>
+        <div style={s('font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px')}>
+          탈퇴 사유 <span style={s('color:#A2957F;font-weight:600')}>· 선택</span>
+        </div>
+        <input
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="더 나은 서비스를 만드는 데 쓰겠습니다"
+          style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:10px;padding:10px 12px;font-size:13px;background:#FFFFFF;outline:none')}
+        />
+      </div>
+
+      <div
+        onClick={() => st.requestDeletion(reason.trim())}
+        style={s('cursor:pointer;margin-top:14px;background:#A64B32;color:#FFFFFF;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700')}
+      >
+        탈퇴 요청하기
+      </div>
+      <div
+        onClick={() => setOpen(false)}
+        style={s('cursor:pointer;margin-top:8px;text-align:center;font-size:12.5px;color:#8A7D6C;padding:6px')}
+      >
+        돌아가기
       </div>
     </div>
   )

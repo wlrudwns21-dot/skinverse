@@ -75,6 +75,8 @@ export const zh: Strings = {
   tAdded: '已加入购物袋', tNoPts: '积分不足',
   tSoldOut: '该奖励已兑换完毕',
   tOrderFailed: '下单未能完成，请检查购物袋',
+  tLeaveRequested: '注销申请已受理，确认后将为您处理',
+  tLeaveCancelled: '已取消注销申请',
   tStockShort: (name, left) =>
     left > 0 ? `${name} 仅剩 ${left} 件` : `${name} 已售罄`,
   tEarn: (p) => '+' + p + ' 积分已到账',

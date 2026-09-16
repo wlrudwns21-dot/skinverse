@@ -11,6 +11,7 @@ import { MissionConfig } from './admin/views/MissionConfig'
 import { Orders } from './admin/views/Orders'
 import { Products } from './admin/views/Products'
 import { Users } from './admin/views/Users'
+import { Withdrawals } from './admin/views/Withdrawals'
 import { Toast } from './components/Toast'
 import { s } from './lib/css'
 
@@ -24,6 +25,7 @@ function CurrentView() {
   if (admin.isMissions) return <MissionConfig />
   if (admin.isAccess) return <Access />
   if (admin.isAudit) return <Audit />
+  if (admin.isWithdrawals) return <Withdrawals />
   return <Inquiries />
 }
 

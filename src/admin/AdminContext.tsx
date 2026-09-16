@@ -19,6 +19,7 @@ import * as remote from './adminRemote'
 
 export type AdminView =
   | 'dash' | 'orders' | 'products' | 'users' | 'missions' | 'cs' | 'access' | 'audit'
+  | 'withdrawals'
 
 /** Views only a master may open: the operator list and the point economy. */
 // `audit` is master-only for a reason worth stating: the log is how you
@@ -77,6 +78,8 @@ function useAdminValue() {
 
   // Just the badge count; the CS screen loads its own threads.
   const [pendingCs, setPendingCs] = useState(0)
+  /** Badge count for the withdrawal queue — these are on a legal clock. */
+  const [pendingWithdrawals, setPendingWithdrawals] = useState(0)
 
   // Point rules are edited locally and committed with an explicit save, so a
   // half-typed number never becomes the live earn rate.
@@ -124,12 +127,14 @@ function useAdminValue() {
 
   const refresh = useCallback(async () => {
     setLoadingData(true)
-    const [o, m, s, threads] = await Promise.all([
+    const [o, m, s, threads, withdrawals] = await Promise.all([
       remote.loadOrders(),
       remote.loadMembers(),
       remote.loadStats(),
       loadAllThreads(),
+      remote.loadDeletionRequests(),
     ])
+    setPendingWithdrawals(withdrawals.length)
     setOrders(o)
     setMembers(m)
     setStats(s)
@@ -291,6 +296,7 @@ function useAdminValue() {
       ['cs', 'CS 문의', pendingCs],
       ['access', '권한 관리', 0],
       ['audit', '감사 로그', 0],
+      ['withdrawals', '탈퇴 요청', pendingWithdrawals],
     ] as [AdminView, string, number][]
   )
     .filter(([id]) => isMaster || !MASTER_ONLY.has(id))
@@ -374,6 +380,7 @@ function useAdminValue() {
   return {
     view,
     toast,
+    toastMsg,
     role,
     isMaster,
     isAdmin: role !== undefined && role !== null,
@@ -396,6 +403,7 @@ function useAdminValue() {
     isCs: view === 'cs',
     isAccess: view === 'access',
     isAudit: view === 'audit',
+    isWithdrawals: view === 'withdrawals',
 
     kpis,
     countrySales,

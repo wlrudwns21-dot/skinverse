@@ -75,6 +75,8 @@ export const th: Strings = {
   tAdded: 'ใส่ตะกร้าแล้ว', tNoPts: 'แต้มไม่พอ',
   tSoldOut: 'ของรางวัลนี้หมดแล้ว',
   tOrderFailed: 'สั่งซื้อไม่สำเร็จ กรุณาตรวจสอบตะกร้า',
+  tLeaveRequested: 'รับคำขอปิดบัญชีแล้ว จะดำเนินการหลังตรวจสอบ',
+  tLeaveCancelled: 'ยกเลิกคำขอปิดบัญชีแล้ว',
   tStockShort: (name, left) =>
     left > 0 ? `${name} เหลือ ${left} ชิ้น` : `${name} หมดแล้ว`,
   tEarn: (p) => '+' + p + ' แต้ม',

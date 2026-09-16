@@ -560,3 +560,52 @@ export async function saveRoutine(input: SaveRoutineInput): Promise<boolean> {
   if (error) console.error('[skinverse] 루틴 저장 실패', error.message)
   return !error
 }
+
+// ── leaving ─────────────────────────────────────────────────────────────────
+
+/** A member's own pending withdrawal, or null when they have not asked. */
+export interface DeletionRequest {
+  status: 'pending'
+  requestedAt: string
+}
+
+export async function myDeletionRequest(): Promise<DeletionRequest | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.rpc('my_deletion_request')
+  if (error) {
+    console.error('[skinverse] 탈퇴 요청 조회 실패', error.message)
+    return null
+  }
+  const row = data as Record<string, unknown> | null
+  if (!row || row.status !== 'pending') return null
+  return { status: 'pending', requestedAt: String(row.requestedAt ?? '') }
+}
+
+/**
+ * Ask to be deleted.
+ *
+ * A request rather than an immediate wipe, because an order in transit and a
+ * refund in flight both need a person to look at them first — and because the
+ * deletion itself is irreversible, so a stray tap should not be able to
+ * trigger it. It cannot be refused, only carried out; the queue exists to make
+ * that deliberate and leave a record.
+ */
+export async function requestAccountDeletion(reason: string): Promise<boolean> {
+  if (!supabase) return false
+  const { data, error } = await supabase.rpc('request_account_deletion', { p_reason: reason })
+  if (error) {
+    console.error('[skinverse] 탈퇴 요청 실패', error.message)
+    return false
+  }
+  return (data as Record<string, unknown> | null)?.ok === true
+}
+
+export async function cancelAccountDeletion(): Promise<boolean> {
+  if (!supabase) return false
+  const { data, error } = await supabase.rpc('cancel_account_deletion')
+  if (error) {
+    console.error('[skinverse] 탈퇴 취소 실패', error.message)
+    return false
+  }
+  return (data as Record<string, unknown> | null)?.ok === true
+}

@@ -75,6 +75,8 @@ export const ko: Strings = {
   tAdded: '장바구니에 담았어요', tNoPts: '포인트가 부족해요',
   tSoldOut: '이 리워드는 모두 소진되었어요',
   tOrderFailed: '주문을 완료하지 못했어요. 장바구니를 확인해주세요',
+  tLeaveRequested: '탈퇴 요청이 접수되었어요. 확인 후 처리해드립니다',
+  tLeaveCancelled: '탈퇴 요청을 취소했어요',
   tStockShort: (name, left) =>
     left > 0 ? `${name} 재고가 ${left}개 남았어요` : `${name}이(가) 품절됐어요`,
   tEarn: (p) => '+' + p + ' P 적립',

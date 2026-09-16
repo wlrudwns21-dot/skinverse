@@ -446,3 +446,76 @@ export async function loadAuditLog(limit = 200): Promise<AuditEntry[]> {
     detail: (r.detail as Record<string, unknown>) ?? {},
   }))
 }
+
+// ── withdrawal queue ────────────────────────────────────────────────────────
+
+export interface DeletionRequestRow {
+  userId: string
+  email: string
+  name: string
+  requestedAt: string
+  reason: string
+}
+
+/**
+ * Members waiting to be deleted, oldest first.
+ *
+ * Oldest first on purpose: 개인정보 보호법 requires these to be acted on
+ * without delay, so the one that has waited longest is the one that matters.
+ */
+export async function loadDeletionRequests(): Promise<DeletionRequestRow[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('deletion_requests')
+    .select('user_id, email, name, requested_at, reason')
+    .eq('status', 'pending')
+    .order('requested_at', { ascending: true })
+
+  if (error) {
+    console.error('[skinverse] 탈퇴 요청 조회 실패', error.message)
+    return []
+  }
+  return (data ?? []).map((r) => ({
+    userId: r.user_id as string,
+    email: (r.email as string) || '—',
+    name: (r.name as string) || '—',
+    requestedAt: r.requested_at as string,
+    reason: (r.reason as string) || '',
+  }))
+}
+
+export interface DeletionOutcome {
+  ok: boolean
+  ordersRetained?: number
+  threadsRetained?: number
+  reason?: string
+}
+
+/**
+ * Carry out a withdrawal. Irreversible.
+ *
+ * Not "approve": a withdrawal cannot be refused. What the operator is
+ * confirming is that they have checked nothing is mid-shipment, not that the
+ * member has permission to leave.
+ */
+export async function completeAccountDeletion(
+  userId: string,
+  note: string,
+): Promise<DeletionOutcome> {
+  if (!supabase) return { ok: false, reason: 'unavailable' }
+  const { data, error } = await supabase.rpc('complete_account_deletion', {
+    p_user: userId,
+    p_note: note,
+  })
+  if (error) {
+    console.error('[skinverse] 탈퇴 처리 실패', error.message)
+    return { ok: false, reason: 'unavailable' }
+  }
+  const row = (data ?? {}) as Record<string, unknown>
+  return {
+    ok: row.ok === true,
+    ordersRetained: typeof row.ordersRetained === 'number' ? row.ordersRetained : undefined,
+    threadsRetained: typeof row.threadsRetained === 'number' ? row.threadsRetained : undefined,
+    reason: typeof row.reason === 'string' ? row.reason : undefined,
+  }
+}
