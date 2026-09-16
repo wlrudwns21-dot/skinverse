@@ -20,6 +20,29 @@ export interface AuthStrings {
   passwordConfirm: string
   name: string
   namePlaceholder: string
+
+  /** The rest of what a customer tells us at signup. */
+  phone: string
+  phonePlaceholder: string
+  dialCode: string
+  address: string
+  addressPlaceholder: string
+  postalCode: string
+  postalPlaceholder: string
+  gender: string
+  birthDate: string
+  customsCode: string
+  customsHelp: string
+  customsPlaceholder: string
+  optional: string
+  /** Heading over the block that is only needed for shipping. */
+  deliveryTitle: string
+  deliveryHint: string
+
+  errPhone: string
+  errBirthDate: string
+  errAddress: string
+  errCustomsCode: string
   signUpTitle: string
   signUpSub: string
   logInTitle: string
@@ -144,6 +167,20 @@ export const authStrings: Record<Lang, AuthStrings> = {
     signUp: '회원가입', logIn: '로그인', logOut: '로그아웃',
     email: '이메일', password: '비밀번호', passwordHint: '8자 이상',
     passwordConfirm: '비밀번호 확인', name: '이름', namePlaceholder: '홍길동',
+    phone: '연락처', phonePlaceholder: '10-1234-5678', dialCode: '국가번호',
+    address: '주소', addressPlaceholder: '도로명 주소, 상세 주소',
+    postalCode: '우편번호', postalPlaceholder: '06236',
+    gender: '성별', birthDate: '생년월일',
+    customsCode: '개인통관고유부호',
+    customsHelp: '한국으로 배송받을 때 통관에 쓰입니다. 나중에 입력해도 됩니다.',
+    customsPlaceholder: 'P + 숫자 12자리',
+    optional: '선택',
+    deliveryTitle: '배송 정보',
+    deliveryHint: '주문하실 때 쓰입니다. MY에서 언제든 바꿀 수 있어요.',
+    errPhone: '연락처를 다시 확인해주세요',
+    errBirthDate: '생년월일을 다시 확인해주세요 (만 13세 이상)',
+    errAddress: '주소를 입력해주세요',
+    errCustomsCode: '개인통관고유부호는 P + 숫자 12자리입니다',
     signUpTitle: 'Skinverse 시작하기',
     signUpSub: '가입하면 분석 기록과 포인트가 저장되고, 구매와 루틴 저장을 이용할 수 있습니다.',
     logInTitle: '다시 오셨네요', logInSub: '이메일로 로그인해주세요.',
@@ -246,6 +283,20 @@ export const authStrings: Record<Lang, AuthStrings> = {
     signUp: 'Sign up', logIn: 'Log in', logOut: 'Log out',
     email: 'Email', password: 'Password', passwordHint: '8 characters or more',
     passwordConfirm: 'Confirm password', name: 'Name', namePlaceholder: 'Yuki Tanaka',
+    phone: 'Phone', phonePlaceholder: '7700 900123', dialCode: 'Code',
+    address: 'Address', addressPlaceholder: 'Street address, unit',
+    postalCode: 'Postcode', postalPlaceholder: 'SW1A 1AA',
+    gender: 'Gender', birthDate: 'Date of birth',
+    customsCode: 'Customs clearance code',
+    customsHelp: 'Used for customs on deliveries into Korea. You can add it later.',
+    customsPlaceholder: 'P followed by 12 digits',
+    optional: 'optional',
+    deliveryTitle: 'Delivery',
+    deliveryHint: 'Used when you order. You can change any of it from MY.',
+    errPhone: 'Please check the phone number',
+    errBirthDate: 'Please check the date of birth (13 or over)',
+    errAddress: 'Please enter an address',
+    errCustomsCode: 'The customs code is a P followed by 12 digits',
     signUpTitle: 'Get started with Skinverse',
     signUpSub: 'Members keep their scan history and points, and can buy products and save routines.',
     logInTitle: 'Welcome back', logInSub: 'Log in with your email.',
@@ -348,6 +399,20 @@ export const authStrings: Record<Lang, AuthStrings> = {
     signUp: '注册', logIn: '登录', logOut: '退出登录',
     email: '邮箱', password: '密码', passwordHint: '至少8位',
     passwordConfirm: '确认密码', name: '姓名', namePlaceholder: '李伟',
+    phone: '联系电话', phonePlaceholder: '138 0013 8000', dialCode: '国家代码',
+    address: '地址', addressPlaceholder: '街道地址、门牌号',
+    postalCode: '邮编', postalPlaceholder: '100000',
+    gender: '性别', birthDate: '出生日期',
+    customsCode: '个人通关码',
+    customsHelp: '寄往韩国时用于清关，也可以稍后填写。',
+    customsPlaceholder: 'P + 12 位数字',
+    optional: '选填',
+    deliveryTitle: '配送信息',
+    deliveryHint: '下单时使用，可随时在「MY」中修改。',
+    errPhone: '请检查联系电话',
+    errBirthDate: '请检查出生日期（须满 13 周岁）',
+    errAddress: '请输入地址',
+    errCustomsCode: '个人通关码为 P + 12 位数字',
     signUpTitle: '开始使用 Skinverse',
     signUpSub: '注册后可保存分析记录与积分，并可购买商品、保存护肤方案。',
     logInTitle: '欢迎回来', logInSub: '请使用邮箱登录。',
@@ -450,6 +515,20 @@ export const authStrings: Record<Lang, AuthStrings> = {
     signUp: 'สมัครสมาชิก', logIn: 'เข้าสู่ระบบ', logOut: 'ออกจากระบบ',
     email: 'อีเมล', password: 'รหัสผ่าน', passwordHint: 'อย่างน้อย 8 ตัวอักษร',
     passwordConfirm: 'ยืนยันรหัสผ่าน', name: 'ชื่อ', namePlaceholder: 'พลอย',
+    phone: 'เบอร์โทร', phonePlaceholder: '81 234 5678', dialCode: 'รหัสประเทศ',
+    address: 'ที่อยู่', addressPlaceholder: 'ที่อยู่ เลขที่ห้อง',
+    postalCode: 'รหัสไปรษณีย์', postalPlaceholder: '10110',
+    gender: 'เพศ', birthDate: 'วันเกิด',
+    customsCode: 'รหัสผ่านพิธีการศุลกากร',
+    customsHelp: 'ใช้สำหรับการนำเข้าไปเกาหลี กรอกภายหลังได้',
+    customsPlaceholder: 'P ตามด้วยตัวเลข 12 หลัก',
+    optional: 'ไม่บังคับ',
+    deliveryTitle: 'ข้อมูลจัดส่ง',
+    deliveryHint: 'ใช้ตอนสั่งซื้อ แก้ไขได้ทุกเมื่อจากหน้า MY',
+    errPhone: 'กรุณาตรวจสอบเบอร์โทร',
+    errBirthDate: 'กรุณาตรวจสอบวันเกิด (อายุ 13 ปีขึ้นไป)',
+    errAddress: 'กรุณากรอกที่อยู่',
+    errCustomsCode: 'รหัสศุลกากรคือ P ตามด้วยตัวเลข 12 หลัก',
     signUpTitle: 'เริ่มต้นกับ Skinverse',
     signUpSub: 'สมาชิกจะเก็บประวัติการวิเคราะห์และแต้มไว้ ซื้อสินค้าและบันทึกรูทีนได้',
     logInTitle: 'ยินดีต้อนรับกลับมา', logInSub: 'เข้าสู่ระบบด้วยอีเมลของคุณ',

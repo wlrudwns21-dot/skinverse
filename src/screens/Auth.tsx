@@ -1,5 +1,16 @@
 import { useState } from 'react'
 import { shippingCountries } from '../data/cities'
+import {
+  dialCodeFor,
+  dialCodes,
+  dialKey,
+  genders,
+  isBirthDate,
+  isCustomsCode,
+  isPhone,
+  normaliseCustomsCode,
+  normalisePhone,
+} from '../data/signup'
 import { s } from '../lib/css'
 import { useAuth } from '../auth/AuthContext'
 import { useStore } from '../store/StoreContext'
@@ -30,6 +41,15 @@ export function Auth() {
   const [confirm, setConfirm] = useState('')
   const [name, setName] = useState('')
   const [country, setCountry] = useState(st.state.country)
+  // Preselected from the country they already chose, so the common case is
+  // already right and the dropdown is there for the exception.
+  const [phoneCc, setPhoneCc] = useState(() => dialCodeFor(st.state.country))
+  const [phone, setPhone] = useState('')
+  const [address, setAddress] = useState('')
+  const [postal, setPostal] = useState('')
+  const [gender, setGender] = useState('undisclosed')
+  const [birth, setBirth] = useState('')
+  const [customs, setCustoms] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [sentTo, setSentTo] = useState('')
@@ -42,6 +62,13 @@ export function Auth() {
     if (isSignUp) {
       if (!name.trim()) return setError(a.errName)
       if (password !== confirm) return setError(a.errPasswordMatch)
+      if (!isPhone(phone)) return setError(a.errPhone)
+      if (!isBirthDate(birth, new Date())) return setError(a.errBirthDate)
+      if (!address.trim()) return setError(a.errAddress)
+      // The only optional field, and the only one checked just for shape: an
+      // empty customs code is valid, a malformed one is a typo worth catching
+      // now rather than at the customs desk.
+      if (!isCustomsCode(customs)) return setError(a.errCustomsCode)
     }
 
     setBusy(true)
@@ -53,6 +80,13 @@ export function Auth() {
           language: st.lang,
           country,
           city: st.state.city,
+          phoneCc,
+          phone: normalisePhone(phone),
+          address: address.trim(),
+          postalCode: postal.trim(),
+          gender,
+          birthDate: birth,
+          customsCode: normaliseCustomsCode(customs),
         })
       : await auth.signIn(email, password)
     setBusy(false)
@@ -140,12 +174,135 @@ export function Auth() {
               />
             </div>
             <div>
+              <div style={s(label)}>{a.birthDate}</div>
+              <input
+                type="date"
+                value={birth}
+                onChange={(e) => setBirth(e.target.value)}
+                max={new Date().toISOString().slice(0, 10)}
+                style={s(field)}
+              />
+            </div>
+
+            <div>
+              <div style={s(label)}>{a.gender}</div>
+              <div style={s('display:flex;gap:6px;flex-wrap:wrap')}>
+                {genders.map((g) => {
+                  const on = gender === g.key
+                  return (
+                    <div
+                      key={g.key}
+                      onClick={() => setGender(g.key)}
+                      style={s(
+                        'cursor:pointer;flex:1;min-width:70px;text-align:center;border-radius:10px;padding:10px 6px;font-size:12.5px;font-weight:600;' +
+                          (on
+                            ? 'background:#221C15;color:#F5F0E6'
+                            : 'background:#FFFFFF;border:1px solid #D8CFBF;color:#6E6252'),
+                      )}
+                    >
+                      {g.label[st.lang]}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Everything below is for getting a parcel to them. Grouped and
+                labelled as such so it reads as one purpose rather than five
+                more questions. */}
+            <div style={s('border-top:1px solid #ECE6DA;margin-top:6px;padding-top:14px')}>
+              <div style={s('font-size:13px;font-weight:700;color:#4A4234')}>{a.deliveryTitle}</div>
+              <div style={s('font-size:11.5px;color:#A2957F;line-height:1.5;margin-top:3px')}>
+                {a.deliveryHint}
+              </div>
+            </div>
+
+            <div>
+              <div style={s(label)}>{a.phone}</div>
+              <div style={s('display:flex;gap:8px')}>
+                {/* The code is a country choice, not something to be typed
+                    wrong — a number without it cannot be dialled from abroad,
+                    and this store ships to thirty countries. */}
+                <select
+                  value={phoneCc}
+                  onChange={(e) => setPhoneCc(e.target.value)}
+                  aria-label={a.dialCode}
+                  style={s(field + ';width:116px;flex-shrink:0;padding-inline:10px')}
+                >
+                  {dialCodes.map((d) => (
+                    <option key={dialKey(d)} value={d.code}>
+                      {d.code} {d.iso}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  autoComplete="tel-national"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder={a.phonePlaceholder}
+                  style={s(field)}
+                />
+              </div>
+            </div>
+
+            <div>
               <div style={s(label)}>{st.t.country}</div>
-              <select value={country} onChange={(e) => setCountry(e.target.value)} style={s(field)}>
+              <select
+                value={country}
+                onChange={(e) => {
+                  setCountry(e.target.value)
+                  // Follow the country unless they have already picked a code
+                  // by hand — changing it under them would be worse than a
+                  // stale default.
+                  setPhoneCc((current) =>
+                    current === dialCodeFor(country) ? dialCodeFor(e.target.value) : current,
+                  )
+                }}
+                style={s(field)}
+              >
                 {shippingCountries.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <div style={s(label)}>{a.address}</div>
+              <input
+                autoComplete="street-address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder={a.addressPlaceholder}
+                style={s(field)}
+              />
+            </div>
+
+            <div>
+              <div style={s(label)}>{a.postalCode}</div>
+              <input
+                autoComplete="postal-code"
+                value={postal}
+                onChange={(e) => setPostal(e.target.value)}
+                placeholder={a.postalPlaceholder}
+                style={s(field)}
+              />
+            </div>
+
+            <div>
+              <div style={s(label)}>
+                {a.customsCode}
+                <span style={s('color:#A2957F;font-weight:600')}> · {a.optional}</span>
+              </div>
+              <input
+                value={customs}
+                onChange={(e) => setCustoms(e.target.value)}
+                placeholder={a.customsPlaceholder}
+                style={s(field)}
+              />
+              <div style={s('font-size:11px;color:#A2957F;line-height:1.5;margin-top:5px')}>
+                {a.customsHelp}
+              </div>
             </div>
           </>
         )}

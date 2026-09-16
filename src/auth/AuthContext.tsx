@@ -28,6 +28,19 @@ export interface Profile {
    * of the account, not of whatever clock the current request claimed.
    */
   timezone: string
+
+  /** Kept apart from the number so the code stays a choice, not a typo. */
+  phone_cc: string | null
+  phone: string | null
+  postal_code: string | null
+  gender: string | null
+  /** ISO date, or null when they declined to give one. */
+  birth_date: string | null
+  /**
+   * Korea's personal customs clearance code. Optional everywhere and never
+   * required to sign up — most customers have no parcel to clear.
+   */
+  customs_code: string | null
 }
 
 /** The browser's own zone, or Seoul when it will not say. */
@@ -54,6 +67,14 @@ interface SignUpInput {
   language: Lang
   country: string
   city: string
+  phoneCc: string
+  phone: string
+  address: string
+  postalCode: string
+  gender: string
+  birthDate: string
+  /** May be empty; it never blocks a signup. */
+  customsCode: string
 }
 
 function useAuthValue() {
@@ -117,6 +138,13 @@ function useAuthValue() {
           country: input.country,
           city: input.city,
           timezone: deviceTimezone(),
+          phone_cc: input.phoneCc,
+          phone: input.phone,
+          address: input.address,
+          postal_code: input.postalCode,
+          gender: input.gender,
+          birth_date: input.birthDate,
+          customs_code: input.customsCode,
         },
       },
     })
