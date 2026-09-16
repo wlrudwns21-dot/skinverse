@@ -2,7 +2,6 @@ import { AuthProvider } from './auth/AuthContext'
 import { CatalogProvider } from './catalog/CatalogContext'
 import { GatePrompt } from './components/GatePrompt'
 import { Header } from './components/Header'
-import { PaypalModal } from './components/PaypalModal'
 import { Splash } from './components/Splash'
 import { TabBar } from './components/TabBar'
 import { Toast } from './components/Toast'
@@ -80,7 +79,6 @@ function StoreShell() {
         <TabBar />
         <Toast message={st.state.toast} />
         <GatePrompt />
-        <PaypalModal />
       </div>
 
       {/* Over the shell rather than instead of it, so the app is already laid

@@ -177,6 +177,9 @@ export interface Strings {
   tNoPts: string
   tSoldOut: string
   tOrderFailed: string
+  tPayFailed: string
+  tPayCancelled: string
+  tPayUnsure: string
   tLeaveRequested: string
   tLeaveCancelled: string
   tStockShort: (name: string, left: number) => string

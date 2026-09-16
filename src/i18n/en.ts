@@ -75,6 +75,9 @@ export const en: Strings = {
   tAdded: 'Added to bag', tNoPts: 'Not enough points',
   tSoldOut: 'This reward has run out',
   tOrderFailed: 'The order could not be placed. Please check your bag',
+  tPayFailed: 'The payment did not go through. Please try again',
+  tPayCancelled: 'Payment cancelled — your bag is untouched',
+  tPayUnsure: 'Still confirming the payment. Please check your orders shortly',
   tLeaveRequested: 'Your withdrawal request has been received',
   tLeaveCancelled: 'Withdrawal request cancelled',
   tStockShort: (name, left) =>

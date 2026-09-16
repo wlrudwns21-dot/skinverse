@@ -1,5 +1,6 @@
 import { shippingCountries } from '../data/cities'
 import { shipping } from '../data/commerce'
+import { PaypalButtons } from '../components/PaypalButtons'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
@@ -100,10 +101,7 @@ export function CheckoutPayment() {
         </div>
       </div>
 
-      <div onClick={st.openPaypal} style={s('cursor:pointer;margin-top:16px;background:#0B3D91;color:#FFFFFF;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700')}>
-        {st.t.payWith} <i>PayPal</i> · Sandbox
-      </div>
-      <div style={s('text-align:center;font-size:11px;color:#A2957F;margin-top:10px')}>{st.t.testNote}</div>
+      <PaypalButtons />
     </div>
   )
 }

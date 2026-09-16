@@ -609,3 +609,87 @@ export async function cancelAccountDeletion(): Promise<boolean> {
   }
   return (data as Record<string, unknown> | null)?.ok === true
 }
+
+// ── checkout, in three phases ───────────────────────────────────────────────
+
+export interface BegunCheckout {
+  ok: boolean
+  points: number
+  orderNo?: string
+  subtotal?: number
+  shipping?: number
+  pointsUsed?: number
+  total?: number
+  pointsEarned?: number
+  eta?: string
+  reason?: OrderRefusal | 'checkout_already_open'
+  productId?: string
+  available?: number
+}
+
+/**
+ * Reserve the goods and hold the points, before anyone is asked to pay.
+ *
+ * Nothing is sold yet — the order exists as `pending` and can still be voided.
+ * What it does do is take the stock off the shelf, so a customer part-way
+ * through paying cannot have it sold out from under them, and settle on a
+ * total that the payment step then charges without re-deciding anything.
+ *
+ * As with `place_order` before it, no figures are sent. The server prices the
+ * basket it holds.
+ */
+export async function beginCheckout(input: PlaceOrderInput): Promise<BegunCheckout> {
+  if (!supabase) return { ok: false, points: input.currentPoints, reason: 'unavailable' }
+
+  const { data, error } = await supabase.rpc('begin_checkout', {
+    p_ship_method: input.shipMethod,
+    p_ship_name: input.name,
+    p_ship_country: input.country,
+    p_ship_address: input.address,
+    p_use_points: input.usePoints,
+  })
+
+  if (error) {
+    console.error('[skinverse] 결제 준비 실패', error.message)
+    return { ok: false, points: input.currentPoints, reason: 'unavailable' }
+  }
+
+  const row = (data ?? {}) as Record<string, unknown>
+  const num = (v: unknown) => (typeof v === 'number' ? v : undefined)
+
+  return {
+    ok: row.ok === true,
+    points: num(row.points) ?? input.currentPoints,
+    orderNo: typeof row.orderNo === 'string' ? row.orderNo : undefined,
+    subtotal: num(row.subtotal),
+    shipping: num(row.shipping),
+    pointsUsed: num(row.pointsUsed),
+    total: num(row.total),
+    pointsEarned: num(row.pointsEarned),
+    eta: typeof row.eta === 'string' ? row.eta : undefined,
+    reason: typeof row.reason === 'string' ? (row.reason as BegunCheckout['reason']) : undefined,
+    productId: typeof row.productId === 'string' ? row.productId : undefined,
+    available: num(row.available),
+  }
+}
+
+/**
+ * Give it all back.
+ *
+ * Called when the customer walks away from PayPal, or the SDK errors. Stock
+ * returns to the shelf and the points to the balance — leaving either held
+ * would punish someone for changing their mind.
+ */
+export async function voidCheckout(orderNo: string, reason: string): Promise<number | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.rpc('void_checkout', {
+    p_order_no: orderNo,
+    p_reason: reason,
+  })
+  if (error) {
+    console.error('[skinverse] 주문 취소 실패', error.message)
+    return null
+  }
+  const row = (data ?? {}) as Record<string, unknown>
+  return typeof row.pointsReturned === 'number' ? row.pointsReturned : null
+}

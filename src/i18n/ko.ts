@@ -75,6 +75,9 @@ export const ko: Strings = {
   tAdded: '장바구니에 담았어요', tNoPts: '포인트가 부족해요',
   tSoldOut: '이 리워드는 모두 소진되었어요',
   tOrderFailed: '주문을 완료하지 못했어요. 장바구니를 확인해주세요',
+  tPayFailed: '결제를 완료하지 못했어요. 다시 시도해주세요',
+  tPayCancelled: '결제를 취소했어요. 장바구니는 그대로 있어요',
+  tPayUnsure: '결제 결과를 확인 중이에요. 주문 내역에서 다시 확인해주세요',
   tLeaveRequested: '탈퇴 요청이 접수되었어요. 확인 후 처리해드립니다',
   tLeaveCancelled: '탈퇴 요청을 취소했어요',
   tStockShort: (name, left) =>

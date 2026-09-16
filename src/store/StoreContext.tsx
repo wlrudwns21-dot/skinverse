@@ -51,6 +51,7 @@ import { describeAll } from '../insights/describe'
 import { insightT } from '../i18n/insights'
 import { strings, type Strings } from '../i18n'
 import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
+import { capturePaypalOrder, openPaypalOrder } from '../payments/paypal'
 import * as remote from './remote'
 import {
   initialState,
@@ -66,7 +67,6 @@ import {
 const SCAN_TICK_MS = 70
 const SCAN_TICK_STEP = 2
 const TOAST_MS = 2600
-const PAYPAL_MS = 1500
 
 export interface ProductView {
   id: string
@@ -186,7 +186,19 @@ function useStoreValue() {
   stateRef.current = state
   const scanTimer = useRef<ReturnType<typeof setInterval> | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const payTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /**
+   * The order reserved but not yet paid for.
+   *
+   * A ref rather than state: it lives between the PayPal button's callbacks,
+   * which the SDK holds from the moment it renders — re-rendering the checkout
+   * must not hand them a stale order number.
+   */
+  const pendingOrder = useRef<{
+    orderNo: string
+    total: number
+    eta: string
+    pointsEarned: number
+  } | null>(null)
 
   const dailyRef = useRef(dailyMissions)
   dailyRef.current = dailyMissions
@@ -226,7 +238,6 @@ function useStoreValue() {
     () => () => {
       if (scanTimer.current) clearInterval(scanTimer.current)
       if (toastTimer.current) clearTimeout(toastTimer.current)
-      if (payTimer.current) clearTimeout(payTimer.current)
     },
     [],
   )
@@ -935,60 +946,129 @@ function useStoreValue() {
 
   // ── checkout ──────────────────────────────────────────────────────────────
 
-  const pay = useCallback(() => {
-    setState((s) => ({ ...s, ppBusy: true }))
-    payTimer.current = setTimeout(() => {
-      void (async () => {
-        const s = stateRef.current
+  /**
+   * Phase one: reserve, then ask PayPal to open an order.
+   *
+   * Returns PayPal's order id for the SDK, or null when we could not get that
+   * far. Nothing is sold yet — the stock and the points are held against a
+   * `pending` order that `abandonPayment` can give back.
+   */
+  const beginPayment = useCallback(async (): Promise<string | null> => {
+    const s = stateRef.current
+    setState((cur) => ({ ...cur, ppBusy: true }))
 
-        // No figures are sent: what this order costs is the server's to decide,
-        // from the basket it holds and the prices in its own tables.
-        const res = await remote.placeOrder({
-          shipMethod: s.ship,
-          name: s.name,
-          country: s.country,
-          address: s.addr,
-          usePoints: s.usePoints,
-          currentPoints: s.points,
-        })
+    // No figures are sent: what this order costs is the server's to decide,
+    // from the basket it holds and the prices in its own tables.
+    const res = await remote.beginCheckout({
+      shipMethod: s.ship,
+      name: s.name,
+      country: s.country,
+      address: s.addr,
+      usePoints: s.usePoints,
+      currentPoints: s.points,
+    })
 
-        if (!res.ok) {
-          setState((cur) => ({ ...cur, ppBusy: false, pp: false, points: res.points }))
+    if (!res.ok || !res.orderNo) {
+      setState((cur) => ({ ...cur, ppBusy: false, points: res.points }))
 
-          // Someone else took the last one while this basket sat open. Name the
-          // product and how many are left — "주문 실패" tells them nothing they
-          // can act on, and the bag is still exactly as they left it.
-          if (res.reason === 'insufficient_stock') {
-            const sold = productsRef.current.find((p) => p.id === res.productId)
-            toastMsg(tRef.current.tStockShort(sold?.name ?? '', res.available ?? 0))
-            void catalogRef.current()
-            return
-          }
+      // Someone else took the last one while this basket sat open. Name the
+      // product and how many are left — "주문 실패" tells them nothing they
+      // can act on, and the bag is still exactly as they left it.
+      if (res.reason === 'insufficient_stock') {
+        const sold = productsRef.current.find((p) => p.id === res.productId)
+        toastMsg(tRef.current.tStockShort(sold?.name ?? '', res.available ?? 0))
+        void catalogRef.current()
+        return null
+      }
+      toastMsg(tRef.current.tOrderFailed)
+      return null
+    }
 
-          toastMsg(tRef.current.tOrderFailed)
-          return
-        }
+    pendingOrder.current = {
+      orderNo: res.orderNo,
+      total: res.total ?? 0,
+      eta: res.eta ?? '',
+      pointsEarned: res.pointsEarned ?? 0,
+    }
+    setState((cur) => ({ ...cur, points: res.points }))
 
-        // The receipt shows what was actually written down, not what this
-        // screen worked out a moment ago.
-        setState((cur) => ({
-          ...cur,
-          ppBusy: false,
-          pp: false,
-          chkStep: 3,
-          cart: {},
-          points: res.points,
-          order: {
-            no: res.orderNo ?? '',
-            total: usd(res.total ?? 0),
-            earn: res.pointsEarned ?? 0,
-            eta: res.eta ?? '',
-          },
-        }))
-        void auth.refreshProfile()
-      })()
-    }, PAYPAL_MS)
-  }, [auth])
+    try {
+      return await openPaypalOrder(res.orderNo)
+    } catch {
+      // PayPal would not open an order, so nothing can be paid against this
+      // reservation. Give the stock and the points straight back rather than
+      // leaving them held by an order that can never complete.
+      await remote.voidCheckout(res.orderNo, 'paypal_create_failed')
+      pendingOrder.current = null
+      setState((cur) => ({ ...cur, ppBusy: false }))
+      void auth.refreshProfile()
+      void catalogRef.current()
+      toastMsg(tRef.current.tPayFailed)
+      return null
+    }
+  }, [auth, toastMsg])
+
+  /** Phase two: the customer approved, so take the money and settle. */
+  const capturePayment = useCallback(async (): Promise<void> => {
+    const held = pendingOrder.current
+    if (!held) return
+
+    setState((cur) => ({ ...cur, ppBusy: true }))
+    try {
+      const res = await capturePaypalOrder(held.orderNo)
+      if (!res.ok) {
+        setState((cur) => ({ ...cur, ppBusy: false }))
+        toastMsg(tRef.current.tPayFailed)
+        return
+      }
+
+      pendingOrder.current = null
+      // The receipt shows what was actually written down, not what this screen
+      // worked out a moment ago.
+      setState((cur) => ({
+        ...cur,
+        ppBusy: false,
+        pp: false,
+        chkStep: 3,
+        cart: {},
+        order: {
+          no: held.orderNo,
+          total: usd(held.total),
+          earn: res.pointsEarned || held.pointsEarned,
+          eta: held.eta,
+        },
+      }))
+      void auth.refreshProfile()
+      void catalogRef.current()
+    } catch {
+      // The money may or may not have moved. Say nothing definite, and leave
+      // the order pending — the webhook settles it if the capture succeeded.
+      setState((cur) => ({ ...cur, ppBusy: false }))
+      toastMsg(tRef.current.tPayUnsure)
+    }
+  }, [auth, toastMsg])
+
+  /**
+   * Phase three: they walked away, or PayPal errored.
+   *
+   * Putting the reservation back is not optional politeness — stock held by an
+   * abandoned checkout is stock nobody else can buy, and `begin_checkout`
+   * allows one open order at a time, so this customer could not try again.
+   */
+  const abandonPayment = useCallback(
+    async (reason: string): Promise<void> => {
+      const held = pendingOrder.current
+      pendingOrder.current = null
+      setState((cur) => ({ ...cur, ppBusy: false }))
+      if (!held) return
+
+      await remote.voidCheckout(held.orderNo, reason)
+      void auth.refreshProfile()
+      void catalogRef.current()
+      if (reason === 'customer_cancelled') toastMsg(tRef.current.tPayCancelled)
+    },
+    [auth, toastMsg],
+  )
 
   // ── derived ───────────────────────────────────────────────────────────────
 
@@ -1568,9 +1648,9 @@ function useStoreValue() {
     togglePoints: () => setState((s) => ({ ...s, usePoints: !s.usePoints })),
     togBg: state.usePoints ? '#2E6B58' : '#D8CFBF',
     togLeft: state.usePoints ? '21px' : '3px',
-    openPaypal: () => setState((s) => ({ ...s, pp: true })),
-    closePaypal: () => setState((s) => ({ ...s, pp: false })),
-    pay,
+    beginPayment,
+    capturePayment,
+    abandonPayment,
 
     setCity: (value: string) => {
       setState((s) => ({ ...s, city: value }))
