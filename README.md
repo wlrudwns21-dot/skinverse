@@ -268,6 +268,42 @@ react-router가 처리합니다.
 **Supabase Site URL** — Authentication > URL Configuration의 Site URL을 배포 도메인으로
 바꿔야 이메일 인증 링크가 localhost 대신 실제 사이트를 가리킵니다.
 
+## 보안 헤더
+
+`vercel.json`이 모든 응답에 헤더를 붙입니다. JSON에는 주석을 달 수 없어 이유를
+여기 적어 둡니다.
+
+| 헤더 | 하는 일 |
+| --- | --- |
+| `Content-Security-Policy` | 스크립트는 `'self'`만. `unsafe-inline`도 `unsafe-eval`도 없습니다 |
+| `frame-ancestors 'none'` + `X-Frame-Options` | 클릭재킹 — 우리 화면을 남의 페이지에 투명하게 겹쳐 놓는 공격 |
+| `Strict-Transport-Security` | 1년간 HTTPS 강제. `preload`는 뺐습니다 — 되돌리기 어려운 약속이라 직접 결정하실 일입니다 |
+| `Permissions-Policy` | 카메라·위치는 `self`(스캔과 날씨에 필요), 마이크·USB 등은 완전 차단 |
+| `Referrer-Policy` | 외부로 나갈 때 전체 경로 대신 출처만 보냄 |
+
+CSP에서 느슨한 곳은 두 군데뿐이고, 둘 다 의도한 것입니다:
+
+- `style-src`에 `'unsafe-inline'` — Google Fonts 스타일시트 때문입니다. CSS 주입은
+  스크립트 주입과 위험도가 다르고, 정작 중요한 `script-src`는 조여 두었습니다.
+- `img-src https:` — Perfect Corp이 돌려주는 마스크 이미지가 서명된 CDN URL이고
+  그 호스트가 고정돼 있지 않습니다. 이미지는 실행되지 않습니다.
+
+빌드를 이 헤더 그대로 서빙하면서 홈·`/admin` 두 화면을 띄워 CSP 위반 0건,
+Marcellus 폰트 로드까지 확인했습니다.
+
+## 손으로 켜야 하는 것
+
+코드나 마이그레이션으로 처리할 수 없고 **대시보드에서 직접** 해야 하는 항목입니다.
+
+1. **Authentication > Policies > Password**
+   - *Leaked password protection* 켜기 — HaveIBeenPwned 대조. 지금은 꺼져 있어
+     `password123` 같은 유출된 비밀번호로도 가입이 됩니다.
+   - 최소 길이를 **8**로. 기본값 6이라 화면(8자)과 서버가 어긋나 있습니다.
+
+2. **Edge Functions > analyze-skin > Secrets**
+   - `ALLOWED_ORIGINS`에 실제 배포 도메인을 넣어주세요 (쉼표로 여러 개 가능).
+     비워 두면 `*.vercel.app`과 localhost까지 허용하는 폭넓은 기본값으로 동작합니다.
+
 ## 샘플 데이터 교체
 
 실제 데이터로 한 번에 바꿀 수 있도록 **모든 더미 데이터는 `src/data/` 안에만**

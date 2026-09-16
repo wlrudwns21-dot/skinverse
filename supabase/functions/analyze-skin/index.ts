@@ -41,25 +41,73 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png']
 const LIMIT_OVERRIDE = Number(Deno.env.get('ANALYSIS_MEMBER_DAILY_LIMIT') ?? '')
 const DEFAULT_DAILY_LIMIT = 1
 
-const CORS = {
-  'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') ?? '*',
-  // Listed generously on purpose. A header the browser intends to send that the
-  // preflight does not permit kills the request in the browser, before the
-  // handler runs — which looks identical to the function failing, except
-  // nothing server-side records it. `authorization` must be named explicitly:
-  // the `*` wildcard deliberately does not cover it.
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-api-version, ' +
-    'x-region, accept-profile, content-profile, x-requested-with',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Max-Age': '86400',
+/**
+ * Which origins may call this from a browser.
+ *
+ * This used to fall back to `*` when the environment variable was unset, which
+ * is what it has actually been running as. That is not the hole it looks like —
+ * the endpoint demands a Bearer token, and a third-party page cannot read this
+ * origin's stored session, so the worst it bought an attacker was the ability
+ * to spend their own quota from their own site. But an open door that happens
+ * to lead nowhere is still an open door, and `*` is not a decision anyone made.
+ *
+ * `ALLOWED_ORIGINS` (comma-separated) is authoritative when set. Until it is,
+ * the fallback is deployment targets this repo actually has — the Vercel domain
+ * and a local dev server — rather than everything.
+ */
+const CONFIGURED_ORIGINS = (
+  Deno.env.get('ALLOWED_ORIGINS') ??
+  Deno.env.get('ALLOWED_ORIGIN') ??
+  ''
+)
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean)
+
+const DEV_ORIGIN = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/
+/**
+ * Broader than one domain because the production hostname is not recorded
+ * anywhere in this repo, and pinning it to a guess would take the storefront
+ * offline. Narrow it by setting ALLOWED_ORIGINS — that is the whole point of
+ * the variable being checked first.
+ */
+const VERCEL_ORIGIN = /^https:\/\/[a-z0-9][a-z0-9-]*\.vercel\.app$/
+
+function allowedOrigin(origin: string | null): string | null {
+  if (!origin) return null
+  if (CONFIGURED_ORIGINS.length > 0) {
+    return CONFIGURED_ORIGINS.includes(origin) ? origin : null
+  }
+  return DEV_ORIGIN.test(origin) || VERCEL_ORIGIN.test(origin) ? origin : null
 }
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...CORS, 'Content-Type': 'application/json' },
-  })
+/**
+ * Headers for one request.
+ *
+ * Built per call rather than once at module scope, because the answer now
+ * depends on who is asking — a shared object would hand the second caller the
+ * first caller's origin.
+ */
+function corsFor(req: Request): Record<string, string> {
+  const headers: Record<string, string> = {
+    // Listed generously on purpose. A header the browser intends to send that
+    // the preflight does not permit kills the request in the browser, before
+    // the handler runs — which looks identical to the function failing, except
+    // nothing server-side records it. `authorization` must be named explicitly:
+    // the `*` wildcard deliberately does not cover it.
+    'Access-Control-Allow-Headers':
+      'authorization, x-client-info, apikey, content-type, x-supabase-api-version, ' +
+      'x-region, accept-profile, content-profile, x-requested-with',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+    // Without this a cache could serve one origin's allow header to another.
+    Vary: 'Origin',
+  }
+
+  const origin = allowedOrigin(req.headers.get('Origin'))
+  if (origin) headers['Access-Control-Allow-Origin'] = origin
+  return headers
+}
 
 /** Local conditions at the time of the scan, as the app reports them. */
 interface Weather {
@@ -93,7 +141,22 @@ function readWeather(field: FormDataEntryValue | null): Weather | null {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
+  const cors = corsFor(req)
+  const json = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    })
+
+  if (req.method === 'OPTIONS') {
+    // A preflight from an origin that is not on the list gets no allow header,
+    // so the browser refuses the real request before it is ever sent.
+    const permitted = 'Access-Control-Allow-Origin' in cors
+    return new Response(permitted ? 'ok' : 'origin_not_allowed', {
+      status: permitted ? 200 : 403,
+      headers: cors,
+    })
+  }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
 
   const url = Deno.env.get('SUPABASE_URL')
