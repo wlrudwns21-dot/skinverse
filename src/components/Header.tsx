@@ -50,8 +50,8 @@ export function Header() {
             {st.t.myPage}
           </div>
         ) : (
-          <div onClick={() => st.goAuth('signup')} style={s('cursor:pointer;background:#2E6B58;color:#F3EFE6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0')}>
-            {st.a.signUp}
+          <div onClick={() => st.goAuth('login')} style={s('cursor:pointer;background:#2E6B58;color:#F3EFE6;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0')}>
+            {st.a.logIn}
           </div>
         )}
       </div>

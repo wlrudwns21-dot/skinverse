@@ -132,7 +132,7 @@ export interface StoreState {
 export const initialState: StoreState = {
   screen: 'home',
   returnTo: 'home',
-  authMode: 'signup',
+  authMode: 'login',
   scanStep: 'intro',
   progress: 0,
   scanned: false,

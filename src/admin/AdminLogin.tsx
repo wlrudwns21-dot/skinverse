@@ -8,6 +8,32 @@ const field =
   'width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none'
 const label = 'font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px'
 
+/**
+ * Where the note survives an email confirmation.
+ *
+ * Signing up and applying are two steps with a mail round trip in between, so
+ * what they typed about themselves would otherwise be lost by the time they
+ * come back and the application is actually filed.
+ */
+const NOTE_KEY = 'skinverse.admin.applyNote'
+
+const readNote = (): string => {
+  try {
+    return localStorage.getItem(NOTE_KEY) ?? ''
+  } catch {
+    return ''
+  }
+}
+
+const keepNote = (note: string) => {
+  try {
+    if (note) localStorage.setItem(NOTE_KEY, note)
+    else localStorage.removeItem(NOTE_KEY)
+  } catch {
+    /* Private mode. The note is a convenience, not the application. */
+  }
+}
+
 function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div style={s('min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#EFEBE2')}>
@@ -33,11 +59,15 @@ export function AdminLogin() {
   const admin = useAdmin()
   const auth = useAuth()
 
+  const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [name, setName] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const [note, setNote] = useState('')
+  const [sentTo, setSentTo] = useState('')
+  const [note, setNote] = useState(readNote)
 
   if (admin.authLoading || (admin.isSignedIn && admin.role === undefined)) {
     return (
@@ -120,6 +150,7 @@ export function AdminLogin() {
             admin.applying
               ? undefined
               : () => {
+                  keepNote('')
                   void admin.apply(note.trim())
                 }
           }
@@ -135,23 +166,120 @@ export function AdminLogin() {
     )
   }
 
+  // The account was created but the mail has not been answered yet. Nothing to
+  // apply with until they confirm — the application needs a session to sign it.
+  if (sentTo) {
+    return (
+      <Frame>
+        <div style={s('font-size:15px;font-weight:700')}>이메일을 확인해주세요</div>
+        <div style={s('font-size:13px;color:#6E6252;margin-top:8px;line-height:1.6')}>
+          <b>{sentTo}</b> 로 인증 메일을 보냈습니다. 메일의 링크를 누른 뒤 이 화면에서 로그인하면
+          운영자 신청을 이어서 하실 수 있습니다.
+        </div>
+        <div
+          onClick={() => {
+            setSentTo('')
+            setMode('login')
+            setPassword('')
+            setConfirm('')
+          }}
+          style={s('cursor:pointer;margin-top:20px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700')}
+        >
+          로그인하러 가기
+        </div>
+        <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px')}>← 스토어로 돌아가기</a>
+      </Frame>
+    )
+  }
+
+  const isSignUp = mode === 'signup'
+
   const submit = async () => {
     setError('')
     if (!/^\S+@\S+\.\S+$/.test(email)) return setError('올바른 이메일 주소를 입력해주세요')
     if (!password) return setError('비밀번호를 입력해주세요')
 
+    if (!isSignUp) {
+      setBusy(true)
+      const res = await auth.signIn(email, password)
+      setBusy(false)
+      if (!res.ok) setError('이메일 또는 비밀번호가 올바르지 않습니다')
+      return
+    }
+
+    if (password.length < 8) return setError('비밀번호는 8자 이상이어야 합니다')
+    if (password !== confirm) return setError('비밀번호가 일치하지 않습니다')
+    if (!name.trim()) return setError('이름을 입력해주세요')
+
     setBusy(true)
-    const res = await auth.signIn(email, password)
+    // An operator account is an account, nothing more — no address, no birth
+    // date. The console has no use for them and asking would be collecting
+    // personal data for no reason.
+    const res = await auth.signUp({ email, password, name: name.trim() })
     setBusy(false)
-    if (!res.ok) setError('이메일 또는 비밀번호가 올바르지 않습니다')
+
+    if (!res.ok) {
+      setError(
+        res.error?.toLowerCase().includes('already')
+          ? '이미 가입된 이메일입니다. 로그인해주세요.'
+          : '가입에 실패했습니다. 잠시 후 다시 시도해주세요',
+      )
+      return
+    }
+
+    // Confirmation on: they leave and come back, and the apply form above is
+    // waiting for them with the note restored. Confirmation off: they are
+    // already signed in, so file it now and they land on 승인 대기 중.
+    if (res.needsEmailConfirm) {
+      keepNote(note.trim())
+      setSentTo(email)
+    } else {
+      keepNote('')
+      void admin.apply(note.trim())
+    }
   }
 
   return (
     <Frame>
-      <div style={s('font-size:15px;font-weight:700')}>운영자 로그인</div>
-      <div style={s('font-size:12.5px;color:#8A7D6C;margin-top:6px')}>관리자로 등록된 계정만 접근할 수 있습니다.</div>
+      <div style={s('display:flex;gap:6px;background:#F3EFE6;border-radius:999px;padding:4px;margin-bottom:18px')}>
+        {(['login', 'signup'] as const).map((m) => (
+          <div
+            key={m}
+            onClick={() => {
+              setMode(m)
+              setError('')
+            }}
+            style={s(
+              'cursor:pointer;flex:1;text-align:center;border-radius:999px;padding:9px 0;font-size:12.5px;font-weight:700;' +
+                (mode === m ? 'background:#FFFFFF;color:#221C15;box-shadow:0 1px 3px rgba(60,45,25,0.12)' : 'color:#8A7D6C'),
+            )}
+          >
+            {m === 'login' ? '로그인' : '운영자 가입'}
+          </div>
+        ))}
+      </div>
+
+      <div style={s('font-size:15px;font-weight:700')}>{isSignUp ? '운영자 계정 만들기' : '운영자 로그인'}</div>
+      <div style={s('font-size:12.5px;color:#8A7D6C;margin-top:6px;line-height:1.6')}>
+        {isSignUp
+          ? '계정을 만든 뒤 운영자 신청이 접수됩니다. 마스터 관리자가 승인해야 콘솔을 이용할 수 있습니다.'
+          : '관리자로 등록된 계정만 접근할 수 있습니다.'}
+      </div>
 
       <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:18px')}>
+        {isSignUp && (
+          <div>
+            <div style={s(label)}>이름</div>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') void submit() }}
+              placeholder="홍길동"
+              style={s(field)}
+            />
+          </div>
+        )}
+
         <div>
           <div style={s(label)}>이메일</div>
           <input
@@ -167,14 +295,54 @@ export function AdminLogin() {
           <div style={s(label)}>비밀번호</div>
           <input
             type="password"
-            autoComplete="current-password"
+            autoComplete={isSignUp ? 'new-password' : 'current-password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') void submit() }}
+            placeholder={isSignUp ? '8자 이상' : undefined}
             style={s(field)}
           />
         </div>
+
+        {isSignUp && (
+          <>
+            <div>
+              <div style={s(label)}>비밀번호 확인</div>
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') void submit() }}
+                style={s(field)}
+              />
+            </div>
+            <div>
+              <div style={s(label)}>
+                소속 · 담당 업무 <span style={s('color:#A2957F;font-weight:600')}>· 선택</span>
+              </div>
+              <input
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') void submit() }}
+                placeholder="예: 마케팅팀 / CS 담당"
+                style={s(field)}
+              />
+              <div style={s('font-size:11px;color:#A2957F;line-height:1.5;margin-top:5px')}>
+                승인하는 사람이 누구인지 알아볼 수 있도록 적어주세요.
+              </div>
+            </div>
+          </>
+        )}
       </div>
+
+      {isSignUp && (
+        <div style={s('background:#F8F5EF;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:#8A7D6C;line-height:1.5')}>
+          모든 신청은 <b>일반 관리자</b>로 접수됩니다. 마스터 권한은 승인 후 마스터 관리자가 부여합니다.
+          <br />
+          이 계정은 스토어 회원가입과는 <b>별개</b>입니다.
+        </div>
+      )}
 
       {error && (
         <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;color:#A64B32;border-radius:12px;padding:11px 14px;margin-top:12px;font-size:12.5px')}>
@@ -186,10 +354,23 @@ export function AdminLogin() {
         onClick={busy ? undefined : submit}
         style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:14px;text-align:center;font-size:14px;font-weight:700;opacity:${busy ? '.6' : '1'}`)}
       >
-        {busy ? '확인 중…' : '로그인'}
+        {busy ? '확인 중…' : isSignUp ? '가입하고 신청하기' : '로그인'}
       </div>
 
-      <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px')}>← 스토어로 돌아가기</a>
+      <div style={s('text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px')}>
+        {isSignUp ? '이미 운영자 계정이 있으신가요?' : '아직 운영자 계정이 없으신가요?'}{' '}
+        <span
+          onClick={() => {
+            setMode(isSignUp ? 'login' : 'signup')
+            setError('')
+          }}
+          style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+        >
+          {isSignUp ? '로그인' : '운영자 가입'}
+        </span>
+      </div>
+
+      <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:12px')}>← 스토어로 돌아가기</a>
     </Frame>
   )
 }

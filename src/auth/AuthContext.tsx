@@ -60,21 +60,26 @@ export interface AuthResult {
   error?: string
 }
 
+/**
+ * Only the first three are an account. The rest describe a shopper, and the
+ * operator console signs people up without any of them — an admin has nothing
+ * to ship and no reason to hand over a birth date to get a console login.
+ */
 interface SignUpInput {
   email: string
   password: string
   name: string
-  language: Lang
-  country: string
-  city: string
-  phoneCc: string
-  phone: string
-  address: string
-  postalCode: string
-  gender: string
-  birthDate: string
+  language?: Lang
+  country?: string
+  city?: string
+  phoneCc?: string
+  phone?: string
+  address?: string
+  postalCode?: string
+  gender?: string
+  birthDate?: string
   /** May be empty; it never blocks a signup. */
-  customsCode: string
+  customsCode?: string
 }
 
 function useAuthValue() {
@@ -134,17 +139,17 @@ function useAuthValue() {
       options: {
         data: {
           name: input.name,
-          language: input.language,
-          country: input.country,
-          city: input.city,
+          language: input.language ?? 'ko',
+          country: input.country ?? '',
+          city: input.city ?? '',
           timezone: deviceTimezone(),
-          phone_cc: input.phoneCc,
-          phone: input.phone,
-          address: input.address,
-          postal_code: input.postalCode,
-          gender: input.gender,
-          birth_date: input.birthDate,
-          customs_code: input.customsCode,
+          phone_cc: input.phoneCc ?? '',
+          phone: input.phone ?? '',
+          address: input.address ?? '',
+          postal_code: input.postalCode ?? '',
+          gender: input.gender ?? '',
+          birth_date: input.birthDate ?? '',
+          customs_code: input.customsCode ?? '',
         },
       },
     })

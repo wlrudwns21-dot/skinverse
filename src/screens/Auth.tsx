@@ -156,7 +156,7 @@ export function Auth() {
             autoComplete={isSignUp ? 'new-password' : 'current-password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder={a.passwordHint}
+            placeholder={isSignUp ? a.passwordHint : undefined}
             style={s(field)}
           />
         </div>
@@ -321,18 +321,42 @@ export function Auth() {
         {busy ? a.submitting : isSignUp ? a.signUp : a.logIn}
       </div>
 
-      <div style={s('text-align:center;font-size:12.5px;color:#8A7D6C;margin-top:16px')}>
-        {isSignUp ? a.hasAccount : a.noAccount}{' '}
-        <span
-          onClick={() => {
-            setError('')
-            st.goAuth(isSignUp ? 'login' : 'signup')
-          }}
-          style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
-        >
-          {isSignUp ? a.logIn : a.signUp}
-        </span>
-      </div>
+      {/* On the login screen signing up is a destination, not a footnote: the
+          form asks for a lot, so it gets its own page rather than unfolding
+          under someone who only came here to log in. */}
+      {!isSignUp && (
+        <>
+          <div style={s('display:flex;align-items:center;gap:10px;margin-top:20px;color:#A2957F;font-size:11.5px')}>
+            <div style={s('flex:1;height:1px;background:#E4DCCB')} />
+            {a.noAccount}
+            <div style={s('flex:1;height:1px;background:#E4DCCB')} />
+          </div>
+          <div
+            onClick={() => {
+              setError('')
+              st.goAuth('signup')
+            }}
+            style={s('cursor:pointer;margin-top:12px;background:#FFFFFF;border:1.5px solid #2E6B58;color:#2E6B58;border-radius:999px;padding:14px;text-align:center;font-size:14px;font-weight:700')}
+          >
+            {a.signUp}
+          </div>
+        </>
+      )}
+
+      {isSignUp && (
+        <div style={s('text-align:center;font-size:12.5px;color:#8A7D6C;margin-top:16px')}>
+          {a.hasAccount}{' '}
+          <span
+            onClick={() => {
+              setError('')
+              st.goAuth('login')
+            }}
+            style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+          >
+            {a.logIn}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

@@ -588,8 +588,11 @@ function useStoreValue() {
 
   const go = useCallback((screen: Screen) => () => setState((s) => ({ ...s, screen })), [])
 
+  // Login is the default because most arrivals at this screen already have an
+  // account; the ones who do not are one tap away, and a returning member
+  // should not have to dismiss a signup form to get back in.
   const goAuth = useCallback(
-    (mode: AuthMode = 'signup') =>
+    (mode: AuthMode = 'login') =>
       setState((s) => ({
         ...s,
         screen: 'auth',
