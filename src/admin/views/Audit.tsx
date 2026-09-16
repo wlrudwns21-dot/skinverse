@@ -11,6 +11,14 @@ const ACTIONS: Record<string, { label: string; tone: string; bg: string }> = {
   'operator.change': { label: '권한 변경', tone: '#A64B32', bg: '#FBE9E3' },
   'operator.remove': { label: '운영자 삭제', tone: '#A64B32', bg: '#FBE9E3' },
   'order.update': { label: '주문 처리', tone: '#4A4234', bg: '#F1ECE2' },
+  'order.paid': { label: '결제 완료', tone: '#2E6B58', bg: '#EAF1EC' },
+  'order.void': { label: '주문 취소', tone: '#8A7D6C', bg: '#F1EEE6' },
+  // The four below all mean money left again. Loud on purpose.
+  'order.refunded': { label: '환불', tone: '#B4622F', bg: '#FBEFE3' },
+  'order.reversed': { label: '지급거절(분쟁)', tone: '#A33B3B', bg: '#FAE4E4' },
+  'order.payment_failed': { label: '결제 실패', tone: '#A64B32', bg: '#FBE9E3' },
+  'payment.dispute': { label: '분쟁 접수', tone: '#A33B3B', bg: '#FAE4E4' },
+  'payment.orphaned': { label: '결제 불일치', tone: '#A33B3B', bg: '#FAE4E4' },
 }
 
 const num = (v: unknown) => (typeof v === 'number' ? v : null)
@@ -57,6 +65,42 @@ function describe(e: AuditEntry): string {
   if (e.action === 'order.update') {
     const parts = [movement(d, 'status'), movement(d, 'tracking')].filter(Boolean)
     return parts.length ? parts.join(' · ') : '변경 없음'
+  }
+
+  if (e.action === 'order.paid') {
+    return `$${num(d.total) ?? '?'} 결제 · ${num(d.pointsEarned) ?? 0} P 적립`
+  }
+
+  /*
+   * Money going back out.
+   *
+   * This is the line an operator acts on, so it says what still needs doing
+   * rather than only what happened: points that could not be reclaimed are a
+   * decision for a human, and stock that was not returned is a shelf that is
+   * still wrong.
+   */
+  if (
+    e.action === 'order.refunded' ||
+    e.action === 'order.reversed' ||
+    e.action === 'order.payment_failed'
+  ) {
+    const parts = [
+      `$${num(d.amount) ?? '?'} 반환`,
+      d.full === false ? `부분 (누적 $${num(d.refundedTotal) ?? '?'} / $${num(d.orderTotal) ?? '?'})` : '전액',
+    ]
+    if (num(d.pointsClawedBack)) parts.push(`${num(d.pointsClawedBack)} P 회수`)
+    if (num(d.pointsReturned)) parts.push(`사용 ${num(d.pointsReturned)} P 반환`)
+    if (num(d.pointsShort)) parts.push(`⚠ ${num(d.pointsShort)} P 회수 불가 (잔액 부족)`)
+    parts.push(d.stockReturned === true ? '재고 복구됨' : '⚠ 재고 수동 조정 필요')
+    return parts.join(' · ')
+  }
+
+  if (e.action === 'payment.dispute') {
+    return `${str(d.status) ?? '?'} · 사유 ${str(d.reason) ?? '?'} · $${str(d.amount) ?? '?'} · 기한 내 대응 필요`
+  }
+
+  if (e.action === 'payment.orphaned') {
+    return `취소된 주문에 $${num(d.total) ?? '?'} 입금 · 환불 필요`
   }
 
   return JSON.stringify(d)

@@ -18,12 +18,20 @@ import {
  *   create   tell PayPal what to charge — for an amount read out of our own
  *            database, never one the browser sent
  *   capture  take the money, then settle the order
- *   webhook  the same settlement, triggered by PayPal instead of the browser
+ *   webhook  the same settlement, triggered by PayPal instead of the browser,
+ *            and everything that happens to the money afterwards
  *
  * The webhook is not a nicety. A customer who pays and immediately closes the
  * tab never reaches step two, and without the webhook their money is taken and
  * their order stays pending for ever. Both paths call the same idempotent
  * `settle_checkout`, so whichever arrives first wins and the other is a no-op.
+ *
+ * Money also goes back out, and only the webhook ever hears about it: a refund
+ * issued from PayPal's own dashboard, a chargeback the bank forces, a capture
+ * PayPal later denies. Those arrive here and nowhere else — there is no
+ * browser involved and no one logged in — so if this endpoint ignores them the
+ * order says `paid` for ever and the customer keeps points they earned on a
+ * purchase that has been unwound.
  *
  * What this never does is trust a number from the client. The browser sends an
  * order number; everything financial is looked up.
@@ -45,6 +53,91 @@ interface OrderRow {
   total: string
   status: string
   payment_order_id: string | null
+}
+
+/** A Supabase client with the service key. Narrowed to what this file uses. */
+type Admin = ReturnType<typeof createClient>
+
+/**
+ * Money leaving again, and what each event means for the order.
+ *
+ * REFUNDED  we (or PayPal on our behalf) sent it back — possibly only part
+ * REVERSED  the bank pulled it back; a dispute we lost
+ * DENIED    the capture never really completed after all
+ *
+ * The distinction matters downstream: `reverse_checkout` returns spent points
+ * on a refund but not on a chargeback, and puts stock back only on a denial.
+ */
+const REVERSALS: Record<string, 'refund' | 'reversal' | 'denied'> = {
+  'PAYMENT.CAPTURE.REFUNDED': 'refund',
+  'PAYMENT.CAPTURE.REVERSED': 'reversal',
+  'PAYMENT.CAPTURE.DENIED': 'denied',
+}
+
+const str = (v: unknown): string | null => (typeof v === 'string' && v ? v : null)
+
+/**
+ * The PayPal capture id this event is about.
+ *
+ * On a capture event the resource *is* the capture, so `resource.id` is it. On
+ * a refund the resource is the refund, and the capture it undoes is only
+ * reachable through the HATEOAS `up` link — which is why this bothers with
+ * link parsing at all.
+ */
+function captureIdOf(resource: Record<string, unknown>, isRefund: boolean): string | null {
+  if (!isRefund) return str(resource.id)
+
+  const links = (resource.links ?? []) as Record<string, unknown>[]
+  for (const link of links) {
+    if (String(link.rel ?? '').toLowerCase() !== 'up') continue
+    const href = str(link.href)
+    if (!href) continue
+    const last = href.split('?')[0].split('/').filter(Boolean).pop()
+    if (last) return last
+  }
+  return null
+}
+
+/**
+ * Which of our orders is this about?
+ *
+ * `custom_id` is what we set at creation and is the direct answer when PayPal
+ * carries it through. It does not always survive onto a refund resource, so
+ * the fallback walks back through the capture id we recorded at settlement.
+ * Returning null is a real outcome — an event for a payment that is not ours
+ * must be acknowledged and dropped, not retried for ever.
+ */
+async function resolveOrderNo(
+  admin: Admin,
+  resource: Record<string, unknown>,
+  isRefund: boolean,
+): Promise<string | null> {
+  const direct = str(resource.custom_id) ?? str(resource.invoice_id)
+  if (direct) return direct
+
+  const captureId = captureIdOf(resource, isRefund)
+  if (!captureId) return null
+
+  const { data, error } = await admin
+    .from('orders')
+    .select('order_no')
+    .eq('payment_capture_id', captureId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('could not look up the order by capture id', error.message)
+    throw new Error('lookup_failed')
+  }
+  return str((data as { order_no?: unknown } | null)?.order_no)
+}
+
+/** The refunded amount, or null for "all of it". */
+function amountOf(resource: Record<string, unknown>): number | null {
+  const amount = (resource.amount ?? {}) as Record<string, unknown>
+  const raw = str(amount.value)
+  if (!raw) return null
+  const n = Number(raw)
+  return Number.isFinite(n) && n >= 0 ? n : null
 }
 
 Deno.serve(async (req) => {
@@ -99,25 +192,125 @@ Deno.serve(async (req) => {
     const type = String(event.event_type ?? '')
     const resource = (event.resource ?? {}) as Record<string, unknown>
 
+    // ── a dispute was opened or moved ──────────────────────────────────────
+    //
+    // No money has moved yet, so nothing about the order changes. It is
+    // recorded loudly because a dispute has a deadline: PayPal decides for us
+    // if nobody responds, and an operator who never hears about it loses by
+    // default. If it is ultimately lost the money leaves as a REVERSED event,
+    // which is handled below.
+    if (type.startsWith('CUSTOMER.DISPUTE.')) {
+      const disputed = (resource.disputed_transactions ?? []) as Record<string, unknown>[]
+      const captureId = str(disputed[0]?.seller_transaction_id)
+      const amount = (resource.dispute_amount ?? {}) as Record<string, unknown>
+
+      let orderNo: string | null = null
+      if (captureId) {
+        const { data } = await admin
+          .from('orders')
+          .select('order_no')
+          .eq('payment_capture_id', captureId)
+          .maybeSingle()
+        orderNo = str((data as { order_no?: unknown } | null)?.order_no)
+      }
+
+      console.error(
+        `DISPUTE ${type}: ${str(resource.dispute_id) ?? '?'} ` +
+          `order=${orderNo ?? 'unknown'} status=${str(resource.status) ?? '?'}`,
+      )
+
+      await admin.from('audit_log').insert({
+        actor: 'system',
+        action: 'payment.dispute',
+        subject: orderNo ?? (str(resource.dispute_id) ?? 'unknown'),
+        detail: {
+          event: type,
+          disputeId: str(resource.dispute_id),
+          reason: str(resource.reason),
+          status: str(resource.status),
+          outcome: str((resource.dispute_outcome as Record<string, unknown>)?.outcome_code),
+          amount: str(amount.value),
+          currency: str(amount.currency_code),
+          captureId,
+          note: '분쟁이 접수되었습니다. PayPal Resolution Center에서 기한 내 대응이 필요합니다.',
+        },
+      })
+
+      return json({ ok: true, dispute: true }, 200, cors)
+    }
+
+    // ── the money went back out ────────────────────────────────────────────
+    const kind = REVERSALS[type]
+    if (kind) {
+      const isRefund = kind === 'refund'
+
+      let orderNo: string | null
+      try {
+        orderNo = await resolveOrderNo(admin, resource, isRefund)
+      } catch {
+        // The database was unreachable, not the event unrecognisable. Ask
+        // PayPal to try again rather than dropping a refund on the floor.
+        return json({ error: 'lookup_failed' }, 500, cors)
+      }
+
+      if (!orderNo) {
+        console.error(`${type} could not be matched to an order`, JSON.stringify(resource).slice(0, 400))
+        return json({ ok: true, ignored: 'no_order_ref' }, 200, cors)
+      }
+
+      const { data, error } = await admin.rpc('reverse_checkout', {
+        p_order_no: orderNo,
+        p_kind: kind,
+        // A refund carries the amount actually returned, which may be a part
+        // of the order. A reversal or denial takes the whole capture.
+        p_amount: isRefund ? amountOf(resource) : null,
+        // The provider's id for this event. `reverse_checkout` keys its
+        // idempotency on it, so a redelivered webhook cannot claw back the
+        // same points twice.
+        p_ref: str(resource.id),
+        p_note: `PayPal ${type}`,
+      })
+
+      if (error) {
+        console.error(`reverse_checkout failed for ${orderNo}`, error.message)
+        return json({ error: 'reverse_failed' }, 500, cors)
+      }
+
+      const row = (data ?? {}) as Record<string, unknown>
+      if (row.ok === false) {
+        // Not retryable — the order is in a state this event cannot apply to.
+        // Acknowledged so PayPal stops, but recorded so somebody looks.
+        console.error(`${type} for ${orderNo} was not applied: ${String(row.reason)}`)
+        return json({ ok: true, ignored: row.reason }, 200, cors)
+      }
+
+      if (row.pointsShort && Number(row.pointsShort) > 0) {
+        // The customer had already spent the points earned on this order. The
+        // balance is not taken negative; the gap is somebody's judgement call.
+        console.error(
+          `POINTS SHORTFALL on ${orderNo}: could not reclaim ${row.pointsShort} P — balance was too low`,
+        )
+      }
+      if (!row.duplicate && !row.stockReturned && kind !== 'denied') {
+        console.error(
+          `STOCK NOT RETURNED for ${orderNo} (${kind}) — adjust inventory by hand once the goods are back`,
+        )
+      }
+
+      return json({ ok: true, kind, status: row.status ?? null }, 200, cors)
+    }
+
+    // ── the money came in ──────────────────────────────────────────────────
+    if (type !== 'PAYMENT.CAPTURE.COMPLETED') {
+      // Acknowledged and ignored — including CHECKOUT.ORDER.APPROVED, because
+      // approved is not paid and capture is what moves money. Returning an
+      // error would make PayPal retry an event we were never going to act on.
+      return json({ ok: true, ignored: type }, 200, cors)
+    }
+
     // `custom_id` is the order number we set when creating the order — the only
     // link back to us that survives the customer's browser being gone.
-    const orderNo =
-      (typeof resource.custom_id === 'string' && resource.custom_id) ||
-      (typeof resource.invoice_id === 'string' && resource.invoice_id) ||
-      null
-
-    if (type !== 'PAYMENT.CAPTURE.COMPLETED' && type !== 'CHECKOUT.ORDER.APPROVED') {
-      // Acknowledged and ignored. Returning an error would make PayPal retry
-      // an event we were never going to act on.
-      return json({ ok: true, ignored: type }, 200, cors)
-    }
-
-    if (type === 'CHECKOUT.ORDER.APPROVED') {
-      // Approved is not paid. Capture is what moves money, and the browser is
-      // normally the one to ask for it.
-      return json({ ok: true, ignored: type }, 200, cors)
-    }
-
+    const orderNo = str(resource.custom_id) ?? str(resource.invoice_id)
     if (!orderNo) {
       console.error('capture webhook carried no custom_id', JSON.stringify(resource).slice(0, 400))
       return json({ ok: true, ignored: 'no_order_ref' }, 200, cors)
@@ -128,13 +321,13 @@ Deno.serve(async (req) => {
     // the capture's own id.
     const related = ((resource.supplementary_data ?? {}) as Record<string, unknown>)
       .related_ids as Record<string, unknown> | undefined
-    const paypalOrderId = typeof related?.order_id === 'string' ? related.order_id : null
+    const paypalOrderId = str(related?.order_id)
 
     const { data, error } = await admin.rpc('settle_checkout', {
       p_order_no: orderNo,
       p_provider: 'paypal',
       p_order_id: paypalOrderId,
-      p_capture_id: typeof resource.id === 'string' ? resource.id : null,
+      p_capture_id: str(resource.id),
     })
     if (error) {
       console.error('settle_checkout failed from webhook', error.message)

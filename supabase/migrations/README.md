@@ -11,7 +11,7 @@ DB에만 있던 동안에는 권한이 언제 어떻게 바뀌었는지 diff로 
 ## 한 군데만 DB와 다릅니다
 
 `..140036_admin_role_and_policies`와 `..140916_split_master_and_admin_roles`의
-**운영자 시드 이메일 두 개는 `example.com`으로 가려 놓았습니다.** 나머지 26개 파일은
+**운영자 시드 이메일 두 개는 `example.com`으로 가려 놓았습니다.** 나머지 36개 파일은
 DB 기록과 글자 단위로 같지만 이 둘은 아닙니다.
 
 이 저장소는 공개되어 있고, 이 설계에서는 **운영자의 이메일 주소가 곧 관리자 신원**입니다
@@ -44,6 +44,16 @@ supabase db push
 | `..141449_server_side_points` | `..141530_claim_mission_explicit_row_count` | `FOUND` 대신 `row_count`를 명시적으로 읽도록 |
 | `..151227_analysis_usage_quota` | `..015443_quota_local_midnight...` | 할당량이 UTC 자정에 초기화되던 문제 |
 
+| `..174953_refunds_and_disputes` | `..175608_fix_payment_status_guard_actor` | SECURITY DEFINER 안에서 `current_user`는 항상 소유자라, 트리거가 모든 호출자를 통과시킴 |
+
 `..170313_fn_hits_debug`와 `..180324_drop_fn_hits_debug_table`은 한 쌍입니다 —
 임시 디버그 테이블을 만들고 다시 지웁니다. 지운 이유는 그 테이블이 읽는 사람도
 없이 요청 메타데이터를 쌓고 있었기 때문입니다.
+
+결제는 `..160903_checkout_in_three_phases`부터 읽으면 이야기가 이어집니다:
+예약 → 결제 → 정산으로 쪼개고(`..160903`), 취소된 주문에 돈이 들어오는 경우와
+버려진 장바구니를 처리하고(`..161053`, `..161155`), 마지막으로 돈이 다시 나가는
+경우를 다룹니다(`..174953`). 환불이 왜 단순한 되돌리기가 아닌지 —
+적립 포인트·사용 포인트·재고가 각각 다르게 처리되는 이유 — 는
+`..180130_document_the_reversal_rules`가 `comment on function`으로 DB에 직접
+남겨 두었습니다. `\df+ public.reverse_checkout`으로도 읽을 수 있습니다.

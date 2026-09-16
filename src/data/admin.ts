@@ -100,6 +100,21 @@ export const orderStatusMeta: Record<OrderStatus, [string, string, string]> = {
   shipped: ['발송완료', '#2E6B58', '#EAF1EC'],
   delivered: ['배송완료', '#6E6252', '#F1EEE6'],
   cancelled: ['취소', '#C25E43', '#FBE9E3'],
+  // Written by the payment webhook only. Red, because each one means money has
+  // left and somebody needs to look at the order.
+  partly_refunded: ['부분환불', '#B4622F', '#FBEFE3'],
+  refunded: ['환불완료', '#C25E43', '#FBE9E3'],
+  reversed: ['지급거절(분쟁)', '#A33B3B', '#FAE4E4'],
+  payment_failed: ['결제실패', '#8A7D6C', '#F1EEE6'],
 }
 
+/**
+ * What the operator may choose in the console.
+ *
+ * Only the fulfilment states. The payment states are missing on purpose: an
+ * order is refunded because PayPal says so, and offering "환불완료" in a
+ * dropdown would let the books say the money went back when it never did. The
+ * database refuses those writes too — this list is the half of that rule the
+ * operator can see.
+ */
 export const orderStatusOrder: OrderStatus[] = ['paid', 'preparing', 'shipped', 'delivered', 'cancelled']

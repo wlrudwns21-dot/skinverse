@@ -1,5 +1,5 @@
 import { orderStatusMeta, orderStatusOrder } from '../../data/admin'
-import type { OrderStatus } from '../../data/types'
+import { isPaymentLocked, type OrderStatus } from '../../data/types'
 import { s } from '../../lib/css'
 import { useAdmin } from '../AdminContext'
 
@@ -42,15 +42,31 @@ export function Orders() {
               <b>{o.amtS}</b>
               <span style={s('color:#6E6252')}>{o.carrier}</span>
               <span style={s('font-size:11.5px;color:#6E6252')}>{o.tracking}</span>
-              <select
-                value={o.status}
-                onChange={(e) => o.setStatus(e.target.value as OrderStatus)}
-                style={s('border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:12px;background:#FFFFFF;outline:none;cursor:pointer;max-width:130px')}
-              >
-                {orderStatusOrder.map((st) => (
-                  <option key={st} value={st}>{orderStatusMeta[st][0]}</option>
-                ))}
-              </select>
+              {isPaymentLocked(o.status) ? (
+                /*
+                 * Not a dropdown, because there is nothing to choose. PayPal
+                 * has already decided, the database refuses to be told
+                 * otherwise, and a select box here would only offer the
+                 * operator a click that fails.
+                 */
+                <span
+                  title="결제사에서 확정된 상태입니다. 콘솔에서는 변경할 수 없습니다."
+                  style={s('border-radius:6px;padding:5px 9px;font-size:11.5px;font-weight:700;text-align:center;white-space:nowrap;' +
+                    `color:${orderStatusMeta[o.status][1]};background:${orderStatusMeta[o.status][2]}`)}
+                >
+                  {orderStatusMeta[o.status][0]}
+                </span>
+              ) : (
+                <select
+                  value={o.status}
+                  onChange={(e) => o.setStatus(e.target.value as OrderStatus)}
+                  style={s('border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:12px;background:#FFFFFF;outline:none;cursor:pointer;max-width:130px')}
+                >
+                  {orderStatusOrder.map((st) => (
+                    <option key={st} value={st}>{orderStatusMeta[st][0]}</option>
+                  ))}
+                </select>
+              )}
             </div>
           ))}
         </div>

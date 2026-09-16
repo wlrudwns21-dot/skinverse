@@ -48,6 +48,7 @@ export const en: Strings = {
   streakLine: (d) => d + '-day streak',
 
   skinHistory: 'Skin history', orders: 'Orders', inTransit: 'In transit', noOrders: 'No orders yet',
+  orderState: { refunded: 'Refunded', partly_refunded: 'Partly refunded', reversed: 'Payment reversed', payment_failed: 'Payment failed', cancelled: 'Cancelled' },
   settings: 'Settings', language: 'Language', currency: 'Currency', shipRegion: 'Shipping region',
   reminders: 'Routine reminders', firstScan: 'First analysis', latest: 'Latest', scanN: 'Scan',
 

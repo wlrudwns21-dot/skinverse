@@ -81,7 +81,34 @@ export interface Reward {
 /** `[pointsRequired, name]`, ascending. */
 export type Level = [number, string]
 
-export type OrderStatus = 'paid' | 'preparing' | 'shipped' | 'delivered' | 'cancelled'
+/**
+ * Where an order stands.
+ *
+ * The first five are the fulfilment states an operator moves an order through.
+ * The last four are facts about the money, written only by a verified payment
+ * webhook — an operator cannot select them and cannot undo them, which is why
+ * they are deliberately absent from `orderStatusOrder`.
+ */
+export type OrderStatus =
+  | 'paid'
+  | 'preparing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'partly_refunded'
+  | 'refunded'
+  | 'reversed'
+  | 'payment_failed'
+
+/** The states only PayPal may put an order into. */
+export const PAYMENT_LOCKED: readonly OrderStatus[] = [
+  'partly_refunded',
+  'refunded',
+  'reversed',
+  'payment_failed',
+]
+
+export const isPaymentLocked = (s: OrderStatus): boolean => PAYMENT_LOCKED.includes(s)
 
 export interface AdminOrder {
   no: string

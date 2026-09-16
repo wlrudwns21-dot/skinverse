@@ -153,7 +153,18 @@ export function MyPage() {
         <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center')}>
           <div>
             <div style={s('font-size:13px;font-weight:600')}>{order.no}</div>
-            <div style={s('font-size:11.5px;color:#8A7D6C')}>{st.t.inTransit} — {order.eta}</div>
+            {/*
+              * An order that has been refunded, disputed or cancelled must
+              * stop claiming to be on its way — that line is the first thing a
+              * customer checks after asking for their money back.
+              */}
+            {order.status && order.status in st.t.orderState ? (
+              <div style={s('font-size:11.5px;font-weight:700;color:#C25E43')}>
+                {st.t.orderState[order.status as keyof typeof st.t.orderState]}
+              </div>
+            ) : (
+              <div style={s('font-size:11.5px;color:#8A7D6C')}>{st.t.inTransit} — {order.eta}</div>
+            )}
           </div>
           <div style={s('font-size:13px;font-weight:700')}>{order.total}</div>
         </div>

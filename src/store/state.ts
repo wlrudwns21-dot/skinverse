@@ -2,7 +2,7 @@ import { demoAccount, demoScenario } from '../data/account'
 import type { ShipMethod } from '../data/commerce'
 import { shipping } from '../data/commerce'
 import type { CatalogProduct, StoreSettings } from '../catalog/types'
-import type { Lang, MetricKey, SkinConditionKey, Weather } from '../data/types'
+import type { Lang, MetricKey, OrderStatus, SkinConditionKey, Weather } from '../data/types'
 import type { AnalysisVisuals, SkinTypeReading } from '../analysis/perfectcorp'
 import type { Capability } from '../auth/capabilities'
 import type { ImageCheck } from '../analysis/imageCheck'
@@ -40,6 +40,12 @@ export interface PlacedOrder {
   total: string
   earn: number
   eta: string
+  /**
+   * Absent on the receipt shown the instant a payment succeeds — there is
+   * nothing it could be but paid — and present when the order is read back
+   * from the database, where it may since have been refunded.
+   */
+  status?: OrderStatus
 }
 
 /**

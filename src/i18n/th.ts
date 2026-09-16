@@ -48,6 +48,7 @@ export const th: Strings = {
   streakLine: (d) => 'ต่อเนื่อง ' + d + ' วัน',
 
   skinHistory: 'ประวัติผิว', orders: 'คำสั่งซื้อ', inTransit: 'กำลังจัดส่ง', noOrders: 'ยังไม่มีคำสั่งซื้อ',
+  orderState: { refunded: 'คืนเงินแล้ว', partly_refunded: 'คืนเงินบางส่วน', reversed: 'ยกเลิกการชำระเงิน', payment_failed: 'ชำระเงินไม่สำเร็จ', cancelled: 'ยกเลิกแล้ว' },
   settings: 'ตั้งค่า', language: 'ภาษา', currency: 'สกุลเงิน', shipRegion: 'พื้นที่จัดส่ง',
   reminders: 'แจ้งเตือนรูทีน', firstScan: 'วิเคราะห์ครั้งแรก', latest: 'ล่าสุด', scanN: 'สแกน',
 

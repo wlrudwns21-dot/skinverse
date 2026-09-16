@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase'
-import type { MetricKey, SkinConditionKey, Weather } from '../data/types'
+import type { MetricKey, OrderStatus, SkinConditionKey, Weather } from '../data/types'
 import type { SkinTypeReading } from '../analysis/perfectcorp'
 import type { ScanRecord } from './state'
 import type { RoutineStepRecord } from './types'
@@ -72,6 +72,7 @@ export interface MemberSnapshot {
     points_earned: number
     eta: string
     created_at: string
+    status: OrderStatus
   } | null
   savedRoutineCount: number
 }
@@ -114,7 +115,9 @@ export async function loadMemberSnapshot(): Promise<MemberSnapshot> {
       .limit(SCAN_HISTORY_LIMIT),
     supabase
       .from('orders')
-      .select('order_no, total, points_earned, eta, created_at')
+      // `status` matters on screen: an order that has been refunded must not
+      // go on telling the customer it is on its way.
+      .select('order_no, total, points_earned, eta, created_at, status')
       .order('created_at', { ascending: false })
       .limit(1),
     supabase.from('routines').select('id', { count: 'exact', head: true }),

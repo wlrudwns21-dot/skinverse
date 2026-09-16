@@ -396,6 +396,7 @@ function useStoreValue() {
               total: usd(Number(snap.latestOrder.total)),
               earn: snap.latestOrder.points_earned,
               eta: snap.latestOrder.eta,
+              status: snap.latestOrder.status,
             }
           : null,
       }))

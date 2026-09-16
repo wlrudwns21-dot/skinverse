@@ -48,6 +48,7 @@ export const ko: Strings = {
   streakLine: (d) => '연속 ' + d + '일',
 
   skinHistory: '피부 기록', orders: '주문 내역', inTransit: '배송 중', noOrders: '아직 주문이 없어요',
+  orderState: { refunded: '환불 완료', partly_refunded: '부분 환불', reversed: '결제 취소됨 (분쟁)', payment_failed: '결제 실패', cancelled: '주문 취소' },
   settings: '설정', language: '언어', currency: '통화', shipRegion: '배송 지역',
   reminders: '루틴 알림', firstScan: '첫 분석', latest: '최신', scanN: '스캔',
 

@@ -122,6 +122,8 @@ export interface Strings {
   skinHistory: string
   orders: string
   inTransit: string
+  /** What the latest order says about itself, once it is no longer simply on its way. */
+  orderState: Record<'refunded' | 'partly_refunded' | 'reversed' | 'payment_failed' | 'cancelled', string>
   noOrders: string
   settings: string
   language: string

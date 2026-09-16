@@ -48,6 +48,7 @@ export const zh: Strings = {
   streakLine: (d) => '连续 ' + d + ' 天',
 
   skinHistory: '肌肤记录', orders: '订单', inTransit: '运送中', noOrders: '暂无订单',
+  orderState: { refunded: '已退款', partly_refunded: '部分退款', reversed: '付款已撤销', payment_failed: '付款失败', cancelled: '已取消' },
   settings: '设置', language: '语言', currency: '货币', shipRegion: '配送地区',
   reminders: '护肤提醒', firstScan: '首次分析', latest: '最新', scanN: '扫描',
 
