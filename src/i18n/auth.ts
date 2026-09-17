@@ -58,6 +58,21 @@ export interface AuthStrings {
   checkEmailSub: (email: string) => string
   gotIt: string
 
+  // Forgotten password
+  forgot: string
+  resetTitle: string
+  resetSub: string
+  resetSend: string
+  /** Deliberately says "if an account exists" — see requestPasswordReset. */
+  resetSentTitle: string
+  resetSentSub: (email: string) => string
+  newPwTitle: string
+  newPwSub: string
+  newPwField: string
+  newPwSave: string
+  newPwDone: string
+  errResetRate: string
+
   // validation and server errors
   errEmail: string
   errPassword: string
@@ -189,6 +204,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: '이미 계정이 있으신가요?', noAccount: '아직 회원이 아니신가요?',
     submitting: '처리 중…', back: '← 뒤로',
 
+    forgot: '비밀번호를 잊으셨나요?',
+    resetTitle: '비밀번호 재설정',
+    resetSub: '가입하신 이메일 주소를 입력하시면 재설정 링크를 보내드립니다.',
+    resetSend: '재설정 링크 받기',
+    resetSentTitle: '메일을 보냈습니다',
+    resetSentSub: (e) => e + ' 로 가입된 계정이 있다면 재설정 링크가 도착합니다. 메일이 보이지 않으면 스팸함도 확인해주세요.',
+    newPwTitle: '새 비밀번호 설정',
+    newPwSub: '앞으로 사용하실 비밀번호를 입력해주세요.',
+    newPwField: '새 비밀번호',
+    newPwSave: '비밀번호 변경',
+    newPwDone: '비밀번호가 변경되었습니다',
+    errResetRate: '요청이 너무 잦습니다. 잠시 후 다시 시도해주세요.',
     checkEmail: '이메일을 확인해주세요',
     checkEmailSub: (e) => e + ' 로 인증 메일을 보냈습니다. 메일의 링크를 누르면 가입이 완료됩니다.',
     gotIt: '확인',
@@ -306,6 +333,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: 'Already have an account?', noAccount: 'Not a member yet?',
     submitting: 'Working…', back: '← Back',
 
+    forgot: 'Forgot your password?',
+    resetTitle: 'Reset your password',
+    resetSub: 'Enter the email you signed up with and we will send a reset link.',
+    resetSend: 'Send reset link',
+    resetSentTitle: 'Email sent',
+    resetSentSub: (e) => 'If an account exists for ' + e + ', a reset link is on its way. Check your spam folder if you do not see it.',
+    newPwTitle: 'Set a new password',
+    newPwSub: 'Choose the password you will use from now on.',
+    newPwField: 'New password',
+    newPwSave: 'Change password',
+    newPwDone: 'Your password has been changed',
+    errResetRate: 'Too many requests. Please try again shortly.',
     checkEmail: 'Check your email',
     checkEmailSub: (e) => 'We sent a confirmation link to ' + e + '. Tap it to finish signing up.',
     gotIt: 'Got it',
@@ -423,6 +462,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: '已有账号？', noAccount: '还不是会员？',
     submitting: '处理中…', back: '← 返回',
 
+    forgot: '忘记密码？',
+    resetTitle: '重置密码',
+    resetSub: '请输入注册时使用的邮箱，我们会发送重置链接。',
+    resetSend: '发送重置链接',
+    resetSentTitle: '邮件已发送',
+    resetSentSub: (e) => '如果 ' + e + ' 已注册，重置链接将会送达。若未收到请查看垃圾邮件。',
+    newPwTitle: '设置新密码',
+    newPwSub: '请输入今后使用的密码。',
+    newPwField: '新密码',
+    newPwSave: '修改密码',
+    newPwDone: '密码已修改',
+    errResetRate: '请求过于频繁，请稍后再试。',
     checkEmail: '请查收邮件',
     checkEmailSub: (e) => '我们已向 ' + e + ' 发送确认链接，点击即可完成注册。',
     gotIt: '知道了',
@@ -540,6 +591,18 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: 'มีบัญชีอยู่แล้ว?', noAccount: 'ยังไม่เป็นสมาชิก?',
     submitting: 'กำลังดำเนินการ…', back: '← กลับ',
 
+    forgot: 'ลืมรหัสผ่าน?',
+    resetTitle: 'ตั้งรหัสผ่านใหม่',
+    resetSub: 'กรอกอีเมลที่ใช้สมัคร แล้วเราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่',
+    resetSend: 'ส่งลิงก์',
+    resetSentTitle: 'ส่งอีเมลแล้ว',
+    resetSentSub: (e) => 'หากมีบัญชีที่ใช้ ' + e + ' ลิงก์จะถูกส่งไป หากไม่พบ กรุณาตรวจสอบกล่องสแปม',
+    newPwTitle: 'ตั้งรหัสผ่านใหม่',
+    newPwSub: 'เลือกรหัสผ่านที่จะใช้ต่อจากนี้',
+    newPwField: 'รหัสผ่านใหม่',
+    newPwSave: 'เปลี่ยนรหัสผ่าน',
+    newPwDone: 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว',
+    errResetRate: 'ส่งคำขอบ่อยเกินไป กรุณาลองใหม่ในภายหลัง',
     checkEmail: 'กรุณาตรวจสอบอีเมล',
     checkEmailSub: (e) => 'เราส่งลิงก์ยืนยันไปที่ ' + e + ' แล้ว กดลิงก์เพื่อสมัครให้เสร็จ',
     gotIt: 'รับทราบ',

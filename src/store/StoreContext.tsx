@@ -1632,6 +1632,9 @@ function useStoreValue() {
     gate: state.gate,
     closeGate,
     goAuth,
+    /** Back to the sign-in form from the reset form. */
+    goResetBack: () => setState((s) => ({ ...s, screen: 'auth', authMode: 'login' })),
+    say: toastMsg,
     goLegal,
     leaveLegal,
     leaveAuth,

@@ -32,7 +32,12 @@ export type Screen =
  * every score the app has ever shown them.
  */
 export type ScanStep = 'intro' | 'scanning' | 'results' | 'failed'
-export type AuthMode = 'signup' | 'login'
+/**
+ * `reset` is the "email me a link" form, not the "type a new password" one —
+ * that second screen is reached from the email and is driven by
+ * `auth.recovering`, not by anything the visitor can navigate to.
+ */
+export type AuthMode = 'signup' | 'login' | 'reset'
 /** Which of the two legal documents the legal screen opens on. */
 export type LegalDocId = 'terms' | 'privacy'
 

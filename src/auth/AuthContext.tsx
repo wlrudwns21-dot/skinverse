@@ -96,6 +96,16 @@ function useAuthValue() {
   const [profile, setProfile] = useState<Profile | null>(null)
   /** True until the stored session has been read — prevents a signed-in user flashing the guest UI. */
   const [loading, setLoading] = useState(isSupabaseConfigured)
+  /**
+   * The visitor arrived through a password-reset link.
+   *
+   * Supabase signs them in to let them set a new password, which means they
+   * look exactly like an ordinary signed-in member. They are not: they proved
+   * they can read the inbox, not that they know the password. So the app has
+   * to hold them on the new-password screen rather than dropping them into an
+   * account someone else may have requested the reset for.
+   */
+  const [recovering, setRecovering] = useState(false)
 
   const loadProfile = useCallback(async (user: User | null) => {
     if (!supabase || !user) {
@@ -127,9 +137,13 @@ function useAuthValue() {
       if (!cancelled) setLoading(false)
     })
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       setSession(next)
       void loadProfile(next?.user ?? null)
+      // Fired when the recovery link is opened. Cleared once the new password
+      // is actually saved, or when they sign out without setting one.
+      if (event === 'PASSWORD_RECOVERY') setRecovering(true)
+      if (event === 'SIGNED_OUT') setRecovering(false)
     })
 
     return () => {
@@ -167,6 +181,45 @@ function useAuthValue() {
 
     // With email confirmation on, Supabase returns a user but no session.
     if (!data.session) return { ok: true, needsEmailConfirm: true }
+    return { ok: true }
+  }, [])
+
+  /**
+   * Send the reset link.
+   *
+   * Always reports success, even for an address with no account. Saying "no
+   * such account" here would turn this form into a way of asking whether any
+   * given person shops with us — and the customer who mistyped their own
+   * address is helped more by checking their inbox and finding nothing than
+   * by being told which of their addresses is registered.
+   */
+  const requestPasswordReset = useCallback(async (
+    email: string,
+    captchaToken?: string,
+  ): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, error: 'not-configured' }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // Back to the app itself. Supabase appends the recovery token as a hash
+      // fragment, which the client library reads on load.
+      redirectTo: window.location.origin,
+      captchaToken: captchaToken || undefined,
+    })
+    // Rate limiting is the one failure worth surfacing: the customer should
+    // wait rather than press the button eight more times.
+    if (error && /rate|too many/i.test(error.message)) {
+      return { ok: false, error: error.message }
+    }
+    if (error) console.error('[skinverse] 재설정 메일 발송 실패', error.message)
+    return { ok: true }
+  }, [])
+
+  /** Save the new password, ending the recovery state. */
+  const setNewPassword = useCallback(async (password: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, error: 'not-configured' }
+    const { error } = await supabase.auth.updateUser({ password })
+    if (error) return { ok: false, error: error.message }
+    setRecovering(false)
     return { ok: true }
   }, [])
 
@@ -220,8 +273,15 @@ function useAuthValue() {
       signOut,
       updateProfile,
       refreshProfile,
+      recovering,
+      requestPasswordReset,
+      setNewPassword,
     }),
-    [session, profile, loading, signUp, signIn, signOut, updateProfile, refreshProfile],
+    [
+      session, profile, loading, recovering,
+      signUp, signIn, signOut, updateProfile, refreshProfile,
+      requestPasswordReset, setNewPassword,
+    ],
   )
 }
 

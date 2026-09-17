@@ -1,4 +1,4 @@
-import { AuthProvider } from './auth/AuthContext'
+import { AuthProvider, useAuth } from './auth/AuthContext'
 import { CatalogProvider } from './catalog/CatalogContext'
 import { GatePrompt } from './components/GatePrompt'
 import { Header } from './components/Header'
@@ -13,6 +13,7 @@ import { Home } from './screens/Home'
 import { Legal } from './screens/Legal'
 import { Missions } from './screens/Missions'
 import { MyPage } from './screens/MyPage'
+import { NewPassword, PasswordReset } from './screens/PasswordReset'
 import { Routine } from './screens/Routine'
 import { Stories } from './screens/Stories'
 import { Support } from './screens/Support'
@@ -22,12 +23,23 @@ import { StoreProvider, useStore } from './store/StoreContext'
 
 function CurrentScreen() {
   const { state } = useStore()
+  const auth = useAuth()
+
+  /*
+   * A reset link beats whatever screen they were on.
+   *
+   * Supabase signs the visitor in the moment the link is opened, so without
+   * this they would land on the home page already logged in and never be asked
+   * for a new password — leaving an account reachable by anyone holding that
+   * email. It stays in front of everything until the password is actually set.
+   */
+  if (auth.recovering) return <NewPassword />
 
   switch (state.screen) {
     case 'home':
       return <Home />
     case 'auth':
-      return <Auth />
+      return state.authMode === 'reset' ? <PasswordReset /> : <Auth />
     case 'scan':
       if (state.scanStep === 'intro') return <ScanIntro />
       if (state.scanStep === 'scanning') return <Scanning />

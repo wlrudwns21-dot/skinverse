@@ -367,6 +367,23 @@ export function Auth() {
       {/* On the login screen signing up is a destination, not a footnote: the
           form asks for a lot, so it gets its own page rather than unfolding
           under someone who only came here to log in. */}
+      {/*
+        * Under the sign-in button, where somebody who just failed to log in is
+        * already looking. Absent from the signup form, where there is no
+        * password to have forgotten yet.
+        */}
+      {!isSignUp && (
+        <div
+          onClick={() => {
+            setError('')
+            st.goAuth('reset')
+          }}
+          style={s('cursor:pointer;text-align:center;font-size:12.5px;color:#8A7D6C;font-weight:600;margin-top:14px;text-decoration:underline')}
+        >
+          {a.forgot}
+        </div>
+      )}
+
       {!isSignUp && (
         <>
           <div style={s('display:flex;align-items:center;gap:10px;margin-top:20px;color:#A2957F;font-size:11.5px')}>
