@@ -1,0 +1,120 @@
+<!--
+  가입 확인 메일.
+
+  Supabase Dashboard → Authentication → Emails → Confirm signup 에 붙여넣습니다.
+  이 저장소에 두는 이유는 하나입니다 — 대시보드 안에만 있으면 누가 언제 무엇을
+  바꿨는지 diff로 볼 방법이 없고, 프로젝트가 사라지면 복구할 방법도 없습니다.
+
+  ⚠️ 이메일 HTML은 웹 HTML이 아닙니다.
+  - 외부 스타일시트와 <style> 블록은 상당수 메일 클라이언트가 지웁니다. 그래서
+    모든 스타일이 인라인입니다.
+  - flexbox와 grid는 Outlook에서 무너집니다. 그래서 레이아웃이 <table>입니다.
+  - 네이버·다음은 스팸 판정이 엄격합니다. 이미지가 없고 텍스트 대비 링크가 적은
+    편이 유리합니다.
+
+  한국어와 영어를 함께 넣은 이유: Supabase 템플릿은 프로젝트당 하나뿐이라
+  수신자 언어를 알 수 없습니다. 고객의 절반 이상이 한국 밖에 있으므로 한쪽만
+  쓰면 나머지는 읽지 못하는 메일을 받습니다.
+
+  치환 변수: {{ .ConfirmationURL }} 만 사용합니다.
+-->
+<!doctype html>
+<html lang="ko">
+  <body style="margin:0;padding:0;background:#F5F0E6;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0E6;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;">
+            <tr>
+              <td style="padding:32px 32px 0;text-align:center;">
+                <div style="font-size:22px;font-weight:700;color:#221C15;letter-spacing:0.02em;">Skinverse</div>
+                <div style="font-size:11px;color:#A2957F;margin-top:4px;letter-spacing:0.12em;">K-BEAUTY · SEOUL</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:28px 32px 0;">
+                <div style="font-size:19px;font-weight:700;color:#221C15;line-height:1.5;">
+                  이메일 주소를 확인해주세요
+                </div>
+                <div style="font-size:14px;color:#8A7D6C;margin-top:4px;">
+                  Confirm your email address
+                </div>
+
+                <div style="font-size:14px;color:#4A4234;line-height:1.75;margin-top:18px;">
+                  Skinverse 가입을 시작하셨습니다. 아래 버튼을 눌러 이메일 주소를 확인하시면
+                  가입이 완료됩니다.
+                </div>
+                <div style="font-size:13px;color:#8A7D6C;line-height:1.7;margin-top:10px;">
+                  You have started signing up for Skinverse. Tap the button below to confirm
+                  your address and finish creating your account.
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:24px 32px 0;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="center" style="background:#221C15;border-radius:999px;">
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        style="display:block;padding:15px 24px;font-size:15px;font-weight:700;color:#F3E9D6;text-decoration:none;"
+                      >
+                        이메일 확인하기 · Confirm email
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!--
+              버튼이 눌리지 않는 환경이 실제로 있습니다: 일부 회사 메일 게이트웨이가
+              링크를 다시 쓰고, 텍스트 전용으로 읽는 사람도 있습니다. 주소를 그대로
+              보여주면 복사해서 쓸 수 있습니다.
+            -->
+            <tr>
+              <td style="padding:16px 32px 0;">
+                <div style="font-size:11.5px;color:#A2957F;line-height:1.6;">
+                  버튼이 눌리지 않으면 아래 주소를 복사해 브라우저에 붙여넣어 주세요.<br />
+                  If the button does not work, copy this address into your browser.
+                </div>
+                <div style="font-size:11.5px;color:#6E6252;line-height:1.6;margin-top:6px;word-break:break-all;">
+                  {{ .ConfirmationURL }}
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:22px 32px 0;">
+                <div style="height:1px;background:#F1ECE2;"></div>
+              </td>
+            </tr>
+
+            <!--
+              가입한 적 없는 사람에게 도착하는 경우가 반드시 생깁니다 — 오타로 남의
+              주소를 적는 일은 흔합니다. 무시하면 계정이 만들어지지 않는다고
+              명확히 말해두는 편이, 그 사람이 스팸 신고를 누르는 것보다 낫습니다.
+            -->
+            <tr>
+              <td style="padding:16px 32px 32px;">
+                <div style="font-size:11.5px;color:#A2957F;line-height:1.7;">
+                  가입하신 적이 없다면 이 메일을 무시하셔도 됩니다. 확인하지 않으면 계정은
+                  만들어지지 않습니다.<br />
+                  If you did not sign up, you can ignore this email — no account is created
+                  until it is confirmed.
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <div style="max-width:480px;font-size:11px;color:#A2957F;line-height:1.7;margin-top:18px;text-align:center;">
+            엘제이 바이오 (LJ-BIO) · 서울특별시 강남구 학동로2길 19, 2층 2741호<br />
+            고객문의 kyungjun.ji@bio-lj.com
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
