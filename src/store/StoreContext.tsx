@@ -429,7 +429,7 @@ function useStoreValue() {
         order: snap.latestOrder
           ? {
               no: snap.latestOrder.order_no,
-              total: money(Number(snap.latestOrder.total)),
+              total: Number(snap.latestOrder.total),
               earn: snap.latestOrder.points_earned,
               eta: snap.latestOrder.eta,
               status: snap.latestOrder.status,
@@ -1070,7 +1070,7 @@ function useStoreValue() {
         cart: {},
         order: {
           no: held.orderNo,
-          total: money(held.total),
+          total: held.total,
           earn: res.pointsEarned || held.pointsEarned,
           eta: held.eta,
         },
@@ -1725,6 +1725,19 @@ function useStoreValue() {
     billedNote: isSettlement(state.currency) ? '' : t.billedIn(usd(totals.total)),
     earnPreview: Math.round((totals.sub + totals.ship) * settings.earnPerDollar),
     shipName: catalog.shipping[state.ship].label,
+    /*
+     * Postage, from the live table and in the customer's currency.
+     *
+     * These were rendered straight from the seed in dollars, so a customer
+     * reading every other figure in won met two that were not — and an
+     * operator changing a rate in the database would not have moved them.
+     */
+    shipOptions: (['dhl', 'ems'] as const).map((id) => ({
+      id,
+      label: catalog.shipping[id].label,
+      feeS: money(catalog.shipping[id].fee),
+      eta: catalog.shipping[id].eta,
+    })),
     setName: (value: string) => setState((s) => ({ ...s, name: value })),
     setAddr: (value: string) => setState((s) => ({ ...s, addr: value })),
     setCountry: (value: string) => setState((s) => ({ ...s, country: value })),

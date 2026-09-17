@@ -38,7 +38,14 @@ export type LegalDocId = 'terms' | 'privacy'
 
 export interface PlacedOrder {
   no: string
-  total: string
+  /**
+   * The settlement amount, not a formatted string.
+   *
+   * Formatting happens where it is rendered: a receipt that froze "₩52,640"
+   * at payment time would still say it after the customer switched their
+   * currency to dollars.
+   */
+  total: number
   earn: number
   eta: string
   /**

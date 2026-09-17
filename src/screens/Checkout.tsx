@@ -1,5 +1,4 @@
 import { shippingCountries } from '../data/cities'
-import { shipping } from '../data/commerce'
 import { PaypalButtons } from '../components/PaypalButtons'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
@@ -44,14 +43,14 @@ export function CheckoutShipping() {
             <b style={s('font-size:13px')}>DHL Express</b>
             <div style={s('font-size:12px;color:#8A7D6C')}>{st.t.dhlDesc}</div>
           </div>
-          <b style={s('font-size:13px')}>${shipping.dhl.fee.toFixed(2)}</b>
+          <b style={s('font-size:13px')}>{st.shipOptions[0].feeS}</b>
         </div>
         <div onClick={st.pickEms} style={s(`cursor:pointer;background:#FFFFFF;border:1.5px solid ${st.emsBorder};border-radius:14px;padding:13px 14px;display:flex;justify-content:space-between;align-items:center`)}>
           <div>
             <b style={s('font-size:13px')}>K-Packet / EMS</b>
             <div style={s('font-size:12px;color:#8A7D6C')}>{st.t.emsDesc}</div>
           </div>
-          <b style={s('font-size:13px')}>${shipping.ems.fee.toFixed(2)}</b>
+          <b style={s('font-size:13px')}>{st.shipOptions[1].feeS}</b>
         </div>
       </div>
 
@@ -133,7 +132,7 @@ export function CheckoutConfirmed() {
         </div>
         <div style={s('display:flex;justify-content:space-between')}>
           <span style={s('color:#6E6252')}>{st.t.paidVia}</span>
-          <b>{order?.total}</b>
+          <b>{order ? st.money(order.total) : ''}</b>
         </div>
         <div style={s('display:flex;justify-content:space-between')}>
           <span style={s('color:#6E6252')}>{st.t.delivery}</span>
