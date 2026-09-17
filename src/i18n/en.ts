@@ -49,6 +49,15 @@ export const en: Strings = {
 
   skinHistory: 'Skin history', orders: 'Orders', inTransit: 'In transit', noOrders: 'No orders yet',
   orderState: { refunded: 'Refunded', partly_refunded: 'Partly refunded', reversed: 'Payment reversed', payment_failed: 'Payment failed', cancelled: 'Cancelled' },
+  billedIn: (amount) => `You will be charged ${amount} (USD)`,
+  showAll: (n) => `Show ${n} more`, showLess: 'Show less',
+  orderStatus: { pending: 'Awaiting payment', paid: 'Paid', preparing: 'Preparing', shipped: 'Shipped', delivered: 'Delivered', cancelled: 'Cancelled', partly_refunded: 'Partly refunded', refunded: 'Refunded', reversed: 'Payment reversed', payment_failed: 'Payment failed' },
+  refundAsked: 'Refund request received', refundWithdrawn: 'Refund request withdrawn',
+  refundAsk: 'Request a refund', refundPending: 'Refund request under review', refundDeclined: 'Refund declined',
+  refundWithdraw: 'Withdraw request', refundReason: 'Tell us why', refundSend: 'Send request',
+  refundNote: 'We will review your request. If approved, the money goes back to the way you paid.',
+  refundRefused: { not_signed_in: 'Please sign in', no_such_order: 'Order not found', not_paid: 'This order has not been paid', already_settled: 'This order has already been settled', unavailable: 'Please try again shortly' },
+  tryAgain: 'Please try again shortly', refunded: 'Refunded', ordersEmpty: 'No orders yet',
   settings: 'Settings', language: 'Language', currency: 'Currency', shipRegion: 'Shipping region',
   reminders: 'Routine reminders', firstScan: 'First analysis', latest: 'Latest', scanN: 'Scan',
 

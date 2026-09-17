@@ -15,17 +15,24 @@ import { useAuth } from '../auth/AuthContext'
 import { useCatalog } from '../catalog/CatalogContext'
 import * as catalogRemote from '../catalog/remote'
 import type { StoreSettings } from '../catalog/types'
+// The console always speaks the settlement currency: an operator refunding an
+// order needs the figure PayPal will move, not a converted one.
+import { usd } from '../store/state'
 import * as remote from './adminRemote'
 
 export type AdminView =
   | 'dash' | 'orders' | 'products' | 'users' | 'missions' | 'cs' | 'access' | 'audit'
-  | 'withdrawals'
+  | 'withdrawals' | 'refunds' | 'pricing'
 
 /** Views only a master may open: the operator list and the point economy. */
 // `audit` is master-only for a reason worth stating: the log is how you
 // investigate an operator, so it must not be readable by the operator being
 // investigated. RLS enforces that too — this only hides the menu item.
-const MASTER_ONLY: ReadonlySet<AdminView> = new Set<AdminView>(['missions', 'access', 'audit'])
+// `pricing` joins them: the USD rate reprices the entire catalogue in one
+// click, which is the same class of decision as setting the earn rate.
+const MASTER_ONLY: ReadonlySet<AdminView> = new Set<AdminView>([
+  'missions', 'access', 'audit', 'pricing',
+])
 
 const TOAST_MS = 2400
 const STOCK_STEP = 10
@@ -73,6 +80,10 @@ function useAdminValue() {
   const [operators, setOperators] = useState<remote.Operator[]>([])
   const [orders, setOrders] = useState<AdminOrder[]>([])
   const [members, setMembers] = useState<remote.AdminMember[]>([])
+  const [refundQueue, setRefundQueue] = useState<remote.RefundRequestRow[]>([])
+  const [costs, setCosts] = useState<Record<string, catalogRemote.ProductCost>>({})
+  /** An in-flight refund, so the button cannot be pressed twice. */
+  const [refunding, setRefunding] = useState('')
   const [stats, setStats] = useState<remote.AdminStats | null>(null)
   const [loadingData, setLoadingData] = useState(false)
 
@@ -127,14 +138,18 @@ function useAdminValue() {
 
   const refresh = useCallback(async () => {
     setLoadingData(true)
-    const [o, m, s, threads, withdrawals] = await Promise.all([
+    const [o, m, s, threads, withdrawals, refunds, productCosts] = await Promise.all([
       remote.loadOrders(),
       remote.loadMembers(),
       remote.loadStats(),
       loadAllThreads(),
       remote.loadDeletionRequests(),
+      remote.loadRefundQueue(),
+      catalogRemote.loadProductCosts(),
     ])
     setPendingWithdrawals(withdrawals.length)
+    setRefundQueue(refunds)
+    setCosts(productCosts)
     setOrders(o)
     setMembers(m)
     setStats(s)
@@ -296,7 +311,9 @@ function useAdminValue() {
       ['cs', 'CS 문의', pendingCs],
       ['access', '권한 관리', 0],
       ['audit', '감사 로그', 0],
+      ['refunds', '환불 요청', refundQueue.length],
       ['withdrawals', '탈퇴 요청', pendingWithdrawals],
+      ['pricing', '가격 · 환율', 0],
     ] as [AdminView, string, number][]
   )
     .filter(([id]) => isMaster || !MASTER_ONLY.has(id))
@@ -404,6 +421,100 @@ function useAdminValue() {
     isAccess: view === 'access',
     isAudit: view === 'audit',
     isWithdrawals: view === 'withdrawals',
+    isRefunds: view === 'refunds',
+    isPricing: view === 'pricing',
+
+    /*
+     * ── refunds ──────────────────────────────────────────────────────────
+     *
+     * The queue, and the two answers an operator can give it. Issuing goes
+     * out to PayPal first and only then updates our own books, because the
+     * reverse order would leave the shop believing it had paid somebody it
+     * had not.
+     */
+    refundQueue: refundQueue.map((r) => ({
+      ...r,
+      remaining: r.total - r.refundedTotal,
+      remainingS: usd(r.total - r.refundedTotal),
+      totalS: usd(r.total),
+      askedAt: new Date(r.requestedAt).toLocaleString('ko-KR', {
+        month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+      }),
+      statusLabel: orderStatusMeta[r.orderStatus]?.[0] ?? r.orderStatus,
+      busy: refunding === r.orderNo,
+    })),
+    refundPendingN: refundQueue.length,
+    refundBusy: refunding,
+
+    issueRefund: async (orderNo: string, amount: number | null, note: string) => {
+      if (refunding) return
+      setRefunding(orderNo)
+      const res = await remote.refundOrder(orderNo, amount, note)
+      setRefunding('')
+      if (!res.ok) return toastMsg(res.message)
+
+      // The shortfall is the operator's problem to know about: the customer
+      // had already spent points this order earned, so the balance could not
+      // be taken all the way back.
+      toastMsg(
+        res.pointsShort > 0
+          ? `환불 완료 · ${res.pointsClawedBack}P 회수 (잔액 부족으로 ${res.pointsShort}P 회수 불가)`
+          : `환불 완료 · ${res.pointsClawedBack}P 회수`,
+      )
+      await refresh()
+    },
+
+    refuseRefund: async (orderNo: string, note: string) => {
+      if (!note.trim()) return toastMsg('거절 사유를 입력해주세요')
+      if (!(await remote.declineRefund(orderNo, note.trim()))) return toastMsg('거절 처리 실패')
+      toastMsg('환불 요청을 거절했습니다')
+      await refresh()
+    },
+
+    /*
+     * ── pricing ──────────────────────────────────────────────────────────
+     *
+     * Cost and margin are held here rather than on the product rows because
+     * they live in a table customers cannot read at all — putting them on
+     * `products` would have served every visitor the shop's cost base.
+     */
+    rates: Object.values(catalog.rates).sort((a, b) => a.code.localeCompare(b.code)),
+    usdRate: catalog.rates.USD?.krwPerUnit ?? 0,
+    costOf: (id: string) => costs[id] ?? null,
+
+    saveRate: async (code: string, value: number) => {
+      if (!(await catalogRemote.setFxRate(code, value))) return toastMsg('환율 저장 실패')
+      await catalog.refresh()
+      if (code !== 'USD') return toastMsg(`${code} 환율 저장됨`)
+
+      // Moving USD changes what every product is charged at, so the
+      // re-derivation is done here rather than left for someone to remember.
+      const changed = await catalogRemote.resyncPrices()
+      await catalog.refresh()
+      toastMsg(changed === null ? '환율은 저장됐으나 가격 재계산 실패' : `환율 저장 · 상품가 ${changed}건 갱신`)
+    },
+
+    addProduct: async (input: catalogRemote.NewProduct, costKrw: number, marginPct: number) => {
+      const id = await catalogRemote.createProduct(input)
+      if (!id) return toastMsg('상품 등록 실패')
+      // Cost is a second row in a second table, so a failure here leaves a
+      // product with no cost rather than no product — worth saying out loud.
+      if (costKrw > 0 && !(await catalogRemote.saveProductCost(id, costKrw, marginPct, ''))) {
+        toastMsg('상품은 등록됐으나 원가 저장 실패')
+      } else {
+        toastMsg('상품이 등록되었습니다 — 판매중지 상태이니 확인 후 판매를 시작하세요')
+      }
+      await Promise.all([catalog.refresh(), refresh()])
+      return id
+    },
+
+    savePricing: async (id: string, costKrw: number, marginPct: number, priceKrw: number) => {
+      const okCost = await catalogRemote.saveProductCost(id, costKrw, marginPct, '')
+      const okPrice = await catalogRemote.setProductPrice(id, priceKrw)
+      if (!okCost || !okPrice) return toastMsg('저장 실패')
+      await Promise.all([catalog.refresh(), refresh()])
+      toastMsg('가격 저장됨')
+    },
 
     kpis,
     countrySales,

@@ -116,9 +116,13 @@ export interface AdminOrder {
   name: string
   country: string
   amt: number
+  /** How much of `amt` has already gone back. */
+  refunded: number
   carrier: 'DHL' | 'EMS'
   tracking: string
   status: OrderStatus
+  /** Whether money was actually captured, and so whether any can be returned. */
+  capturable: boolean
 }
 
 export interface AdminProduct {

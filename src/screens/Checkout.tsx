@@ -89,6 +89,16 @@ export function CheckoutPayment() {
           <b>{st.t.total}</b>
           <b>{st.totalS}</b>
         </div>
+        {/*
+          * The figures above are converted for readability; PayPal is told one
+          * currency. Saying which, right next to the total, is the difference
+          * between a conversion and a surprise on a card statement.
+          */}
+        {st.billedNote && (
+          <div style={s('font-size:11.5px;color:#8A7D6C;text-align:right;margin-top:2px')}>
+            {st.billedNote}
+          </div>
+        )}
       </div>
 
       <div onClick={st.togglePoints} style={s('cursor:pointer;background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px')}>

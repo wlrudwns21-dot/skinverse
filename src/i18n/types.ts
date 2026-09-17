@@ -122,6 +122,29 @@ export interface Strings {
   skinHistory: string
   orders: string
   inTransit: string
+  // Order history and refunds
+  /** Every status an order can be in, including the ones only PayPal writes. */
+  orderStatus: Record<string, string>
+  refundAsked: string
+  refundWithdrawn: string
+  refundAsk: string
+  refundPending: string
+  refundDeclined: string
+  refundWithdraw: string
+  refundReason: string
+  refundSend: string
+  refundNote: string
+  /** Why the server would not take the request, in words a customer can act on. */
+  refundRefused: Record<string, string>
+  tryAgain: string
+  refunded: string
+  ordersEmpty: string
+
+  /** Expanding a list that would otherwise grow without bound. */
+  showAll: (n: number) => string
+  showLess: string
+  /** Says which currency the card is really billed in, when it is not the one on screen. */
+  billedIn: (amount: string) => string
   /** What the latest order says about itself, once it is no longer simply on its way. */
   orderState: Record<'refunded' | 'partly_refunded' | 'reversed' | 'payment_failed' | 'cancelled', string>
   noOrders: string

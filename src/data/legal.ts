@@ -51,8 +51,7 @@ const CO = {
   bizNo: '292-38-01178',
   /** 관할 구청 신고 후 발급. 없으면 통신판매 자체가 불가합니다. */
   saleNo: '[통신판매업 신고번호 — 강남구청 신고 후 기재]',
-  email: '[고객문의 이메일]',
-  phone: '[고객센터 전화번호]',
+  email: 'kyungjun.ji@bio-lj.com',
   privacyOfficer: '[개인정보 보호책임자 성명 · 직책]',
 } as const
 
@@ -188,7 +187,7 @@ export const terms: LegalDoc = {
         CO.addressEn,
         `사업자등록번호 ${CO.bizNo}`,
         `통신판매업 신고번호 ${CO.saleNo}`,
-        `고객문의 ${CO.email} · ${CO.phone}`,
+        `고객문의 ${CO.email}`,
       ],
     },
   ],
@@ -302,7 +301,7 @@ export const privacy: LegalDoc = {
       heading: '10. 개인정보 보호책임자',
       body: [
         `개인정보 보호책임자 ${CO.privacyOfficer}`,
-        `문의처 ${CO.email} · ${CO.phone}`,
+        `문의처 ${CO.email}`,
         '개인정보 침해에 대한 신고나 상담이 필요하신 경우 개인정보침해신고센터(privacy.kisa.or.kr, 국번없이 118), 대검찰청 사이버수사과(1301), 경찰청 사이버수사국(182)으로 문의하실 수 있습니다.',
       ],
     },

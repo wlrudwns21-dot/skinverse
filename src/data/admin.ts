@@ -10,12 +10,12 @@ import type {
 
 /** SAMPLE DATA — order book. */
 export const adminOrders: AdminOrder[] = [
-  { no: 'SV-2609-4821', date: '09-14 10:42', name: 'Yuki Tanaka', country: '🇯🇵 Japan', amt: 74, carrier: 'DHL', tracking: '—', status: 'paid' },
-  { no: 'SV-2609-4820', date: '09-14 09:15', name: 'Li Wei', country: '🇨🇳 China', amt: 51, carrier: 'EMS', tracking: '—', status: 'preparing' },
-  { no: 'SV-2609-4818', date: '09-13 22:03', name: 'Ploy S.', country: '🇹🇭 Thailand', amt: 98, carrier: 'DHL', tracking: 'DHL 4402 8871', status: 'shipped' },
-  { no: 'SV-2609-4815', date: '09-13 18:37', name: 'Emma Chen', country: '🇸🇬 Singapore', amt: 42, carrier: 'EMS', tracking: 'EM 552 918 KR', status: 'shipped' },
-  { no: 'SV-2609-4809', date: '09-12 14:11', name: 'Sarah Kim', country: '🇺🇸 USA', amt: 126, carrier: 'DHL', tracking: 'DHL 4402 6650', status: 'delivered' },
-  { no: 'SV-2609-4801', date: '09-11 20:49', name: 'Aiko Mori', country: '🇯🇵 Japan', amt: 37, carrier: 'EMS', tracking: '—', status: 'cancelled' },
+  { no: 'SV-2609-4821', date: '09-14 10:42', name: 'Yuki Tanaka', country: '🇯🇵 Japan', amt: 74, carrier: 'DHL', tracking: '—', status: 'paid', refunded: 0, capturable: false },
+  { no: 'SV-2609-4820', date: '09-14 09:15', name: 'Li Wei', country: '🇨🇳 China', amt: 51, carrier: 'EMS', tracking: '—', status: 'preparing', refunded: 0, capturable: false },
+  { no: 'SV-2609-4818', date: '09-13 22:03', name: 'Ploy S.', country: '🇹🇭 Thailand', amt: 98, carrier: 'DHL', tracking: 'DHL 4402 8871', status: 'shipped', refunded: 0, capturable: false },
+  { no: 'SV-2609-4815', date: '09-13 18:37', name: 'Emma Chen', country: '🇸🇬 Singapore', amt: 42, carrier: 'EMS', tracking: 'EM 552 918 KR', status: 'shipped', refunded: 0, capturable: false },
+  { no: 'SV-2609-4809', date: '09-12 14:11', name: 'Sarah Kim', country: '🇺🇸 USA', amt: 126, carrier: 'DHL', tracking: 'DHL 4402 6650', status: 'delivered', refunded: 0, capturable: false },
+  { no: 'SV-2609-4801', date: '09-11 20:49', name: 'Aiko Mori', country: '🇯🇵 Japan', amt: 37, carrier: 'EMS', tracking: '—', status: 'cancelled', refunded: 0, capturable: false },
 ]
 
 /** SAMPLE DATA — inventory view of the catalogue. */

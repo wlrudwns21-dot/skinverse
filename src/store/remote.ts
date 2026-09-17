@@ -696,3 +696,142 @@ export async function voidCheckout(orderNo: string, reason: string): Promise<num
   const row = (data ?? {}) as Record<string, unknown>
   return typeof row.pointsReturned === 'number' ? row.pointsReturned : null
 }
+
+// ── order history and refunds ───────────────────────────────────────────────
+
+/**
+ * One line of the customer's own order history.
+ *
+ * Read straight from `orders` rather than through an RPC: row level security
+ * already scopes it to the signed-in member, and a function would only be a
+ * second place for that rule to be written down differently.
+ */
+export interface MemberOrder {
+  orderNo: string
+  createdAt: string
+  status: OrderStatus
+  /** Settlement currency. The screen converts it for display. */
+  total: number
+  refundedTotal: number
+  pointsEarned: number
+  pointsUsed: number
+  eta: string
+  shipMethod: string
+  tracking: string
+  paidAt: string | null
+  /** The state of this member's refund request on this order, if any. */
+  refund: MemberRefundRequest | null
+}
+
+export interface MemberRefundRequest {
+  status: 'pending' | 'approved' | 'declined' | 'done' | 'cancelled'
+  reason: string
+  requestedAt: string
+  /** The operator's answer when they turned it down. */
+  note: string
+}
+
+const ORDER_COLUMNS =
+  'order_no, created_at, status, total, refunded_total, points_earned, points_used, ' +
+  'eta, ship_method, tracking, paid_at'
+
+/** How far back the history goes. Long enough to cover the retention period. */
+const ORDER_HISTORY_LIMIT = 50
+
+export async function loadMyOrders(): Promise<MemberOrder[]> {
+  if (!supabase) return []
+
+  const [orders, refunds] = await Promise.all([
+    supabase
+      .from('orders')
+      .select(ORDER_COLUMNS)
+      .order('created_at', { ascending: false })
+      .limit(ORDER_HISTORY_LIMIT),
+    supabase.from('refund_requests').select('order_no, status, reason, requested_at, note'),
+  ])
+
+  if (orders.error) {
+    console.error('[skinverse] 주문 내역을 불러오지 못했습니다', orders.error.message)
+    return []
+  }
+  // A failed refund lookup must not hide the orders themselves — the history
+  // is still true, it just cannot say what was asked about each line.
+  if (refunds.error) {
+    console.error('[skinverse] 환불 요청 조회 실패', refunds.error.message)
+  }
+
+  const byOrder = new Map<string, MemberRefundRequest>()
+  for (const row of (refunds.data ?? []) as unknown as Record<string, unknown>[]) {
+    byOrder.set(String(row.order_no), {
+      status: row.status as MemberRefundRequest['status'],
+      reason: String(row.reason ?? ''),
+      requestedAt: String(row.requested_at ?? ''),
+      note: String(row.note ?? ''),
+    })
+  }
+
+  // The column list is a runtime string, so PostgREST's generated types cannot
+  // narrow it; the shape is asserted here and read defensively below.
+  const rows = (orders.data ?? []) as unknown as Record<string, unknown>[]
+
+  return rows.map((row) => ({
+    orderNo: String(row.order_no),
+    createdAt: String(row.created_at ?? ''),
+    status: row.status as OrderStatus,
+    total: Number(row.total ?? 0),
+    refundedTotal: Number(row.refunded_total ?? 0),
+    pointsEarned: Number(row.points_earned ?? 0),
+    pointsUsed: Number(row.points_used ?? 0),
+    eta: String(row.eta ?? ''),
+    shipMethod: String(row.ship_method ?? ''),
+    tracking: String(row.tracking ?? ''),
+    paidAt: row.paid_at ? String(row.paid_at) : null,
+    refund: byOrder.get(String(row.order_no)) ?? null,
+  }))
+}
+
+/** Why the server would not accept a refund request. */
+export type RefundRefusal =
+  | 'not_signed_in'
+  | 'no_such_order'
+  | 'not_paid'
+  | 'already_settled'
+  | 'unavailable'
+
+/**
+ * Ask for the money back.
+ *
+ * A request, not a refund: the money only moves when an operator issues it and
+ * PayPal confirms. Saying so plainly on the screen matters more than the
+ * mechanism — a button labelled "환불" that merely files a ticket is a
+ * promise the shop has not made.
+ */
+export async function requestRefund(
+  orderNo: string,
+  reason: string,
+): Promise<{ ok: true } | { ok: false; reason: RefundRefusal }> {
+  if (!supabase) return { ok: false, reason: 'unavailable' }
+
+  const { data, error } = await supabase.rpc('request_refund', {
+    p_order_no: orderNo,
+    p_reason: reason,
+  })
+  if (error) {
+    console.error('[skinverse] 환불 요청 실패', error.message)
+    return { ok: false, reason: 'unavailable' }
+  }
+
+  const row = (data ?? {}) as Record<string, unknown>
+  if (row.ok === true) return { ok: true }
+  return { ok: false, reason: (row.reason as RefundRefusal) ?? 'unavailable' }
+}
+
+export async function cancelRefundRequest(orderNo: string): Promise<boolean> {
+  if (!supabase) return false
+  const { data, error } = await supabase.rpc('cancel_refund_request', { p_order_no: orderNo })
+  if (error) {
+    console.error('[skinverse] 환불 요청 취소 실패', error.message)
+    return false
+  }
+  return (data as Record<string, unknown> | null)?.ok === true
+}

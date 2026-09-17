@@ -49,6 +49,15 @@ export const ko: Strings = {
 
   skinHistory: '피부 기록', orders: '주문 내역', inTransit: '배송 중', noOrders: '아직 주문이 없어요',
   orderState: { refunded: '환불 완료', partly_refunded: '부분 환불', reversed: '결제 취소됨 (분쟁)', payment_failed: '결제 실패', cancelled: '주문 취소' },
+  billedIn: (amount) => `실제 결제는 ${amount} (USD)로 청구됩니다`,
+  showAll: (n) => `기록 ${n}개 더 보기`, showLess: '접기',
+  orderStatus: { pending: '결제 대기', paid: '결제완료', preparing: '배송준비', shipped: '발송완료', delivered: '배송완료', cancelled: '취소', partly_refunded: '부분환불', refunded: '환불완료', reversed: '결제 취소됨', payment_failed: '결제실패' },
+  refundAsked: '환불 요청이 접수되었습니다', refundWithdrawn: '환불 요청을 취소했습니다',
+  refundAsk: '환불 요청', refundPending: '환불 요청 처리 중', refundDeclined: '환불이 거절되었습니다',
+  refundWithdraw: '요청 취소', refundReason: '환불 사유를 알려주세요', refundSend: '요청 보내기',
+  refundNote: '요청하시면 담당자가 확인 후 처리합니다. 승인되면 결제하신 수단으로 환불됩니다.',
+  refundRefused: { not_signed_in: '로그인이 필요합니다', no_such_order: '주문을 찾을 수 없습니다', not_paid: '아직 결제되지 않은 주문입니다', already_settled: '이미 처리된 주문입니다', unavailable: '잠시 후 다시 시도해주세요' },
+  tryAgain: '잠시 후 다시 시도해주세요', refunded: '환불', ordersEmpty: '아직 주문이 없어요',
   settings: '설정', language: '언어', currency: '통화', shipRegion: '배송 지역',
   reminders: '루틴 알림', firstScan: '첫 분석', latest: '최신', scanN: '스캔',
 

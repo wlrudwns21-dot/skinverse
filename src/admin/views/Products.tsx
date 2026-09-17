@@ -24,7 +24,11 @@ export function Products() {
             <div style={s('flex:1;min-width:160px')}>
               <div style={s('font-size:10px;color:#8A7D6C;letter-spacing:0.1em')}>{p.brand}</div>
               <div style={s('font-size:13.5px;font-weight:600')}>{p.name}</div>
-              <div style={s('font-size:11.5px;color:#A2957F')}>{p.kind} · {p.ml} · ${p.price}</div>
+              {/* Won first: that is the price the operator set, and the
+                  dollar figure is derived from it at the current rate. */}
+              <div style={s('font-size:11.5px;color:#A2957F')}>
+                {p.kind} · {p.ml} · ₩{p.priceKrw.toLocaleString('en-US')} (${p.price})
+              </div>
             </div>
 
             <div style={s('text-align:center')}>

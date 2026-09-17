@@ -52,6 +52,7 @@ import { insightT } from '../i18n/insights'
 import { strings, type Strings } from '../i18n'
 import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
 import { capturePaypalOrder, openPaypalOrder } from '../payments/paypal'
+import { display as showMoney, isSettlement, SETTLEMENT } from '../money/fx'
 import * as remote from './remote'
 import {
   initialState,
@@ -169,6 +170,16 @@ function useStoreValue() {
   const weeklyMissions = catalog.missions.filter((m) => m.kind === 'weekly' && m.active)
   const rewards = catalog.rewards.filter((r) => r.active)
   const settings = catalog.settings
+  const rates = catalog.rates
+
+  /**
+   * A settlement amount, written in the currency the customer picked.
+   *
+   * Everything financial this context receives is already in the settlement
+   * currency — the server decided it — so this only ever changes how a number
+   * looks, never what it is.
+   */
+  const money = (amount: number) => showMoney(amount, rates, state.currency)
 
   const [state, setState] = useState<StoreState>(() => {
     // UI preferences and a guest bag are restored before the first paint, so a
@@ -218,6 +229,7 @@ function useStoreValue() {
    * should not be offered the withdrawal button a second time.
    */
   const [deletionPending, setDeletionPending] = useState(false)
+  const [orders, setOrders] = useState<remote.MemberOrder[]>([])
 
   const [liveWeather, setLiveWeather] = useState<Weather | null>(null)
   /**
@@ -250,6 +262,30 @@ function useStoreValue() {
     let cancelled = false
     void remote.myDeletionRequest().then((r) => {
       if (!cancelled) setDeletionPending(r !== null)
+    })
+    return () => { cancelled = true }
+  }, [isMember])
+
+  /*
+   * The member's own orders.
+   *
+   * A guest has none by definition, and the list is emptied on sign-out rather
+   * than left behind — someone else signing in on the same device must not see
+   * the previous person's purchases.
+   */
+  const reloadOrders = useCallback(async () => {
+    if (!isMember) return setOrders([])
+    setOrders(await remote.loadMyOrders())
+  }, [isMember])
+
+  useEffect(() => {
+    let cancelled = false
+    if (!isMember) {
+      setOrders([])
+      return
+    }
+    void remote.loadMyOrders().then((rows) => {
+      if (!cancelled) setOrders(rows)
     })
     return () => { cancelled = true }
   }, [isMember])
@@ -393,7 +429,7 @@ function useStoreValue() {
         order: snap.latestOrder
           ? {
               no: snap.latestOrder.order_no,
-              total: usd(Number(snap.latestOrder.total)),
+              total: money(Number(snap.latestOrder.total)),
               earn: snap.latestOrder.points_earned,
               eta: snap.latestOrder.eta,
               status: snap.latestOrder.status,
@@ -1034,7 +1070,7 @@ function useStoreValue() {
         cart: {},
         order: {
           no: held.orderNo,
-          total: usd(held.total),
+          total: money(held.total),
           earn: res.pointsEarned || held.pointsEarned,
           eta: held.eta,
         },
@@ -1159,7 +1195,7 @@ function useStoreValue() {
       sub: p.sub[lang],
       why: p.why[lang],
       ing: p.ing,
-      priceS: '$' + p.price,
+      priceS: money(p.price),
       matchS: matchN + '%',
       matchN,
       open: () => setState((s) => ({ ...s, screen: 'detail', selId: p.id })),
@@ -1504,7 +1540,7 @@ function useStoreValue() {
       name: p?.name ?? '',
       grad: p?.grad ?? '',
       qty,
-      lineS: usd(price * qty),
+      lineS: money(price * qty),
       inc: () => setQty(id, 1),
       dec: () => setQty(id, -1),
     }
@@ -1520,6 +1556,48 @@ function useStoreValue() {
     authLoading: auth.loading,
     profile: auth.profile,
     signOut: () => void auth.signOut(),
+
+    /**
+     * The order history, ready to render.
+     *
+     * Amounts are converted for display only; `refundable` is decided from the
+     * order's real state rather than from how it looks, so a line that cannot
+     * be refunded never offers a button that would fail.
+     */
+    orderHistory: orders.map((o) => {
+      const settled = ['refunded', 'reversed', 'payment_failed', 'cancelled'].includes(o.status)
+      const open = o.refund?.status === 'pending'
+      return {
+        ...o,
+        totalS: money(o.total),
+        refundedS: o.refundedTotal > 0 ? money(o.refundedTotal) : '',
+        date: o.createdAt.slice(0, 10),
+        statusLabel: t.orderStatus[o.status] ?? o.status,
+        statusTone: settled ? '#C25E43' : o.status === 'delivered' ? '#6E6252' : '#2E6B58',
+        // Nothing to ask for before the money arrived, or after it has gone.
+        refundable: o.paidAt !== null && !settled && !open,
+        requestOpen: open,
+        declined: o.refund?.status === 'declined',
+        declineNote: o.refund?.note ?? '',
+      }
+    }),
+    hasOrders: orders.length > 0,
+
+    askRefund: (orderNo: string, reason: string) => {
+      void (async () => {
+        const res = await remote.requestRefund(orderNo, reason)
+        if (!res.ok) return toastMsg(tRef.current.refundRefused[res.reason] ?? tRef.current.tryAgain)
+        await reloadOrders()
+        toastMsg(tRef.current.refundAsked)
+      })()
+    },
+    cancelRefund: (orderNo: string) => {
+      void (async () => {
+        if (!(await remote.cancelRefundRequest(orderNo))) return toastMsg(tRef.current.tryAgain)
+        await reloadOrders()
+        toastMsg(tRef.current.refundWithdrawn)
+      })()
+    },
 
     deletionPending,
     requestDeletion: (reason: string) => {
@@ -1537,6 +1615,13 @@ function useStoreValue() {
         setDeletionPending(false)
         toastMsg(tRef.current.tLeaveCancelled)
       })()
+    },
+    money,
+    currency: state.currency,
+    currencyOptions: Object.values(rates)
+      .map((r) => ({ value: r.code, label: `${r.label} ${r.symbol}` })),
+    setCurrency: (value: string) => {
+      setState((s) => ({ ...s, currency: rates[value] ? value : SETTLEMENT }))
     },
     setLang: (value: Lang) => {
       setState((s) => ({ ...s, lang: value }))
@@ -1627,11 +1712,17 @@ function useStoreValue() {
     sel,
 
     cartItems,
-    subS: usd(totals.sub),
-    shipS: usd(totals.ship),
-    discS: '−' + usd(totals.disc),
-    totalS: usd(totals.total),
-    usePtsLine: t.usePts(totals.ptsUsed.toLocaleString(), usd(totals.disc)),
+    subS: money(totals.sub),
+    shipS: money(totals.ship),
+    discS: '−' + money(totals.disc),
+    totalS: money(totals.total),
+    usePtsLine: t.usePts(totals.ptsUsed.toLocaleString(), money(totals.disc)),
+    /**
+     * What the card is actually billed, shown alongside the converted total
+     * when the two differ. Quoting ฿1,372 and charging $37.60 in silence is
+     * how a customer concludes they were overcharged by the rounding.
+     */
+    billedNote: isSettlement(state.currency) ? '' : t.billedIn(usd(totals.total)),
     earnPreview: Math.round((totals.sub + totals.ship) * settings.earnPerDollar),
     shipName: catalog.shipping[state.ship].label,
     setName: (value: string) => setState((s) => ({ ...s, name: value })),

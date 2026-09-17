@@ -99,7 +99,10 @@ export async function loadOrders(): Promise<AdminOrder[]> {
   if (!supabase) return []
   const { data, error } = await supabase
     .from('orders')
-    .select('order_no, created_at, ship_name, ship_country, total, ship_method, tracking, status')
+    .select(
+      'order_no, created_at, ship_name, ship_country, total, refunded_total, ' +
+        'ship_method, tracking, status, payment_capture_id',
+    )
     .order('created_at', { ascending: false })
     .limit(200)
 
@@ -108,7 +111,8 @@ export async function loadOrders(): Promise<AdminOrder[]> {
     return []
   }
 
-  return (data ?? []).map((o) => ({
+  // Built from a runtime column list, so the generated row type cannot narrow.
+  return ((data ?? []) as unknown as Record<string, unknown>[]).map((o) => ({
     no: o.order_no as string,
     date: new Date(o.created_at as string).toLocaleString('ko-KR', {
       month: '2-digit',
@@ -119,9 +123,13 @@ export async function loadOrders(): Promise<AdminOrder[]> {
     name: (o.ship_name as string) || '—',
     country: o.ship_country as string,
     amt: Number(o.total),
+    refunded: Number(o.refunded_total ?? 0),
     carrier: o.ship_method === 'dhl' ? 'DHL' : 'EMS',
     tracking: (o.tracking as string) || '—',
     status: o.status as OrderStatus,
+    // No capture id means nothing was ever taken, so there is nothing to send
+    // back — the refund control has to be absent rather than merely failing.
+    capturable: typeof o.payment_capture_id === 'string' && o.payment_capture_id.length > 0,
   }))
 }
 
@@ -518,4 +526,119 @@ export async function completeAccountDeletion(
     threadsRetained: typeof row.threadsRetained === 'number' ? row.threadsRetained : undefined,
     reason: typeof row.reason === 'string' ? row.reason : undefined,
   }
+}
+
+// ── refunds ─────────────────────────────────────────────────────────────────
+
+/** One customer waiting for an answer. */
+export interface RefundRequestRow {
+  orderNo: string
+  reason: string
+  requestedAt: string
+  total: number
+  refundedTotal: number
+  orderStatus: OrderStatus
+  shipName: string
+  shipCountry: string
+  paidAt: string | null
+  capturable: boolean
+}
+
+export async function loadRefundQueue(): Promise<RefundRequestRow[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase.rpc('admin_refund_queue')
+  if (error) {
+    console.error('[skinverse] 환불 요청 조회 실패', error.message)
+    return []
+  }
+  return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    orderNo: String(r.order_no),
+    reason: String(r.reason ?? ''),
+    requestedAt: String(r.requested_at ?? ''),
+    total: Number(r.total ?? 0),
+    refundedTotal: Number(r.refunded_total ?? 0),
+    orderStatus: r.order_status as OrderStatus,
+    shipName: String(r.ship_name ?? ''),
+    shipCountry: String(r.ship_country ?? ''),
+    paidAt: r.paid_at ? String(r.paid_at) : null,
+    capturable: typeof r.payment_capture_id === 'string' && r.payment_capture_id.length > 0,
+  }))
+}
+
+export interface RefundOutcome {
+  ok: boolean
+  /** Set when it failed, in words an operator can act on. */
+  message: string
+  pointsClawedBack: number
+  /** Points the customer had already spent, so could not be taken back. */
+  pointsShort: number
+}
+
+const REFUND_ERRORS: Record<string, string> = {
+  not_an_operator: '권한이 없습니다',
+  no_such_order: '주문을 찾을 수 없습니다',
+  nothing_captured: '결제된 금액이 없습니다',
+  already_fully_refunded: '이미 전액 환불된 주문입니다',
+  amount_exceeds_remaining: '남은 환불 가능 금액을 초과했습니다',
+  refund_not_accepted: 'PayPal이 환불을 받아들이지 않았습니다',
+  paypal_failed: 'PayPal 요청이 실패했습니다',
+}
+
+/**
+ * Send the money back.
+ *
+ * Goes through the edge function rather than the database, because only the
+ * server holds the PayPal secret — and because the refund has to happen at
+ * PayPal *first*. Marking an order refunded in our own tables and then failing
+ * to reach PayPal would leave the books saying the customer was paid when they
+ * were not.
+ *
+ * `amount` omitted refunds everything still outstanding.
+ */
+export async function refundOrder(
+  orderNo: string,
+  amount: number | null,
+  note: string,
+): Promise<RefundOutcome> {
+  if (!supabase) return { ok: false, message: '서버에 연결할 수 없습니다', pointsClawedBack: 0, pointsShort: 0 }
+
+  const { data, error } = await supabase.functions.invoke('paypal', {
+    body: { action: 'refund', orderNo, amount: amount ?? undefined, note },
+  })
+
+  if (error) {
+    console.error('[skinverse] 환불 실패', error.message)
+    return { ok: false, message: '환불에 실패했습니다. 로그를 확인해주세요.', pointsClawedBack: 0, pointsShort: 0 }
+  }
+
+  const row = (data ?? {}) as Record<string, unknown>
+  if (row.ok !== true) {
+    const code = String(row.error ?? '')
+    return {
+      ok: false,
+      message: REFUND_ERRORS[code] ?? '환불에 실패했습니다',
+      pointsClawedBack: 0,
+      pointsShort: 0,
+    }
+  }
+
+  return {
+    ok: true,
+    message: '',
+    pointsClawedBack: Number(row.pointsClawedBack ?? 0),
+    pointsShort: Number(row.pointsShort ?? 0),
+  }
+}
+
+export async function declineRefund(orderNo: string, note: string): Promise<boolean> {
+  if (!supabase) return false
+  const { data, error } = await supabase.rpc('decline_refund_request', {
+    p_order_no: orderNo,
+    p_note: note,
+  })
+  if (error) {
+    console.error('[skinverse] 환불 거절 실패', error.message)
+    return false
+  }
+  return (data as Record<string, unknown> | null)?.ok === true
 }

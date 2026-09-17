@@ -49,6 +49,15 @@ export const zh: Strings = {
 
   skinHistory: '肌肤记录', orders: '订单', inTransit: '运送中', noOrders: '暂无订单',
   orderState: { refunded: '已退款', partly_refunded: '部分退款', reversed: '付款已撤销', payment_failed: '付款失败', cancelled: '已取消' },
+  billedIn: (amount) => `实际扣款为 ${amount}（美元）`,
+  showAll: (n) => `再显示 ${n} 条`, showLess: '收起',
+  orderStatus: { pending: '待付款', paid: '已付款', preparing: '备货中', shipped: '已发货', delivered: '已送达', cancelled: '已取消', partly_refunded: '部分退款', refunded: '已退款', reversed: '付款已撤销', payment_failed: '付款失败' },
+  refundAsked: '退款申请已提交', refundWithdrawn: '已撤回退款申请',
+  refundAsk: '申请退款', refundPending: '退款申请处理中', refundDeclined: '退款申请被拒绝',
+  refundWithdraw: '撤回申请', refundReason: '请说明退款原因', refundSend: '提交申请',
+  refundNote: '我们会尽快审核。通过后将按原支付方式退回。',
+  refundRefused: { not_signed_in: '请先登录', no_such_order: '未找到订单', not_paid: '该订单尚未付款', already_settled: '该订单已处理完毕', unavailable: '请稍后再试' },
+  tryAgain: '请稍后再试', refunded: '退款', ordersEmpty: '暂无订单',
   settings: '设置', language: '语言', currency: '货币', shipRegion: '配送地区',
   reminders: '护肤提醒', firstScan: '首次分析', latest: '最新', scanN: '扫描',
 

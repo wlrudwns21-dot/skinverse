@@ -206,6 +206,60 @@ export async function captureOrder(paypalOrderId: string): Promise<CaptureResult
   }
 }
 
+export interface RefundResult {
+  id: string
+  status: string
+  /** What PayPal says it actually sent back. */
+  amount: string | null
+  currency: string | null
+}
+
+/**
+ * Send money back.
+ *
+ * `amount` omitted means the whole remaining capture — which is what PayPal
+ * does with an empty body, and what an operator almost always means. A partial
+ * refund must name its figure, and PayPal rejects anything that would take the
+ * total refunded past what was captured, so over-refunding is not our bug to
+ * prevent.
+ *
+ * The idempotency key is built from the capture and the amount rather than
+ * being random: a double-clicked button sends the same request twice, and
+ * PayPal treats the second as a repeat of the first instead of a second
+ * refund. Two *deliberate* partial refunds of the same size need distinct
+ * keys, which is what the caller's `reference` supplies.
+ */
+export async function refundCapture(opts: {
+  captureId: string
+  amount?: number | null
+  currency: string
+  reference: string
+  note?: string
+}): Promise<RefundResult> {
+  const body: Record<string, unknown> = {}
+  if (opts.amount != null && opts.amount > 0) {
+    body.amount = { value: amountString(opts.amount), currency_code: opts.currency }
+  }
+  if (opts.note) body.note_to_payer = opts.note.slice(0, 255)
+
+  const res = await call<Record<string, unknown>>(
+    `/v2/payments/captures/${encodeURIComponent(opts.captureId)}/refund`,
+    {
+      method: 'POST',
+      idempotencyKey: `refund-${opts.captureId}-${opts.reference}`,
+      body: JSON.stringify(body),
+    },
+  )
+
+  const amount = (res.amount ?? {}) as Record<string, unknown>
+  return {
+    id: String(res.id ?? ''),
+    status: String(res.status ?? ''),
+    amount: amount.value ? String(amount.value) : null,
+    currency: amount.currency_code ? String(amount.currency_code) : null,
+  }
+}
+
 /**
  * Is this webhook really from PayPal?
  *

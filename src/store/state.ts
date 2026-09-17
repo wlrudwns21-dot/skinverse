@@ -7,6 +7,7 @@ import type { AnalysisVisuals, SkinTypeReading } from '../analysis/perfectcorp'
 import type { Capability } from '../auth/capabilities'
 import type { ImageCheck } from '../analysis/imageCheck'
 import type { ChipKey } from '../i18n/chips'
+import { SETTLEMENT } from '../money/fx'
 
 export type Screen =
   | 'home'
@@ -83,6 +84,11 @@ export interface StoreState {
   filter: ChipKey
   chkStep: 1 | 2 | 3
   lang: Lang
+  /**
+   * The currency prices are shown in. Display only — the bill is always in the
+   * settlement currency, and the checkout says so when they differ.
+   */
+  currency: string
   skinCondition: SkinConditionKey
 
   /** Authoritative point balance: the member's profile, or 0 for a guest. */
@@ -153,6 +159,7 @@ export const initialState: StoreState = {
   filter: 'All',
   chkStep: 1,
   lang: demoScenario.language,
+  currency: SETTLEMENT,
   skinCondition: demoScenario.skinCondition,
 
   points: 0,

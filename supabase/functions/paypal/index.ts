@@ -7,6 +7,7 @@ import {
   IS_LIVE,
   isConfigured,
   PayPalError,
+  refundCapture,
   verifyWebhook,
 } from './paypal.ts'
 
@@ -346,13 +347,15 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get('Authorization') ?? ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
   let userId: string | null = null
+  let userEmail = ''
   if (token) {
     const { data } = await admin.auth.getUser(token)
     userId = data.user?.id ?? null
+    userEmail = (data.user?.email ?? '').toLowerCase()
   }
   if (!userId) return json({ error: 'members_only' }, 401, cors)
 
-  let body: { action?: string; orderNo?: string }
+  let body: { action?: string; orderNo?: string; amount?: number; note?: string }
   try {
     body = (await req.json()) as typeof body
   } catch {
@@ -361,6 +364,119 @@ Deno.serve(async (req) => {
 
   const orderNo = typeof body.orderNo === 'string' ? body.orderNo : ''
   if (!orderNo) return json({ error: 'order_required' }, 400, cors)
+
+  // ── refund ───────────────────────────────────────────────────────────────
+  //
+  // Split out above the ownership check below, because this is the one action
+  // where the caller is deliberately NOT the person who owns the order. The
+  // check it gets instead is the stricter one: an active operator, looked up
+  // by the email inside their own verified token.
+  if (body.action === 'refund') {
+    const { data: operator, error: opError } = await admin
+      .from('admin_users')
+      .select('email, status')
+      .eq('email', userEmail)
+      .eq('status', 'active')
+      .maybeSingle()
+
+    if (opError) {
+      console.error('could not check operator status', opError.message)
+      return json({ error: 'unavailable' }, 503, cors)
+    }
+    if (!operator) return json({ error: 'not_an_operator' }, 403, cors)
+
+    const { data: row, error: readErr } = await admin
+      .from('orders')
+      .select('order_no, total, refunded_total, status, payment_capture_id')
+      .eq('order_no', orderNo)
+      .maybeSingle()
+    if (readErr) {
+      console.error('could not read the order to refund', readErr.message)
+      return json({ error: 'unavailable' }, 503, cors)
+    }
+
+    const order = row as {
+      total: string
+      refunded_total: string | null
+      status: string
+      payment_capture_id: string | null
+    } | null
+    if (!order) return json({ error: 'no_such_order' }, 404, cors)
+    if (!order.payment_capture_id) return json({ error: 'nothing_captured' }, 409, cors)
+
+    // What is actually left to give back. Asking PayPal for more than this
+    // fails at their end anyway; failing here says why in plain terms.
+    const remaining = Number(order.total) - Number(order.refunded_total ?? 0)
+    if (remaining <= 0) return json({ error: 'already_fully_refunded' }, 409, cors)
+
+    const asked = typeof body.amount === 'number' && body.amount > 0 ? body.amount : null
+    if (asked != null && asked > remaining + 0.005) {
+      return json({ error: 'amount_exceeds_remaining', remaining }, 409, cors)
+    }
+
+    let refund
+    try {
+      refund = await refundCapture({
+        captureId: order.payment_capture_id,
+        amount: asked,
+        currency: CURRENCY,
+        // Distinguishes two deliberate partial refunds of the same size while
+        // still collapsing an accidental double-click into one.
+        reference: `${Math.round((asked ?? remaining) * 100)}-${Math.round(
+          Number(order.refunded_total ?? 0) * 100,
+        )}`,
+        note: body.note,
+      })
+    } catch (err) {
+      if (err instanceof PayPalError) {
+        console.error(`refund failed for ${orderNo}`, err.message)
+        return json({ error: 'paypal_failed', message: err.userMessage }, err.status, cors)
+      }
+      throw err
+    }
+
+    if (refund.status !== 'COMPLETED' && refund.status !== 'PENDING') {
+      console.error(`refund for ${orderNo} came back as ${refund.status}`)
+      return json({ error: 'refund_not_accepted', status: refund.status }, 502, cors)
+    }
+
+    /*
+     * Settle it here as well as in the webhook.
+     *
+     * Same redundancy as capture, for the same reason: the webhook is the
+     * reliable path but not the fast one, and an operator who clicks refund
+     * should not be left looking at an order that still says `paid`.
+     * `reverse_checkout` keys on the refund id, so whichever arrives second
+     * does nothing.
+     */
+    const { data: applied, error: revErr } = await admin.rpc('reverse_checkout', {
+      p_order_no: orderNo,
+      p_kind: 'refund',
+      p_amount: Number(refund.amount ?? asked ?? remaining),
+      p_ref: refund.id,
+      p_note: `운영자 환불 (${userEmail})${body.note ? ' · ' + body.note : ''}`,
+    })
+    if (revErr) {
+      // The money has gone back and our books do not know. The webhook will
+      // put that right, which is exactly why it exists.
+      console.error(`reverse_checkout failed after a successful refund of ${orderNo}`, revErr.message)
+      return json({ ok: true, refundId: refund.id, pendingSettlement: true }, 200, cors)
+    }
+
+    const result = (applied ?? {}) as Record<string, unknown>
+    return json(
+      {
+        ok: true,
+        refundId: refund.id,
+        status: result.status ?? null,
+        refundedTotal: result.refundedTotal ?? null,
+        pointsClawedBack: result.pointsClawedBack ?? 0,
+        pointsShort: result.pointsShort ?? 0,
+      },
+      200,
+      cors,
+    )
+  }
 
   // The ownership check. Without it, one member could pay for — or capture —
   // another member's order by guessing an order number.

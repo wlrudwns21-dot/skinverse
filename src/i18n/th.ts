@@ -49,6 +49,15 @@ export const th: Strings = {
 
   skinHistory: 'ประวัติผิว', orders: 'คำสั่งซื้อ', inTransit: 'กำลังจัดส่ง', noOrders: 'ยังไม่มีคำสั่งซื้อ',
   orderState: { refunded: 'คืนเงินแล้ว', partly_refunded: 'คืนเงินบางส่วน', reversed: 'ยกเลิกการชำระเงิน', payment_failed: 'ชำระเงินไม่สำเร็จ', cancelled: 'ยกเลิกแล้ว' },
+  billedIn: (amount) => `ยอดเรียกเก็บจริงคือ ${amount} (USD)`,
+  showAll: (n) => `ดูเพิ่มอีก ${n} รายการ`, showLess: 'ย่อ',
+  orderStatus: { pending: 'รอชำระเงิน', paid: 'ชำระแล้ว', preparing: 'กำลังเตรียมสินค้า', shipped: 'จัดส่งแล้ว', delivered: 'ส่งถึงแล้ว', cancelled: 'ยกเลิกแล้ว', partly_refunded: 'คืนเงินบางส่วน', refunded: 'คืนเงินแล้ว', reversed: 'ยกเลิกการชำระเงิน', payment_failed: 'ชำระเงินไม่สำเร็จ' },
+  refundAsked: 'รับคำขอคืนเงินแล้ว', refundWithdrawn: 'ยกเลิกคำขอคืนเงินแล้ว',
+  refundAsk: 'ขอคืนเงิน', refundPending: 'กำลังพิจารณาคำขอคืนเงิน', refundDeclined: 'คำขอคืนเงินถูกปฏิเสธ',
+  refundWithdraw: 'ยกเลิกคำขอ', refundReason: 'โปรดระบุเหตุผล', refundSend: 'ส่งคำขอ',
+  refundNote: 'เราจะตรวจสอบคำขอของคุณ หากอนุมัติ เงินจะคืนตามช่องทางที่ชำระ',
+  refundRefused: { not_signed_in: 'กรุณาเข้าสู่ระบบ', no_such_order: 'ไม่พบคำสั่งซื้อ', not_paid: 'คำสั่งซื้อนี้ยังไม่ได้ชำระเงิน', already_settled: 'คำสั่งซื้อนี้ดำเนินการเสร็จแล้ว', unavailable: 'โปรดลองอีกครั้งในภายหลัง' },
+  tryAgain: 'โปรดลองอีกครั้งในภายหลัง', refunded: 'คืนเงิน', ordersEmpty: 'ยังไม่มีคำสั่งซื้อ',
   settings: 'ตั้งค่า', language: 'ภาษา', currency: 'สกุลเงิน', shipRegion: 'พื้นที่จัดส่ง',
   reminders: 'แจ้งเตือนรูทีน', firstScan: 'วิเคราะห์ครั้งแรก', latest: 'ล่าสุด', scanN: 'สแกน',
 
