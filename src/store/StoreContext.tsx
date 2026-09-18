@@ -52,6 +52,7 @@ import { insightT } from '../i18n/insights'
 import { strings, type Strings } from '../i18n'
 import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
 import { capturePaypalOrder, openPaypalOrder } from '../payments/paypal'
+import { arrivalError, confirmedSignup } from '../auth/landing'
 import { display as showMoney, isSettlement, SETTLEMENT } from '../money/fx'
 import * as remote from './remote'
 import {
@@ -245,6 +246,8 @@ function useStoreValue() {
   const ins = useMemo(() => insightT(state.lang), [state.lang])
   const tRef = useRef<Strings>(t)
   tRef.current = t
+  const aRef = useRef(a)
+  aRef.current = a
 
   useEffect(
     () => () => {
@@ -289,6 +292,30 @@ function useStoreValue() {
     })
     return () => { cancelled = true }
   }, [isMember])
+
+  /*
+   * Acknowledge an email link.
+   *
+   * Clicking "confirm my email" and landing on an ordinary home page with no
+   * word of acknowledgement reads as failure, whatever the database thinks —
+   * and an expired link reads the same way, except it really did fail. Said
+   * once, on the load that carried the token.
+   */
+  const greeted = useRef(false)
+  useEffect(() => {
+    if (greeted.current) return
+    if (!arrivalError && !confirmedSignup) return
+    greeted.current = true
+    // After the splash, so it is not shown behind it.
+    const timer = setTimeout(() => {
+      setState((s) => ({
+        ...s,
+        toast: arrivalError ? aRef.current.linkExpired : aRef.current.emailConfirmed,
+      }))
+      setTimeout(() => setState((s) => ({ ...s, toast: '' })), TOAST_MS)
+    }, 900)
+    return () => clearTimeout(timer)
+  }, [])
 
   const toastMsg = useCallback((msg: string) => {
     if (toastTimer.current) clearTimeout(toastTimer.current)

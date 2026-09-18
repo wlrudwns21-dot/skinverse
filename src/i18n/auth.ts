@@ -58,6 +58,10 @@ export interface AuthStrings {
   checkEmailSub: (email: string) => string
   gotIt: string
 
+  /** Shown once when an email link brought the visitor here. */
+  emailConfirmed: string
+  linkExpired: string
+
   // Forgotten password
   forgot: string
   resetTitle: string
@@ -204,6 +208,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: '이미 계정이 있으신가요?', noAccount: '아직 회원이 아니신가요?',
     submitting: '처리 중…', back: '← 뒤로',
 
+    emailConfirmed: '이메일 인증이 완료되었습니다. 로그인해주세요.',
+    linkExpired: '링크가 만료되었거나 이미 사용되었습니다. 다시 요청해주세요.',
     forgot: '비밀번호를 잊으셨나요?',
     resetTitle: '비밀번호 재설정',
     resetSub: '가입하신 이메일 주소를 입력하시면 재설정 링크를 보내드립니다.',
@@ -333,6 +339,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: 'Already have an account?', noAccount: 'Not a member yet?',
     submitting: 'Working…', back: '← Back',
 
+    emailConfirmed: 'Your email is confirmed. Please sign in.',
+    linkExpired: 'That link has expired or was already used. Please request a new one.',
     forgot: 'Forgot your password?',
     resetTitle: 'Reset your password',
     resetSub: 'Enter the email you signed up with and we will send a reset link.',
@@ -462,6 +470,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: '已有账号？', noAccount: '还不是会员？',
     submitting: '处理中…', back: '← 返回',
 
+    emailConfirmed: '邮箱验证完成，请登录。',
+    linkExpired: '链接已过期或已被使用，请重新申请。',
     forgot: '忘记密码？',
     resetTitle: '重置密码',
     resetSub: '请输入注册时使用的邮箱，我们会发送重置链接。',
@@ -591,6 +601,8 @@ export const authStrings: Record<Lang, AuthStrings> = {
     hasAccount: 'มีบัญชีอยู่แล้ว?', noAccount: 'ยังไม่เป็นสมาชิก?',
     submitting: 'กำลังดำเนินการ…', back: '← กลับ',
 
+    emailConfirmed: 'ยืนยันอีเมลเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ',
+    linkExpired: 'ลิงก์หมดอายุหรือถูกใช้ไปแล้ว กรุณาขอใหม่',
     forgot: 'ลืมรหัสผ่าน?',
     resetTitle: 'ตั้งรหัสผ่านใหม่',
     resetSub: 'กรอกอีเมลที่ใช้สมัคร แล้วเราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่',
