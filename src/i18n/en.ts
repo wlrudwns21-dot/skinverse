@@ -50,6 +50,8 @@ export const en: Strings = {
   skinHistory: 'Skin history', orders: 'Orders', inTransit: 'In transit', noOrders: 'No orders yet',
   orderState: { refunded: 'Refunded', partly_refunded: 'Partly refunded', reversed: 'Payment reversed', payment_failed: 'Payment failed', cancelled: 'Cancelled' },
   billedIn: (amount) => `You will be charged ${amount} (USD)`,
+  dust: 'Fine dust', airBand: { good: 'Good', moderate: 'Moderate', bad: 'Bad', veryBad: 'Very bad' },
+  dustAdvice: (b) => `Air quality ${b} — double cleanse tonight to lift what settled, and add an antioxidant step.`,
   showAll: (n) => `Show ${n} more`, showLess: 'Show less',
   orderStatus: { pending: 'Awaiting payment', paid: 'Paid', preparing: 'Preparing', shipped: 'Shipped', delivered: 'Delivered', cancelled: 'Cancelled', partly_refunded: 'Partly refunded', refunded: 'Refunded', reversed: 'Payment reversed', payment_failed: 'Payment failed' },
   refundAsked: 'Refund request received', refundWithdrawn: 'Refund request withdrawn',

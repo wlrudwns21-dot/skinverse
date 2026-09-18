@@ -1,5 +1,6 @@
 import type { MetricKey, ProductTag, Weather } from '../data/types'
 import type { SkinConditionKey } from '../data/types'
+import { isPolluted, type AirBand } from './air'
 import { tempBand, uvBand, type TempBand, type UvBand } from './rules'
 import { dewPoint, drynessBand, type DrynessBand } from './climate'
 
@@ -32,6 +33,10 @@ export interface Rankable {
 export interface RecommendContext {
   metrics: Record<MetricKey, number>
   weather: Weather
+  /** Today's particulates, or null when the air-quality service was silent. */
+  air?: AirBand | null
+  /** 0–100. Zero when there is no reading. */
+  pollution?: number
   /** The axis the report singled out, if it singled one out. */
   focus: MetricKey | null
   /** Axes that fell since the previous comparable scan. */
@@ -62,6 +67,8 @@ export type ReasonKind =
   | 'oilySkin'
   /** The vendor classified the skin as dry. */
   | 'drySkin'
+  /** Particulates are high — the skin is carrying a load it did not choose. */
+  | 'polluted'
 
 export interface Reason {
   kind: ReasonKind
@@ -106,6 +113,15 @@ export const WEIGHTS = {
   oilySkin: 8,
   /** The vendor called the skin dry. */
   drySkin: 8,
+  /**
+   * Bad air, for cleansing and antioxidant products.
+   *
+   * PM2.5 settles into the follicular opening carrying oxidants with it, so
+   * the two answers are getting it off at the end of the day and giving the
+   * skin something to neutralise it with. Weighted below the axis need on
+   * purpose: a dusty week does not change what the skin measured.
+   */
+  polluted: 9,
 } as const
 
 const isDryAir = (d: DrynessBand) => d === 'drying' || d === 'harsh' || d === 'severe'
@@ -182,6 +198,23 @@ export function scoreProduct(product: Rankable, context: RecommendContext): Reco
   if (product.tag === 'Soothing' && isCold(temp)) add('cold', WEIGHTS.cold)
 
   if (product.tag === 'Brightening' && isHighUv(uv)) add('uvLoad', WEIGHTS.uvPigment)
+
+  /*
+   * Particulates.
+   *
+   * Only when we actually have a reading — `air` is null when the service did
+   * not answer, and "we do not know" must not be scored as "the air is clean".
+   *
+   * Pore products answer the mechanical half (what settles in the follicle)
+   * and brightening products the chemical half (oxidative stress, which is
+   * the documented route from PM2.5 to pigmentation). Scaled by how bad it
+   * actually is, so a marginal day nudges rather than reorders.
+   */
+  if (context.air && isPolluted(context.air)) {
+    if (product.tag === 'Pore' || product.tag === 'Brightening') {
+      add('polluted', Math.round((WEIGHTS.polluted * (context.pollution ?? 0)) / 100))
+    }
+  }
 
   // The skin type the vendor reported, folded into our three conditions.
   if (context.condition === 'oily') {

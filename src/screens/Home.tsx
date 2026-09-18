@@ -42,6 +42,14 @@ export function Home() {
           <div style={s('font-size:12px;color:#8A7D6C')}>{st.t.todayIn} {st.placeLabel}</div>
           <div style={s('font-size:14px;font-weight:600;margin-top:3px')}>{st.wLine}</div>
           <div style={s('font-size:12px;color:#2E6B58;margin-top:3px;font-weight:500')}>{st.wHint}</div>
+          {/* Only on the days it is warranted. A line that appears every
+              morning stops being read, and then it is missing on the day it
+              mattered. */}
+          {st.airAdvice && (
+            <div style={s('font-size:12px;color:#B4622F;margin-top:4px;font-weight:600;line-height:1.5')}>
+              {st.airAdvice}
+            </div>
+          )}
         </div>
         <div style={s('color:#B0A490;font-size:18px')}>→</div>
       </div>

@@ -17,6 +17,7 @@
  * the thresholds are documented where they are used.
  */
 
+import { airBand, pollutionLoad, type AirBand } from './air'
 import type { Weather } from '../data/types'
 
 /** Facial skin surface temperature, and the layer just above it taken as saturated. */
@@ -222,6 +223,16 @@ export interface ClimateRead {
   coldStress: number
   /** Sweat will not evaporate freely — heavy textures will sit on the surface. */
   occlusive: boolean
+  /**
+   * What the air is carrying, when the air-quality service answered.
+   *
+   * Null rather than a clean-air default: "we do not know" and "the air is
+   * clean" lead to different advice, and only one of them is honest when the
+   * service is down.
+   */
+  air: AirBand | null
+  /** 0–100, for weighting. Zero when there is no reading.  */
+  pollution: number
 }
 
 export function readClimate(weather: Weather): ClimateRead {
@@ -234,5 +245,7 @@ export function readClimate(weather: Weather): ClimateRead {
     absoluteHumidity: absoluteHumidity(weather.t, weather.h),
     coldStress: coldStress(weather),
     occlusive: td >= 24,
+    air: weather.air ? airBand(weather.air) : null,
+    pollution: weather.air ? pollutionLoad(weather.air) : 0,
   }
 }

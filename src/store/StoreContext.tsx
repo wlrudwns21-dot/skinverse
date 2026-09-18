@@ -53,6 +53,7 @@ import { strings, type Strings } from '../i18n'
 import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
 import { capturePaypalOrder, openPaypalOrder } from '../payments/paypal'
 import { arrivalError, confirmedSignup } from '../auth/landing'
+import { airBand, isPolluted, pollutionLoad } from '../routine/air'
 import { display as showMoney, isSettlement, SETTLEMENT } from '../money/fx'
 import * as remote from './remote'
 import {
@@ -1197,6 +1198,10 @@ function useStoreValue() {
     rank(products, {
       metrics: effectiveMetrics,
       weather,
+      // Null when the air-quality service was silent, which is not the same as
+      // clean air and must not be scored as if it were.
+      air: weather.air ? airBand(weather.air) : null,
+      pollution: weather.air ? pollutionLoad(weather.air) : 0,
       focus: report.insights.some((i) => i.kind === 'weakest') ? report.focus : null,
       falling: fallingAxes(effectiveMetrics, previousMetrics, MOVE_THRESHOLD),
       condition: state.skinCondition,
@@ -1807,7 +1812,23 @@ function useStoreValue() {
     weatherIsLive: liveWeather !== null,
     weather,
     uvColor: plan.uv === 'extreme' || plan.uv === 'veryHigh' ? '#C25E43' : plan.uv === 'high' ? '#B08133' : '#2E6B58',
-    wLine: weather.t + '°C · ' + t.humidity + ' ' + weather.h + '% · UV ' + weather.uv,
+    wLine:
+      weather.t + '°C · ' + t.humidity + ' ' + weather.h + '% · UV ' + weather.uv +
+      // Appended rather than given its own row: it is one more reading about
+      // today, and a reading that is only sometimes there must not leave a gap
+      // in the layout when it is not.
+      (weather.air ? ' · ' + t.dust + ' ' + t.airBand[airBand(weather.air)] : ''),
+    /**
+     * A line of advice, only on the days it is warranted.
+     *
+     * Empty on a clean or ordinary day. Saying "air quality is fine" every
+     * morning trains people to stop reading the strip, and then it says
+     * nothing on the day it matters.
+     */
+    airAdvice:
+      weather.air && isPolluted(airBand(weather.air))
+        ? t.dustAdvice(t.airBand[airBand(weather.air)])
+        : '',
     wHint: bands.humidity.why,
     wAdvice,
     bands,

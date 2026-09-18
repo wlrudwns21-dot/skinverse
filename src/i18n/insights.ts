@@ -150,6 +150,7 @@ const ko: InsightStrings = {
 
   reason: {
     axisNeed: '가장 필요한 항목',
+    polluted: '미세먼지 많음',
     focusAxis: '이번 집중 항목',
     axisFalling: '최근 하락 중',
     dryAir: '건조한 공기',
@@ -259,6 +260,7 @@ const en: InsightStrings = {
 
   reason: {
     axisNeed: 'Your lowest-scoring need',
+    polluted: 'High particulates',
     focusAxis: 'This cycle’s focus',
     axisFalling: 'Declining recently',
     dryAir: 'Dry air',
@@ -368,6 +370,7 @@ const zh: InsightStrings = {
 
   reason: {
     axisNeed: '最需要改善的一项',
+    polluted: '雾霾较重',
     focusAxis: '本轮重点',
     axisFalling: '近期下降',
     dryAir: '空气干燥',
@@ -477,6 +480,7 @@ const th: InsightStrings = {
 
   reason: {
     axisNeed: 'จุดที่ต้องการที่สุด',
+    polluted: 'ฝุ่นละอองสูง',
     focusAxis: 'จุดเน้นรอบนี้',
     axisFalling: 'กำลังลดลง',
     dryAir: 'อากาศแห้ง',

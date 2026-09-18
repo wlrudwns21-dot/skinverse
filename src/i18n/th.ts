@@ -50,6 +50,8 @@ export const th: Strings = {
   skinHistory: 'ประวัติผิว', orders: 'คำสั่งซื้อ', inTransit: 'กำลังจัดส่ง', noOrders: 'ยังไม่มีคำสั่งซื้อ',
   orderState: { refunded: 'คืนเงินแล้ว', partly_refunded: 'คืนเงินบางส่วน', reversed: 'ยกเลิกการชำระเงิน', payment_failed: 'ชำระเงินไม่สำเร็จ', cancelled: 'ยกเลิกแล้ว' },
   billedIn: (amount) => `ยอดเรียกเก็บจริงคือ ${amount} (USD)`,
+  dust: 'ฝุ่นละออง', airBand: { good: 'ดี', moderate: 'ปานกลาง', bad: 'แย่', veryBad: 'แย่มาก' },
+  dustAdvice: (b) => `คุณภาพอากาศ${b} — ล้างหน้าสองขั้นตอนในตอนเย็นเพื่อชะล้างฝุ่นที่เกาะอยู่ และเพิ่มขั้นตอนสารต้านอนุมูลอิสระ`,
   showAll: (n) => `ดูเพิ่มอีก ${n} รายการ`, showLess: 'ย่อ',
   orderStatus: { pending: 'รอชำระเงิน', paid: 'ชำระแล้ว', preparing: 'กำลังเตรียมสินค้า', shipped: 'จัดส่งแล้ว', delivered: 'ส่งถึงแล้ว', cancelled: 'ยกเลิกแล้ว', partly_refunded: 'คืนเงินบางส่วน', refunded: 'คืนเงินแล้ว', reversed: 'ยกเลิกการชำระเงิน', payment_failed: 'ชำระเงินไม่สำเร็จ' },
   refundAsked: 'รับคำขอคืนเงินแล้ว', refundWithdrawn: 'ยกเลิกคำขอคืนเงินแล้ว',

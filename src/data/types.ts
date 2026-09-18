@@ -33,6 +33,14 @@ export interface Weather {
   t: number
   h: number
   uv: number
+  /**
+   * Particulates, when the air-quality service answered.
+   *
+   * Optional because it is a second request to a second host, and because
+   * every reading taken before this existed has none — the routine says
+   * nothing about dust rather than guessing at it.
+   */
+  air?: { pm10: number; pm25: number }
 }
 
 export interface SkinCondition {

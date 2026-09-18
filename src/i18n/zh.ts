@@ -50,6 +50,8 @@ export const zh: Strings = {
   skinHistory: '肌肤记录', orders: '订单', inTransit: '运送中', noOrders: '暂无订单',
   orderState: { refunded: '已退款', partly_refunded: '部分退款', reversed: '付款已撤销', payment_failed: '付款失败', cancelled: '已取消' },
   billedIn: (amount) => `实际扣款为 ${amount}（美元）`,
+  dust: '细颗粒物', airBand: { good: '优', moderate: '良', bad: '差', veryBad: '很差' },
+  dustAdvice: (b) => `空气质量${b} — 晚间请做双重清洁，彻底洗净附着的颗粒，并加入抗氧化步骤。`,
   showAll: (n) => `再显示 ${n} 条`, showLess: '收起',
   orderStatus: { pending: '待付款', paid: '已付款', preparing: '备货中', shipped: '已发货', delivered: '已送达', cancelled: '已取消', partly_refunded: '部分退款', refunded: '已退款', reversed: '付款已撤销', payment_failed: '付款失败' },
   refundAsked: '退款申请已提交', refundWithdrawn: '已撤回退款申请',

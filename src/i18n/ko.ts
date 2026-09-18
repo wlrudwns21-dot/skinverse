@@ -50,6 +50,8 @@ export const ko: Strings = {
   skinHistory: '피부 기록', orders: '주문 내역', inTransit: '배송 중', noOrders: '아직 주문이 없어요',
   orderState: { refunded: '환불 완료', partly_refunded: '부분 환불', reversed: '결제 취소됨 (분쟁)', payment_failed: '결제 실패', cancelled: '주문 취소' },
   billedIn: (amount) => `실제 결제는 ${amount} (USD)로 청구됩니다`,
+  dust: '미세먼지', airBand: { good: '좋음', moderate: '보통', bad: '나쁨', veryBad: '매우나쁨' },
+  dustAdvice: (b) => `미세먼지 ${b} — 저녁 이중 세안으로 남은 입자를 확실히 씻어내고, 항산화 제품을 더해주세요.`,
   showAll: (n) => `기록 ${n}개 더 보기`, showLess: '접기',
   orderStatus: { pending: '결제 대기', paid: '결제완료', preparing: '배송준비', shipped: '발송완료', delivered: '배송완료', cancelled: '취소', partly_refunded: '부분환불', refunded: '환불완료', reversed: '결제 취소됨', payment_failed: '결제실패' },
   refundAsked: '환불 요청이 접수되었습니다', refundWithdrawn: '환불 요청을 취소했습니다',

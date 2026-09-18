@@ -140,6 +140,12 @@ export interface Strings {
   refunded: string
   ordersEmpty: string
 
+  /** Particulates, shown in the weather strip when there is a reading. */
+  dust: string
+  airBand: Record<'good' | 'moderate' | 'bad' | 'veryBad', string>
+  /** One line of advice, only on the days the air warrants it. */
+  dustAdvice: (band: string) => string
+
   /** Expanding a list that would otherwise grow without bound. */
   showAll: (n: number) => string
   showLess: string

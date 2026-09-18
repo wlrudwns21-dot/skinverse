@@ -1,3 +1,4 @@
+import type { AirQuality } from '../routine/air'
 import type { Weather } from '../data/types'
 
 /**
@@ -13,6 +14,13 @@ import type { Weather } from '../data/types'
  * a swap to a commercial provider — this file is the only place to change.
  */
 const ENDPOINT = 'https://api.open-meteo.com/v1/forecast'
+
+/**
+ * Air quality is a separate Open-Meteo service — same terms, same lack of a
+ * key, different host. It has to be a second request; there is no way to ask
+ * for particulates from the forecast endpoint.
+ */
+const AIR_ENDPOINT = 'https://air-quality-api.open-meteo.com/v1/air-quality'
 
 /** Readings older than this are re-fetched; weather does not move minute to minute. */
 const CACHE_MS = 10 * 60 * 1000
@@ -43,7 +51,9 @@ export async function fetchWeather(
     '&current=temperature_2m,relative_humidity_2m,uv_index&timezone=auto'
 
   try {
-    const res = await fetch(url)
+    // Fired together rather than in sequence: the routine screen waits on this,
+    // and two round trips end to end would be felt.
+    const [res, air] = await Promise.all([fetch(url), fetchAir(lat, lon)])
     if (!res.ok) return null
 
     const body = (await res.json()) as {
@@ -60,8 +70,37 @@ export async function fetchWeather(
     if (typeof t !== 'number' || typeof h !== 'number' || typeof uv !== 'number') return null
 
     const value: Weather = { t: Math.round(t), h: Math.round(h), uv: Math.round(uv) }
+    // Air quality is additive, never required: a reading without it is still a
+    // complete weather reading, and the routine simply says nothing about dust.
+    if (air) value.air = air
+
     cache.set(key, { at: Date.now(), value })
     return value
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Particulates, or null.
+ *
+ * Its own try/catch on purpose. Air quality is the optional half of the
+ * reading, so this service being down must not cost the customer their
+ * temperature and UV as well.
+ */
+async function fetchAir(lat: number, lon: number): Promise<AirQuality | null> {
+  const url = `${AIR_ENDPOINT}?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&timezone=auto`
+
+  try {
+    const res = await fetch(url)
+    if (!res.ok) return null
+
+    const body = (await res.json()) as { current?: { pm10?: number; pm2_5?: number } }
+    const pm10 = body.current?.pm10
+    const pm25 = body.current?.pm2_5
+    if (typeof pm10 !== 'number' || typeof pm25 !== 'number') return null
+
+    return { pm10: Math.round(pm10), pm25: Math.round(pm25) }
   } catch {
     return null
   }
