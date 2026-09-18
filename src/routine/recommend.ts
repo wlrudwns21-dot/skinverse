@@ -1,6 +1,7 @@
 import type { MetricKey, ProductTag, Weather } from '../data/types'
 import type { SkinConditionKey } from '../data/types'
 import { isPolluted, type AirBand } from './air'
+import { ownershipPoints, type Ownership } from './ownership'
 import { tempBand, uvBand, type TempBand, type UvBand } from './rules'
 import { dewPoint, drynessBand, type DrynessBand } from './climate'
 
@@ -37,6 +38,13 @@ export interface RecommendContext {
   air?: AirBand | null
   /** 0–100. Zero when there is no reading. */
   pollution?: number
+  /**
+   * What the customer has bought, keyed by product id.
+   *
+   * Absent for a guest, and for a member who has never ordered — in both cases
+   * the ranking simply does not consider it.
+   */
+  owned?: Record<string, Ownership>
   /** The axis the report singled out, if it singled one out. */
   focus: MetricKey | null
   /** Axes that fell since the previous comparable scan. */
@@ -69,6 +77,10 @@ export type ReasonKind =
   | 'drySkin'
   /** Particulates are high — the skin is carrying a load it did not choose. */
   | 'polluted'
+  /** They bought this recently and still have it. */
+  | 'hasIt'
+  /** By our reckoning they are about to run out. */
+  | 'runningOut'
 
 export interface Reason {
   kind: ReasonKind
@@ -122,6 +134,16 @@ export const WEIGHTS = {
    * purpose: a dusty week does not change what the skin measured.
    */
   polluted: 9,
+  /**
+   * What they already own, and what they are about to run out of.
+   *
+   * Small on purpose, and the smallest weight in the table. This is inference
+   * on top of a guess — we do not know how much anyone actually uses — so it
+   * is allowed to break a tie between two similar products and nothing more.
+   * Burying something the skin measurably needs because of an estimate about a
+   * bottle would be the recommender overreaching.
+   */
+  ownership: 7,
 } as const
 
 const isDryAir = (d: DrynessBand) => d === 'drying' || d === 'harsh' || d === 'severe'
@@ -222,6 +244,19 @@ export function scoreProduct(product: Rankable, context: RecommendContext): Reco
     else if (product.tag === 'Hydration') add('oilySkin', -WEIGHTS.oilySkin)
   } else if (context.condition === 'dehydrated' && product.tag === 'Hydration') {
     add('drySkin', WEIGHTS.drySkin)
+  }
+
+  /*
+   * What is already on their shelf.
+   *
+   * Last, because it argues about the purchase rather than about the skin, and
+   * it should only ever be adjusting an order the rest of the scoring has
+   * already decided.
+   */
+  const ownership = context.owned?.[product.id]
+  if (ownership) {
+    const points = ownershipPoints(ownership, WEIGHTS.ownership)
+    if (points !== 0) add(points > 0 ? 'runningOut' : 'hasIt', points)
   }
 
   reasons.sort((a, b) => Math.abs(b.points) - Math.abs(a.points))

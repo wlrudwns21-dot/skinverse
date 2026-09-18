@@ -54,6 +54,7 @@ import { LOCAL_KEYS, readLocal, writeLocal } from '../lib/localStore'
 import { capturePaypalOrder, openPaypalOrder } from '../payments/paypal'
 import { arrivalError, confirmedSignup } from '../auth/landing'
 import { airBand, isPolluted, pollutionLoad } from '../routine/air'
+import { daysBetween, type Ownership } from '../routine/ownership'
 import { display as showMoney, isSettlement, SETTLEMENT } from '../money/fx'
 import * as remote from './remote'
 import {
@@ -232,6 +233,8 @@ function useStoreValue() {
    */
   const [deletionPending, setDeletionPending] = useState(false)
   const [orders, setOrders] = useState<remote.MemberOrder[]>([])
+  /** When each product was last bought, for the repurchase signal. */
+  const [purchases, setPurchases] = useState<remote.PurchaseHistory>({})
 
   const [liveWeather, setLiveWeather] = useState<Weather | null>(null)
   /**
@@ -280,6 +283,20 @@ function useStoreValue() {
   const reloadOrders = useCallback(async () => {
     if (!isMember) return setOrders([])
     setOrders(await remote.loadMyOrders())
+  }, [isMember])
+
+  useEffect(() => {
+    let cancelled = false
+    if (!isMember) {
+      // A guest has no history, and the previous member's must not linger on a
+      // shared device.
+      setPurchases({})
+      return
+    }
+    void remote.loadPurchaseHistory().then((rows) => {
+      if (!cancelled) setPurchases(rows)
+    })
+    return () => { cancelled = true }
   }, [isMember])
 
   useEffect(() => {
@@ -1193,6 +1210,22 @@ function useStoreValue() {
     previous: state.history.slice(state.scanIsReal ? 1 : 0),
   })
 
+  /*
+   * The purchase history, paired with each product's expected life.
+   *
+   * A purchase we cannot date is dropped rather than treated as today's: a
+   * bad timestamp would read as "just bought" and quietly suppress a product
+   * the customer may actually need.
+   */
+  const owned: Record<string, Ownership> = {}
+  for (const product of products) {
+    const boughtAt = purchases[product.id]
+    if (!boughtAt) continue
+    const daysSince = daysBetween(boughtAt)
+    if (daysSince < 0) continue
+    owned[product.id] = { productId: product.id, daysSince, useDays: product.useDays }
+  }
+
   const previousMetrics = state.history.find((h) => h.metrics)?.metrics ?? null
   const recommendations = new Map(
     rank(products, {
@@ -1202,6 +1235,7 @@ function useStoreValue() {
       // clean air and must not be scored as if it were.
       air: weather.air ? airBand(weather.air) : null,
       pollution: weather.air ? pollutionLoad(weather.air) : 0,
+      owned,
       focus: report.insights.some((i) => i.kind === 'weakest') ? report.focus : null,
       falling: fallingAxes(effectiveMetrics, previousMetrics, MOVE_THRESHOLD),
       condition: state.skinCondition,

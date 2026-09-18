@@ -55,6 +55,7 @@ export const SEED_CATALOG: Catalog = {
     sold: 0,
     active: true,
     priceKrw: Math.round(p.price * FALLBACK_RATES.USD.krwPerUnit),
+    useDays: 60,
   })),
   missions: [
     ...dailyMissions.map((m) => ({ id: m.id, kind: 'daily' as const, pts: m.pts, l: m.l, active: true })),
@@ -385,4 +386,18 @@ export async function createProduct(input: NewProduct): Promise<string | null> {
     return null
   }
   return id
+}
+
+/**
+ * How long one unit is expected to last.
+ *
+ * Only feeds the repurchase nudge, so a wrong value costs a mistimed
+ * recommendation and nothing else — no price, no stock, no money.
+ */
+export async function setProductUseDays(id: string, days: number): Promise<boolean> {
+  if (!supabase) return false
+  const clamped = Math.max(1, Math.min(730, Math.round(days)))
+  const { error } = await supabase.from('products').update({ use_days: clamped }).eq('id', id)
+  if (error) console.error('[skinverse] 사용 기간 저장 실패', error.message)
+  return !error
 }

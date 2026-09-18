@@ -24,6 +24,7 @@ function PriceRow({ id }: { id: string }) {
   const [cost, setCost] = useState(String(saved?.costKrw ?? 0))
   const [margin, setMargin] = useState(String(saved?.marginPct ?? 0))
   const [price, setPrice] = useState(String(product?.priceKrw ?? 0))
+  const [days, setDays] = useState(String(product?.useDays ?? 60))
   const [open, setOpen] = useState(false)
 
   if (!product) return null
@@ -102,6 +103,22 @@ function PriceRow({ id }: { id: string }) {
                 style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-weight:700')}
               />
             </label>
+            <label style={s('flex:1;min-width:110px')}>
+              <div style={s('font-size:11px;color:#8A7D6C;font-weight:700')}>사용 기간 (일)</div>
+              <input
+                value={days}
+                onChange={(e) => setDays(e.target.value.replace(/[^0-9]/g, ''))}
+                inputMode="numeric"
+                style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
+              />
+            </label>
+          </div>
+
+          {/* Only affects when the shop suggests buying it again — nothing to
+              do with price, stock or what anybody is charged. */}
+          <div style={s('font-size:11px;color:#A2957F;line-height:1.6;margin-top:6px')}>
+            한 개를 다 쓰는 데 걸리는 대략적인 기간입니다. 이 기간의 70%가 지나면
+            추천에서 "다 쓰실 때가 됐어요"로 다시 올라옵니다.
           </div>
 
           <div style={s('background:#F8F5EF;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:#4A4234;line-height:1.7')}>
@@ -122,7 +139,7 @@ function PriceRow({ id }: { id: string }) {
           </div>
 
           <div
-            onClick={() => void admin.savePricing(id, costN, realMargin, priceN)}
+            onClick={() => void admin.savePricing(id, costN, realMargin, priceN, Number(days) || 60)}
             style={s(
               'margin-top:10px;border-radius:999px;padding:10px;text-align:center;font-size:12.5px;font-weight:700;' +
                 (priceN > 0

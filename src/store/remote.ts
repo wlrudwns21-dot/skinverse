@@ -835,3 +835,51 @@ export async function cancelRefundRequest(orderNo: string): Promise<boolean> {
   }
   return (data as Record<string, unknown> | null)?.ok === true
 }
+
+// ── what the customer already bought ────────────────────────────────────────
+
+/** The last time this member bought each product. */
+export type PurchaseHistory = Record<string, string>
+
+/**
+ * When each product was last bought, for the recommender.
+ *
+ * Only orders that were actually paid for and not unwound: a cancelled basket
+ * or a refunded order means the customer does not have the thing, and treating
+ * either as a purchase would hide a product they never received.
+ *
+ * Read through a view of their own orders, which row level security already
+ * scopes to them.
+ */
+export async function loadPurchaseHistory(): Promise<PurchaseHistory> {
+  if (!supabase) return {}
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select('paid_at, status, order_items(product_id)')
+    .not('paid_at', 'is', null)
+    .order('paid_at', { ascending: false })
+    .limit(ORDER_HISTORY_LIMIT)
+
+  if (error) {
+    console.error('[skinverse] 구매 이력을 불러오지 못했습니다', error.message)
+    return {}
+  }
+
+  const UNWOUND = ['cancelled', 'refunded', 'reversed', 'payment_failed']
+  const latest: PurchaseHistory = {}
+
+  for (const row of (data ?? []) as unknown as Record<string, unknown>[]) {
+    if (UNWOUND.includes(String(row.status))) continue
+    const paidAt = String(row.paid_at ?? '')
+    if (!paidAt) continue
+
+    for (const item of (row.order_items ?? []) as { product_id?: unknown }[]) {
+      const id = typeof item.product_id === 'string' ? item.product_id : ''
+      // Rows arrive newest first, so the first sighting is the latest purchase.
+      if (id && !latest[id]) latest[id] = paidAt
+    }
+  }
+
+  return latest
+}

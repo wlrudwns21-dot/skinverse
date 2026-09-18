@@ -7,6 +7,8 @@ export interface CatalogProduct extends Product {
   active: boolean
   /** The price as the operator authored it, in won. `price` is derived. */
   priceKrw: number
+  /** Roughly how many days one unit lasts, for estimating a repurchase. */
+  useDays: number
 }
 
 export interface CatalogMission {
@@ -42,6 +44,7 @@ export interface ProductRow {
   price: string | number
   /** The authored price, in won. `price` is derived from it. */
   price_krw?: string | number | null
+  use_days?: number | null
   tag: string
   metric: string
   ml: string
@@ -63,6 +66,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     name: row.name,
     price: Number(row.price),
     priceKrw: Number(row.price_krw ?? 0),
+    useDays: Number(row.use_days ?? 60),
     tag: row.tag as ProductTag,
     metric: row.metric as MetricKey | 'uv',
     ml: row.ml,

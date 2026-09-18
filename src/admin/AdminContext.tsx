@@ -508,10 +508,17 @@ function useAdminValue() {
       return id
     },
 
-    savePricing: async (id: string, costKrw: number, marginPct: number, priceKrw: number) => {
+    savePricing: async (
+      id: string,
+      costKrw: number,
+      marginPct: number,
+      priceKrw: number,
+      useDays: number,
+    ) => {
       const okCost = await catalogRemote.saveProductCost(id, costKrw, marginPct, '')
       const okPrice = await catalogRemote.setProductPrice(id, priceKrw)
-      if (!okCost || !okPrice) return toastMsg('저장 실패')
+      const okDays = await catalogRemote.setProductUseDays(id, useDays)
+      if (!okCost || !okPrice || !okDays) return toastMsg('저장 실패')
       await Promise.all([catalog.refresh(), refresh()])
       toastMsg('가격 저장됨')
     },
