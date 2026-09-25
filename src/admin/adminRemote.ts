@@ -801,8 +801,10 @@ export interface IngredientStats {
   withCas: number
   /** How many we have written our own customer-facing copy for. */
   withBlurb: number
-  /** Rows in the restricted-ingredient register. */
+  /** Rulings in the restriction register - many per ingredient, one per market. */
   restricted: number
+  /** Distinct ingredients those rulings are about. The smaller, truer number. */
+  restrictedIngredients: number
   /** When the newest ingredient row was written, ISO, or null on an empty table. */
   syncedAt: string | null
 }
@@ -816,17 +818,19 @@ export interface IngredientStats {
  */
 export async function ingredientStats(): Promise<IngredientStats> {
   const blank: IngredientStats = {
-    stored: 0, withEnglish: 0, withCas: 0, withBlurb: 0, restricted: 0, syncedAt: null,
+    stored: 0, withEnglish: 0, withCas: 0, withBlurb: 0,
+    restricted: 0, restrictedIngredients: 0, syncedAt: null,
   }
   if (!supabase) return blank
 
   const head = { count: 'exact' as const, head: true }
-  const [all, eng, cas, blurb, restricted, newest] = await Promise.all([
+  const [all, eng, cas, blurb, restricted, distinctNames, newest] = await Promise.all([
     supabase.from('ingredients').select('id', head),
     supabase.from('ingredients').select('id', head).not('eng_name', 'is', null),
     supabase.from('ingredients').select('id', head).not('cas_no', 'is', null),
     supabase.from('ingredients').select('id', head).not('blurb', 'is', null),
     supabase.from('restricted_ingredients').select('id', head),
+    supabase.rpc('restricted_ingredient_count'),
     supabase.from('ingredients').select('synced_at')
       .order('synced_at', { ascending: false }).limit(1).maybeSingle(),
   ])
@@ -837,6 +841,7 @@ export async function ingredientStats(): Promise<IngredientStats> {
     withCas: cas.count ?? 0,
     withBlurb: blurb.count ?? 0,
     restricted: restricted.count ?? 0,
+    restrictedIngredients: Number(distinctNames.data ?? 0),
     syncedAt: (newest.data as { synced_at?: string } | null)?.synced_at ?? null,
   }
 }
@@ -854,8 +859,18 @@ export interface IngredientHit {
    * limit is per concentration and per product type, a label states neither,
    * and a judgement assembled from this would be a medical claim wearing a
    * citation.
+   *
+   * Each entry belongs to one jurisdiction. The register compares eleven, so an
+   * entry shown without its country is not a smaller truth but a wrong one - a
+   * Chinese prohibition read as though it applied in Seoul.
    */
-  restrictions: { category: string | null; limitText: string | null; otherText: string | null }[]
+  restrictions: {
+    country: string | null
+    category: string | null
+    limitText: string | null
+    provision: string | null
+    noticeName: string | null
+  }[]
 }
 
 /** Look an ingredient up by whatever it was called, for the console's search box. */
@@ -878,9 +893,11 @@ export async function findIngredient(name: string): Promise<IngredientHit[]> {
   // caller that has to remember to ask a second time is a caller that will
   // eventually show a restricted ingredient as if it were unrestricted.
   const restrictions = ((limits.data ?? []) as Record<string, unknown>[]).map((r) => ({
+    country: (r.country as string | null) ?? null,
     category: (r.category as string | null) ?? null,
     limitText: (r.limit_text as string | null) ?? null,
-    otherText: (r.other_text as string | null) ?? null,
+    provision: (r.provision as string | null) ?? null,
+    noticeName: (r.notice_name as string | null) ?? null,
   }))
 
   return ((found.data ?? []) as Record<string, unknown>[]).map((r) => ({

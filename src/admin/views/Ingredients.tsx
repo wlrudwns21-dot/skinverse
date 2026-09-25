@@ -117,6 +117,10 @@ export function Ingredients() {
     setSearched(true)
   }
 
+  /** How many jurisdictions have ruled on one hit. */
+  const countryCount = (h: IngredientHit) =>
+    new Set(h.restrictions.map((r) => r.country).filter(Boolean)).size
+
   const pct = (n: number) =>
     !stats || stats.stored === 0 ? '—' : Math.round((n / stats.stored) * 100) + '%'
 
@@ -141,7 +145,11 @@ export function Ingredients() {
       <div style={s('display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:16px')}>
         {([
           ['원료성분', stored.toLocaleString() + '건', ''],
-          ['사용제한 원료', (stats?.restricted ?? 0).toLocaleString() + '건', ''],
+          // Rulings and ingredients are both shown because the first is much the
+          // larger number: eleven jurisdictions rule on the same ingredient, and
+          // several times each where the limit varies by product type.
+          ['사용제한 규제', (stats?.restricted ?? 0).toLocaleString() + '건',
+            (stats?.restrictedIngredients ?? 0).toLocaleString() + '개 성분'],
           ['영문명 있음', pct(stats?.withEnglish ?? 0), (stats?.withEnglish ?? 0).toLocaleString() + '건'],
           ['CAS번호 있음', pct(stats?.withCas ?? 0), (stats?.withCas ?? 0).toLocaleString() + '건'],
           ['설명 작성됨', pct(stats?.withBlurb ?? 0), (stats?.withBlurb ?? 0).toLocaleString() + '건'],
@@ -256,12 +264,37 @@ export function Ingredients() {
 
             {h.restrictions.length > 0 && (
               <div style={s('background:#FBF3E8;border-radius:10px;padding:10px 12px;margin-top:8px')}>
-                <b style={s('font-size:11.5px;color:#8A5A28')}>식약처 사용제한</b>
+                <b style={s('font-size:11.5px;color:#8A5A28')}>
+                  사용제한 {h.restrictions.length}건 · {countryCount(h)}개 국가
+                </b>
+                <div style={s('font-size:10.5px;color:#A07A46;margin-top:2px;line-height:1.5')}>
+                  식약처가 고시한 원문입니다. 순함·안전성 판정이 아닙니다.
+                </div>
                 {h.restrictions.map((r, j) => (
-                  <div key={j} style={s('font-size:11.5px;color:#7A5A32;margin-top:5px;line-height:1.6')}>
-                    {r.category ?? '(구분 없음)'}
-                    {r.limitText && <><br />한도 {r.limitText}</>}
-                    {r.otherText && <><br />{r.otherText}</>}
+                  <div key={j} style={s('margin-top:8px;padding-top:8px;border-top:1px solid #F0E0CA')}>
+                    <div style={s('font-size:11.5px;font-weight:700;color:#8A5A28')}>
+                      {/* The country is not decoration. A Chinese prohibition
+                          shown without it reads as one that applies here. */}
+                      {r.country ?? '(국가 미기재)'} · {r.category ?? '(구분 없음)'}
+                    </div>
+                    {/* The Ministry writes the limit and its conditions as one
+                        block, newlines and all - including its restrictions on
+                        products for infants and children. Shown verbatim. */}
+                    {r.limitText && (
+                      <div style={s('font-size:11.5px;color:#5C4A32;margin-top:4px;line-height:1.7;white-space:pre-wrap')}>
+                        {r.limitText}
+                      </div>
+                    )}
+                    {r.provision && (
+                      <div style={s('font-size:10.5px;color:#A07A46;margin-top:4px;line-height:1.5')}>
+                        근거 {r.provision}
+                      </div>
+                    )}
+                    {r.noticeName && r.noticeName !== h.engName && (
+                      <div style={s('font-size:10.5px;color:#A07A46;margin-top:2px;line-height:1.5;word-break:break-all')}>
+                        고시 표기 {r.noticeName}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

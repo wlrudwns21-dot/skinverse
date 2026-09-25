@@ -36,15 +36,23 @@ import { corsFor } from './cors.ts'
  * depends on a multi-byte character surviving the trip. Keep new messages out.
  */
 
-/** Rows per request. The portal accepts 1,000 on these services. */
-const PAGE_SIZE = 1000
+/**
+ * Rows per request.
+ *
+ * 500 is the portal's documented-nowhere ceiling. Ask for more and it answers
+ * HTTP 200 with `resultCode: 11`, the message 'numOfRows maximum is =[500]' and
+ * an empty body - so a run at 1,000 read no records, stored nothing, and had no
+ * error to report. Anything above this silently syncs zero rows.
+ */
+const PAGE_SIZE = 500
 
 /**
  * A hard stop, in pages.
  *
- * These registers hold tens of thousands of rows, not millions. If the loop is
- * still going after this many pages then something is wrong with the paging -
- * a service that ignores `pageNo` would otherwise return page one for ever and
+ * These registers hold tens of thousands of rows, not millions. At 500 a page
+ * that is 44 pages for the ingredients and 63 for the restrictions. If the loop
+ * is still going long after that then something is wrong with the paging - a
+ * service that ignores `pageNo` would otherwise return page one for ever and
  * burn the whole daily quota on it.
  */
 const MAX_PAGES = 200
@@ -117,12 +125,11 @@ function clean(v: unknown): string | null {
 /**
  * The first of these keys the record actually has.
  *
- * 15111774's field names are known from its response preview. 15111772's are
- * not - it could not be reached from the build environment - so its mapping is
- * a list of plausible names rather than one certain name, and every record is
- * stored whole in `raw` besides. A wrong guess therefore costs a re-read of our
- * own table, not another sync against the daily quota. The reply carries the
- * field names actually seen, so the guessing ends after one run.
+ * Both registers' field names are now known from live responses, and they do not
+ * match: the ingredient register calls the name INGR_KOR_NAME, the restriction
+ * register calls it INGR_STD_NAME. The alternates are kept as a cushion against
+ * a rename, which is cheaper than a sync that finds no name on any record and
+ * stores an empty table without complaining.
  */
 function pick(r: Record<string, unknown>, keys: string[]): string | null {
   for (const k of keys) {
@@ -159,6 +166,9 @@ const DATASETS: Record<string, Dataset> = {
         match_key: '',
         eng_name: pick(r, ENG_KEYS),
         cas_no: pick(r, CAS_KEYS),
+        // Despite the field name this holds the Ministry's definition of the
+        // material, a sentence long: "this material is extracted from the fruit
+        // of Solanum melongena". Filled on 21,834 of 21,897 entries.
         origin: pick(r, ['ORIGIN_MAJOR_KOR_NAME', 'ORIGIN_KOR_NAME', 'ORIGIN']),
         synonym: pick(r, ['INGR_SYNONYM', 'SYNONYM', 'OTHR_NM']),
         source: 'mfds',
@@ -168,7 +178,10 @@ const DATASETS: Record<string, Dataset> = {
 
   restricted: {
     table: 'restricted_ingredients',
-    conflict: 'kor_name,category,cas_no',
+    // One row per ruling, not per ingredient: the same ingredient in the same
+    // country carries several limits, one per product category. The database
+    // computes the fingerprint, so nothing here can get it wrong.
+    conflict: 'fingerprint',
     urlSecret: 'MFDS_RESTRICTED_URL',
     candidates: [
       // Confirmed. Note the absent '01' - the sibling service has it, this one
@@ -178,19 +191,27 @@ const DATASETS: Record<string, Dataset> = {
       'https://apis.data.go.kr/1471000/CsmtcsUseRstrcInfoService01/getCsmtcsUseRstrcInfoService01',
     ],
     map(r) {
-      const kor = pick(r, NAME_KEYS)
+      // INGR_STD_NAME, not INGR_KOR_NAME. The two registers name the same thing
+      // differently, and a mapping that assumed otherwise found no name on any
+      // record and quietly stored an empty table.
+      const kor = pick(r, ['INGR_STD_NAME', ...NAME_KEYS])
       if (!kor) return null
       return {
         kor_name: kor,
         match_key: '',
         eng_name: pick(r, ENG_KEYS),
         cas_no: pick(r, CAS_KEYS),
-        // Which list the entry is on, in the register's own words.
-        category: pick(r, ['USE_RSTRC_SE', 'RSTRC_SE', 'SE_NM', 'GUBUN', 'DIV_NM', 'USE_SE']),
-        // The permitted concentration, as text, because that is what it is.
-        limit_text: pick(r, ['USE_LIMIT', 'LIMIT_CNTNT', 'USE_LMT', 'CNCNTR_LIMIT', 'LIMIT']),
-        // Other conditions: "not for use in products for infants" lives here.
-        other_text: pick(r, ['ETC_RSTRC', 'ETC_CNTNT', 'OTHER_RSTRC', 'RSTRC_CNTNT', 'ETC']),
+        synonym: pick(r, ['INGR_SYNONYM']),
+        // Prohibited, limited, or both, in the register's own words.
+        category: pick(r, ['REGULATE_TYPE']),
+        // Which jurisdiction. This register compares eleven of them, so the
+        // country is part of what a row means, not a label on it.
+        country: pick(r, ['COUNTRY_NAME']),
+        // The limit and its conditions, as one block of text - which is where
+        // the Ministry writes its restrictions on products for children.
+        limit_text: pick(r, ['LIMIT_COND']),
+        provision: pick(r, ['PROVIS_ATRCL']),
+        notice_name: pick(r, ['NOTICE_INGR_NAME']),
         raw: r,
       }
     },
@@ -238,9 +259,8 @@ interface Page {
  *
  * The service answers XML by default and JSON on request. JSON is asked for,
  * but a failure there is reported rather than parsed around: the portal signals
- * a bad key or an exceeded quota by returning an XML fault *with* HTTP 200, so
- * a body that will not parse as JSON is far more likely to be an error document
- * than a success worth salvaging.
+ * a bad key, an exceeded quota or an out-of-range parameter with HTTP 200 as
+ * readily as with 400, so every reply is checked before its records are read.
  */
 async function fetchPage(
   ds: Dataset,
@@ -291,6 +311,14 @@ async function fetchPage(
   const body = root?.body ?? nested?.response?.body
   const header = root?.header ?? nested?.response?.header
 
+  /*
+   * The result code, checked before the records are read rather than after.
+   *
+   * This is the guard that was missing when PAGE_SIZE was 1,000: the portal
+   * answered HTTP 200, resultCode 11, 'numOfRows maximum is =[500]' and an empty
+   * body. Read past it and an empty body is indistinguishable from a finished
+   * register, so the sync reported success having stored nothing at all.
+   */
   const code = clean(header?.resultCode)
   if (code && code !== '00') {
     throw new Error(`portal code ${code}: ${clean(header?.resultMsg) ?? ''}`)
