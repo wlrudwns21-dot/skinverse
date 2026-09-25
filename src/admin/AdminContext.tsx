@@ -22,7 +22,7 @@ import * as remote from './adminRemote'
 
 export type AdminView =
   | 'dash' | 'orders' | 'products' | 'users' | 'missions' | 'cs' | 'access' | 'audit'
-  | 'withdrawals' | 'refunds' | 'pricing'
+  | 'withdrawals' | 'refunds' | 'pricing' | 'ingredients'
 
 /** Views only a master may open: the operator list and the point economy. */
 // `audit` is master-only for a reason worth stating: the log is how you
@@ -314,6 +314,7 @@ function useAdminValue() {
       ['refunds', '환불 요청', refundQueue.length],
       ['withdrawals', '탈퇴 요청', pendingWithdrawals],
       ['pricing', '가격 · 환율', 0],
+      ['ingredients', '성분 사전', 0],
     ] as [AdminView, string, number][]
   )
     .filter(([id]) => isMaster || !MASTER_ONLY.has(id))
@@ -423,6 +424,7 @@ function useAdminValue() {
     isWithdrawals: view === 'withdrawals',
     isRefunds: view === 'refunds',
     isPricing: view === 'pricing',
+    isIngredients: view === 'ingredients',
 
     /*
      * ── refunds ──────────────────────────────────────────────────────────

@@ -6,6 +6,7 @@ import { Sidebar } from './admin/Sidebar'
 import { Access } from './admin/views/Access'
 import { Audit } from './admin/views/Audit'
 import { Dashboard } from './admin/views/Dashboard'
+import { Ingredients } from './admin/views/Ingredients'
 import { Inquiries } from './admin/views/Inquiries'
 import { MissionConfig } from './admin/views/MissionConfig'
 import { Orders } from './admin/views/Orders'
@@ -30,6 +31,7 @@ function CurrentView() {
   if (admin.isWithdrawals) return <Withdrawals />
   if (admin.isRefunds) return <Refunds />
   if (admin.isPricing) return <Pricing />
+  if (admin.isIngredients) return <Ingredients />
   return <Inquiries />
 }
 

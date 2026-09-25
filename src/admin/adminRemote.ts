@@ -642,3 +642,159 @@ export async function declineRefund(orderNo: string, note: string): Promise<bool
   }
   return (data as Record<string, unknown> | null)?.ok === true
 }
+
+/* ── 성분 사전 ───────────────────────────────────────────────────────────── */
+
+export interface IngredientSync {
+  ok: boolean
+  /** Korean, ready to show. Empty when `ok`. */
+  message: string
+  /** Pages actually fetched this run. */
+  pages: number
+  /** Rows parsed out of those pages. */
+  fetched: number
+  /** What the register says it holds in total, when it said. */
+  total: number
+  /** Rows in our table afterwards. */
+  stored: number
+  /**
+   * Where to start the next call after a failure.
+   *
+   * A sync that dies on page 40 has already written 39 pages' worth, and the
+   * operator should be able to carry on rather than start over — the daily
+   * quota is 10,000 calls and re-reading from page one wastes them.
+   */
+  resumeFrom: number
+}
+
+const SYNC_ERRORS: Record<string, string> = {
+  not_configured: 'DATA_GO_KR_KEY가 설정되지 않았습니다 (Edge Function Secrets)',
+  not_an_operator: '운영자만 실행할 수 있습니다',
+  operators_only: '로그인이 필요합니다',
+  unavailable: '서버에 연결할 수 없습니다',
+}
+
+function toSync(row: Record<string, unknown>, fallback: string): IngredientSync {
+  const code = String(row.error ?? '')
+  return {
+    ok: row.ok === true,
+    message: row.ok === true
+      ? ''
+      : (SYNC_ERRORS[code] ?? String(row.message ?? '') ?? fallback) || fallback,
+    pages: Number(row.pages ?? 0),
+    fetched: Number(row.fetched ?? 0),
+    total: Number(row.total ?? 0),
+    stored: Number(row.stored ?? 0),
+    resumeFrom: Number(row.resumeFrom ?? 1),
+  }
+}
+
+/**
+ * Pull the 식약처 ingredient register into our own table.
+ *
+ * `pages` limits how many pages to read, so a first run can be one page —
+ * enough to prove the key works without spending the day's quota. `from` picks
+ * the page to start at, which is what makes a failed run resumable.
+ *
+ * Runs in an edge function because the API key must not reach a browser, and
+ * because the whole register is tens of thousands of rows: the browser would be
+ * making that many inserts over a home connection.
+ */
+export async function syncIngredients(
+  opts: { pages?: number; from?: number } = {},
+): Promise<IngredientSync> {
+  const empty = { pages: 0, fetched: 0, total: 0, stored: 0, resumeFrom: 1 }
+  if (!supabase) return { ok: false, message: '서버에 연결할 수 없습니다', ...empty }
+
+  const { data, error } = await supabase.functions.invoke('mfds-ingredients', {
+    body: { pages: opts.pages, from: opts.from },
+  })
+
+  if (error) {
+    /*
+     * A non-2xx makes supabase-js throw before it parses the body, but the body
+     * is the interesting part here: it carries how far the sync got and where
+     * to resume. Dig it out of the Response the error carries.
+     */
+    const res = (error as { context?: Response }).context
+    if (res && typeof res.json === 'function') {
+      try {
+        const row = (await res.json()) as Record<string, unknown>
+        return toSync(row, '동기화에 실패했습니다')
+      } catch {
+        // Not JSON. Fall through to the generic message.
+      }
+    }
+    console.error('[skinverse] 성분 동기화 실패', error.message)
+    return { ok: false, message: '동기화에 실패했습니다. 로그를 확인해주세요.', ...empty }
+  }
+
+  return toSync((data ?? {}) as Record<string, unknown>, '동기화에 실패했습니다')
+}
+
+export interface IngredientStats {
+  stored: number
+  /** How many carry an English name — the register often leaves it blank. */
+  withEnglish: number
+  /** How many carry a CAS number. */
+  withCas: number
+  /** How many we have written our own customer-facing copy for. */
+  withBlurb: number
+  /** When the newest row was written, ISO, or null on an empty table. */
+  syncedAt: string | null
+}
+
+/**
+ * How complete the dictionary is.
+ *
+ * The counts for English name and CAS number are not trivia: the register
+ * leaves both blank for a great many entries, and knowing the real coverage is
+ * what decides whether the matcher may lean on them at all.
+ */
+export async function ingredientStats(): Promise<IngredientStats> {
+  const blank: IngredientStats = {
+    stored: 0, withEnglish: 0, withCas: 0, withBlurb: 0, syncedAt: null,
+  }
+  if (!supabase) return blank
+
+  const head = { count: 'exact' as const, head: true }
+  const [all, eng, cas, blurb, newest] = await Promise.all([
+    supabase.from('ingredients').select('id', head),
+    supabase.from('ingredients').select('id', head).not('eng_name', 'is', null),
+    supabase.from('ingredients').select('id', head).not('cas_no', 'is', null),
+    supabase.from('ingredients').select('id', head).not('blurb', 'is', null),
+    supabase.from('ingredients').select('synced_at')
+      .order('synced_at', { ascending: false }).limit(1).maybeSingle(),
+  ])
+
+  return {
+    stored: all.count ?? 0,
+    withEnglish: eng.count ?? 0,
+    withCas: cas.count ?? 0,
+    withBlurb: blurb.count ?? 0,
+    syncedAt: (newest.data as { synced_at?: string } | null)?.synced_at ?? null,
+  }
+}
+
+/** Look an ingredient up by whatever it was called, for the console's search box. */
+export async function findIngredient(name: string): Promise<{
+  korName: string
+  engName: string | null
+  casNo: string | null
+  origin: string | null
+  synonym: string | null
+}[]> {
+  if (!supabase || !name.trim()) return []
+  const { data, error } = await supabase.rpc('find_ingredient', { p_name: name.trim() })
+  if (error) {
+    console.error('[skinverse] 성분 조회 실패', error.message)
+    return []
+  }
+  return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    korName: String(r.kor_name ?? ''),
+    engName: (r.eng_name as string | null) ?? null,
+    casNo: (r.cas_no as string | null) ?? null,
+    origin: (r.origin as string | null) ?? null,
+    synonym: (r.synonym as string | null) ?? null,
+  }))
+}
