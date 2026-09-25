@@ -645,18 +645,47 @@ export async function declineRefund(orderNo: string, note: string): Promise<bool
 
 /* ── 성분 사전 ───────────────────────────────────────────────────────────── */
 
+/** Which register to pull. The two answer different questions. */
+export type IngredientDataset = 'ingredients' | 'restricted'
+
 export interface IngredientSync {
   ok: boolean
   /** Korean, ready to show. Empty when `ok`. */
   message: string
   /** Pages actually fetched this run. */
   pages: number
-  /** Rows parsed out of those pages. */
+  /** Records the API returned, including any we could not use. */
+  received: number
+  /** Records that became rows. */
   fetched: number
   /** What the register says it holds in total, when it said. */
   total: number
   /** Rows in our table afterwards. */
   stored: number
+  /**
+   * The address that actually answered.
+   *
+   * Shown because the portal's request path is a service and an operation named
+   * separately, so the function tries a short list of candidates. Seeing the
+   * winner once ends the guessing.
+   */
+  endpoint: string
+  /**
+   * The field names the API really used.
+   *
+   * The restricted-ingredient dataset's schema could not be checked before
+   * building against it, so its column mapping is a list of plausible names.
+   * This is how the guess gets corrected — and why every record is also kept
+   * whole, so correcting it costs no quota.
+   */
+  fields: string[]
+  /**
+   * True when the key in the secret was the percent-encoded one.
+   *
+   * Harmless — the function decodes it — but worth saying, because the two keys
+   * look alike and only one of them works when pasted anywhere else.
+   */
+  keyWasEncoded: boolean
   /**
    * Where to start the next call after a failure.
    *
@@ -667,47 +696,79 @@ export interface IngredientSync {
   resumeFrom: number
 }
 
+/**
+ * The function speaks ASCII codes; Korean is written here.
+ *
+ * Deliberate, and not only for layering: the function's source travels as a
+ * transcribed payload and Korean in it has been corrupted in transit before,
+ * in the error strings specifically. Keeping the wording on this side puts it
+ * in a file that is edited normally.
+ */
 const SYNC_ERRORS: Record<string, string> = {
-  not_configured: 'DATA_GO_KR_KEY가 설정되지 않았습니다 (Edge Function Secrets)',
+  not_configured: 'DATA_GO_KR_KEY가 설정되지 않았습니다 (Supabase → Edge Functions → Secrets)',
   not_an_operator: '운영자만 실행할 수 있습니다',
   operators_only: '로그인이 필요합니다',
   unavailable: '서버에 연결할 수 없습니다',
+  unknown_dataset: '알 수 없는 데이터셋입니다',
+  method_not_allowed: '잘못된 요청입니다',
+}
+
+/** The prefixes the function puts on a thrown message, in Korean. */
+const SYNC_FAULTS: [RegExp, string][] = [
+  [/^KEY_OR_QUOTA /, '인증키 또는 일일 한도 문제입니다. 포털 응답: '],
+  [/^NO_ADDRESS_ANSWERED /, '어느 주소에서도 응답이 없습니다. 데이터셋 페이지의 정확한 요청주소가 필요합니다. 시도한 주소: '],
+  [/^STORE_FAILED /, '내려받기는 됐지만 저장에 실패했습니다: '],
+]
+
+function faultText(raw: string): string {
+  for (const [pattern, korean] of SYNC_FAULTS) {
+    if (pattern.test(raw)) return korean + raw.replace(pattern, '')
+  }
+  return raw
 }
 
 function toSync(row: Record<string, unknown>, fallback: string): IngredientSync {
   const code = String(row.error ?? '')
+  const raw = String(row.message ?? '')
   return {
     ok: row.ok === true,
     message: row.ok === true
       ? ''
-      : (SYNC_ERRORS[code] ?? String(row.message ?? '') ?? fallback) || fallback,
+      : (SYNC_ERRORS[code] ?? (raw ? faultText(raw) : '') ?? fallback) || fallback,
     pages: Number(row.pages ?? 0),
+    received: Number(row.received ?? 0),
     fetched: Number(row.fetched ?? 0),
     total: Number(row.total ?? 0),
     stored: Number(row.stored ?? 0),
+    endpoint: String(row.endpoint ?? ''),
+    fields: Array.isArray(row.fields) ? (row.fields as unknown[]).map(String) : [],
+    keyWasEncoded: row.keyWasEncoded === true,
     resumeFrom: Number(row.resumeFrom ?? 1),
   }
 }
 
 /**
- * Pull the 식약처 ingredient register into our own table.
+ * Pull a 식약처 register into our own table.
  *
  * `pages` limits how many pages to read, so a first run can be one page —
  * enough to prove the key works without spending the day's quota. `from` picks
  * the page to start at, which is what makes a failed run resumable.
  *
  * Runs in an edge function because the API key must not reach a browser, and
- * because the whole register is tens of thousands of rows: the browser would be
+ * because a whole register is tens of thousands of rows: the browser would be
  * making that many inserts over a home connection.
  */
 export async function syncIngredients(
-  opts: { pages?: number; from?: number } = {},
+  opts: { dataset?: IngredientDataset; pages?: number; from?: number } = {},
 ): Promise<IngredientSync> {
-  const empty = { pages: 0, fetched: 0, total: 0, stored: 0, resumeFrom: 1 }
+  const empty = {
+    pages: 0, received: 0, fetched: 0, total: 0, stored: 0,
+    endpoint: '', fields: [] as string[], keyWasEncoded: false, resumeFrom: 1,
+  }
   if (!supabase) return { ok: false, message: '서버에 연결할 수 없습니다', ...empty }
 
   const { data, error } = await supabase.functions.invoke('mfds-ingredients', {
-    body: { pages: opts.pages, from: opts.from },
+    body: { dataset: opts.dataset ?? 'ingredients', pages: opts.pages, from: opts.from },
   })
 
   if (error) {
@@ -740,7 +801,9 @@ export interface IngredientStats {
   withCas: number
   /** How many we have written our own customer-facing copy for. */
   withBlurb: number
-  /** When the newest row was written, ISO, or null on an empty table. */
+  /** Rows in the restricted-ingredient register. */
+  restricted: number
+  /** When the newest ingredient row was written, ISO, or null on an empty table. */
   syncedAt: string | null
 }
 
@@ -753,16 +816,17 @@ export interface IngredientStats {
  */
 export async function ingredientStats(): Promise<IngredientStats> {
   const blank: IngredientStats = {
-    stored: 0, withEnglish: 0, withCas: 0, withBlurb: 0, syncedAt: null,
+    stored: 0, withEnglish: 0, withCas: 0, withBlurb: 0, restricted: 0, syncedAt: null,
   }
   if (!supabase) return blank
 
   const head = { count: 'exact' as const, head: true }
-  const [all, eng, cas, blurb, newest] = await Promise.all([
+  const [all, eng, cas, blurb, restricted, newest] = await Promise.all([
     supabase.from('ingredients').select('id', head),
     supabase.from('ingredients').select('id', head).not('eng_name', 'is', null),
     supabase.from('ingredients').select('id', head).not('cas_no', 'is', null),
     supabase.from('ingredients').select('id', head).not('blurb', 'is', null),
+    supabase.from('restricted_ingredients').select('id', head),
     supabase.from('ingredients').select('synced_at')
       .order('synced_at', { ascending: false }).limit(1).maybeSingle(),
   ])
@@ -772,29 +836,59 @@ export async function ingredientStats(): Promise<IngredientStats> {
     withEnglish: eng.count ?? 0,
     withCas: cas.count ?? 0,
     withBlurb: blurb.count ?? 0,
+    restricted: restricted.count ?? 0,
     syncedAt: (newest.data as { synced_at?: string } | null)?.synced_at ?? null,
   }
 }
 
-/** Look an ingredient up by whatever it was called, for the console's search box. */
-export async function findIngredient(name: string): Promise<{
+export interface IngredientHit {
   korName: string
   engName: string | null
   casNo: string | null
   origin: string | null
   synonym: string | null
-}[]> {
+  /**
+   * What the Ministry has restricted about this name, in its own words.
+   *
+   * A list, not a verdict. There is no "safe" or "mild" here on purpose: a
+   * limit is per concentration and per product type, a label states neither,
+   * and a judgement assembled from this would be a medical claim wearing a
+   * citation.
+   */
+  restrictions: { category: string | null; limitText: string | null; otherText: string | null }[]
+}
+
+/** Look an ingredient up by whatever it was called, for the console's search box. */
+export async function findIngredient(name: string): Promise<IngredientHit[]> {
   if (!supabase || !name.trim()) return []
-  const { data, error } = await supabase.rpc('find_ingredient', { p_name: name.trim() })
-  if (error) {
-    console.error('[skinverse] 성분 조회 실패', error.message)
+  const term = name.trim()
+
+  const [found, limits] = await Promise.all([
+    supabase.rpc('find_ingredient', { p_name: term }),
+    supabase.rpc('ingredient_restrictions', { p_name: term }),
+  ])
+
+  if (found.error) {
+    console.error('[skinverse] 성분 조회 실패', found.error.message)
     return []
   }
-  return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+
+  // Restrictions are keyed by the same normalised name, so every hit for this
+  // search shares them. Attached to each rather than returned separately: a
+  // caller that has to remember to ask a second time is a caller that will
+  // eventually show a restricted ingredient as if it were unrestricted.
+  const restrictions = ((limits.data ?? []) as Record<string, unknown>[]).map((r) => ({
+    category: (r.category as string | null) ?? null,
+    limitText: (r.limit_text as string | null) ?? null,
+    otherText: (r.other_text as string | null) ?? null,
+  }))
+
+  return ((found.data ?? []) as Record<string, unknown>[]).map((r) => ({
     korName: String(r.kor_name ?? ''),
     engName: (r.eng_name as string | null) ?? null,
     casNo: (r.cas_no as string | null) ?? null,
     origin: (r.origin as string | null) ?? null,
     synonym: (r.synonym as string | null) ?? null,
+    restrictions,
   }))
 }
