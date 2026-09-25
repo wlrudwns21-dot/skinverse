@@ -64,10 +64,16 @@ interface Dataset {
    * Addresses to try, best first.
    *
    * The portal names a service and an operation separately, so a full URL
-   * cannot be derived from either alone. The head of each list is the address
-   * confirmed from the dataset's own page; the rest are kept as a fallback
-   * rather than deleted, because the portal has renamed service paths before
-   * and a rename should cost a retry, not an outage.
+   * cannot be derived from either alone - and the two registers do not even
+   * agree with each other: the ingredient service's operation carries the '01'
+   * suffix, the restriction service's does not. Both heads below were settled
+   * by probing the portal with a deliberately invalid key, which answers
+   * SERVICE_KEY_IS_NOT_REGISTERED_ERROR for an address that exists and
+   * NO_OPENAPI_SERVICE_ERROR for one that does not.
+   *
+   * The rest are kept as a fallback rather than deleted, because the portal has
+   * renamed service paths before and a rename should cost a retry, not an
+   * outage.
    */
   candidates: string[]
   /** Overrides the candidates entirely, for pasting an address without a deploy. */
@@ -87,8 +93,17 @@ interface Dataset {
  */
 /** The portal's way of writing "not applicable". */
 const NOT_APPLICABLE = '\uD574\uB2F9\uC5C6\uC74C'
-/** Words that mark a key or quota fault, not a bad address. */
-const KEY_FAULT = /KEY|LIMIT|EXCEED|\uC778\uC99D|\uD55C\uB3C4|\uB4F1\uB85D\uB418\uC9C0/i
+/**
+ * Words that mark a key or quota fault, not a bad address.
+ *
+ * The distinction is load-bearing: a key fault stops the search, because trying
+ * three more addresses with a bad key just produces three more identical
+ * errors. A missing address does not stop it, because the next candidate is the
+ * whole point. The portal is explicit about which is which -
+ * SERVICE_KEY_IS_NOT_REGISTERED_ERROR against NO_OPENAPI_SERVICE_ERROR - and
+ * only the former matches here.
+ */
+const KEY_FAULT = /SERVICE_KEY|LIMITED_NUMBER|EXCEED|\uC778\uC99D\uD0A4|\uD55C\uB3C4 \uCD08\uACFC/i
 
 /** Trim, and treat the portal's several spellings of "nothing" as nothing. */
 function clean(v: unknown): string | null {
@@ -127,6 +142,7 @@ const DATASETS: Record<string, Dataset> = {
     conflict: 'kor_name,cas_no',
     urlSecret: 'MFDS_INGREDIENT_URL',
     candidates: [
+      // Confirmed: this service's operation does carry the '01'.
       'https://apis.data.go.kr/1471000/CsmtcsIngdCpntInfoService01/getCsmtcsIngdCpntInfoService01',
       'https://apis.data.go.kr/1471000/CsmtcsIngdCpntInfoService/getCsmtcsIngdCpntInfoService01',
       'https://apis.data.go.kr/1471000/CsmtcsIngdCpntInfoService01/getCsmtcsIngdCpntInfoService',
@@ -155,8 +171,10 @@ const DATASETS: Record<string, Dataset> = {
     conflict: 'kor_name,category,cas_no',
     urlSecret: 'MFDS_RESTRICTED_URL',
     candidates: [
-      'https://apis.data.go.kr/1471000/CsmtcsUseRstrcInfoService/getCsmtcsUseRstrcInfoService01',
+      // Confirmed. Note the absent '01' - the sibling service has it, this one
+      // does not, and assuming otherwise costs a wasted call on every sync.
       'https://apis.data.go.kr/1471000/CsmtcsUseRstrcInfoService/getCsmtcsUseRstrcInfoService',
+      'https://apis.data.go.kr/1471000/CsmtcsUseRstrcInfoService/getCsmtcsUseRstrcInfoService01',
       'https://apis.data.go.kr/1471000/CsmtcsUseRstrcInfoService01/getCsmtcsUseRstrcInfoService01',
     ],
     map(r) {
@@ -239,13 +257,17 @@ async function fetchPage(
   const res = await fetch(url, { headers: { Accept: 'application/json' } })
   const text = await res.text()
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 160)}`)
+  // A fault arrives as 400 or 403 with the reason in the body, so the body is
+  // carried into the message rather than the status alone: 'HTTP 403' on its own
+  // does not distinguish a bad key from a retired service, and the two call for
+  // opposite responses.
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`)
 
   let parsed: unknown
   try {
     parsed = JSON.parse(text)
   } catch {
-    // Almost always an XML fault: SERVICE_KEY_IS_NOT_REGISTERED_ERROR,
+    // An XML fault: SERVICE_KEY_IS_NOT_REGISTERED_ERROR,
     // LIMITED_NUMBER_OF_SERVICE_REQUESTS_EXCEEDS_ERROR and friends. Pass the
     // portal's own words through - they name the problem precisely, and the
     // console shows them verbatim rather than guessing at a translation.
@@ -256,6 +278,16 @@ async function fetchPage(
 
   const root = parsed as Record<string, Record<string, unknown>>
   const nested = parsed as Record<string, Record<string, Record<string, unknown>>>
+
+  // A fault can also arrive as JSON with HTTP 200, under its own envelope.
+  const fault = (root?.OpenAPI_ServiceResponse as Record<string, unknown> | undefined)
+    ?.cmmMsgHeader as Record<string, unknown> | undefined
+  if (fault) {
+    throw new Error(
+      `${clean(fault.errMsg) ?? 'portal fault'}: ${clean(fault.returnAuthMsg) ?? ''}`,
+    )
+  }
+
   const body = root?.body ?? nested?.response?.body
   const header = root?.header ?? nested?.response?.header
 
