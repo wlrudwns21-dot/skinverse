@@ -12,6 +12,8 @@ import { SETTLEMENT } from '../money/fx'
 export type Screen =
   | 'home'
   | 'scan'
+  /** 성분 분석 — reading a product's ingredient list, not the customer's face. */
+  | 'label'
   | 'shop'
   | 'detail'
   | 'cart'

@@ -10,6 +10,7 @@ import { Auth } from './screens/Auth'
 import { Cart } from './screens/Cart'
 import { CheckoutConfirmed, CheckoutPayment, CheckoutShipping } from './screens/Checkout'
 import { Home } from './screens/Home'
+import { LabelScan } from './screens/LabelScan'
 import { Legal } from './screens/Legal'
 import { Missions } from './screens/Missions'
 import { MyPage } from './screens/MyPage'
@@ -45,6 +46,8 @@ function CurrentScreen() {
       if (state.scanStep === 'scanning') return <Scanning />
       if (state.scanStep === 'failed') return <ScanFailed />
       return <ScanResults />
+    case 'label':
+      return <LabelScan />
     case 'shop':
       return <Shop />
     case 'detail':

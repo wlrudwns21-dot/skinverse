@@ -37,6 +37,23 @@ export function Home() {
         )}
       </div>
 
+      {/* 성분 분석. Sits above the weather card because it answers a question
+          people arrive with — "what is actually in this" — rather than one the
+          app raises. Unmetered, unlike the face scan, so there is no allowance
+          to explain here. */}
+      <div onClick={st.goLabel} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:13px')}>
+        <div style={s('width:40px;height:40px;border-radius:11px;background:#F1EFE8;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0')}>
+          🧾
+        </div>
+        <div style={s('flex:1;min-width:0')}>
+          <div style={s('font-size:14px;font-weight:600')}>성분 분석</div>
+          <div style={s('font-size:12px;color:#8A7D6C;margin-top:3px;line-height:1.5')}>
+            전성분을 식약처 등록 정보와 대조하고, 어린이 제한 성분을 확인합니다
+          </div>
+        </div>
+        <div style={s('color:#B0A490;font-size:15px;flex-shrink:0')}>›</div>
+      </div>
+
       <div onClick={st.goRoutine} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px')}>
         <div>
           <div style={s('font-size:12px;color:#8A7D6C')}>{st.t.todayIn} {st.placeLabel}</div>

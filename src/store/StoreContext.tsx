@@ -1734,6 +1734,13 @@ function useStoreValue() {
     },
     /** Straight to the result on file, from the camera screen. */
     showLastResult: () => setState((s) => ({ ...s, screen: 'scan', scanStep: 'results' })),
+    /*
+     * 성분 분석. Not behind the analysis quota, deliberately: reading a label
+     * costs one database call against data we already hold, while a face scan
+     * costs a paid third-party analysis. Metering the cheap thing alongside the
+     * expensive one would make customers ration the wrong one.
+     */
+    goLabel: go('label'),
     goShop: go('shop'),
     goRoutine: go('routine'),
     goMissions: go('missions'),
