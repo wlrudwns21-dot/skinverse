@@ -6,7 +6,7 @@
 
 | 슬롯 | 쓰이는 곳 | 파일 경로 | 화면 크기 | 비율 | 납품 크기(3배) |
 |---|---|---|---|---|---|
-| ① 히어로 | 홈 첫 화면 | `public/banner/hero.webp` | 390 × 200 | 1.95 : 1 | **1170 × 600** |
+| ① 히어로 | 홈 첫 화면 | `public/banner/hero.webp` | 390 × 318 | 1.23 : 1 | **1170 × 954** |
 | ② 에디토리얼 | 홈 · 성분 분석 배너 | `public/banner/ingredients.webp` | 390 × 228 | 1.71 : 1 | **1170 × 684** |
 | ③ 가로 스트립 | (현재 미사용 · 혜택 공지용 예비) | `public/banner/promo.webp` | 390 × 112 | 3.48 : 1 | **1170 × 336** |
 | ④ 상품 · 저널 | 상품 그리드, 스토리 카드 | `public/stories/<id>.webp` 등 | — | **4 : 5 세로** | **1050 × 1313** |
@@ -24,18 +24,19 @@
    **피부톤, 흰색, 유리, 미색, 아주 연한 초록** 범위를 유지하세요.
 4. **파일은 WebP, 장당 200KB 이하.** 3배 크기로 만들고 저장할 때 품질 80 정도로 줄이면
    대개 이 안에 들어옵니다.
-5. **글자를 사진 안에 넣지 마세요.** 문구는 앱이 그립니다. 사진 속 한글/영문 텍스트는
+5. **사진의 네 변은 앱이 페이지 바탕색으로 부드럽게 흐립니다.** 가장자리에 중요한 것을
+   두지 마세요 — 위아래 16%, 좌우 11%가 흐려집니다.
+6. **글자를 사진 안에 넣지 마세요.** 문구는 앱이 그립니다. 사진 속 한글/영문 텍스트는
    4개 언어(ko/en/zh/th) 중 하나에서만 맞게 되므로 반드시 빼야 합니다.
 
 ---
 
-## ① 히어로 — `public/banner/hero.webp` (1170 × 600)
+## ① 히어로 — `public/banner/hero.webp` (1170 × 954)
 
-홈을 여는 사진입니다. **글자가 올라가지 않습니다** — 제목과 버튼은 사진 아래, 화면의
-다른 글자들과 같은 격자에 놓입니다. 그래서 아래쪽을 비워둘 필요가 없고, 피사체에
-바짝 붙여 찍으시면 됩니다. 가로로 긴 띠라고 생각하세요.
+홈을 여는 사진입니다. 제목과 버튼이 사진 위에 올라갑니다.
+**아래 40%에는 피사체를 두지 마세요** — 글자가 덮습니다.
 
-### 프롬프트 A### 프롬프트 A — 인물 (권장)
+### 프롬프트 A### 프롬프트 A### 프롬프트 A — 인물 (권장)
 
 ```
 Editorial beauty photograph of a Korean woman in her late twenties, bare
@@ -47,7 +48,7 @@ no specular highlights on the skin. Background is a plain seamless wall in
 warm off-white, very slightly out of focus. Muted desaturated palette of
 skin tone, bone white and pale grey. Shot on a 85mm lens at f/2.0, shallow
 but not blurred. Calm, quiet, clinical-but-warm mood. No text, no logos,
-no jewellery, no props. Vertical-ish 1170x600 crop, lower third of the
+no jewellery, no props. Vertical-ish 1170x954 crop, lower third of the
 frame intentionally empty and uncluttered.
 ```
 
@@ -73,7 +74,8 @@ on smooth bare skin, filling the upper portion of the frame. Soft wraparound
 light, no harsh reflections. Shallow depth of field so the edges fall away
 gently. Palette is skin tone and translucent clear with a cool highlight.
 Fine skin texture visible and natural — pores and fine hairs are present and
-not retouched away. Fill the frame edge to edge. 1170x600. No text, no product, no hands in frame.
+not retouched away. The lower part of the frame softens into unfocused warm
+shadow. 1170x954. No text, no product, no hands in frame.
 ```
 
 ---

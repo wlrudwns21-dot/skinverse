@@ -49,7 +49,7 @@ export function Cart() {
               <b>+{st.earnPreview} P</b>
             </div>
           </div>
-          <div onClick={st.goCheckout} style={s('cursor:pointer;margin-top:14px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}>
+          <div onClick={st.goCheckout} style={s('cursor:pointer;margin-top:14px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}>
             {st.t.checkout}
           </div>
         </>

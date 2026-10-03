@@ -202,7 +202,7 @@ export function Users() {
                       e.stopPropagation()
                       u.grant()
                     }}
-                    style={s('cursor:pointer;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:110px')}
+                    style={s('cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:110px')}
                   >
                     +{admin.grantPoints} P 지급
                   </div>

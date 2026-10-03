@@ -99,7 +99,7 @@ export function Access() {
             placeholder="메모 (선택)"
             style={s(field + ';flex:1;min-width:140px')}
           />
-          <div onClick={submit} style={s('cursor:pointer;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:10px 20px;font-size:13px;font-weight:500;white-space:nowrap')}>
+          <div onClick={submit} style={s('cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:10px 20px;font-size:13px;font-weight:500;white-space:nowrap')}>
             추가
           </div>
         </div>

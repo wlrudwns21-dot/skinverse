@@ -29,11 +29,14 @@
   --line-2: #DEDCD5;
 
   /* The ground for a panel that inverts — the points header, the missions
-     strip, the progress bar. --ink is the text colour, and a slab of it at
-     full strength was the heaviest thing on any screen it appeared on. This
-     is the same family two stops up: still unmistakably a dark panel, still
-     11.4:1 for white text and 6:1 for the caution tone on it. */
-  --panel: #3A3A35;
+     strip, the progress bar — and for every filled button.
+     
+     It was --ink, which is near-black, and a slab of it was the heaviest
+     thing on any screen it landed on. It is the brand green now: the same
+     colour the links and the accents already use, so the filled things on a
+     screen belong to the palette instead of punching a hole in it. White on
+     it is 10:1, the muted white is 7:1, and the caution tone is 5.2:1. */
+  --panel: #1F4A3D;
 
   /* the accent. --accent-mid is for fills and charts, where the deep green
      goes muddy; --accent-soft is the tinted background behind it. */

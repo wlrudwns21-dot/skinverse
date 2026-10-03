@@ -57,7 +57,7 @@ export function GatePrompt() {
 
         <div
           onClick={() => st.goAuth('signup')}
-          style={s('cursor:pointer;margin-top:18px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
+          style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
         >
           {st.a.gateCta}
         </div>

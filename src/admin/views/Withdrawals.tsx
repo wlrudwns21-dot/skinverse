@@ -124,7 +124,7 @@ export function Withdrawals() {
               {!isOpen ? (
                 <div
                   onClick={() => { setConfirming(row.userId); setNote('') }}
-                  style={s('cursor:pointer;margin-top:12px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500')}
+                  style={s('cursor:pointer;margin-top:12px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500')}
                 >
                   탈퇴 처리하기
                 </div>

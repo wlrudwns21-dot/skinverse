@@ -9,7 +9,7 @@ const field =
   'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
 const label = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 const primary =
-  'margin-top:16px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
+  'margin-top:16px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
 const disabled =
   'margin-top:16px;background:var(--surface-2);color:var(--ink-4);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
 

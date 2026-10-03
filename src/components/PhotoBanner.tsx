@@ -41,6 +41,13 @@ interface PhotoBannerProps {
   tone?: BannerTone
   /** A heavier dark scrim, for a `dark` banner over a mostly-light photograph. */
   deep?: boolean
+  /**
+   * Feathers all four edges into the page ground, so the picture arrives and
+   * leaves instead of starting and stopping at a hard line. On by default:
+   * every banner in the app runs full width against the same ground, and a
+   * cut edge is what made them read as pasted on.
+   */
+  fade?: boolean
   /** Makes the whole banner the tap target. */
   onClick?: () => void
   /** Drawn over the scrim, bottom-left. */
@@ -65,6 +72,7 @@ export function PhotoBanner({
   slot,
   tone = 'dark',
   deep = false,
+  fade = true,
   onClick,
   children,
 }: PhotoBannerProps) {
@@ -106,6 +114,22 @@ export function PhotoBanner({
         <span style={s(`position:absolute;top:13px;right:16px;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:${placeheld ? 'var(--on-dark-2)' : 'var(--ink-3)'}`)}>
           {slot}
         </span>
+      )}
+      {/* The four edges, feathered into the page. Each side is its own
+          gradient from the page ground out to nothing, so the corners — where
+          two of them overlap — come out a shade stronger, which is what a
+          vignette does anyway. Drawn under the scrim: the scrim is there to
+          carry text and has to stay the darkest thing at the bottom. */}
+      {fade && (
+        <div
+          style={s(
+            'position:absolute;inset:0;pointer-events:none;background:' +
+              'linear-gradient(to bottom,var(--bg),transparent 16%),' +
+              'linear-gradient(to top,var(--bg),transparent 16%),' +
+              'linear-gradient(to right,var(--bg),transparent 11%),' +
+              'linear-gradient(to left,var(--bg),transparent 11%)',
+          )}
+        />
       )}
       {/* Only where there is text to protect. A scrim over an empty banner is
           just a bruise along the bottom edge. */}

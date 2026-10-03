@@ -140,7 +140,7 @@ export function ScanIntro() {
             'cursor:pointer;margin-top:20px;border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em' +
               (st.photoCheck?.problem
                 ? ';background:transparent;border:1px solid var(--line-2);color:var(--ink-4)'
-                : ';background:var(--ink);color:var(--on-dark)'),
+                : ';background:var(--accent);color:var(--on-dark)'),
           )}
         >
           {st.t.beginScan}
@@ -194,7 +194,7 @@ export function ScanFailed() {
 
       <div
         onClick={st.retryScan}
-        style={s('cursor:pointer;margin-top:22px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px 30px;font-size:14px;font-weight:500')}
+        style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px 30px;font-size:14px;font-weight:500')}
       >
         {st.a.scanRetry}
       </div>
@@ -296,7 +296,7 @@ export function ScanResults() {
       )}
 
       <div style={s('display:flex;gap:10px;margin-top:16px')}>
-        <div onClick={st.goShop} style={s('cursor:pointer;flex:1;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
+        <div onClick={st.goShop} style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
           {st.t.matchedBtn}
         </div>
         <div onClick={st.goRoutine} style={s('cursor:pointer;flex:1;background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>

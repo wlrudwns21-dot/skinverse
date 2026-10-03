@@ -150,7 +150,7 @@ export function Audit() {
                 style={s(
                   'cursor:pointer;border-radius:3px;padding:7px 14px;font-size:12px;font-weight:500;' +
                     (on
-                      ? 'background:var(--ink);color:var(--on-dark)'
+                      ? 'background:var(--accent);color:var(--on-dark)'
                       : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
                 )}
               >

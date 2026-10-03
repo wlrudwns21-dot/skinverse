@@ -185,7 +185,7 @@ export function Stories() {
               style={s(
                 'cursor:pointer;flex-shrink:0;font-size:12px;font-weight:500;border-radius:3px;padding:7px 12px;' +
                   (active
-                    ? 'background:var(--ink);color:var(--on-dark)'
+                    ? 'background:var(--accent);color:var(--on-dark)'
                     : 'background:var(--surface);border:1px solid var(--line);color:var(--ink-3)'),
               )}
             >

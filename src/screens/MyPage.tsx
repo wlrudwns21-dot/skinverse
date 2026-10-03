@@ -91,7 +91,7 @@ function TrendCard() {
                 style={s(
                   'cursor:pointer;flex-shrink:0;font-size:11.5px;font-weight:500;border-radius:3px;padding:5px 11px;' +
                     (active
-                      ? 'background:var(--ink);color:var(--on-dark-2)'
+                      ? 'background:var(--accent);color:var(--on-dark-2)'
                       : 'background:var(--surface-2);color:var(--ink-3)'),
                 )}
               >

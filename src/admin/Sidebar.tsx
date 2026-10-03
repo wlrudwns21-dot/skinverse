@@ -7,7 +7,7 @@ export function Sidebar() {
   const admin = useAdmin()
 
   return (
-    <div style={s('width:216px;flex-shrink:0;background:var(--ink);color:var(--on-dark-2);display:flex;flex-direction:column;padding:22px 0')}>
+    <div style={s('width:216px;flex-shrink:0;background:var(--accent);color:var(--on-dark-2);display:flex;flex-direction:column;padding:22px 0')}>
       <div style={s('padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,0.1)')}>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:19px;letter-spacing:0.06em;color:var(--on-dark)')}>{WORDMARK}</div>
         <div style={s('font-size:10px;letter-spacing:0.14em;color:var(--ink-3);margin-top:3px')}>ADMIN CONSOLE · 관리자</div>

@@ -124,7 +124,7 @@ export function ProductDetail() {
           </div>
           <div
             onClick={() => { sel.add(); st.goCart() }}
-            style={s('cursor:pointer;flex:1;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+            style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
           >
             {st.t.buyNow}
           </div>

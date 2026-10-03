@@ -39,8 +39,8 @@ export const NUMERAL = 'font-family:Albert Sans,sans-serif;font-weight:200;line-
 
 /** The primary action: filled, square, quiet. */
 export const BTN =
-  'cursor:pointer;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'
+  'cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'
 
 /** The secondary action, the same size so a pair of them sits level. */
 export const BTN_GHOST =
-  'cursor:pointer;border:1px solid var(--ink);color:var(--ink);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'
+  'cursor:pointer;border:1px solid var(--accent);color:var(--accent);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'

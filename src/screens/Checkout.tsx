@@ -55,7 +55,7 @@ export function CheckoutShipping() {
         </div>
       </div>
 
-      <div onClick={st.toPayment} style={s('cursor:pointer;margin-top:18px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}>
+      <div onClick={st.toPayment} style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}>
         {st.t.toPayment}
       </div>
     </div>
@@ -154,7 +154,7 @@ export function CheckoutConfirmed() {
         </div>
       </div>
 
-      <div onClick={st.goShop} style={s('cursor:pointer;margin-top:18px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
+      <div onClick={st.goShop} style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
         {st.t.contShop}
       </div>
       <div onClick={st.goMy} style={s('cursor:pointer;margin-top:10px;font-size:13px;color:var(--accent);font-weight:500')}>

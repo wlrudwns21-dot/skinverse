@@ -119,7 +119,7 @@ export function Auth() {
         <div style={s('width:64px;height:64px;border-radius:50%;background:var(--surface-2);color:var(--accent);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px;margin-top:16px')}>{a.checkEmail}</div>
         <div style={s('font-size:13px;color:var(--ink-3);margin-top:8px;line-height:1.6')}>{a.checkEmailSub(sentTo)}</div>
-        <div onClick={st.leaveAuth} style={s('cursor:pointer;margin-top:22px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
+        <div onClick={st.leaveAuth} style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
           {a.gotIt}
         </div>
       </div>
@@ -216,7 +216,7 @@ export function Auth() {
                       style={s(
                         'cursor:pointer;flex:1;min-width:70px;text-align:center;border-radius:4px;padding:10px 6px;font-size:12.5px;font-weight:500;' +
                           (on
-                            ? 'background:var(--ink);color:var(--on-dark)'
+                            ? 'background:var(--accent);color:var(--on-dark)'
                             : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
                       )}
                     >
@@ -365,7 +365,7 @@ export function Auth() {
 
       <div
         onClick={busy ? undefined : submit}
-        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
+        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
       >
         {busy ? a.submitting : isSignUp ? a.signUp : a.logIn}
       </div>
