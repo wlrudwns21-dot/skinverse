@@ -39,16 +39,16 @@ export function Home() {
     <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
       {/* ① The hero. Runs to both edges: the photograph is the first thing on
           the screen, and a margin around it would make it a card instead. */}
-      <PhotoBanner src="/banner/hero.webp" ratio="390/318" slot="hero 390 × 318">
+      <PhotoBanner src="/banner/hero.webp" ratio="390/318" slot="hero 390 × 318" tone="light">
         <div style={s(EYEBROW)}>{st.t.kicker}</div>
-        <div style={s(`${DISPLAY};font-size:25px;line-height:1.3;margin-top:10px;color:var(--on-dark)`)}>
+        <div style={s(`${DISPLAY};font-size:25px;line-height:1.3;margin-top:10px;color:var(--banner-ink)`)}>
           {st.t.heroT}
         </div>
-        <div style={s('font-size:11.5px;color:var(--on-dark-2);line-height:1.6;margin-top:7px')}>{st.t.heroSub}</div>
+        <div style={s('font-size:11.5px;color:var(--banner-ink-2);line-height:1.6;margin-top:7px')}>{st.t.heroSub}</div>
         <div style={s('display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap')}>
           <div
             onClick={st.goScan}
-            style={s('cursor:pointer;background:var(--surface);color:var(--ink);border-radius:3px;padding:14px 24px;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+            style={s('cursor:pointer;background:var(--ink);color:var(--on-accent);border-radius:3px;padding:14px 24px;font-size:13px;font-weight:500;letter-spacing:0.03em')}
           >
             {st.scansLeft === 0 && st.state.scanned ? st.t.viewReport : st.t.startBtn}
           </div>
@@ -56,7 +56,7 @@ export function Home() {
               An allowance the server enforces and the screen never mentions is
               a refusal the customer meets by surprise. */}
           {st.quotaLine && (
-            <span style={s(`font-size:11.5px;letter-spacing:0.05em;color:${st.scansLeft === 0 ? 'var(--warn-mid)' : 'var(--on-dark-2)'}`)}>
+            <span style={s(`font-size:11.5px;letter-spacing:0.05em;color:${st.scansLeft === 0 ? 'var(--warn)' : 'var(--banner-ink-2)'}`)}>
               {st.quotaLine}
             </span>
           )}
@@ -184,14 +184,14 @@ export function Home() {
         ratio="390/228"
         slot="editorial 390 × 228"
         tint="var(--accent-soft)"
-        deep
+        tone="light"
         onClick={st.goLabel}
       >
         <div style={s(EYEBROW)}>ingredients</div>
-        <div style={s(`${DISPLAY};font-size:22px;line-height:1.34;margin-top:9px;color:var(--on-dark)`)}>
+        <div style={s(`${DISPLAY};font-size:22px;line-height:1.34;margin-top:9px;color:var(--banner-ink)`)}>
           성분을 읽습니다
         </div>
-        <div style={s('font-size:11.5px;color:var(--on-dark-2);letter-spacing:0.02em;margin-top:11px;line-height:1.6')}>
+        <div style={s('font-size:11.5px;color:var(--banner-ink-2);letter-spacing:0.02em;margin-top:11px;line-height:1.6')}>
           전성분을 식약처 등록 정보와 대조하고, 어린이 제한 성분을 확인합니다 →
         </div>
       </PhotoBanner>

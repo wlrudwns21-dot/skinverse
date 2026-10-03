@@ -24,7 +24,7 @@ export const RULE = 'height:1px;background:var(--line)'
 
 /** A KICKER over a photograph or a dark fill. */
 export const EYEBROW =
-  'font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--on-dark-2)'
+  'font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--banner-ink-2, var(--on-dark-2))'
 
 /**
  * The display face: light, tight, and with Hangul that actually renders —

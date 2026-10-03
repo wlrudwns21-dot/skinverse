@@ -82,6 +82,10 @@
      Carried as a token because every banner needs the same one. */
   --scrim: linear-gradient(to top, rgba(14, 14, 13, 0.80), rgba(14, 14, 13, 0.56) 34%, rgba(14, 14, 13, 0.26) 64%, rgba(14, 14, 13, 0));
   --scrim-dark: linear-gradient(to top, rgba(12, 16, 13, 0.82), rgba(12, 16, 13, 0.58) 34%, rgba(12, 16, 13, 0.28) 64%, rgba(12, 16, 13, 0));
+  /* The same ramp the other way up, for a photograph whose lower third is
+     already pale. It lifts the background toward --bg rather than darkening
+     it, so ink text reads without the picture turning grey. */
+  --scrim-light: linear-gradient(to top, rgba(252, 252, 250, 0.90), rgba(252, 252, 250, 0.66) 34%, rgba(252, 252, 250, 0.28) 64%, rgba(252, 252, 250, 0));
 }
 
 body {
