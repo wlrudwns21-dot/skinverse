@@ -1,5 +1,7 @@
 /** Shared shapes for the sample data in this folder. */
 
+import type { Fit, Slot } from '../catalog/analysis'
+
 export type Lang = 'en' | 'ko' | 'zh' | 'th'
 
 /** A string that exists in all four supported languages. */
@@ -78,9 +80,29 @@ export interface Product {
   kind: string
   /** CSS gradient standing in for product photography. */
   g: string
+  /**
+   * Path under `public/` to the product's main shot, e.g.
+   * `/products/<id>/main.webp`. Empty while a product has no photograph yet,
+   * in which case `g` is what gets painted.
+   */
+  img: string
   ing: string
   sub: Localized
   why: Localized
+  /** The product line, e.g. 아토베리어365. Empty when the maker has none. */
+  line: string
+  /** Which of the two daily routines it belongs to. */
+  slot: Slot
+  /** Which step of that routine, keyed into `stepNames`. */
+  step: string
+  /** Whether a human checked `ing` against the maker's own label. */
+  checked: boolean
+  /** Which scan readings it speaks to, strongest first. */
+  fits: Fit[]
+  /** What the ingredient list shows. Statements about the list, not about skin. */
+  pros: Localized[]
+  /** What to watch for. Every verified product has at least two. */
+  cons: Localized[]
 }
 
 export interface Mission {

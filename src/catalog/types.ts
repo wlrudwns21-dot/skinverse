@@ -1,3 +1,4 @@
+import type { Fit, Slot } from './analysis'
 import type { Localized, MetricKey, Product, ProductTag } from '../data/types'
 
 /** A catalogue row: the storefront's view of a product plus its operational fields. */
@@ -50,6 +51,8 @@ export interface ProductRow {
   ml: string
   kind: string
   gradient: string
+  /** Path under `public/` to the main product shot; empty when unphotographed. */
+  image?: string | null
   ingredients: string
   sub: Localized
   why: Localized
@@ -57,6 +60,15 @@ export interface ProductRow {
   sold: number
   active: boolean
   sort: number
+  /** The product line, e.g. 아토베리어365. Empty for products loaded before this. */
+  line?: string | null
+  slot?: Slot | null
+  step?: string | null
+  /** Whether a human checked `ingredients` against the maker's own label. */
+  ingredients_checked?: boolean | null
+  fits?: Fit[] | null
+  pros?: Localized[] | null
+  cons?: Localized[] | null
 }
 
 export function toCatalogProduct(row: ProductRow): CatalogProduct {
@@ -72,7 +84,15 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     ml: row.ml,
     kind: row.kind,
     g: row.gradient,
+    img: row.image ?? '',
     ing: row.ingredients,
+    line: row.line ?? '',
+    slot: row.slot ?? 'both',
+    step: row.step ?? '',
+    checked: row.ingredients_checked ?? false,
+    fits: row.fits ?? [],
+    pros: row.pros ?? [],
+    cons: row.cons ?? [],
     sub: row.sub,
     why: row.why,
     stock: row.stock,

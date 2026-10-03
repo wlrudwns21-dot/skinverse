@@ -8,6 +8,7 @@ import {
   storiesTitle,
   storyImage,
 } from '../data/stories'
+import { ProductShot } from '../components/ProductShot'
 import { s } from '../lib/css'
 import { DISPLAY, EYEBROW, GUTTER, KICKER, MORE, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
@@ -159,7 +160,7 @@ export function Home() {
       <div style={s(`${GUTTER};display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px`)}>
         {st.homeRecs.map((p) => (
           <div key={p.id} onClick={p.open} style={s('cursor:pointer')}>
-            <div style={s(`width:100%;aspect-ratio:4/5;background:${p.grad}`)} />
+            <ProductShot src={p.img} grad={p.grad} alt={p.name} />
             <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3);margin-top:10px')}>
               {p.brand} · {p.kind}
             </div>

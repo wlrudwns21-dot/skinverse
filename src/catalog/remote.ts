@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase'
-import { products as seedProducts } from '../data/products'
+import { aesturaProducts } from '../data/aestura'
 import { dailyMissions, rewards as seedRewards, weeklyMissions } from '../data/rewards'
 import { pointsRules, shipping as seedShipping } from '../data/commerce'
 import type { ShipMethod } from '../data/commerce'
@@ -45,17 +45,42 @@ export interface Catalog {
  * What the app renders before the first query returns, and what it falls back to
  * if the database is unreachable. Keeping `src/data` as the seed means a network
  * hiccup shows a slightly stale shop rather than an empty one.
+ *
+ * The products are the real AESTURA catalogue, not the placeholder brands that
+ * used to be here. A fallback made of invented products means a customer on a
+ * bad connection is shown things that cannot be bought — stale is survivable,
+ * fictional is not. Authored in won, which is the direction the database runs
+ * too, so the fallback and the live shop derive the dollar price the same way.
  */
 export const SEED_CATALOG: Catalog = {
-  // The seed carries dollar prices, so the won figure is derived at the
-  // fallback rate rather than left at zero — a ₩0 product reads as free.
-  products: seedProducts.map((p) => ({
-    ...p,
+  products: aesturaProducts.map((p) => ({
+    id: p.id,
+    brand: 'AESTURA',
+    name: p.name,
+    price: Math.round((p.krw / FALLBACK_RATES.USD.krwPerUnit) * 100) / 100,
+    priceKrw: p.krw,
+    useDays: p.useDays,
+    tag: p.tag,
+    metric: p.metric,
+    ml: p.ml,
+    kind: p.kind,
+    g: p.gradient,
+    img: p.image,
+    ing: p.ingredients,
+    sub: p.sub,
+    why: p.why,
+    line: p.line,
+    slot: p.slot,
+    step: p.step,
+    checked: p.checked,
+    fits: p.fits,
+    pros: p.pros,
+    cons: p.cons,
     stock: 0,
     sold: 0,
-    active: true,
-    priceKrw: Math.round(p.price * FALLBACK_RATES.USD.krwPerUnit),
-    useDays: 60,
+    // Mirrors the database rule: an unverified ingredient list cannot be sold,
+    // and the fallback is not a way around it.
+    active: p.checked,
   })),
   missions: [
     ...dailyMissions.map((m) => ({ id: m.id, kind: 'daily' as const, pts: m.pts, l: m.l, active: true })),

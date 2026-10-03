@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react'
+import { analysisLabels as L } from '../catalog/analysis'
+import { ProductShot } from '../components/ProductShot'
 import { s } from '../lib/css'
 import { DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
@@ -27,7 +30,7 @@ export function Shop() {
       <div style={s(`${GUTTER};display:grid;grid-template-columns:1fr 1fr;gap:13px 13px`)}>
         {st.shopList.map((p) => (
           <div key={p.id} style={s('display:flex;flex-direction:column')}>
-            <div onClick={p.open} style={s(`cursor:pointer;width:100%;aspect-ratio:4/5;background:${p.grad}`)} />
+            <ProductShot src={p.img} grad={p.grad} alt={p.name} onClick={p.open} />
             <div onClick={p.open} style={s('cursor:pointer;flex:1')}>
               <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3);margin-top:10px')}>
                 {p.brand} · {p.kind}
@@ -64,6 +67,23 @@ export function Shop() {
   )
 }
 
+/**
+ * One line of the pros or cons list.
+ *
+ * The marker is a character in a fixed-width column rather than a list bullet,
+ * so a two-line note hangs under its own text instead of under the marker, and
+ * so the cons list can be marked in a different colour without the browser's
+ * bullet ignoring it.
+ */
+function Note({ mark, tint, children }: { mark: string; tint: string; children: ReactNode }) {
+  return (
+    <div style={s('display:flex;gap:9px;margin-top:10px')}>
+      <span style={s(`flex-shrink:0;width:9px;font-size:11px;line-height:1.85;color:${tint}`)}>{mark}</span>
+      <span style={s('flex:1;font-size:12px;line-height:1.85;color:var(--ink-2)')}>{children}</span>
+    </div>
+  )
+}
+
 export function ProductDetail() {
   const st = useStore()
   const sel = st.sel
@@ -78,12 +98,19 @@ export function ProductDetail() {
 
       {/* Full width, 4:5. The product photograph is the page, and a rounded
           card around it would make it an illustration of the page instead. */}
-      <div style={s(`width:100%;aspect-ratio:4/5;max-height:430px;background:${sel.grad}`)} />
+      <ProductShot src={sel.img} grad={sel.grad} alt={sel.name} frame="max-height:430px" />
 
       <div style={s(`${GUTTER};padding-top:20px`)}>
         <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3)')}>
           {sel.brand} · {sel.kind} · {sel.ml}
         </div>
+        {/* The line name is held in Korean, which is how Korean customers know
+            the product and how it is printed on the box. It is shown to Korean
+            readers only — to everyone else it is a word they cannot read, and
+            the English product name already carries the line. */}
+        {sel.line && st.lang === 'ko' && (
+          <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:8px;letter-spacing:0.02em')}>{sel.line}</div>
+        )}
         <div style={s(`${DISPLAY};font-size:23px;line-height:1.3;margin-top:8px`)}>{sel.name}</div>
         <div style={s('font-size:12.5px;color:var(--ink-3);margin-top:5px;line-height:1.6')}>{sel.sub}</div>
 
@@ -101,6 +128,50 @@ export function ProductDetail() {
 
         <div style={s(`${RULE};margin-top:20px`)} />
 
+        {/* Where it goes in a day, as two facts rather than a sentence. A
+            customer deciding between two creams is deciding which one replaces
+            what they already put on at night. */}
+        {(sel.slotS || sel.stepS) && (
+          <>
+            <div style={s('display:flex;padding:14px 0')}>
+              <div style={s('flex:1')}>
+                <div style={s(KICKER)}>{L.slot[st.lang]}</div>
+                <div style={s('font-size:12.5px;margin-top:7px;line-height:1.5')}>{sel.slotS}</div>
+              </div>
+              {sel.stepS && (
+                <div style={s('flex:1;border-left:1px solid var(--line);padding-left:16px')}>
+                  <div style={s(KICKER)}>{L.step[st.lang]}</div>
+                  <div style={s('font-size:12.5px;margin-top:7px;line-height:1.5')}>{sel.stepS}</div>
+                </div>
+              )}
+            </div>
+            <div style={s(RULE)} />
+          </>
+        )}
+
+        {sel.fits.length > 0 && (
+          <>
+            <div style={s('padding:16px 0')}>
+              <div style={s(KICKER)}>{L.fits[st.lang]}</div>
+              {sel.fits.map((f) => (
+                <div key={f.axis} style={s('display:flex;gap:11px;align-items:baseline;margin-top:11px')}>
+                  {/* The axis is the heading of the line and the note is the
+                      evidence for it, so the axis is set in ink and the note
+                      one step back — not the other way round. */}
+                  <div style={s('flex-shrink:0;width:74px;font-size:11.5px;line-height:1.6')}>
+                    {f.axis}
+                    <div style={s('font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-4);margin-top:2px')}>
+                      {L[f.strength][st.lang]}
+                    </div>
+                  </div>
+                  <div style={s('flex:1;font-size:12px;line-height:1.75;color:var(--ink-2)')}>{f.note}</div>
+                </div>
+              ))}
+            </div>
+            <div style={s(RULE)} />
+          </>
+        )}
+
         <div style={s('padding:16px 0')}>
           <div style={s(KICKER)}>{st.t.whyT}</div>
           <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.why}</div>
@@ -108,12 +179,48 @@ export function ProductDetail() {
 
         <div style={s(RULE)} />
 
+        {/* Pros and cons sit together, in that order, and neither can be
+            collapsed away: a product shown with only its merits is an
+            advertisement, and this screen is meant to be read. */}
+        {sel.pros.length > 0 && (
+          <>
+            <div style={s('padding:16px 0')}>
+              <div style={s(KICKER)}>{L.pros[st.lang]}</div>
+              {sel.pros.map((line, i) => (
+                <Note key={i} mark="—" tint="var(--ink-2)">{line}</Note>
+              ))}
+            </div>
+            <div style={s(RULE)} />
+          </>
+        )}
+
+        {sel.cons.length > 0 && (
+          <>
+            <div style={s('padding:16px 0')}>
+              <div style={s(`${KICKER};color:var(--warn)`)}>{L.cons[st.lang]}</div>
+              {sel.cons.map((line, i) => (
+                <Note key={i} mark="!" tint="var(--warn)">{line}</Note>
+              ))}
+            </div>
+            <div style={s(RULE)} />
+          </>
+        )}
+
         <div style={s('padding:16px 0')}>
           <div style={s(KICKER)}>{st.t.ingT}</div>
           <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.ing}</div>
         </div>
 
         <div style={s(RULE)} />
+
+        {!sel.checked && (
+          <>
+            <div style={s('padding:16px 0;font-size:11.5px;line-height:1.7;color:var(--ink-3)')}>
+              {L.unchecked[st.lang]}
+            </div>
+            <div style={s(RULE)} />
+          </>
+        )}
 
         <div style={s('display:flex;gap:10px;margin-top:20px')}>
           <div

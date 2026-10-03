@@ -1,3 +1,4 @@
+import type { Fit, FitStrength, Slot } from '../catalog/analysis'
 import type { Localized, MetricKey, ProductTag } from './types'
 
 /**
@@ -23,15 +24,10 @@ import type { Localized, MetricKey, ProductTag } from './types'
  * that, because the alternative is writing the analysis from the product name.
  */
 
-/** How strongly a product speaks to one scan reading. */
-export type FitStrength = 'primary' | 'secondary'
-
-export interface Fit {
-  /** A scan axis, or 'uv' which matches on the local UV index instead. */
-  axis: MetricKey | 'uv'
-  strength: FitStrength
-  note: Localized
-}
+/* `Fit` and `FitStrength` live in `src/catalog/analysis.ts`, next to the labels
+   that render them, and are re-exported here so a caller holding this file's
+   products does not have to know that. */
+export type { Fit, FitStrength }
 
 export interface AesturaProduct {
   id: string
@@ -51,9 +47,15 @@ export interface AesturaProduct {
   tag: ProductTag
   /** The axis the match score is computed from. `fits` is what gets shown. */
   metric: MetricKey | 'uv'
-  slot: 'am' | 'pm' | 'both'
+  slot: Slot
   step: string
   gradient: string
+  /**
+   * Path under `public/` to the main product shot, e.g.
+   * `/products/<id>/main.webp`. Empty until the product is photographed, in
+   * which case `gradient` is what gets painted.
+   */
+  image: string
   sub: Localized
   why: Localized
   /** Whether the ingredient list below was checked against the maker's own. */
@@ -171,6 +173,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'both',
     step: 'cream',
     gradient: G.sand,
+    image: '',
     sub: {
       ko: '세라마이드 장벽 크림',
       en: 'Ceramide barrier cream',
@@ -262,6 +265,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'both',
     step: 'toner',
     gradient: G.sage,
+    image: '',
     sub: {
       ko: '유분을 품은 보습 미스트',
       en: 'Moisturising mist with oils',
@@ -343,6 +347,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'pm',
     step: 'serum',
     gradient: G.stone,
+    image: '',
     sub: {
       ko: '모공·탄력 캡슐 세럼',
       en: 'Pore and firmness capsule serum',
@@ -450,6 +455,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'am',
     step: 'spf',
     gradient: G.sage,
+    image: '',
     sub: {
       ko: '징크 단일 무기자차 · SPF50+ PA++++',
       en: 'Zinc-only mineral sunscreen · SPF50+ PA++++',
@@ -551,6 +557,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'pm',
     step: 'serum',
     gradient: G.sage,
+    image: '/products/ae-acica365-soothing-serum-40/main.webp',
     sub: {
       ko: '병풀 4종 진정 세럼 · pH4.5',
       en: 'Four-compound centella serum · pH4.5',
@@ -587,6 +594,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'pm',
     step: 'serum',
     gradient: G.sage,
+    image: '',
     sub: {
       ko: '흔적진정세럼 2개 세트',
       en: 'Two bottles of the soothing serum',
@@ -628,6 +636,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'both',
     step: 'cream',
     gradient: G.stone,
+    image: '',
     sub: { ko: '', en: '', zh: '', th: '' },
     why: { ko: '', en: '', zh: '', th: '' },
     checked: false,

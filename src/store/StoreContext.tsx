@@ -18,6 +18,7 @@ import { fetchWeather } from '../weather/remote'
 import { useGeolocation } from '../weather/useGeolocation'
 import { useCatalog } from '../catalog/CatalogContext'
 import type { CatalogMission, CatalogProduct, CatalogReward } from '../catalog/types'
+import { axisName, slotNames, stepName, type FitStrength } from '../catalog/analysis'
 import { can, type Capability } from '../auth/capabilities'
 import { deviceTimezone, useAuth } from '../auth/AuthContext'
 import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
@@ -79,6 +80,25 @@ export interface ProductView {
   kind: string
   ml: string
   grad: string
+  /** Path under `public/` to the product shot; empty when unphotographed. */
+  img: string
+  /** The product line, e.g. 아토베리어365. Empty when the maker has none. */
+  line: string
+  /** When in the day it goes on, already in the reader's language. */
+  slotS: string
+  /** Which routine step it is, already in the reader's language. Empty if unset. */
+  stepS: string
+  /** Which scan readings it speaks to, named in the reader's language. */
+  fits: { axis: string; strength: FitStrength; note: string }[]
+  /** What the ingredient list shows, in the reader's language. */
+  pros: string[]
+  /** What to watch for, in the reader's language. */
+  cons: string[]
+  /**
+   * Whether the ingredient list was verified. False means the analysis above is
+   * empty by design, not missing by accident.
+   */
+  checked: boolean
   sub: string
   why: string
   ing: string
@@ -1258,6 +1278,18 @@ function useStoreValue() {
       kind: p.kind,
       ml: p.ml,
       grad: p.g,
+      img: p.img,
+      line: p.line,
+      slotS: slotNames[p.slot][lang],
+      stepS: p.step ? stepName(p.step, lang) : '',
+      /* Primary first: the reading a product was formulated around should not
+         appear under one it merely also touches. */
+      fits: [...p.fits]
+        .sort((a, b) => (a.strength === b.strength ? 0 : a.strength === 'primary' ? -1 : 1))
+        .map((f) => ({ axis: axisName(f.axis, lang), strength: f.strength, note: f.note[lang] })),
+      pros: p.pros.map((x) => x[lang]),
+      cons: p.cons.map((x) => x[lang]),
+      checked: p.checked,
       sub: p.sub[lang],
       why: p.why[lang],
       ing: p.ing,
