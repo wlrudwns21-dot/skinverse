@@ -154,30 +154,12 @@ export function Home() {
         <div style={s('color:var(--on-dark-2);font-size:15px;flex-shrink:0')}>→</div>
       </div>
 
-      {/* ② 성분 분석, as an editorial banner rather than a menu row. It answers
-          a question people arrive with — what is actually in this — and it is
-          unmetered, unlike the face scan, so there is no allowance to explain
-          here. */}
-      <PhotoBanner
-        src="/banner/ingredients.webp"
-        ratio="390/228"
-        slot="editorial 390 × 228"
-        tint="var(--accent-soft)"
-        deep
-        onClick={st.goLabel}
-      >
-        <div style={s(EYEBROW)}>ingredients</div>
-        <div style={s(`${DISPLAY};font-size:22px;line-height:1.34;margin-top:9px;color:var(--on-dark)`)}>
-          성분을 읽습니다
-        </div>
-        <div style={s('font-size:11.5px;color:var(--on-dark-2);letter-spacing:0.02em;margin-top:11px;line-height:1.6')}>
-          전성분을 식약처 등록 정보와 대조하고, 어린이 제한 성분을 확인합니다 →
-        </div>
-      </PhotoBanner>
-
-      {/* The shelf. 4:5 rather than a square, which reads as a photograph
-          instead of a thumbnail, and two across rather than a scrolling strip,
-          so nothing sits off the edge of the screen unseen. */}
+      {/* The shelf, directly under the readings. This is a shop: a customer who
+          scrolls once should already be looking at something they can buy, and
+          the feature banners that used to sit here pushed the first product
+          below two screenfuls. 4:5 rather than a square, which reads as a
+          photograph instead of a thumbnail, and two across rather than a
+          scrolling strip, so nothing sits off the edge unseen. */}
       <div style={s(`${GUTTER};padding-top:24px;padding-bottom:13px;display:flex;align-items:baseline;justify-content:space-between`)}>
         <span style={s(KICKER)}>{st.t.matched}</span>
         <span onClick={st.goShop} style={s(MORE)}>{st.t.allProducts}</span>
@@ -200,6 +182,28 @@ export function Home() {
           </div>
         ))}
       </div>
+
+      {/* ② 성분 분석, between the shelf and the journal. It answers a question
+          people arrive with — what is actually in this — so it belongs next to
+          the products rather than ahead of them, and the full-width banner is
+          what breaks the shelf from the reading below it. Unmetered, unlike
+          the face scan, so there is no allowance to explain here. */}
+      <PhotoBanner
+        src="/banner/ingredients.webp"
+        ratio="390/228"
+        slot="editorial 390 × 228"
+        tint="var(--accent-soft)"
+        deep
+        onClick={st.goLabel}
+      >
+        <div style={s(EYEBROW)}>ingredients</div>
+        <div style={s(`${DISPLAY};font-size:22px;line-height:1.34;margin-top:9px;color:var(--on-dark)`)}>
+          성분을 읽습니다
+        </div>
+        <div style={s('font-size:11.5px;color:var(--on-dark-2);letter-spacing:0.02em;margin-top:11px;line-height:1.6')}>
+          전성분을 식약처 등록 정보와 대조하고, 어린이 제한 성분을 확인합니다 →
+        </div>
+      </PhotoBanner>
 
       {/* Skin Stories. These keep the 2:1 shape the photographs were actually
           made at — cropping a 780x390 master into the shelf's 4:5 frame throws
