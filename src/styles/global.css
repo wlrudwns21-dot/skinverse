@@ -14,13 +14,14 @@
   --surface: #FFFFFF;
   --surface-2: #F4F4F1;
 
-  /* text and icons, darkest to lightest. --ink-3 is the lightest that still
-     clears WCAG AA (4.5:1) on --surface for body text; --ink-4 is for large
-     text, disabled states and glyphs only. */
+  /* Text and icons, darkest to lightest. Every rank here clears WCAG AA
+     (4.5:1) on --bg, including --ink-4 at 4.58:1 — the ramp was a third of a
+     stop too light and the screens used --ink-4 for real sentences anyway, so
+     the rule the ramp states is now one the ramp can keep. */
   --ink: #101010;
   --ink-2: #4A4A44;
-  --ink-3: #6E6E68;
-  --ink-4: #8A8A82;
+  --ink-3: #5C5C57;
+  --ink-4: #74746D;
 
   /* hairlines. --line for dividers, --line-2 for input borders, which need to
      read as an edge you can type inside. */
@@ -39,6 +40,12 @@
   --on-accent: #FFFFFF;
   --on-dark: #FFFFFF;
   --on-dark-2: rgba(255, 255, 255, 0.82);
+  /* The accent and caution tones again, mixed for a dark ground. The light
+     versions are deliberately dark — --warn on black is 2.8:1 and --accent is
+     1.9:1 — so a card that inverts its ground has to invert these too, or its
+     labels vanish. Both clear 9:1 on --ink. */
+  --warn-on-dark: #E8B07A;
+  --accent-on-dark: #8FBFA8;
 
   /* The two translucent grounds, for the bars that stay put while the screen
      scrolls under them. They have to be written out rather than derived,

@@ -92,8 +92,8 @@ export function Routine() {
       {/* The three readings that decide the plan, each with what it changes.
           Showing the criteria beats an unexplained list of products. */}
       <div style={s('background:var(--ink);color:var(--on-dark-2);border-radius:4px;padding:16px;margin-top:10px')}>
-        <div style={s('font-size:11px;letter-spacing:0.12em;color:var(--warn);font-weight:500')}>{st.basisTitle}</div>
-        <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:4px')}>{st.basisHint}</div>
+        <div style={s('font-size:11px;letter-spacing:0.12em;color:var(--warn-on-dark);font-weight:500')}>{st.basisTitle}</div>
+        <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:4px')}>{st.basisHint}</div>
 
         <div style={s('display:flex;flex-direction:column;gap:11px;margin-top:13px')}>
           {[
@@ -106,9 +106,9 @@ export function Routine() {
               <div style={s('min-width:0')}>
                 <div style={s('font-size:12.5px;font-weight:500')}>
                   {row.v.value}
-                  <span style={s('color:var(--warn);font-weight:500')}> · {row.v.label}</span>
+                  <span style={s('color:var(--warn-on-dark);font-weight:500')}> · {row.v.label}</span>
                 </div>
-                <div style={s('font-size:12px;color:var(--ink-4);line-height:1.5;margin-top:2px')}>{row.v.why}</div>
+                <div style={s('font-size:12px;color:var(--on-dark-2);line-height:1.5;margin-top:2px')}>{row.v.why}</div>
               </div>
             </div>
           ))}
@@ -129,7 +129,7 @@ export function Routine() {
               ? st.checkT.allDone
               : st.checkT.doneToday(st.todayAdherence.done, st.todayAdherence.total)}
           </div>
-          <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:2px')}>{st.checkT.sub}</div>
+          <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:2px')}>{st.checkT.sub}</div>
         </div>
         <div style={s('width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;background:conic-gradient(var(--accent) ' + st.todayAdherence.pct + '%, rgba(255,255,255,0.14) 0)')}>
           <div style={s('width:34px;height:34px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center')}>

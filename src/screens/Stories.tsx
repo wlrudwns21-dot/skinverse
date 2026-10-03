@@ -58,7 +58,7 @@ export function Chip({ label, tone }: { label: string; tone: 'core' | 'category'
     <span
       style={s(
         'font-size:10.5px;font-weight:500;border-radius:3px;padding:3px 9px;letter-spacing:0.04em;' +
-          (tone === 'core' ? 'background:var(--ink);color:var(--on-dark-2)' : 'background:var(--surface-2);color:var(--ink-3)'),
+          (tone === 'core' ? 'background:rgba(255,255,255,0.14);color:var(--on-dark)' : 'background:var(--surface-2);color:var(--ink-3)'),
       )}
     >
       {label}
@@ -101,17 +101,17 @@ export function CoreTipCard({ lang, onOpen }: { lang: Lang; onOpen?: () => void 
         <div style={s('position:absolute;right:-50px;top:-70px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:.55')} />
         <div style={s('display:flex;gap:6px;align-items:center;position:relative')}>
           <Chip label={coreTipLabel[lang]} tone="core" />
-          <span style={s('font-size:10.5px;color:var(--ink-3)')}>
+          <span style={s('font-size:10.5px;color:var(--on-dark-2)')}>
             {categoryNames[coreTip.category][lang]} · {minutesLabel(coreTip.minutes, lang)}
           </span>
         </div>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:20px;line-height:1.3;margin:10px 0 8px;position:relative')}>
           {coreTip.title[lang]}
         </div>
-        <div style={s('font-size:13px;line-height:1.65;color:var(--ink-4);position:relative')}>
+        <div style={s('font-size:13px;line-height:1.65;color:var(--on-dark-2);position:relative')}>
           {coreTip.body[0][lang]}
         </div>
-        <div style={s('font-size:13px;line-height:1.65;color:var(--ink-4);margin-top:9px;position:relative')}>
+        <div style={s('font-size:13px;line-height:1.65;color:var(--on-dark-2);margin-top:9px;position:relative')}>
           {coreTip.body[1][lang]}
         </div>
       </div>

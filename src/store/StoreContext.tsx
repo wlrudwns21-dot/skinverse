@@ -1315,7 +1315,7 @@ function useStoreValue() {
         ? 'background:var(--surface-2);color:var(--accent)'
         : affordable
           ? 'background:var(--ink);color:var(--on-dark)'
-          : 'background:var(--surface-2);color:var(--ink-4)',
+          : 'background:transparent;border:1px solid var(--line-2);color:var(--ink-3)',
     }
   })
 

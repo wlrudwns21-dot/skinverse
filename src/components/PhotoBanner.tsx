@@ -55,12 +55,17 @@ export function PhotoBanner({
   // photograph that has not been taken yet.
   const [broken, setBroken] = useState(false)
   const showPhoto = Boolean(src) && !broken
+  // White text over a pale placeholder is invisible, and the scrim is far too
+  // thin to rescue it on its own — it was built to sit over a photograph. So
+  // while there is no photograph, a banner that carries text takes a dark
+  // ground instead of the pale one.
+  const ground = !showPhoto && children ? 'var(--ink-2)' : tint
 
   return (
     <div
       onClick={onClick}
       style={s(
-        `position:relative;width:100%;aspect-ratio:${ratio};background:${tint};overflow:hidden` +
+        `position:relative;width:100%;aspect-ratio:${ratio};background:${ground};overflow:hidden` +
           (onClick ? ';cursor:pointer' : ''),
       )}
     >
@@ -73,7 +78,7 @@ export function PhotoBanner({
         />
       )}
       {!showPhoto && slot && (
-        <span style={s('position:absolute;top:13px;right:16px;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-4)')}>
+        <span style={s(`position:absolute;top:13px;right:16px;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:${children ? 'var(--on-dark-2)' : 'var(--ink-3)'}`)}>
           {slot}
         </span>
       )}

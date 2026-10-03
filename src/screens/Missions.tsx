@@ -19,18 +19,18 @@ export function Missions() {
 
   return (
     <div style={s('padding:20px;animation:rise .4s ease both')}>
-      <div style={s('background:linear-gradient(140deg,var(--ink),var(--ink));color:var(--on-dark);border-radius:4px;padding:18px')}>
+      <div style={s('background:var(--ink);color:var(--on-dark);border-radius:4px;padding:18px')}>
         <div style={s('display:flex;justify-content:space-between;align-items:flex-start')}>
           <div>
-            <div style={s('font-size:11px;letter-spacing:0.14em;color:var(--warn)')}>{st.t.glowPts}</div>
+            <div style={s('font-size:11px;letter-spacing:0.14em;color:var(--warn-on-dark)')}>{st.t.glowPts}</div>
             <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:34px;margin-top:4px')}>{st.pointsS} P</div>
           </div>
           <div style={s('text-align:right;font-size:12px')}>
             <div style={s('background:rgba(255,255,255,0.12);border-radius:3px;padding:5px 10px;font-weight:500')}>Lv. {st.levelName}</div>
-            <div style={s('margin-top:6px;color:var(--warn)')}>🔥 {st.streakLine}</div>
+            <div style={s('margin-top:6px;color:var(--warn-on-dark)')}>🔥 {st.streakLine}</div>
           </div>
         </div>
-        <div style={s('margin-top:14px;font-size:11px;color:var(--warn);display:flex;justify-content:space-between')}>
+        <div style={s('margin-top:14px;font-size:11px;color:var(--on-dark-2);display:flex;justify-content:space-between')}>
           <span>{st.levelName}</span>
           <span>{st.nextLevelS}</span>
         </div>
