@@ -143,225 +143,100 @@ input, select, button { font-family: inherit; }
 }
 
 /* ── the launch splash ──────────────────────────────────────────────────────
-   Ported from the SKINVERSE intro motion study. This is the one part of the
-   app written as real CSS rather than the inline `s()` strings used elsewhere,
-   because it needs @keyframes and a prefers-reduced-motion query — neither of
-   which an inline style can express.
+   One gesture, about a second long.
 
-   Every duration is scaled by `--t`, so the whole sequence can be slowed for
-   QA (`--t: 2`) from one place. Only `transform`, `opacity`, `letter-spacing`
-   and `width` are animated: the first two composite on the GPU, and the last
-   two are confined to small elements, which is what holds 60fps on a low-end
-   Android. */
+   What was here before was a scan ring with measurement ticks and a radar
+   sweep, over three and a half seconds, with the wordmark arriving a letter at
+   a time out of a blur. Every part of that was decoration describing a feature
+   rather than the brand, and a letter-by-letter reveal is the first thing that
+   reads as a template.
+
+   So: the name settles, a rule draws under it, the line beneath fades up. The
+   three are one movement, not three events. Nothing is laid over anything, and
+   the ground is the page's own — the hand-off at the end is a fade between two
+   screens that are already the same colour.
+
+   This is the one part of the app written as real CSS rather than the inline
+   `s()` strings used everywhere else, because it needs keyframes and a
+   reduced-motion query, and an inline style can express neither. Every
+   duration is scaled by `--t`, so the whole thing can be slowed from one place
+   for inspection (`--t: 4` in devtools). */
 
 .splash {
   position: fixed;
   inset: 0;
   z-index: 100;
   display: flex;
+  align-items: center;
   justify-content: center;
-  /* The same ground as the app shell underneath, so the hand-off is a fade
-     and not a flash of a different colour. */
-  background: radial-gradient(120% 80% at 50% 0%, var(--surface) 0%, var(--bg) 60%);
+  background: var(--bg);
   --t: 1;
-  --ring: 31, 74, 61;
   transition: opacity 320ms ease;
 }
 .splash.leaving { opacity: 0; }
 
-.splash-inner {
-  position: relative;
-  width: 100%;
-  max-width: 430px;
-  background: var(--bg);
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  isolation: isolate;
+.splash-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Lifted a touch above centre: text centred by maths reads as low, because
+     the eye puts the middle of a page above its geometric middle. */
+  margin-bottom: 6vh;
 }
-.splash-inner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(120% 78% at 50% 40%, rgba(var(--ring), .10), transparent 62%);
-}
-
-.splash-layer { position: absolute; inset: 0; display: grid; place-items: center; }
-
-.splash-guide {
-  position: absolute;
-  border: 1px solid rgba(var(--ring), .13);
-  border-radius: 50%;
-  width: var(--d); height: var(--d);
-  animation:
-    splashGuideIn calc(460ms * var(--t)) cubic-bezier(.2, .7, .3, 1) calc(var(--gd) * var(--t)) both,
-    splashFadeOut calc(420ms * var(--t)) ease-in calc(1600ms * var(--t)) forwards;
-}
-
-.splash-scan { position: relative; width: 184px; height: 184px; display: grid; place-items: center; }
-
-.splash-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(var(--ring), .55);
-  width: var(--d); height: var(--d);
-  animation:
-    splashRingOut calc(760ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(var(--rd) * var(--t)) both,
-    splashRingIn calc(420ms * var(--t)) cubic-bezier(.6, 0, .8, .2) calc(1560ms * var(--t)) forwards;
-}
-.splash-ring.r2 { border-color: rgba(var(--ring), .34); }
-.splash-ring.r3 { border-color: rgba(var(--ring), .20); }
-
-.splash-sweep {
-  position: absolute;
-  width: 150px; height: 150px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg,
-    rgba(var(--ring), 0) 0deg, rgba(var(--ring), 0) 250deg,
-    rgba(var(--ring), .30) 340deg, rgba(var(--ring), .62) 358deg,
-    rgba(var(--ring), 0) 360deg);
-  -webkit-mask: radial-gradient(circle, transparent 28%, #000 30%, #000 99%, transparent 100%);
-  mask: radial-gradient(circle, transparent 28%, #000 30%, #000 99%, transparent 100%);
-  animation: splashSweep calc(1300ms * var(--t)) cubic-bezier(.35, 0, .25, 1) calc(380ms * var(--t)) both;
-}
-
-.splash-core {
-  position: absolute;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: rgb(var(--ring));
-  animation: splashCore calc(620ms * var(--t)) cubic-bezier(.4, 0, .2, 1) calc(1620ms * var(--t)) both;
-}
-
-.splash-tick {
-  position: absolute;
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  background: rgb(var(--ring));
-  animation:
-    splashTick calc(360ms * var(--t)) cubic-bezier(.2, 1.5, .4, 1) calc(var(--td) * var(--t)) both,
-    splashFadeOut calc(280ms * var(--t)) ease-in calc(1540ms * var(--t)) forwards;
-}
-.splash-tick.long {
-  width: 1px; height: 9px; border-radius: 1px;
-  animation:
-    splashTickLong calc(340ms * var(--t)) cubic-bezier(.2, .9, .3, 1) calc(var(--td) * var(--t)) both,
-    splashFadeOut calc(280ms * var(--t)) ease-in calc(1540ms * var(--t)) forwards;
-}
-
-.splash-brand { position: relative; display: flex; flex-direction: column; align-items: center; }
 
 .splash-logotype {
   margin: 0;
   font-family: Marcellus, "Noto Serif KR", Georgia, 'Times New Roman', serif;
   font-weight: 400;
-  font-size: 30px;
+  font-size: 27px;
   line-height: 1;
-  color: var(--ink);
-  display: flex;
   white-space: nowrap;
-  animation: splashTrack calc(900ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(1880ms * var(--t)) both;
-}
-.splash-logotype span {
-  display: inline-block;
-  animation: splashLetter calc(560ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(var(--ld) * var(--t)) both;
+  color: var(--ink);
+  animation: splashName calc(760ms * var(--t)) cubic-bezier(.16, .84, .32, 1) both;
 }
 
+/* Grows from nothing to the width of the tagline under it, so the three parts
+   end up locked to one measure. */
 .splash-rule {
   height: 1px;
-  background: rgba(var(--ring), .7);
-  margin: 15px 0 13px;
-  animation: splashRule calc(620ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(2440ms * var(--t)) both;
+  width: 100%;
+  background: var(--line-2);
+  margin: 16px 0 12px;
+  transform-origin: 50% 50%;
+  animation: splashRule calc(620ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(420ms * var(--t)) both;
 }
 
 .splash-tagline {
   margin: 0;
   font-size: 9.5px;
-  letter-spacing: .34em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--ink-3);
   white-space: nowrap;
-  animation: splashTag calc(520ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(2600ms * var(--t)) both;
+  animation: splashFade calc(520ms * var(--t)) ease-out calc(560ms * var(--t)) both;
 }
 
-.splash-progress {
-  position: absolute;
-  left: 50%; bottom: 52px;
-  transform: translateX(-50%);
-  width: 52px; height: 1.5px;
-  border-radius: 2px;
-  background: rgba(var(--ring), .18);
-  overflow: hidden;
-  animation: splashBarIn calc(300ms * var(--t)) ease calc(2700ms * var(--t)) both;
+@keyframes splashName {
+  from { opacity: 0; letter-spacing: 0.38em; transform: translateY(5px); }
+  to   { opacity: 1; letter-spacing: 0.17em; transform: none; }
 }
-.splash-progress i {
-  display: block;
-  height: 100%;
-  background: rgb(var(--ring));
-  animation: splashBarFill calc(760ms * var(--t)) cubic-bezier(.3, .1, .2, 1) calc(2760ms * var(--t)) both;
+@keyframes splashRule {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+@keyframes splashFade {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: none; }
 }
 
-@keyframes splashGuideIn { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
-@keyframes splashFadeOut { to { opacity: 0; } }
-@keyframes splashRingOut {
-  0% { opacity: 0; transform: scale(.5); }
-  35% { opacity: 1; }
-  100% { opacity: .9; transform: scale(1); }
-}
-@keyframes splashRingIn {
-  0% { opacity: .9; transform: scale(1); }
-  100% { opacity: 0; transform: scale(.14); }
-}
-@keyframes splashSweep {
-  0% { opacity: 0; transform: rotate(0deg); }
-  12% { opacity: 1; }
-  82% { opacity: 1; }
-  100% { opacity: 0; transform: rotate(560deg); }
-}
-@keyframes splashCore {
-  0% { opacity: 0; transform: scale(.4); }
-  45% { opacity: 1; transform: scale(1); }
-  70% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(7); }
-}
-@keyframes splashTick {
-  0% { opacity: 0; transform: rotate(var(--a)) translateY(-75px) scale(0); }
-  60% { opacity: 1; transform: rotate(var(--a)) translateY(-75px) scale(1.6); }
-  100% { opacity: .85; transform: rotate(var(--a)) translateY(-75px) scale(1); }
-}
-@keyframes splashTickLong {
-  0% { opacity: 0; transform: rotate(var(--a)) translateY(-75px) scaleY(0); }
-  100% { opacity: .85; transform: rotate(var(--a)) translateY(-75px) scaleY(1); }
-}
-@keyframes splashLetter {
-  0% { opacity: 0; transform: translateY(.42em); filter: blur(3px); }
-  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
-}
-@keyframes splashTrack {
-  0% { letter-spacing: .42em; text-indent: .42em; }
-  100% { letter-spacing: .17em; text-indent: .17em; }
-}
-@keyframes splashRule { from { width: 0; } to { width: 104px; } }
-@keyframes splashTag { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes splashBarIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes splashBarFill { from { width: 0; } to { width: 100%; } }
-
-/* Motion is the whole point of this screen, so when it is refused there is
-   nothing to degrade to but the final frame: the wordmark, the rule and the
-   tagline, held still. The scan cluster is hidden outright rather than shown
-   mid-sweep, and the splash is dismissed on a shorter minimum — the hold
-   exists to let an animation play, and there is no animation. */
+/* With motion off there is nothing left to reveal, so everything is simply
+   there. The component shortens its own floor to match — holding a still
+   screen for the length of an animation nobody is seeing is just a delay. */
 @media (prefers-reduced-motion: reduce) {
-  /* `.splash-tick.long` is listed explicitly: it is a two-class selector, so a
-     bare `.splash-tick` here loses to it on specificity and the long ticks keep
-     animating — the one thing this block exists to prevent. */
-  .splash-guide, .splash-ring, .splash-sweep, .splash-core,
-  .splash-tick, .splash-tick.long { animation: none; opacity: 0; }
-  .splash-logotype { animation: none; letter-spacing: .17em; text-indent: .17em; }
-  .splash-logotype span { animation: none; opacity: 1; transform: none; filter: none; }
-  .splash-rule { animation: none; width: 104px; }
-  .splash-tagline { animation: none; opacity: 1; transform: none; }
-  .splash-progress { animation: none; opacity: 1; }
-  .splash-progress i { animation: none; width: 100%; }
+  .splash-logotype,
+  .splash-rule,
+  .splash-tagline {
+    animation: none;
+  }
+  .splash-logotype { letter-spacing: 0.17em; }
 }

@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { WORDMARK } from '../data/brand'
 
 /**
- * The launch splash: a scan ring reads the skin, then collapses into the name.
+ * The launch splash: the name settles, a rule draws under it, the line beneath
+ * fades up. One gesture, about a second.
  *
  * It says what the app is before the app has finished loading, which is the
  * only excuse a splash screen ever has. So it is tied to the loading it covers
- * rather than run on a fixed timer: the sequence is cut the moment the session
- * and the catalogue are both in, and the later phases are seen only by someone
- * who was going to be waiting anyway.
+ * rather than run on a fixed timer: it leaves the moment the session and the
+ * catalogue are both in, once the sequence has had time to land.
  *
  * The styling lives in src/styles/global.css — keyframes and a reduced-motion
  * query cannot be expressed as inline styles, which is how the rest of this app
@@ -16,43 +16,35 @@ import { WORDMARK } from '../data/brand'
  */
 
 /**
- * The shortest the splash is ever shown: long enough to have seen the name.
+ * The shortest the splash is ever shown.
  *
- * This was 1,600ms, taken from the study's "minimum exposure" note, and it was
- * wrong — the wordmark does not start rising until 1,880ms and the tagline
- * under it does not settle until 3,120ms. On any load that finished quickly
- * the splash played the scan rings and then cut before a single letter had
- * arrived: all setup, no payoff, which is the one thing a brand intro must not
- * do.
+ * It is the end of the sequence and not a round number pulled out of the air:
+ * the tagline is the last thing to arrive, at 560ms, and it takes 520ms to
+ * settle. Cutting before that plays a reveal and then hides the thing being
+ * revealed, which is the one failure a brand intro cannot have.
  *
- * So the floor is the end of the brand lockup. What the study means by cutting
- * early is skipping phase G — the progress bar from 2,700ms, which exists only
- * to occupy someone who is still waiting — and that is still skipped.
- *
- *   letters   1,880 → 2,800   (last of nine starts at 2,240, runs 560)
- *   rule      2,440 → 3,060
- *   tagline   2,600 → 3,120   ← the last thing to land
+ *   name     0   → 760
+ *   rule     420 → 1,040
+ *   tagline  560 → 1,080   ← last to land
  */
-const BRAND_MS = 3120
+const BRAND_MS = 1080
 
 /**
- * The full sequence, and the ceiling.
- *
- * If loading has not finished by here the splash leaves anyway: the app has its
- * own loading states and can say what it is waiting for, which a logo cannot. A
- * splash that outlives its animation is just a locked screen.
+ * The ceiling. If loading has not finished by here the splash leaves anyway:
+ * the app has its own loading states and can say what it is waiting for, which
+ * a logo cannot. A splash that outlives its animation is a locked screen.
  */
-const TOTAL_MS = 3520
+const TOTAL_MS = 2400
 
 /** How long the hand-off fade takes. Matches the `transition` on `.splash`. */
 const FADE_MS = 320
 
 /**
- * Reduced motion gets a much shorter floor, and does not miss anything by it:
- * with the animation off the wordmark is on screen from the first frame, so
- * there is no reveal left to wait for — only a delay.
+ * Reduced motion gets a much shorter floor, and misses nothing by it: with the
+ * animation off the whole lockup is on screen from the first frame, so there is
+ * no reveal left to wait for — only a delay.
  */
-const MIN_MS_STILL = 700
+const MIN_MS_STILL = 450
 
 const prefersStill = () =>
   typeof window !== 'undefined' &&
@@ -64,8 +56,8 @@ const prefersStill = () =>
  *
  * Read off the element rather than hard-coded, so overriding `--t` in devtools
  * — the documented way to slow this down and check it frame by frame — slows
- * the dismissal with it. Otherwise the splash would leave on schedule while
- * the animation was a third of the way through, and QA would be inspecting a
+ * the dismissal with it. Otherwise the splash would leave on schedule while the
+ * animation was a third of the way through, and QA would be inspecting a
  * sequence nobody ever sees.
  */
 function timeScale(el: HTMLElement | null): number {
@@ -73,21 +65,6 @@ function timeScale(el: HTMLElement | null): number {
   const raw = Number.parseFloat(getComputedStyle(el).getPropertyValue('--t'))
   return Number.isFinite(raw) && raw > 0 ? raw : 1
 }
-
-/** Each letter rises 45ms after the one before, starting at 1,880ms. */
-const LETTER_START = 1880
-const LETTER_STEP = 45
-
-/** Where the seven measurement points sit, and when each lights up. */
-const TICKS: { angle: number; delay: number; long: boolean }[] = [
-  { angle: 0, delay: 900, long: true },
-  { angle: 48, delay: 990, long: false },
-  { angle: 96, delay: 1080, long: true },
-  { angle: 150, delay: 1170, long: false },
-  { angle: 204, delay: 1260, long: true },
-  { angle: 258, delay: 1350, long: false },
-  { angle: 312, delay: 1440, long: false },
-]
 
 export function Splash({ ready }: { ready: boolean }) {
   const [gone, setGone] = useState(false)
@@ -102,7 +79,7 @@ export function Splash({ ready }: { ready: boolean }) {
     const floor = (prefersStill() ? MIN_MS_STILL : BRAND_MS) * scale
     const elapsed = Date.now() - startedAt.current
     // Wait out the floor, then go as soon as the app is ready — but never hold
-    // past the end of the sequence, whatever loading is still doing.
+    // past the ceiling, whatever loading is still doing.
     const waitFor = ready
       ? Math.max(0, floor - elapsed)
       : Math.max(0, TOTAL_MS * scale - elapsed)
@@ -129,55 +106,12 @@ export function Splash({ ready }: { ready: boolean }) {
       // already live — clicks should reach it rather than land on a ghost.
       style={leaving ? { pointerEvents: 'none' } : undefined}
     >
-      <div className="splash-inner">
-        <div className="splash-layer" aria-hidden="true">
-          <span className="splash-guide" style={{ '--d': '238px', '--gd': '120ms' } as React.CSSProperties} />
-          <span className="splash-guide" style={{ '--d': '296px', '--gd': '220ms' } as React.CSSProperties} />
-        </div>
-
-        <div className="splash-layer" aria-hidden="true">
-          <div className="splash-scan">
-            <span className="splash-sweep" />
-            <span className="splash-ring r1" style={{ '--d': '96px', '--rd': '380ms' } as React.CSSProperties} />
-            <span className="splash-ring r2" style={{ '--d': '134px', '--rd': '500ms' } as React.CSSProperties} />
-            <span className="splash-ring r3" style={{ '--d': '172px', '--rd': '620ms' } as React.CSSProperties} />
-            <span className="splash-core" />
-            {TICKS.map((tick) => (
-              <i
-                key={tick.angle}
-                className={`splash-tick${tick.long ? ' long' : ''}`}
-                style={{ '--a': `${tick.angle}deg`, '--td': `${tick.delay}ms` } as React.CSSProperties}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="splash-layer">
-          <div className="splash-brand">
-            {/* One span per letter so they can rise in sequence. The whole
-                lockup is labelled on the wrapper, so screen readers hear the
-                name once rather than nine separate letters. */}
-            <div className="splash-logotype" aria-hidden="true">
-              {WORDMARK.split('').map((letter, i) => (
-                <span
-                  key={`${letter}${i}`}
-                  style={{ '--ld': `${LETTER_START + i * LETTER_STEP}ms` } as React.CSSProperties}
-                >
-                  {letter}
-                </span>
-              ))}
-            </div>
-            <div className="splash-rule" aria-hidden="true" />
-            <p className="splash-tagline" aria-hidden="true">
-              K-Beauty · AI Skin Lab
-            </p>
-          </div>
-        </div>
-
-        {/* Only ever seen on a slow load, which is exactly what it is for. */}
-        <div className="splash-progress" aria-hidden="true">
-          <i />
-        </div>
+      {/* The name is on the wrapper's label, so a screen reader hears it once
+          rather than hearing the wordmark and the tagline as two things. */}
+      <div className="splash-brand" aria-hidden="true">
+        <div className="splash-logotype">{WORDMARK}</div>
+        <div className="splash-rule" />
+        <p className="splash-tagline">K-Beauty · AI Skin Lab</p>
       </div>
     </div>
   )
