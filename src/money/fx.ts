@@ -35,9 +35,16 @@ export const SETTLEMENT = 'USD'
  * Deliberately just the settlement currency at 1:1. Showing a price converted
  * at a guessed rate is worse than showing the dollar price — one is unfamiliar,
  * the other is wrong.
+ *
+ * The rate is the one the won prices were set from: every product is priced at
+ * the Lotte Duty Free selling price in won, and ₩1,359.6 to the dollar is what
+ * reproduces Lotte's own dollar price to the cent on all 31 rows of the price
+ * list. It is not a market rate and is not meant to track one — it exists so
+ * the fallback cannot quote a different price from the database, which holds
+ * the same figure in `fx_rates` and is what customers are actually charged.
  */
 export const FALLBACK_RATES: FxRates = {
-  USD: { code: 'USD', label: '미국 달러', symbol: '$', krwPerUnit: 1400, decimals: 2 },
+  USD: { code: 'USD', label: '미국 달러', symbol: '$', krwPerUnit: 1359.6, decimals: 2 },
 }
 
 /**
