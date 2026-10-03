@@ -41,6 +41,15 @@ export interface Weather {
    * nothing about dust rather than guessing at it.
    */
   air?: { pm10: number; pm25: number }
+  /**
+   * The WMO weather code, when the forecast answered with one.
+   *
+   * Optional for the same reason as `air`: the sample reading predates it,
+   * and a stored reading taken before this field existed has none. Nothing
+   * reads it directly — it goes through `skyFor`, which treats a missing code
+   * as a plain sky.
+   */
+  code?: number
 }
 
 export interface SkinCondition {

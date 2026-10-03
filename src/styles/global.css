@@ -28,6 +28,13 @@
   --line: #E9E7E1;
   --line-2: #DEDCD5;
 
+  /* The ground for a panel that inverts — the points header, the missions
+     strip, the progress bar. --ink is the text colour, and a slab of it at
+     full strength was the heaviest thing on any screen it appeared on. This
+     is the same family two stops up: still unmistakably a dark panel, still
+     11.4:1 for white text and 6:1 for the caution tone on it. */
+  --panel: #3A3A35;
+
   /* the accent. --accent-mid is for fills and charts, where the deep green
      goes muddy; --accent-soft is the tinted background behind it. */
   --accent: #1F4A3D;

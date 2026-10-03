@@ -48,7 +48,7 @@ export async function fetchWeather(
 
   const url =
     `${ENDPOINT}?latitude=${lat}&longitude=${lon}` +
-    '&current=temperature_2m,relative_humidity_2m,uv_index&timezone=auto'
+    '&current=temperature_2m,relative_humidity_2m,uv_index,weather_code&timezone=auto'
 
   try {
     // Fired together rather than in sequence: the routine screen waits on this,
@@ -57,7 +57,12 @@ export async function fetchWeather(
     if (!res.ok) return null
 
     const body = (await res.json()) as {
-      current?: { temperature_2m?: number; relative_humidity_2m?: number; uv_index?: number }
+      current?: {
+        temperature_2m?: number
+        relative_humidity_2m?: number
+        uv_index?: number
+        weather_code?: number
+      }
     }
     const current = body.current
     if (!current) return null
@@ -70,6 +75,9 @@ export async function fetchWeather(
     if (typeof t !== 'number' || typeof h !== 'number' || typeof uv !== 'number') return null
 
     const value: Weather = { t: Math.round(t), h: Math.round(h), uv: Math.round(uv) }
+    // The sky is scene-setting, never required: a reading without a code still
+    // shows every number, and the backdrop falls back to a plain sky.
+    if (typeof current.weather_code === 'number') value.code = current.weather_code
     // Air quality is additive, never required: a reading without it is still a
     // complete weather reading, and the routine simply says nothing about dust.
     if (air) value.air = air

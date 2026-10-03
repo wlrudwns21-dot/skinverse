@@ -131,7 +131,7 @@ export function Home() {
           would only make it harder to read. */}
       <div
         onClick={st.goMissions}
-        style={s('cursor:pointer;background:var(--ink);padding:22px 20px;display:flex;align-items:center;gap:14px')}
+        style={s('cursor:pointer;background:var(--panel);padding:22px 20px;display:flex;align-items:center;gap:14px')}
       >
         <div style={s('flex:1;min-width:0')}>
           <div style={s(EYEBROW)}>{st.t.earnP}</div>

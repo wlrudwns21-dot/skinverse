@@ -84,6 +84,7 @@ export function PhotoBanner({
   const scrim = onPale ? '--scrim-light' : deep ? '--scrim-dark' : '--scrim'
   const ink = onPale ? 'var(--ink)' : 'var(--on-dark)'
   const ink2 = onPale ? 'var(--ink-3)' : 'var(--on-dark-2)'
+  const warn = onPale ? 'var(--warn)' : 'var(--warn-on-dark)'
 
   return (
     <div
@@ -115,7 +116,7 @@ export function PhotoBanner({
         /* The two text colours are handed down as custom properties rather
            than threaded through every caller, so a banner's contents are
            written once and read correctly whichever way the tone runs. */
-        <div style={s(`position:absolute;left:20px;right:20px;bottom:20px;--banner-ink:${ink};--banner-ink-2:${ink2}`)}>
+        <div style={s(`position:absolute;left:20px;right:20px;bottom:20px;--banner-ink:${ink};--banner-ink-2:${ink2};--banner-warn:${warn}`)}>
           {children}
         </div>
       )}

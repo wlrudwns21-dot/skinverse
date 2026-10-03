@@ -46,7 +46,7 @@ export function Missions() {
       {/* The balance, full bleed. It is the one number anyone opens this screen
           for, so it gets the width of the screen and the weight of a reading
           rather than a card's worth of padding around it. */}
-      <div style={s('background:var(--ink);color:var(--on-dark);padding:24px 20px 22px')}>
+      <div style={s('background:var(--panel);color:var(--on-dark);padding:24px 20px 22px')}>
         <div style={s('display:flex;align-items:flex-start;justify-content:space-between;gap:12px')}>
           <div style={s('min-width:0')}>
             <div style={s(EYEBROW)}>{st.t.glowPts}</div>

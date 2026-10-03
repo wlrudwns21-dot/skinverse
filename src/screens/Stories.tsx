@@ -92,7 +92,7 @@ export function CoreTipCard({ lang, onOpen }: { lang: Lang; onOpen?: () => void 
     <div
       onClick={onOpen}
       style={s(
-        'background:var(--ink);color:var(--on-dark);border-radius:4px;position:relative;overflow:hidden' +
+        'background:var(--panel);color:var(--on-dark);border-radius:4px;position:relative;overflow:hidden' +
           (onOpen ? ';cursor:pointer' : ''),
       )}
     >
@@ -185,7 +185,7 @@ export function Stories() {
               style={s(
                 'cursor:pointer;flex-shrink:0;font-size:12px;font-weight:500;border-radius:3px;padding:7px 12px;' +
                   (active
-                    ? 'background:var(--ink);color:var(--on-dark-2)'
+                    ? 'background:var(--ink);color:var(--on-dark)'
                     : 'background:var(--surface);border:1px solid var(--line);color:var(--ink-3)'),
               )}
             >

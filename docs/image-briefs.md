@@ -111,6 +111,43 @@ is empty reflective surface. No text, no labels, no hands.
 
 ---
 
+## ②-2 하늘 — `public/banner/sky-*.webp` (1170 × 780, 비율 1.5:1)
+
+루틴 화면의 "오늘의 판단 기준" 블록 뒤에 깔립니다. **현재 위치의 실제 날씨에 따라
+자동으로 바뀝니다** — 기상청(Open-Meteo)이 주는 WMO 코드를 읽어서 네 가지 중 하나를
+고릅니다. 네 장 다 있어야 하고, 하나라도 없으면 그 날씨일 때만 단색으로 떨어집니다.
+
+| 파일 | 언제 뜨나 |
+|---|---|
+| `sky-clear.webp` | 맑음 (코드 0–1) |
+| `sky-cloud.webp` | 구름·흐림·안개 (2, 3, 45, 48) |
+| `sky-rain.webp` | 이슬비·비·소나기·뇌우 (51–67, 80–82, 95–99) |
+| `sky-snow.webp` | 눈·진눈깨비 (71–77, 85, 86) |
+
+> **네 장을 반드시 같은 자리에서 찍은 것처럼 만드세요.** 같은 화각, 같은 구도, 날씨만
+> 다르게. 날씨가 바뀔 때 장면 자체가 바뀌면 화면이 덜컹거립니다.
+>
+> **글자가 전면에 올라갑니다.** 아래 60%는 하늘이나 흐린 배경만 두고 구조물·전선·
+> 글자를 넣지 마세요. 글자는 검은색으로 올라가므로 **전체적으로 밝아야** 합니다.
+
+```
+A wide photograph of the sky, 1170x780, shot straight upward at a shallow
+angle from a quiet residential street in Seoul, with the top edge of a plain
+pale building just entering the lower left corner and nothing else in frame.
+[날씨: a cloudless pale blue sky with soft morning haze / a soft overcast sky
+of flat pale grey cloud, no texture / a rain-grey sky with fine rain visible
+as soft streaks against pale cloud / a pale winter sky with light snow
+falling, flakes soft and out of focus]. Muted, desaturated, high key —
+the whole frame is light. Soft natural daylight, no sun flare, no strong
+colour. The lower 60 percent of the frame is open sky with nothing in it.
+No text, no birds, no wires, no aircraft, no buildings beyond that one corner.
+```
+
+> 대괄호 안만 바꾸고 나머지는 글자 하나 건드리지 마세요 — 그래야 네 장이 한 장소로
+> 읽힙니다.
+
+---
+
 ## ③ 가로 스트립 — `public/banner/promo.webp` (1170 × 336)
 
 혜택·공지용 예비 슬롯입니다. **지금 앱에서는 쓰고 있지 않습니다** — 홈의 그 자리에는

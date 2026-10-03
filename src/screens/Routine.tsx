@@ -1,5 +1,6 @@
 import { cityNames, CURRENT_LOCATION } from '../data/cities'
 import { storiesHomeCta } from '../data/stories'
+import { PhotoBanner } from '../components/PhotoBanner'
 import { PlanBasis } from '../components/PlanBasis'
 import { RefreshIcon } from '../components/RefreshIcon'
 import { RoutineAdherence } from '../components/RoutineAdherence'
@@ -7,11 +8,13 @@ import { RoutineCheck } from '../components/RoutineCheck'
 import { CoreTipCard } from './Stories'
 import { s } from '../lib/css'
 import { BTN, DISPLAY, EYEBROW, GUTTER, KICKER, NUMERAL, RULE } from '../lib/ui'
+import { skyFor, skyImage } from '../weather/sky'
 import { useStore } from '../store/StoreContext'
 
 export function Routine() {
   const st = useStore()
   const w = st.weather
+  const sky = skyFor(w.code)
 
   return (
     <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
@@ -94,28 +97,37 @@ export function Routine() {
 
       {/* The three readings that decide the plan, each with what it changes.
           Showing the criteria beats an unexplained list of products. */}
-      <div style={s('background:var(--ink);color:var(--on-dark);padding:22px 20px;margin-top:14px')}>
-        <div style={s(EYEBROW)}>{st.basisTitle}</div>
-        <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:7px;line-height:1.6')}>{st.basisHint}</div>
+      {/* The sky behind the reading changes with the sky outside: the forecast
+          reports a WMO code, and four backdrops cover every value it can take.
+          It runs light rather than dark — a black slab was the heaviest thing
+          on the screen, and a photograph of weather is the thing this block is
+          actually about. A sky nobody has photographed yet falls back to a
+          flat tint, and the readings are unaffected either way. */}
+      <div style={s('margin-top:14px')}>
+        <PhotoBanner src={skyImage(sky)} ratio="390/260" tint="var(--accent-soft)" tone="light">
+          <div style={s(EYEBROW)}>{st.basisTitle}</div>
+          <div style={s('font-size:11.5px;color:var(--banner-ink-2);margin-top:7px;line-height:1.6')}>
+            {st.basisHint}
+          </div>
 
-        <div style={s('display:flex;flex-direction:column;gap:11px;margin-top:13px')}>
-          {[
-            { key: 'temp', icon: '🌡', v: st.bands.temp },
-            { key: 'humidity', icon: '💧', v: st.bands.humidity },
-            { key: 'uv', icon: '☀', v: st.bands.uv },
-          ].map((row) => (
-            <div key={row.key} style={s('display:flex;gap:10px;align-items:flex-start')}>
-              <span style={s('font-size:13px;flex-shrink:0;width:18px')}>{row.icon}</span>
-              <div style={s('min-width:0')}>
-                <div style={s('font-size:12.5px;font-weight:500')}>
+          <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:13px')}>
+            {[
+              { key: 'temp', v: st.bands.temp },
+              { key: 'humidity', v: st.bands.humidity },
+              { key: 'uv', v: st.bands.uv },
+            ].map((row) => (
+              <div key={row.key} style={s('min-width:0')}>
+                <div style={s('font-size:12.5px;font-weight:500;color:var(--banner-ink)')}>
                   {row.v.value}
-                  <span style={s('color:var(--warn-on-dark);font-weight:500')}> · {row.v.label}</span>
+                  <span style={s('color:var(--banner-warn)')}> · {row.v.label}</span>
                 </div>
-                <div style={s('font-size:12px;color:var(--on-dark-2);line-height:1.5;margin-top:2px')}>{row.v.why}</div>
+                <div style={s('font-size:12px;color:var(--banner-ink-2);line-height:1.5;margin-top:2px')}>
+                  {row.v.why}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </PhotoBanner>
       </div>
 
       {/* The working behind the steps below. Collapsed by default — someone who
@@ -127,7 +139,7 @@ export function Routine() {
 
       {/* Today's progress, before the steps themselves — a customer coming
           back at 9pm wants to know what is left, not to re-read the list. */}
-      <div style={s('background:var(--ink);color:var(--on-dark);padding:18px 20px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
+      <div style={s('background:var(--panel);color:var(--on-dark);padding:18px 20px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
         <div style={s('min-width:0')}>
           <div style={s('font-size:13px;font-weight:500')}>
             {st.todayAdherence.done === st.todayAdherence.total && st.todayAdherence.total > 0
@@ -137,7 +149,7 @@ export function Routine() {
           <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:2px')}>{st.checkT.sub}</div>
         </div>
         <div style={s('width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;background:conic-gradient(var(--accent) ' + st.todayAdherence.pct + '%, rgba(255,255,255,0.14) 0)')}>
-          <div style={s('width:34px;height:34px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center')}>
+          <div style={s('width:34px;height:34px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center')}>
             {st.todayAdherence.pct}%
           </div>
         </div>
