@@ -1,5 +1,6 @@
 import { shippingCountries } from '../data/cities'
 import { PaypalButtons } from '../components/PaypalButtons'
+import { PhotoBanner } from '../components/PhotoBanner'
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
@@ -120,10 +121,19 @@ export function CheckoutConfirmed() {
   const order = st.state.order
 
   return (
-    <div style={s('padding:40px 20px;text-align:center;animation:rise .4s ease both')}>
-      <div style={s('width:72px;height:72px;border-radius:50%;background:var(--accent);color:var(--on-dark);font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✓</div>
-      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px;margin-top:16px')}>{st.t.confirmed}</div>
-      <div style={s('font-size:13px;color:var(--ink-3);margin-top:4px')}>{st.t.confirmedSub} 🇰🇷</div>
+    <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
+      {/* The confirmation carries its own headline, so this banner takes the
+          scrim and the tick sits on the photograph rather than above it. */}
+      <PhotoBanner src="/banner/order-done.webp" ratio="1170/480" slot="order 1170 × 480">
+        <div style={s('font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--on-dark-2)')}>
+          ✓ {st.t.confirmedSub}
+        </div>
+        <div style={s('font-family:Albert Sans,"Noto Sans KR",sans-serif;font-weight:300;letter-spacing:-0.01em;font-size:23px;margin-top:9px;color:var(--on-dark)')}>
+          {st.t.confirmed}
+        </div>
+      </PhotoBanner>
+
+      <div style={s('padding:20px 20px 24px;text-align:center')}>
 
       <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:18px;font-size:13px;text-align:left;display:flex;flex-direction:column;gap:8px')}>
         <div style={s('display:flex;justify-content:space-between')}>
@@ -149,6 +159,7 @@ export function CheckoutConfirmed() {
       </div>
       <div onClick={st.goMy} style={s('cursor:pointer;margin-top:10px;font-size:13px;color:var(--accent);font-weight:500')}>
         {st.t.viewMy}
+      </div>
       </div>
     </div>
   )

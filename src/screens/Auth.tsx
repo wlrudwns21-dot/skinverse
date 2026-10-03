@@ -13,6 +13,7 @@ import {
 } from '../data/signup'
 import { Captcha, type CaptchaHandle } from '../components/Captcha'
 import { captchaEnabled } from '../auth/captcha'
+import { PhotoBanner } from '../components/PhotoBanner'
 import { s } from '../lib/css'
 import { useAuth } from '../auth/AuthContext'
 import { useStore } from '../store/StoreContext'
@@ -126,7 +127,12 @@ export function Auth() {
   }
 
   return (
-    <div style={s('padding:24px 20px;animation:rise .4s ease both')}>
+    <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
+      {/* Nothing is written over this one, so it carries no scrim — it sets a
+          tone above the form rather than holding a headline. */}
+      <PhotoBanner src="/banner/auth.webp" ratio="1170/600" slot="auth 1170 × 600" />
+
+      <div style={s('padding:20px 20px 24px')}>
       <div onClick={st.leaveAuth} style={s('cursor:pointer;font-size:13px;color:var(--ink-3);margin-bottom:12px')}>{a.back}</div>
 
       <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>{isSignUp ? a.signUpTitle : a.logInTitle}</div>
@@ -417,6 +423,7 @@ export function Auth() {
           </span>
         </div>
       )}
+      </div>
     </div>
   )
 }

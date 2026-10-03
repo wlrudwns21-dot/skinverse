@@ -11,8 +11,9 @@ import {
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
-/** How many story cards the home strip shows before "see all". */
-const HOME_STORIES = 4
+/** How many story cards the home strip shows before "see all". Two, because
+    they run at full width now rather than two to a row. */
+const HOME_STORIES = 2
 
 /* The screen is built from a few repeated pieces rather than a shape per
    block, which is what keeps it reading as one screen. A section stays inside
@@ -200,9 +201,11 @@ export function Home() {
         ))}
       </div>
 
-      {/* Skin Stories, in the same 4:5 grid as the shelf. A reading and a
-          product are both something a customer looks at before deciding, and
-          giving them one shape says so. */}
+      {/* Skin Stories. These keep the 2:1 shape the photographs were actually
+          made at — cropping a 780x390 master into the shelf's 4:5 frame throws
+          away three fifths of its width, and the subject with it. Two at full
+          width rather than four in a grid, because at this ratio a half-width
+          card is an 84px strip nobody can read. */}
       <div style={s(`${GUTTER};padding-top:26px;padding-bottom:4px;display:flex;align-items:baseline;justify-content:space-between`)}>
         <span style={s(KICKER)}>{storiesTitle[lang]}</span>
         <span onClick={st.goStories} style={s(MORE)}>{storiesHomeCta[lang]}</span>
@@ -211,22 +214,24 @@ export function Home() {
         {storiesSub[lang]}
       </div>
 
-      <div style={s(`${GUTTER};display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px`)}>
+      <div style={s(`${GUTTER};display:flex;flex-direction:column;gap:20px`)}>
         {stories.slice(0, HOME_STORIES).map((story) => (
           <div key={story.id} onClick={st.goStories} style={s('cursor:pointer')}>
             <img
               src={storyImage(story)}
               alt={story.title[lang]}
               loading="lazy"
-              style={s('display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--surface-2)')}
+              style={s('display:block;width:100%;aspect-ratio:2/1;object-fit:cover;background:var(--surface-2)')}
             />
-            <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3);margin-top:10px')}>
-              {categoryNames[story.category][lang]}
+            <div style={s('display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:11px')}>
+              <span style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3)')}>
+                {categoryNames[story.category][lang]}
+              </span>
+              <span style={s('font-size:10.5px;color:var(--ink-4);flex-shrink:0')}>
+                {minutesLabel(story.minutes, lang)}
+              </span>
             </div>
-            <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{story.title[lang]}</div>
-            <div style={s('font-size:11px;color:var(--ink-4);margin-top:4px')}>
-              {minutesLabel(story.minutes, lang)}
-            </div>
+            <div style={s('font-size:13.5px;margin-top:5px;line-height:1.55')}>{story.title[lang]}</div>
           </div>
         ))}
       </div>
