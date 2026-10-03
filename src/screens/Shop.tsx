@@ -1,43 +1,64 @@
 import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
+/* The same pieces the home screen is built from, so the two screens read as
+   one app rather than two. */
+const GUTTER = 'padding:0 20px'
+const KICKER = 'font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--ink-3)'
+const DISPLAY = 'font-family:Albert Sans,"Noto Sans KR",sans-serif;font-weight:300;letter-spacing:-0.01em'
+const RULE = 'height:1px;background:var(--line)'
+
 export function Shop() {
   const st = useStore()
 
   return (
-    <div style={s('padding:20px;animation:rise .4s ease both')}>
-      <div style={s('font-family:Marcellus,serif;font-size:22px')}>{st.t.shopTitle}</div>
-      <div style={s('font-size:12px;color:#8A7D6C;margin-top:2px')}>{st.t.shopSub} 🇰🇷</div>
+    <div style={s('animation:rise .4s ease both;padding:22px 0 4px')}>
+      <div style={s(GUTTER)}>
+        <div style={s(KICKER)}>store</div>
+        <div style={s(`${DISPLAY};font-size:24px;margin-top:8px`)}>{st.t.shopTitle}</div>
+        <div style={s('font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.6')}>{st.t.shopSub} 🇰🇷</div>
+      </div>
 
-      <div style={s('display:flex;gap:8px;overflow-x:auto;margin:14px 0;padding-bottom:4px')}>
+      {/* Scrolls under the gutter rather than inside it, so the last filter
+          bleeds off the edge and reads as "there is more", instead of sitting
+          cut in half against a margin. */}
+      <div style={s('display:flex;gap:18px;overflow-x:auto;margin:18px 0 0;padding:0 20px')}>
         {st.chips.map((c) => (
           <div key={c.key} onClick={c.pick} style={s(c.style)}>{c.label}</div>
         ))}
       </div>
+      <div style={s(`${RULE};margin-bottom:18px`)} />
 
-      <div style={s('display:grid;grid-template-columns:1fr 1fr;gap:12px')}>
+      <div style={s(`${GUTTER};display:grid;grid-template-columns:1fr 1fr;gap:13px 13px`)}>
         {st.shopList.map((p) => (
-          <div key={p.id} style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:10px;display:flex;flex-direction:column')}>
-            <div onClick={p.open} style={s(`cursor:pointer;height:120px;border-radius:10px;background:${p.grad};display:flex;align-items:flex-end;padding:8px;box-sizing:border-box`)}>
-              <span style={s('background:rgba(255,255,255,0.85);border-radius:6px;font-size:10px;padding:3px 6px;font-weight:600;color:#4A4234')}>{p.kind} · {p.ml}</span>
-            </div>
+          <div key={p.id} style={s('display:flex;flex-direction:column')}>
+            <div onClick={p.open} style={s(`cursor:pointer;width:100%;aspect-ratio:4/5;background:${p.grad}`)} />
             <div onClick={p.open} style={s('cursor:pointer;flex:1')}>
-              <div style={s('font-size:10px;color:#8A7D6C;letter-spacing:0.1em;margin-top:8px')}>{p.brand}</div>
-              <div style={s('font-size:12.5px;font-weight:600;line-height:1.3;margin-top:2px')}>{p.name}</div>
-              <div style={s('font-size:11px;color:#A2957F')}>{p.sub}</div>
+              <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3);margin-top:10px')}>
+                {p.brand} · {p.kind}
+              </div>
+              <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{p.name}</div>
+              <div style={s('font-size:11px;color:var(--ink-4);margin-top:2px;line-height:1.5')}>{p.sub}</div>
             </div>
-            <div style={s('display:flex;justify-content:space-between;align-items:center;margin-top:8px')}>
+            <div style={s('display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;gap:8px')}>
               <div style={s('min-width:0')}>
-                <div style={s('font-size:14px;font-weight:700')}>{p.priceS}</div>
-                <div style={s('font-size:10px;font-weight:700;color:#2E6B58')}>{p.matchS} {st.t.match}</div>
+                <div style={s('font-size:13px;color:var(--ink);letter-spacing:0.04em')}>
+                  {p.priceS} <span style={s('font-size:10px;color:var(--ink-4)')}>{p.ml}</span>
+                </div>
+                <div style={s('font-size:10px;color:var(--accent);font-weight:500;margin-top:3px')}>
+                  {p.matchS} {st.t.match}
+                </div>
                 {/* A percentage with no cause is just a number. */}
                 {p.reasons[0] && (
-                  <div style={s('font-size:9.5px;color:#A2957F;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>
+                  <div style={s('font-size:9.5px;color:var(--ink-4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>
                     {p.reasons[0]}
                   </div>
                 )}
               </div>
-              <div onClick={p.add} style={s('cursor:pointer;background:#221C15;color:#F5F0E6;border-radius:999px;font-size:11px;font-weight:700;padding:8px 12px')}>
+              <div
+                onClick={p.add}
+                style={s('cursor:pointer;flex-shrink:0;border:1px solid var(--ink);color:var(--ink);border-radius:3px;font-size:11px;font-weight:500;letter-spacing:0.03em;padding:8px 11px')}
+              >
                 + {st.t.bag}
               </div>
             </div>
@@ -53,56 +74,65 @@ export function ProductDetail() {
   const sel = st.sel
 
   return (
-    <div style={s('padding:20px;animation:rise .4s ease both')}>
-      <div onClick={st.goShop} style={s('cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:12px')}>← {st.t.shopTitle}</div>
-
-      <div style={s(`height:230px;border-radius:18px;background:${sel.grad};display:flex;align-items:flex-end;padding:14px;box-sizing:border-box`)}>
-        <span style={s('background:rgba(255,255,255,0.88);border-radius:8px;font-size:12px;padding:5px 10px;font-weight:600;color:#4A4234')}>{sel.kind} · {sel.ml}</span>
+    <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
+      <div style={s(`${GUTTER};padding-top:16px;padding-bottom:14px`)}>
+        <span onClick={st.goShop} style={s('cursor:pointer;font-size:11px;letter-spacing:0.1em;color:var(--ink-3)')}>
+          ← {st.t.shopTitle}
+        </span>
       </div>
 
-      <div style={s('display:flex;justify-content:space-between;align-items:flex-start;margin-top:16px;gap:10px')}>
-        <div>
-          <div style={s('font-size:11px;color:#8A7D6C;letter-spacing:0.12em')}>{sel.brand}</div>
-          <div style={s('font-family:Marcellus,serif;font-size:22px;line-height:1.2;margin-top:2px')}>{sel.name}</div>
-          <div style={s('font-size:13px;color:#A2957F;margin-top:2px')}>{sel.sub}</div>
-        </div>
-        <div style={s('text-align:right')}>
-          <div style={s('font-size:20px;font-weight:700')}>{sel.priceS}</div>
-          <div style={s('font-size:11px;font-weight:700;color:#2E6B58;background:#EAF1EC;border-radius:6px;padding:3px 7px;margin-top:4px')}>{sel.matchS} {st.t.match}</div>
-        </div>
-      </div>
+      {/* Full width, 4:5. The product photograph is the page, and a rounded
+          card around it would make it an illustration of the page instead. */}
+      <div style={s(`width:100%;aspect-ratio:4/5;max-height:430px;background:${sel.grad}`)} />
 
-      {sel.reasons.length > 0 && (
-        <div style={s('display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px')}>
-          <span style={s('font-size:11.5px;color:#8A7D6C;font-weight:600')}>{st.whyThis}</span>
-          {sel.reasons.map((reason) => (
-            <span key={reason} style={s('font-size:11px;font-weight:600;color:#4A4234;background:#F1EEE6;border:1px solid #E2DACA;border-radius:999px;padding:4px 10px')}>
-              {reason}
-            </span>
-          ))}
+      <div style={s(`${GUTTER};padding-top:20px`)}>
+        <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3)')}>
+          {sel.brand} · {sel.kind} · {sel.ml}
         </div>
-      )}
+        <div style={s(`${DISPLAY};font-size:23px;line-height:1.3;margin-top:8px`)}>{sel.name}</div>
+        <div style={s('font-size:12.5px;color:var(--ink-3);margin-top:5px;line-height:1.6')}>{sel.sub}</div>
 
-      <div style={s('background:#EAF1EC;border-radius:14px;padding:14px;margin-top:14px;font-size:13px;line-height:1.55;color:#2C4A3E')}>
-        <b>{st.t.whyT}</b>
-        <br />
-        {sel.why}
-      </div>
-
-      <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px;margin-top:10px;font-size:13px')}>
-        <b>{st.t.ingT}</b>
-        <div style={s('color:#6E6252;margin-top:4px;line-height:1.5')}>{sel.ing}</div>
-      </div>
-
-      <div style={s('display:flex;gap:10px;margin-top:16px')}>
-        <div onClick={sel.add} style={s('cursor:pointer;flex:1;background:#FFFFFF;border:1.5px solid #221C15;border-radius:999px;padding:14px;text-align:center;font-size:13px;font-weight:700')}>
-          {st.t.addBag}
+        <div style={s('display:flex;align-items:baseline;gap:12px;margin-top:14px')}>
+          <span style={s('font-family:Albert Sans,sans-serif;font-weight:200;font-size:26px;line-height:1')}>{sel.priceS}</span>
+          <span style={s('font-size:11px;color:var(--accent);font-weight:500')}>{sel.matchS} {st.t.match}</span>
         </div>
-        <div
-          onClick={() => { sel.add(); st.goCart() }}
-          style={s('cursor:pointer;flex:1;background:#221C15;color:#F5F0E6;border-radius:999px;padding:14px;text-align:center;font-size:13px;font-weight:700')}
-        >
-          {st.t.buyNow}
+
+        {sel.reasons.length > 0 && (
+          <div style={s('margin-top:16px;font-size:11.5px;color:var(--ink-2);line-height:1.8')}>
+            <span style={s('color:var(--ink-3)')}>{st.whyThis} </span>
+            {sel.reasons.join(' · ')}
+          </div>
+        )}
+
+        <div style={s(`${RULE};margin-top:20px`)} />
+
+        <div style={s('padding:16px 0')}>
+          <div style={s(KICKER)}>{st.t.whyT}</div>
+          <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.why}</div>
+        </div>
+
+        <div style={s(RULE)} />
+
+        <div style={s('padding:16px 0')}>
+          <div style={s(KICKER)}>{st.t.ingT}</div>
+          <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.ing}</div>
+        </div>
+
+        <div style={s(RULE)} />
+
+        <div style={s('display:flex;gap:10px;margin-top:20px')}>
+          <div
+            onClick={sel.add}
+            style={s('cursor:pointer;flex:1;border:1px solid var(--ink);color:var(--ink);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+          >
+            {st.t.addBag}
+          </div>
+          <div
+            onClick={() => { sel.add(); st.goCart() }}
+            style={s('cursor:pointer;flex:1;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+          >
+            {st.t.buyNow}
+          </div>
         </div>
       </div>
     </div>

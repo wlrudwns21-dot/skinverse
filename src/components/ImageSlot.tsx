@@ -29,7 +29,7 @@ export interface ImageSlotProps {
   value?: File | null
 }
 
-const DROP_ACCENT = '#c96442'
+const DROP_ACCENT = 'var(--accent)'
 
 export function ImageSlot({
   mask,

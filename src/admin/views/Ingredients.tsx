@@ -127,17 +127,17 @@ export function Ingredients() {
   const stored = stats?.stored ?? 0
   const anyBusy = busy !== null
   const btn = (kind: 'ghost' | 'solid' | 'warn', disabled: boolean) => {
-    const base = 'border-radius:9px;padding:9px 16px;font-size:12.5px;font-weight:700;' +
+    const base = 'border-radius:4px;padding:9px 16px;font-size:12.5px;font-weight:500;' +
       'cursor:' + (disabled ? 'default' : 'pointer') + ';opacity:' + (disabled ? '.5' : '1') + ';'
-    if (kind === 'solid') return s(base + 'border:none;background:#2E2A24;color:#F5F0E6')
-    if (kind === 'warn') return s(base + 'border:1px solid #D9B48F;background:#FBF3E8;color:#8A5A28')
-    return s(base + 'border:1px solid #D3C9B7;background:#FFFFFF;color:#4A4234')
+    if (kind === 'solid') return s(base + 'border:none;background:var(--ink);color:var(--on-dark)')
+    if (kind === 'warn') return s(base + 'border:1px solid var(--warn-mid);background:var(--surface);color:var(--warn)')
+    return s(base + 'border:1px solid var(--line-2);background:var(--surface);color:var(--ink-2)')
   }
 
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>
-      <div style={s('font-family:Marcellus,serif;font-size:24px')}>성분 사전</div>
-      <div style={s('font-size:12px;color:#8A7D6C;margin-top:4px;line-height:1.6')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>성분 사전</div>
+      <div style={s('font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.6')}>
         식품의약품안전처 공개 데이터의 사본입니다 (공공데이터포털 15111774 · 15111772, 이용허락범위 제한 없음).
       </div>
 
@@ -154,16 +154,16 @@ export function Ingredients() {
           ['CAS번호 있음', pct(stats?.withCas ?? 0), (stats?.withCas ?? 0).toLocaleString() + '건'],
           ['설명 작성됨', pct(stats?.withBlurb ?? 0), (stats?.withBlurb ?? 0).toLocaleString() + '건'],
         ] as [string, string, string][]).map(([label, value, sub]) => (
-          <div key={label} style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px 16px')}>
-            <div style={s('font-size:11.5px;color:#8A7D6C')}>{label}</div>
-            <div style={s('font-family:Marcellus,serif;font-size:21px;margin-top:4px')}>{value}</div>
-            {sub && <div style={s('font-size:11px;color:#A89B87;margin-top:2px')}>{sub}</div>}
+          <div key={label} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px')}>
+            <div style={s('font-size:11.5px;color:var(--ink-3)')}>{label}</div>
+            <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:21px;margin-top:4px')}>{value}</div>
+            {sub && <div style={s('font-size:11px;color:var(--ink-4);margin-top:2px')}>{sub}</div>}
           </div>
         ))}
       </div>
 
       {stats?.syncedAt && (
-        <div style={s('font-size:11.5px;color:#8A7D6C;margin-top:8px')}>
+        <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:8px')}>
           마지막 동기화 {new Date(stats.syncedAt).toLocaleString('ko-KR')}
         </div>
       )}
@@ -175,9 +175,9 @@ export function Ingredients() {
           const from = resume[panel.id]
           const mine = busy === panel.id
           return (
-            <div key={panel.id} style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px')}>
+            <div key={panel.id} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px')}>
               <b style={s('font-size:14px')}>{panel.title}</b>
-              <div style={s('font-size:11.5px;color:#8A7D6C;margin-top:4px;line-height:1.6')}>
+              <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:4px;line-height:1.6')}>
                 {panel.note}
               </div>
 
@@ -199,7 +199,7 @@ export function Ingredients() {
               </div>
 
               {info?.endpoint && (
-                <div style={s('margin-top:10px;background:#F1F5F2;border-radius:8px;padding:8px 11px;font-size:11px;color:#3C5A4C;word-break:break-all;line-height:1.5')}>
+                <div style={s('margin-top:10px;background:var(--surface);border-radius:4px;padding:8px 11px;font-size:11px;color:var(--accent);word-break:break-all;line-height:1.5')}>
                   응답한 주소 {info.endpoint}
                 </div>
               )}
@@ -207,7 +207,7 @@ export function Ingredients() {
                   restricted register's schema was a guess until now, and this is
                   the evidence for correcting it. */}
               {info?.fields && info.fields.length > 0 && (
-                <div style={s('margin-top:6px;background:#F8F5EF;border-radius:8px;padding:8px 11px;font-size:11px;color:#6B6252;word-break:break-all;line-height:1.5')}>
+                <div style={s('margin-top:6px;background:var(--surface);border-radius:4px;padding:8px 11px;font-size:11px;color:var(--ink-2);word-break:break-all;line-height:1.5')}>
                   응답 필드 {info.fields.join(', ')}
                 </div>
               )}
@@ -217,9 +217,9 @@ export function Ingredients() {
       </div>
 
       {log.length > 0 && (
-        <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:6px')}>
+        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:6px')}>
           {log.map((line, i) => (
-            <div key={i} style={s('font-size:11.5px;color:' + (i === 0 ? '#4A4234' : '#A89B87') + ';line-height:1.6;white-space:pre-wrap;word-break:break-all')}>
+            <div key={i} style={s('font-size:11.5px;color:' + (i === 0 ? 'var(--ink-2)' : 'var(--ink-4)') + ';line-height:1.6;white-space:pre-wrap;word-break:break-all')}>
               {line}
             </div>
           ))}
@@ -227,10 +227,10 @@ export function Ingredients() {
       )}
 
       {/* ── lookup ─────────────────────────────────────────────────────── */}
-      <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:16px;margin-top:12px')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
         <b style={s('font-size:14px')}>성분 찾기</b>
-        <div style={s('font-size:11.5px;color:#8A7D6C;margin-top:4px;line-height:1.6')}>
-          띄어쓰기·하이픈·괄호는 무시하고 대조합니다. <span style={s('color:#A89B87')}>예: 1,2-헥산다이올 = 1,2 헥산다이올</span>
+        <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:4px;line-height:1.6')}>
+          띄어쓰기·하이픈·괄호는 무시하고 대조합니다. <span style={s('color:var(--ink-4)')}>예: 1,2-헥산다이올 = 1,2 헥산다이올</span>
         </div>
 
         <div style={s('display:flex;gap:8px;margin-top:10px;flex-wrap:wrap')}>
@@ -239,23 +239,23 @@ export function Ingredients() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') void search() }}
             placeholder="성분명 (예: 나이아신아마이드)"
-            style={s('flex:1;min-width:180px;border:1px solid #D3C9B7;border-radius:9px;padding:9px 12px;font-size:13px;font-family:inherit')}
+            style={s('flex:1;min-width:180px;border:1px solid var(--line-2);border-radius:4px;padding:9px 12px;font-size:13px;font-family:inherit')}
           />
           <button onClick={() => void search()} style={btn('ghost', false)}>찾기</button>
         </div>
 
         {searched && hits.length === 0 && (
-          <div style={s('font-size:12px;color:#A64B32;margin-top:10px')}>
+          <div style={s('font-size:12px;color:var(--warn);margin-top:10px')}>
             사전에 없는 성분명입니다. 표기가 다르거나, 아직 동기화되지 않았을 수 있습니다.
           </div>
         )}
 
         {hits.map((h, i) => (
-          <div key={i} style={s('border-top:1px solid #F0EAE0;padding-top:10px;margin-top:10px')}>
+          <div key={i} style={s('border-top:1px solid var(--line);padding-top:10px;margin-top:10px')}>
             <b style={s('font-size:13.5px')}>{h.korName}</b>
             {/* Blanks are said out loud rather than left as gaps: an empty field
                 is the register's own answer, not a loading state. */}
-            <div style={s('font-size:11.5px;color:#8A7D6C;margin-top:3px;line-height:1.7')}>
+            <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:3px;line-height:1.7')}>
               영문명 {h.engName ?? '(없음)'}<br />
               CAS {h.casNo ?? '(없음)'}<br />
               기원 {h.origin ?? '(없음)'}
@@ -263,16 +263,16 @@ export function Ingredients() {
             </div>
 
             {h.restrictions.length > 0 && (
-              <div style={s('background:#FBF3E8;border-radius:10px;padding:10px 12px;margin-top:8px')}>
-                <b style={s('font-size:11.5px;color:#8A5A28')}>
+              <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:8px')}>
+                <b style={s('font-size:11.5px;color:var(--warn)')}>
                   사용제한 {h.restrictions.length}건 · {countryCount(h)}개 국가
                 </b>
-                <div style={s('font-size:10.5px;color:#A07A46;margin-top:2px;line-height:1.5')}>
+                <div style={s('font-size:10.5px;color:var(--warn);margin-top:2px;line-height:1.5')}>
                   식약처가 고시한 원문입니다. 순함·안전성 판정이 아닙니다.
                 </div>
                 {h.restrictions.map((r, j) => (
-                  <div key={j} style={s('margin-top:8px;padding-top:8px;border-top:1px solid #F0E0CA')}>
-                    <div style={s('font-size:11.5px;font-weight:700;color:#8A5A28')}>
+                  <div key={j} style={s('margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)')}>
+                    <div style={s('font-size:11.5px;font-weight:500;color:var(--warn)')}>
                       {/* The country is not decoration. A Chinese prohibition
                           shown without it reads as one that applies here. */}
                       {r.country ?? '(국가 미기재)'} · {r.category ?? '(구분 없음)'}
@@ -281,17 +281,17 @@ export function Ingredients() {
                         block, newlines and all - including its restrictions on
                         products for infants and children. Shown verbatim. */}
                     {r.limitText && (
-                      <div style={s('font-size:11.5px;color:#5C4A32;margin-top:4px;line-height:1.7;white-space:pre-wrap')}>
+                      <div style={s('font-size:11.5px;color:var(--warn);margin-top:4px;line-height:1.7;white-space:pre-wrap')}>
                         {r.limitText}
                       </div>
                     )}
                     {r.provision && (
-                      <div style={s('font-size:10.5px;color:#A07A46;margin-top:4px;line-height:1.5')}>
+                      <div style={s('font-size:10.5px;color:var(--warn);margin-top:4px;line-height:1.5')}>
                         근거 {r.provision}
                       </div>
                     )}
                     {r.noticeName && r.noticeName !== h.engName && (
-                      <div style={s('font-size:10.5px;color:#A07A46;margin-top:2px;line-height:1.5;word-break:break-all')}>
+                      <div style={s('font-size:10.5px;color:var(--warn);margin-top:2px;line-height:1.5;word-break:break-all')}>
                         고시 표기 {r.noticeName}
                       </div>
                     )}

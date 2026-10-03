@@ -42,8 +42,8 @@ const day = (iso: string) =>
 function Field({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
   return (
     <div style={s('min-width:0')}>
-      <div style={s('font-size:10.5px;color:#A2957F')}>{label}</div>
-      <div style={s(`font-size:12.5px;margin-top:2px;word-break:break-all;color:${muted ? '#A2957F' : '#3A3226'}`)}>
+      <div style={s('font-size:10.5px;color:var(--ink-4)')}>{label}</div>
+      <div style={s(`font-size:12.5px;margin-top:2px;word-break:break-all;color:${muted ? 'var(--ink-4)' : 'var(--ink)'}`)}>
         {value}
       </div>
     </div>
@@ -52,8 +52,8 @@ function Field({ label, value, muted }: { label: string; value: string; muted?: 
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:10px;padding:12px 14px')}>
-      <div style={s('font-size:10.5px;font-weight:700;color:#8A7D6C;letter-spacing:0.08em;margin-bottom:9px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}>
+      <div style={s('font-size:10.5px;font-weight:500;color:var(--ink-3);letter-spacing:0.08em;margin-bottom:9px')}>
         {title}
       </div>
       <div style={s('display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:11px')}>
@@ -71,10 +71,10 @@ function Changed({ label, from, to }: { label: string; from: string | null; to: 
   const moved = from !== null && from !== to
   return (
     <div style={s('min-width:0')}>
-      <div style={s('font-size:10.5px;color:#A2957F')}>{label}</div>
-      <div style={s('font-size:12.5px;margin-top:2px;word-break:break-all;color:#3A3226')}>
+      <div style={s('font-size:10.5px;color:var(--ink-4)')}>{label}</div>
+      <div style={s('font-size:12.5px;margin-top:2px;word-break:break-all;color:var(--ink)')}>
         {from ?? '—'}
-        {moved && <span style={s('color:#B08133')}> → {to}</span>}
+        {moved && <span style={s('color:var(--warn)')}> → {to}</span>}
       </div>
     </div>
   )
@@ -84,12 +84,12 @@ function Detail({ m }: { m: AdminMember }) {
   const confirmed = m.emailConfirmedAt !== null
 
   return (
-    <div style={s('background:#F8F5EF;border-radius:12px;padding:13px;margin:0 6px 12px;display:flex;flex-direction:column;gap:10px;animation:riseAdmin .2s ease both')}>
+    <div style={s('background:var(--surface);border-radius:4px;padding:13px;margin:0 6px 12px;display:flex;flex-direction:column;gap:10px;animation:riseAdmin .2s ease both')}>
       <Group title="계정">
         <Field label="이메일" value={m.email} />
         <div style={s('min-width:0')}>
-          <div style={s('font-size:10.5px;color:#A2957F')}>이메일 인증</div>
-          <div style={s(`font-size:12.5px;margin-top:2px;font-weight:700;color:${confirmed ? '#2E6B58' : '#C25E43'}`)}>
+          <div style={s('font-size:10.5px;color:var(--ink-4)')}>이메일 인증</div>
+          <div style={s(`font-size:12.5px;margin-top:2px;font-weight:500;color:${confirmed ? 'var(--accent)' : 'var(--warn)'}`)}>
             {confirmed ? '완료' : '미인증'}
           </div>
         </div>
@@ -143,31 +143,31 @@ export function Users() {
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>
       <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap')}>
-        <div style={s('font-family:Marcellus,serif;font-size:24px')}>회원 관리</div>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>회원 관리</div>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="이름 또는 이메일 검색"
-          style={s('border:1px solid #D8CFBF;border-radius:999px;padding:8px 14px;font-size:12.5px;background:#FFFFFF;outline:none;min-width:200px')}
+          style={s('border:1px solid var(--line-2);border-radius:3px;padding:8px 14px;font-size:12.5px;background:var(--surface);outline:none;min-width:200px')}
         />
       </div>
 
       {!admin.hasMembers && (
-        <div style={s('border:1px dashed #D3C9B7;border-radius:12px;padding:22px;text-align:center;font-size:12.5px;color:#8A7D6C;margin-top:14px;line-height:1.6')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);margin-top:14px;line-height:1.6')}>
           아직 가입한 회원이 없습니다.
           <br />
           스토어에서 회원가입이 이루어지면 여기에 바로 나타납니다.
         </div>
       )}
 
-      <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:6px 16px 16px;margin-top:14px;overflow-x:auto')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px 16px 16px;margin-top:14px;overflow-x:auto')}>
         <div style={s('min-width:760px')}>
-          <div style={s(ROW_COLS + ';font-size:11px;color:#8A7D6C;font-weight:700;padding:10px 6px;border-bottom:1px solid #ECE6DA')}>
+          <div style={s(ROW_COLS + ';font-size:11px;color:var(--ink-3);font-weight:500;padding:10px 6px;border-bottom:1px solid var(--line)')}>
             <span>회원 / 이메일</span><span>국가</span><span>레벨</span><span>포인트</span><span>분석 / 주문</span><span>포인트 지급</span>
           </div>
 
           {admin.hasMembers && shown.length === 0 && (
-            <div style={s('padding:22px;text-align:center;font-size:12.5px;color:#8A7D6C')}>
+            <div style={s('padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3)')}>
               “{query}”와 일치하는 회원이 없습니다.
             </div>
           )}
@@ -179,30 +179,30 @@ export function Users() {
               <div key={u.id}>
                 <div
                   onClick={() => setOpenId(open ? null : u.id)}
-                  style={s(ROW_COLS + `;cursor:pointer;font-size:12.5px;padding:11px 6px;align-items:center;border-bottom:1px solid #F1ECE2;${open ? 'background:#F8F5EF' : ''}`)}
+                  style={s(ROW_COLS + `;cursor:pointer;font-size:12.5px;padding:11px 6px;align-items:center;border-bottom:1px solid var(--line);${open ? 'background:var(--surface)' : ''}`)}
                 >
                   <div style={s('min-width:0')}>
                     <b>{u.name}</b>
-                    <div style={s('font-size:11px;color:#8A7D6C;word-break:break-all')}>
+                    <div style={s('font-size:11px;color:var(--ink-3);word-break:break-all')}>
                       {u.email}
                       {/* An unconfirmed address is the first thing to check when
                           a member says nothing is arriving, so it is on the row
                           rather than one click further in. */}
                       {unconfirmed && (
-                        <span style={s('color:#C25E43;font-weight:700')}> · 미인증</span>
+                        <span style={s('color:var(--warn);font-weight:500')}> · 미인증</span>
                       )}
                     </div>
                   </div>
                   <span>{u.country}</span>
-                  <span style={s('background:#EAF1EC;color:#2E6B58;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;justify-self:start')}>{u.level}</span>
+                  <span style={s('background:var(--surface-2);color:var(--accent);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:500;justify-self:start')}>{u.level}</span>
                   <b>{u.ptsS} P</b>
-                  <span style={s('color:#6E6252')}>{u.activity}</span>
+                  <span style={s('color:var(--ink-2)')}>{u.activity}</span>
                   <div
                     onClick={(e) => {
                       e.stopPropagation()
                       u.grant()
                     }}
-                    style={s('cursor:pointer;background:#221C15;color:#F5F0E6;border-radius:999px;padding:7px 0;font-size:11.5px;font-weight:700;text-align:center;max-width:110px')}
+                    style={s('cursor:pointer;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:110px')}
                   >
                     +{admin.grantPoints} P 지급
                   </div>

@@ -39,8 +39,8 @@ export const scanHistory: {
   offset: number
   color: string
 }[] = [
-  { date: 'Aug 30', scanNo: 2, typeKey: 'condition', offset: -4, color: '#B08133' },
-  { date: 'Aug 16', scanNo: 1, typeKey: 'first', offset: -7, color: '#C25E43' },
+  { date: 'Aug 30', scanNo: 2, typeKey: 'condition', offset: -4, color: 'var(--warn)' },
+  { date: 'Aug 16', scanNo: 1, typeKey: 'first', offset: -7, color: 'var(--warn)' },
 ]
 
 /** Date shown against the current (latest) scan. */

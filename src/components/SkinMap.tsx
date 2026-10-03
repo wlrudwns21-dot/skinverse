@@ -32,11 +32,11 @@ export interface SkinMapProps {
 
 /** Overlay tint per concern group, so the legend colour means something. */
 const TINTS: Record<string, string> = {
-  hydration: '#3E8FB0',
-  texture: '#2E6B58',
-  tone: '#B08133',
-  firmness: '#7A5EA8',
-  eyes: '#C25E43',
+  hydration: 'var(--viz-2)',
+  texture: 'var(--viz-1)',
+  tone: 'var(--viz-3)',
+  firmness: 'var(--viz-4)',
+  eyes: 'var(--viz-5)',
 }
 
 interface Layer {
@@ -69,7 +69,7 @@ export function SkinMap({ visuals, lang, t }: SkinMapProps) {
 
   if (!visuals.photo || layers.length === 0 || failed) {
     return (
-      <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:12px;font-size:12.5px;color:#8A7D6C;line-height:1.5')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px;font-size:12.5px;color:var(--ink-3);line-height:1.5')}>
         {t.none}
       </div>
     )
@@ -78,11 +78,11 @@ export function SkinMap({ visuals, lang, t }: SkinMapProps) {
   const shown = layers.find((layer) => layer.key === active) ?? null
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:12px')}>
-      <div style={s('font-family:Marcellus,serif;font-size:16px')}>{t.title}</div>
-      <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px;margin-bottom:12px')}>{t.sub}</div>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{t.title}</div>
+      <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px;margin-bottom:12px')}>{t.sub}</div>
 
-      <div style={s('position:relative;width:100%;border-radius:14px;overflow:hidden;background:#EDE6D8')}>
+      <div style={s('position:relative;width:100%;border-radius:4px;overflow:hidden;background:var(--surface-2)')}>
         <img
           src={visuals.photo}
           alt=""
@@ -107,40 +107,40 @@ export function SkinMap({ visuals, lang, t }: SkinMapProps) {
       <div style={s('display:flex;flex-wrap:wrap;gap:6px;margin-top:12px')}>
         {layers.map((layer) => {
           const on = layer.key === active
-          const tint = TINTS[layer.def.group] ?? '#4A4234'
+          const tint = TINTS[layer.def.group] ?? 'var(--ink-2)'
           return (
             <div
               key={layer.key}
               onClick={() => setActive(on ? null : layer.key)}
               style={s(
-                'cursor:pointer;border-radius:999px;padding:6px 11px;font-size:11.5px;font-weight:600;' +
+                'cursor:pointer;border-radius:3px;padding:6px 11px;font-size:11.5px;font-weight:500;' +
                   'display:flex;align-items:center;gap:5px;white-space:nowrap;' +
                   (on
-                    ? `background:${tint};color:#FFFFFF;border:1px solid ${tint}`
-                    : 'background:#F8F5EF;color:#4A4234;border:1px solid #E2DACA'),
+                    ? `background:${tint};color:var(--on-dark);border:1px solid ${tint}`
+                    : 'background:var(--surface);color:var(--ink-2);border:1px solid var(--line-2)'),
               )}
             >
               <span>{layer.def.name[lang]}</span>
-              <span style={s('opacity:0.75;font-weight:700')}>{layer.score}</span>
+              <span style={s('opacity:0.75;font-weight:500')}>{layer.score}</span>
             </div>
           )
         })}
       </div>
 
       {shown && (
-        <div style={s('margin-top:12px;background:#F8F5EF;border-radius:12px;padding:12px 14px')}>
-          <div style={s('font-size:12.5px;line-height:1.6;color:#4A4234')}>
+        <div style={s('margin-top:12px;background:var(--surface);border-radius:4px;padding:12px 14px')}>
+          <div style={s('font-size:12.5px;line-height:1.6;color:var(--ink-2)')}>
             {shown.def.means[lang]}
           </div>
           {shown.score < 70 && (
-            <div style={s('font-size:12.5px;line-height:1.6;color:#2C4A3E;margin-top:8px;padding-top:8px;border-top:1px solid #E7E1D4')}>
+            <div style={s('font-size:12.5px;line-height:1.6;color:var(--accent);margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)')}>
               {shown.def.low[lang]}
             </div>
           )}
         </div>
       )}
 
-      <div style={s('font-size:10.5px;color:#B9AC93;margin-top:10px;line-height:1.5')}>
+      <div style={s('font-size:10.5px;color:var(--ink-4);margin-top:10px;line-height:1.5')}>
         {t.expires}
       </div>
     </div>

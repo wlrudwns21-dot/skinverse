@@ -42,7 +42,7 @@ function AdminShell() {
   if (!admin.isSignedIn || admin.isAdmin !== true) return <AdminLogin />
 
   return (
-    <div style={s('display:flex;min-height:100vh;max-width:1280px;margin:0 auto;background:#F8F5EF;box-shadow:0 0 60px rgba(60,45,25,0.1)')}>
+    <div style={s('display:flex;min-height:100vh;max-width:1280px;margin:0 auto;background:var(--bg);box-shadow:0 0 60px rgba(16,16,16,0.06)')}>
       <Sidebar />
       <div style={s('flex:1;min-width:0;padding:26px 28px 40px')}>
         <CurrentView />

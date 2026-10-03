@@ -35,7 +35,7 @@ export function s(text: string): CSSProperties {
 }
 
 /**
- * Split on top-level `;` only — values like `linear-gradient(150deg,#DDEAE3,#8FBCA6)`
+ * Split on top-level `;` only — values like `linear-gradient(150deg,var(--accent-soft),var(--accent-mid))`
  * and `ellipse(50% 50% at 50% 50%)` carry their own punctuation inside parens.
  */
 function splitDeclarations(text: string): string[] {

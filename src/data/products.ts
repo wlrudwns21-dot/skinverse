@@ -15,7 +15,7 @@ export const products: Product[] = [
     metric: 'hydration',
     ml: '50ml',
     kind: 'Serum',
-    g: 'linear-gradient(150deg,#DDEAE3,#8FBCA6)',
+    g: 'linear-gradient(160deg,var(--surface-2),var(--ph-a))',
     ing: 'Hyaluronic Acid 5-complex · Panthenol · Beta-Glucan',
     sub: {
       en: 'Barrier hydration serum',
@@ -39,7 +39,7 @@ export const products: Product[] = [
     metric: 'sensitivity',
     ml: '60ml',
     kind: 'Cream',
-    g: 'linear-gradient(150deg,#E7EBDD,#A9B98A)',
+    g: 'linear-gradient(160deg,var(--surface-2),var(--ph-b))',
     ing: 'Centella 71% · Madecassoside · Ceramide NP',
     sub: {
       en: 'Centella calming cream',
@@ -63,7 +63,7 @@ export const products: Product[] = [
     metric: 'pores',
     ml: '200ml',
     kind: 'Toner',
-    g: 'linear-gradient(150deg,#E3EDE0,#93B58E)',
+    g: 'linear-gradient(160deg,var(--surface-2),var(--ph-c))',
     ing: 'Green Tea Water 80% · PHA 2% · Zinc PCA',
     sub: {
       en: 'PHA pore-care toner',
@@ -87,7 +87,7 @@ export const products: Product[] = [
     metric: 'pigmentation',
     ml: '30ml',
     kind: 'Ampoule',
-    g: 'linear-gradient(150deg,#F4E8D7,#DBB27A)',
+    g: 'linear-gradient(160deg,var(--surface-2),var(--ph-a))',
     ing: 'Ascorbic Acid 12% · Ferulic Acid · Niacinamide 2%',
     sub: {
       en: 'Vitamin C brightening ampoule',
@@ -111,7 +111,7 @@ export const products: Product[] = [
     metric: 'hydration',
     ml: '80ml',
     kind: 'Mask',
-    g: 'linear-gradient(150deg,#F0EBE1,#C9BA9B)',
+    g: 'linear-gradient(160deg,var(--surface-2),var(--ph-b))',
     ing: 'Rice Extract · Ceramide NP · Squalane',
     sub: {
       en: 'Overnight barrier mask',
@@ -135,7 +135,7 @@ export const products: Product[] = [
     metric: 'uv',
     ml: '50ml',
     kind: 'SPF',
-    g: 'linear-gradient(150deg,#F3E9DC,#E0C08E)',
+    g: 'linear-gradient(160deg,var(--surface-2),var(--ph-c))',
     ing: 'Hybrid filters · PA++++ · No white cast',
     sub: {
       en: 'Daily fluid sunscreen',

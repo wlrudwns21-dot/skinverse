@@ -57,82 +57,82 @@ function PriceRow({ id }: { id: string }) {
   const usdPrice = admin.usdRate > 0 ? priceN / admin.usdRate : 0
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:12px 14px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}>
       <div
         onClick={() => setOpen((v) => !v)}
         style={s('cursor:pointer;display:flex;gap:12px;align-items:center')}
       >
-        <div style={s(`width:40px;height:40px;border-radius:9px;background:${product.grad};flex-shrink:0`)} />
+        <div style={s(`width:40px;height:40px;border-radius:4px;background:${product.grad};flex-shrink:0`)} />
         <div style={s('flex:1;min-width:0')}>
-          <div style={s('font-size:10px;color:#8A7D6C;letter-spacing:0.1em')}>{product.brand}</div>
-          <div style={s('font-size:13.5px;font-weight:600')}>{product.name}</div>
+          <div style={s('font-size:10px;color:var(--ink-3);letter-spacing:0.1em')}>{product.brand}</div>
+          <div style={s('font-size:13.5px;font-weight:500')}>{product.name}</div>
         </div>
         <div style={s('text-align:right;flex-shrink:0')}>
-          <div style={s('font-size:13.5px;font-weight:700')}>{won(product.priceKrw)}</div>
-          <div style={s('font-size:11px;color:#8A7D6C')}>${product.price}</div>
+          <div style={s('font-size:13.5px;font-weight:500')}>{won(product.priceKrw)}</div>
+          <div style={s('font-size:11px;color:var(--ink-3)')}>${product.price}</div>
         </div>
       </div>
 
       {open && (
-        <div style={s('margin-top:12px;border-top:1px solid #F1ECE2;padding-top:12px')}>
+        <div style={s('margin-top:12px;border-top:1px solid var(--line);padding-top:12px')}>
           <div style={s('display:flex;gap:10px;flex-wrap:wrap')}>
             <label style={s('flex:1;min-width:110px')}>
-              <div style={s('font-size:11px;color:#8A7D6C;font-weight:700')}>원가 (원)</div>
+              <div style={s('font-size:11px;color:var(--ink-3);font-weight:500')}>원가 (원)</div>
               <input
                 value={cost}
                 onChange={(e) => applyCost(e.target.value.replace(/[^0-9]/g, ''))}
                 inputMode="numeric"
-                style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
               />
             </label>
             <label style={s('flex:1;min-width:90px')}>
-              <div style={s('font-size:11px;color:#8A7D6C;font-weight:700')}>마진 (%)</div>
+              <div style={s('font-size:11px;color:var(--ink-3);font-weight:500')}>마진 (%)</div>
               <input
                 value={margin}
                 onChange={(e) => applyMargin(e.target.value.replace(/[^0-9.-]/g, ''))}
                 inputMode="decimal"
-                style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
               />
             </label>
             <label style={s('flex:1;min-width:110px')}>
-              <div style={s('font-size:11px;color:#8A7D6C;font-weight:700')}>판매가 (원)</div>
+              <div style={s('font-size:11px;color:var(--ink-3);font-weight:500')}>판매가 (원)</div>
               <input
                 value={price}
                 onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ''))}
                 inputMode="numeric"
-                style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-weight:700')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-weight:500')}
               />
             </label>
             <label style={s('flex:1;min-width:110px')}>
-              <div style={s('font-size:11px;color:#8A7D6C;font-weight:700')}>사용 기간 (일)</div>
+              <div style={s('font-size:11px;color:var(--ink-3);font-weight:500')}>사용 기간 (일)</div>
               <input
                 value={days}
                 onChange={(e) => setDays(e.target.value.replace(/[^0-9]/g, ''))}
                 inputMode="numeric"
-                style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
               />
             </label>
           </div>
 
           {/* Only affects when the shop suggests buying it again — nothing to
               do with price, stock or what anybody is charged. */}
-          <div style={s('font-size:11px;color:#A2957F;line-height:1.6;margin-top:6px')}>
+          <div style={s('font-size:11px;color:var(--ink-4);line-height:1.6;margin-top:6px')}>
             한 개를 다 쓰는 데 걸리는 대략적인 기간입니다. 이 기간의 70%가 지나면
             추천에서 "다 쓰실 때가 됐어요"로 다시 올라옵니다.
           </div>
 
-          <div style={s('background:#F8F5EF;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:#4A4234;line-height:1.7')}>
+          <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.7')}>
             <div>
               개당 이익 <b>{won(profit)}</b>
               {costN > 0 && <> · 실제 마진 <b>{realMargin.toFixed(1)}%</b></>}
             </div>
-            <div style={s('color:#8A7D6C')}>
+            <div style={s('color:var(--ink-3)')}>
               고객 결제 금액 <b>${usdPrice.toFixed(2)}</b> (환율 {won(admin.usdRate)}/$ 기준)
             </div>
             {/* Said out loud rather than silently corrected: the operator chose
                 the round number and should know what it costs them. */}
             {drifted && (
-              <div style={s('color:#B4622F')}>
+              <div style={s('color:var(--warn)')}>
                 판매가를 직접 고치셔서 마진이 {marginN}% → {realMargin.toFixed(1)}%로 바뀝니다.
               </div>
             )}
@@ -141,16 +141,16 @@ function PriceRow({ id }: { id: string }) {
           <div
             onClick={() => void admin.savePricing(id, costN, realMargin, priceN, Number(days) || 60)}
             style={s(
-              'margin-top:10px;border-radius:999px;padding:10px;text-align:center;font-size:12.5px;font-weight:700;' +
+              'margin-top:10px;border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
                 (priceN > 0
-                  ? 'cursor:pointer;background:#221C15;color:#F3E9D6'
-                  : 'background:#EFE9DD;color:#B0A490'),
+                  ? 'cursor:pointer;background:var(--ink);color:var(--on-dark-2)'
+                  : 'background:var(--surface-2);color:var(--ink-4)'),
             )}
           >
             저장
           </div>
           {priceN <= 0 && (
-            <div style={s('font-size:11px;color:#A64B32;text-align:center;margin-top:5px')}>
+            <div style={s('font-size:11px;color:var(--warn);text-align:center;margin-top:5px')}>
               판매 중인 상품은 판매가가 0원일 수 없습니다.
             </div>
           )}
@@ -171,31 +171,31 @@ function RateRow({ code }: { code: string }) {
   const isUsd = code === 'USD'
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap')}>
       <div style={s('flex:1;min-width:120px')}>
-        <div style={s('font-size:13px;font-weight:700')}>
+        <div style={s('font-size:13px;font-weight:500')}>
           {rate.symbol} {rate.code}
-          {isUsd && <span style={s('font-size:10.5px;color:#B4622F;margin-left:6px')}>결제 통화</span>}
+          {isUsd && <span style={s('font-size:10.5px;color:var(--warn);margin-left:6px')}>결제 통화</span>}
         </div>
-        <div style={s('font-size:11px;color:#8A7D6C')}>{rate.label}</div>
+        <div style={s('font-size:11px;color:var(--ink-3)')}>{rate.label}</div>
       </div>
 
       <div style={s('display:flex;align-items:center;gap:6px')}>
-        <span style={s('font-size:11.5px;color:#8A7D6C')}>1 {code} =</span>
+        <span style={s('font-size:11.5px;color:var(--ink-3)')}>1 {code} =</span>
         <input
           value={value}
           onChange={(e) => setValue(e.target.value.replace(/[^0-9.]/g, ''))}
           inputMode="decimal"
           disabled={code === 'KRW'}
-          style={s('width:100px;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;outline:none;text-align:right')}
+          style={s('width:100px;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;outline:none;text-align:right')}
         />
-        <span style={s('font-size:11.5px;color:#8A7D6C')}>원</span>
+        <span style={s('font-size:11.5px;color:var(--ink-3)')}>원</span>
       </div>
 
       {changed && code !== 'KRW' && (
         <div
           onClick={() => void admin.saveRate(code, next)}
-          style={s('cursor:pointer;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700;background:#221C15;color:#F3E9D6')}
+          style={s('cursor:pointer;border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500;background:var(--ink);color:var(--on-dark-2)')}
         >
           저장
         </div>
@@ -210,17 +210,21 @@ const METRICS = [
   ['pigmentation', '색소침착'], ['wrinkles', '주름'], ['sensitivity', '민감도'],
 ] as const
 /** Swatches, so an operator picks a look rather than typing CSS. */
+/* Six grounds an operator picks between, so each one has to be the obviously
+   different choice from the other five. They run off the chart scale, which is
+   already built for separation, and every one fades from the same near-white
+   so a shelf of mixed cards still reads as one shelf. */
 const GRADIENTS = [
-  'linear-gradient(150deg,#DDEAE3,#8FBCA6)',
-  'linear-gradient(150deg,#E7EBDD,#A9B98A)',
-  'linear-gradient(150deg,#F4E8D7,#DBB27A)',
-  'linear-gradient(150deg,#F0EBE1,#C9BA9B)',
-  'linear-gradient(150deg,#E8E2EF,#B0A0C4)',
-  'linear-gradient(150deg,#F3E2E2,#D49A9A)',
+  'linear-gradient(150deg,var(--surface-2),var(--viz-1))',
+  'linear-gradient(150deg,var(--surface-2),var(--viz-5))',
+  'linear-gradient(150deg,var(--surface-2),var(--viz-3))',
+  'linear-gradient(150deg,var(--surface-2),var(--viz-2))',
+  'linear-gradient(150deg,var(--surface-2),var(--viz-4))',
+  'linear-gradient(150deg,var(--surface-2),var(--ink-4))',
 ]
 
-const field = 'width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none'
-const label = 'font-size:11px;color:#8A7D6C;font-weight:700'
+const field = 'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none'
+const label = 'font-size:11px;color:var(--ink-3);font-weight:500'
 
 /**
  * Registering a new product.
@@ -267,7 +271,7 @@ function NewProductForm() {
     return (
       <div
         onClick={() => setOpen(true)}
-        style={s('cursor:pointer;border:1px dashed #D3C9B7;border-radius:12px;padding:14px;text-align:center;font-size:13px;font-weight:700;color:#8A7D6C;margin-bottom:10px')}
+        style={s('cursor:pointer;border:1px dashed var(--line-2);border-radius:4px;padding:14px;text-align:center;font-size:13px;font-weight:500;color:var(--ink-3);margin-bottom:10px')}
       >
         + 새 상품 등록
       </div>
@@ -275,8 +279,8 @@ function NewProductForm() {
   }
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:14px 16px;margin-bottom:10px')}>
-      <div style={s('font-size:14px;font-weight:700')}>새 상품 등록</div>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-bottom:10px')}>
+      <div style={s('font-size:14px;font-weight:500')}>새 상품 등록</div>
 
       <div style={s('display:flex;gap:10px;flex-wrap:wrap;margin-top:10px')}>
         <label style={s('flex:1;min-width:130px')}>
@@ -319,8 +323,8 @@ function NewProductForm() {
             <div
               key={g}
               onClick={() => set('gradient', g)}
-              style={s(`cursor:pointer;width:38px;height:38px;border-radius:9px;background:${g};` +
-                (f.gradient === g ? 'outline:2px solid #221C15;outline-offset:2px' : ''))}
+              style={s(`cursor:pointer;width:38px;height:38px;border-radius:4px;background:${g};` +
+                (f.gradient === g ? 'outline:2px solid var(--ink);outline-offset:2px' : ''))}
             />
           ))}
         </div>
@@ -346,7 +350,7 @@ function NewProductForm() {
             value={f.priceKrw || suggested || ''}
             onChange={(e) => set('priceKrw', Number(e.target.value.replace(/[^0-9]/g, '')) || 0)}
             inputMode="numeric"
-            style={s(field + ';font-weight:700')}
+            style={s(field + ';font-weight:500')}
           />
         </label>
         <label style={s('flex:1;min-width:90px')}>
@@ -361,35 +365,35 @@ function NewProductForm() {
       </div>
 
       {priceN > 0 && (
-        <div style={s('background:#F8F5EF;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:#4A4234;line-height:1.7')}>
+        <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.7')}>
           <div>
             판매가 <b>{won(priceN)}</b>
             {costN > 0 && <> · 개당 이익 <b>{won(priceN - costN)}</b> · 실제 마진 <b>{marginFromPrice(costN, priceN).toFixed(1)}%</b></>}
           </div>
-          <div style={s('color:#8A7D6C')}>
+          <div style={s('color:var(--ink-3)')}>
             고객 결제 금액 <b>${(admin.usdRate > 0 ? priceN / admin.usdRate : 0).toFixed(2)}</b>
           </div>
         </div>
       )}
 
-      <div style={s('background:#FBF3E4;border-radius:10px;padding:9px 12px;margin-top:8px;font-size:11.5px;color:#8A6D32;line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border-radius:4px;padding:9px 12px;margin-top:8px;font-size:11.5px;color:var(--warn);line-height:1.6')}>
         등록 후에는 <b>판매중지</b> 상태로 들어갑니다. 상품 관리에서 내용을 확인한 뒤 판매를 시작하세요.
       </div>
 
       <div style={s('display:flex;gap:8px;margin-top:10px')}>
         <div
           onClick={() => setOpen(false)}
-          style={s('flex:1;cursor:pointer;border:1px solid #D8CFBF;border-radius:999px;padding:10px;text-align:center;font-size:12.5px;font-weight:700;color:#8A7D6C')}
+          style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-3)')}
         >
           취소
         </div>
         <div
           onClick={() => void submit()}
           style={s(
-            'flex:2;border-radius:999px;padding:10px;text-align:center;font-size:12.5px;font-weight:700;' +
+            'flex:2;border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
               (ready && !busy
-                ? 'cursor:pointer;background:#221C15;color:#F3E9D6'
-                : 'background:#EFE9DD;color:#B0A490'),
+                ? 'cursor:pointer;background:var(--ink);color:var(--on-dark-2)'
+                : 'background:var(--surface-2);color:var(--ink-4)'),
           )}
         >
           {busy ? '등록 중…' : '등록'}
@@ -404,20 +408,20 @@ export function Pricing() {
 
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>
-      <div style={s('font-family:Marcellus,serif;font-size:24px')}>가격 · 환율</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>가격 · 환율</div>
 
-      <div style={s('font-family:Marcellus,serif;font-size:17px;margin:18px 2px 6px')}>환율</div>
-      <div style={s('font-size:12px;color:#8A7D6C;line-height:1.6;margin-bottom:10px')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:17px;margin:18px 2px 6px')}>환율</div>
+      <div style={s('font-size:12px;color:var(--ink-3);line-height:1.6;margin-bottom:10px')}>
         상품은 <b>원화</b>로 등록하고, 고객 화면에는 각자 설정한 통화로 환산해 보여줍니다.
         실제 결제는 <b>USD</b>로 청구되므로,
-        <b style={s('color:#B4622F')}> USD 환율을 바꾸면 전 상품의 결제 금액이 즉시 다시 계산됩니다.</b>
+        <b style={s('color:var(--warn)')}> USD 환율을 바꾸면 전 상품의 결제 금액이 즉시 다시 계산됩니다.</b>
       </div>
       <div style={s('display:flex;flex-direction:column;gap:8px')}>
         {admin.rates.map((r) => <RateRow key={r.code} code={r.code} />)}
       </div>
 
-      <div style={s('font-family:Marcellus,serif;font-size:17px;margin:22px 2px 6px')}>상품 가격</div>
-      <div style={s('font-size:12px;color:#8A7D6C;line-height:1.6;margin-bottom:10px')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:17px;margin:22px 2px 6px')}>상품 가격</div>
+      <div style={s('font-size:12px;color:var(--ink-3);line-height:1.6;margin-bottom:10px')}>
         원가와 마진을 입력하면 판매가가 자동 계산됩니다. 판매가를 직접 고치면 실제 마진을 다시 알려드립니다.
         원가는 운영자만 볼 수 있습니다.
       </div>

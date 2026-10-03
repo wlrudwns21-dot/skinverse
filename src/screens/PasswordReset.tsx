@@ -6,12 +6,12 @@ import { useAuth } from '../auth/AuthContext'
 import { useStore } from '../store/StoreContext'
 
 const field =
-  'width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none'
-const label = 'font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px'
+  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
+const label = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 const primary =
-  'margin-top:16px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700'
+  'margin-top:16px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
 const disabled =
-  'margin-top:16px;background:#EFE9DD;color:#B0A490;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700'
+  'margin-top:16px;background:var(--surface-2);color:var(--ink-4);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
 
 /**
  * Asking for a reset link.
@@ -55,9 +55,9 @@ export function PasswordReset() {
   if (sentTo) {
     return (
       <div style={s('padding:40px 20px;text-align:center;animation:rise .4s ease both')}>
-        <div style={s('width:64px;height:64px;border-radius:50%;background:#EAF1EC;color:#2E6B58;font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
-        <div style={s('font-family:Marcellus,serif;font-size:22px;margin-top:16px')}>{a.resetSentTitle}</div>
-        <div style={s('font-size:13px;color:#8A7D6C;margin-top:8px;line-height:1.6')}>{a.resetSentSub(sentTo)}</div>
+        <div style={s('width:64px;height:64px;border-radius:50%;background:var(--surface-2);color:var(--accent);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px;margin-top:16px')}>{a.resetSentTitle}</div>
+        <div style={s('font-size:13px;color:var(--ink-3);margin-top:8px;line-height:1.6')}>{a.resetSentSub(sentTo)}</div>
         <div onClick={st.goResetBack} style={s('cursor:pointer;' + primary)}>{a.gotIt}</div>
       </div>
     )
@@ -65,10 +65,10 @@ export function PasswordReset() {
 
   return (
     <div style={s('padding:24px 20px;animation:rise .4s ease both')}>
-      <div onClick={st.goResetBack} style={s('cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:12px')}>{a.back}</div>
+      <div onClick={st.goResetBack} style={s('cursor:pointer;font-size:13px;color:var(--ink-3);margin-bottom:12px')}>{a.back}</div>
 
-      <div style={s('font-family:Marcellus,serif;font-size:24px')}>{a.resetTitle}</div>
-      <div style={s('font-size:13px;color:#8A7D6C;margin-top:4px;line-height:1.5')}>{a.resetSub}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>{a.resetTitle}</div>
+      <div style={s('font-size:13px;color:var(--ink-3);margin-top:4px;line-height:1.5')}>{a.resetSub}</div>
 
       <div style={s('margin-top:18px')}>
         <div style={s(label)}>{a.email}</div>
@@ -88,7 +88,7 @@ export function PasswordReset() {
       )}
 
       {error && (
-        <div style={s('background:#FBE9E3;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:12.5px;color:#A64B32;line-height:1.5')}>
+        <div style={s('background:var(--surface-2);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
           {error}
         </div>
       )}
@@ -134,8 +134,8 @@ export function NewPassword() {
 
   return (
     <div style={s('padding:24px 20px;animation:rise .4s ease both')}>
-      <div style={s('font-family:Marcellus,serif;font-size:24px')}>{a.newPwTitle}</div>
-      <div style={s('font-size:13px;color:#8A7D6C;margin-top:4px;line-height:1.5')}>{a.newPwSub}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>{a.newPwTitle}</div>
+      <div style={s('font-size:13px;color:var(--ink-3);margin-top:4px;line-height:1.5')}>{a.newPwSub}</div>
 
       <div style={s('margin-top:18px')}>
         <div style={s(label)}>{a.newPwField}</div>
@@ -160,7 +160,7 @@ export function NewPassword() {
       </div>
 
       {error && (
-        <div style={s('background:#FBE9E3;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:12.5px;color:#A64B32;line-height:1.5')}>
+        <div style={s('background:var(--surface-2);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
           {error}
         </div>
       )}
@@ -178,7 +178,7 @@ export function NewPassword() {
         */}
       <div
         onClick={() => void auth.signOut()}
-        style={s('cursor:pointer;margin-top:12px;text-align:center;font-size:12.5px;color:#8A7D6C;font-weight:600')}
+        style={s('cursor:pointer;margin-top:12px;text-align:center;font-size:12.5px;color:var(--ink-3);font-weight:500')}
       >
         {a.back}
       </div>

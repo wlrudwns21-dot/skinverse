@@ -20,12 +20,12 @@ export const adminOrders: AdminOrder[] = [
 
 /** SAMPLE DATA — inventory view of the catalogue. */
 export const adminProducts: AdminProduct[] = [
-  { id: 'p1', brand: 'LUMIVE', name: 'Hyaluron Barrier Serum', kind: 'Serum', ml: '50ml', price: 28, stock: 142, sold: 312, active: true, g: 'linear-gradient(150deg,#DDEAE3,#8FBCA6)' },
-  { id: 'p2', brand: 'HANJUN', name: 'Cica Calming Cream', kind: 'Cream', ml: '60ml', price: 24, stock: 87, sold: 268, active: true, g: 'linear-gradient(150deg,#E7EBDD,#A9B98A)' },
-  { id: 'p3', brand: 'ONYU', name: 'Green Tea Pore Toner', kind: 'Toner', ml: '200ml', price: 19, stock: 4, sold: 190, active: true, g: 'linear-gradient(150deg,#E3EDE0,#93B58E)' },
-  { id: 'p4', brand: 'SOLBIT', name: 'Vitamin C Glow Ampoule', kind: 'Ampoule', ml: '30ml', price: 32, stock: 56, sold: 241, active: true, g: 'linear-gradient(150deg,#F4E8D7,#DBB27A)' },
-  { id: 'p5', brand: 'MIREU', name: 'Rice Ceramide Sleep Mask', kind: 'Mask', ml: '80ml', price: 22, stock: 0, sold: 154, active: false, g: 'linear-gradient(150deg,#F0EBE1,#C9BA9B)' },
-  { id: 'p6', brand: 'HAERIM', name: 'Sun Barrier Fluid SPF50+', kind: 'SPF', ml: '50ml', price: 18, stock: 203, sold: 388, active: true, g: 'linear-gradient(150deg,#F3E9DC,#E0C08E)' },
+  { id: 'p1', brand: 'LUMIVE', name: 'Hyaluron Barrier Serum', kind: 'Serum', ml: '50ml', price: 28, stock: 142, sold: 312, active: true, g: 'linear-gradient(160deg,var(--surface-2),var(--ph-a))' },
+  { id: 'p2', brand: 'HANJUN', name: 'Cica Calming Cream', kind: 'Cream', ml: '60ml', price: 24, stock: 87, sold: 268, active: true, g: 'linear-gradient(160deg,var(--surface-2),var(--ph-b))' },
+  { id: 'p3', brand: 'ONYU', name: 'Green Tea Pore Toner', kind: 'Toner', ml: '200ml', price: 19, stock: 4, sold: 190, active: true, g: 'linear-gradient(160deg,var(--surface-2),var(--ph-c))' },
+  { id: 'p4', brand: 'SOLBIT', name: 'Vitamin C Glow Ampoule', kind: 'Ampoule', ml: '30ml', price: 32, stock: 56, sold: 241, active: true, g: 'linear-gradient(160deg,var(--surface-2),var(--ph-a))' },
+  { id: 'p5', brand: 'MIREU', name: 'Rice Ceramide Sleep Mask', kind: 'Mask', ml: '80ml', price: 22, stock: 0, sold: 154, active: false, g: 'linear-gradient(160deg,var(--surface-2),var(--ph-b))' },
+  { id: 'p6', brand: 'HAERIM', name: 'Sun Barrier Fluid SPF50+', kind: 'SPF', ml: '50ml', price: 18, stock: 203, sold: 388, active: true, g: 'linear-gradient(160deg,var(--surface-2),var(--ph-c))' },
 ]
 
 /** SAMPLE DATA — members. */
@@ -61,10 +61,10 @@ export const adminPointRules = { earnRate: 5, useCap: 30, streakBonus: 0 }
 
 /** SAMPLE DATA — dashboard headline figures. */
 export const adminKpis: Kpi[] = [
-  { label: '오늘 매출', value: '$1,284', delta: '+18%', deltaColor: '#2E6B58' },
-  { label: '오늘 주문', value: '23건', delta: '+4건', deltaColor: '#2E6B58' },
-  { label: 'AI 스캔 (오늘)', value: '147회', delta: '+31%', deltaColor: '#2E6B58' },
-  { label: '신규 가입', value: '38명', delta: '−5%', deltaColor: '#C25E43' },
+  { label: '오늘 매출', value: '$1,284', delta: '+18%', deltaColor: 'var(--accent)' },
+  { label: '오늘 주문', value: '23건', delta: '+4건', deltaColor: 'var(--accent)' },
+  { label: 'AI 스캔 (오늘)', value: '147회', delta: '+31%', deltaColor: 'var(--accent)' },
+  { label: '신규 가입', value: '38명', delta: '−5%', deltaColor: 'var(--warn)' },
 ]
 
 /** SAMPLE DATA — 7-day sales by country, highest first (drives the bar widths). */
@@ -95,17 +95,17 @@ export const adminOperator = { initial: '관', name: '운영자', email: 'admin@
 
 /** Label, text colour and chip background for each order status. */
 export const orderStatusMeta: Record<OrderStatus, [string, string, string]> = {
-  paid: ['결제완료', '#B08133', '#FBF3E4'],
-  preparing: ['배송준비', '#6B4B78', '#F1EAF3'],
-  shipped: ['발송완료', '#2E6B58', '#EAF1EC'],
-  delivered: ['배송완료', '#6E6252', '#F1EEE6'],
-  cancelled: ['취소', '#C25E43', '#FBE9E3'],
+  paid: ['결제완료', 'var(--warn)', 'var(--warn-soft)'],
+  preparing: ['배송준비', 'var(--viz-4)', 'var(--surface-2)'],
+  shipped: ['발송완료', 'var(--accent)', 'var(--accent-soft)'],
+  delivered: ['배송완료', 'var(--ink-2)', 'var(--surface-2)'],
+  cancelled: ['취소', 'var(--ink-3)', 'var(--surface-2)'],
   // Written by the payment webhook only. Red, because each one means money has
   // left and somebody needs to look at the order.
-  partly_refunded: ['부분환불', '#B4622F', '#FBEFE3'],
-  refunded: ['환불완료', '#C25E43', '#FBE9E3'],
-  reversed: ['지급거절(분쟁)', '#A33B3B', '#FAE4E4'],
-  payment_failed: ['결제실패', '#8A7D6C', '#F1EEE6'],
+  partly_refunded: ['부분환불', 'var(--warn)', 'var(--warn-soft)'],
+  refunded: ['환불완료', 'var(--warn)', 'var(--warn-soft)'],
+  reversed: ['지급거절(분쟁)', 'var(--danger)', 'var(--danger)'],
+  payment_failed: ['결제실패', 'var(--ink-3)', 'var(--surface-2)'],
 }
 
 /**

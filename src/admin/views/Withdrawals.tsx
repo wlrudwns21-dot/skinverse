@@ -51,15 +51,15 @@ export function Withdrawals() {
 
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>
-      <div style={s('font-family:Marcellus,serif;font-size:24px')}>탈퇴 요청</div>
-      <div style={s('font-size:12.5px;color:#8A7D6C;margin-top:6px;line-height:1.6')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>탈퇴 요청</div>
+      <div style={s('font-size:12.5px;color:var(--ink-3);margin-top:6px;line-height:1.6')}>
         회원이 직접 요청한 탈퇴 건입니다. 배송 중인 주문이나 진행 중인 환불이 없는지 확인한 뒤
         처리해주세요.
       </div>
 
       {/* The operator needs to know this before they look for a reject button
           and wonder where it went. */}
-      <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:14px 16px;margin-top:14px;font-size:12px;color:#8A6D32;line-height:1.7')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:14px;font-size:12px;color:var(--warn);line-height:1.7')}>
         <b>탈퇴는 승인·거부의 대상이 아닙니다.</b>
         <br />
         개인정보 보호법 제36조는 삭제 요구를 <b>지체 없이</b> 처리하도록 정하고 있고, 회원 탈퇴는
@@ -72,12 +72,12 @@ export function Withdrawals() {
 
       {rows === null && (
         <div style={s('padding:30px;text-align:center')}>
-          <div style={s('width:28px;height:28px;margin:0 auto;border-radius:50%;border:3px solid #E4DCCB;border-top-color:#2E6B58;animation:spin 1s linear infinite')} />
+          <div style={s('width:28px;height:28px;margin:0 auto;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
         </div>
       )}
 
       {rows !== null && pending.length === 0 && (
-        <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:30px;margin-top:14px;text-align:center;font-size:13px;color:#8A7D6C')}>
+        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:30px;margin-top:14px;text-align:center;font-size:13px;color:var(--ink-3)')}>
           대기 중인 탈퇴 요청이 없습니다.
         </div>
       )}
@@ -93,19 +93,19 @@ export function Withdrawals() {
           return (
             <div
               key={row.userId}
-              style={s(`background:#FFFFFF;border:1px solid ${late ? '#EFCFC3' : '#ECE6DA'};border-radius:14px;padding:16px`)}
+              style={s(`background:var(--surface);border:1px solid ${late ? 'var(--warn-mid)' : 'var(--line)'};border-radius:4px;padding:16px`)}
             >
               <div style={s('display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap')}>
                 <div style={s('flex:1;min-width:200px')}>
-                  <div style={s('font-size:14px;font-weight:700')}>{row.name}</div>
-                  <div style={s('font-size:12px;color:#6E6252;margin-top:2px;word-break:break-all')}>
+                  <div style={s('font-size:14px;font-weight:500')}>{row.name}</div>
+                  <div style={s('font-size:12px;color:var(--ink-2);margin-top:2px;word-break:break-all')}>
                     {row.email}
                   </div>
-                  <div style={s('font-size:11.5px;color:#8A7D6C;margin-top:6px')}>
+                  <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:6px')}>
                     {new Date(row.requestedAt).toLocaleString('ko-KR')} 요청
                   </div>
                   {row.reason && (
-                    <div style={s('background:#FAF8F3;border-radius:10px;padding:9px 11px;margin-top:8px;font-size:12px;color:#4A4234;line-height:1.5')}>
+                    <div style={s('background:var(--surface);border-radius:4px;padding:9px 11px;margin-top:8px;font-size:12px;color:var(--ink-2);line-height:1.5')}>
                       “{row.reason}”
                     </div>
                   )}
@@ -113,8 +113,8 @@ export function Withdrawals() {
 
                 <div
                   style={s(
-                    `border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:700;white-space:nowrap;` +
-                      (late ? 'background:#FBE9E3;color:#A64B32' : 'background:#F1ECE2;color:#6E6252'),
+                    `border-radius:3px;padding:5px 12px;font-size:11.5px;font-weight:500;white-space:nowrap;` +
+                      (late ? 'background:var(--surface-2);color:var(--warn)' : 'background:var(--surface-2);color:var(--ink-2)'),
                   )}
                 >
                   {days === 0 ? '오늘 요청' : `${days}일 경과`}
@@ -124,16 +124,16 @@ export function Withdrawals() {
               {!isOpen ? (
                 <div
                   onClick={() => { setConfirming(row.userId); setNote('') }}
-                  style={s('cursor:pointer;margin-top:12px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:11px;text-align:center;font-size:12.5px;font-weight:700')}
+                  style={s('cursor:pointer;margin-top:12px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500')}
                 >
                   탈퇴 처리하기
                 </div>
               ) : (
-                <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;border-radius:12px;padding:13px;margin-top:12px')}>
-                  <div style={s('font-size:12.5px;font-weight:700;color:#A64B32')}>
+                <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:13px;margin-top:12px')}>
+                  <div style={s('font-size:12.5px;font-weight:500;color:var(--warn)')}>
                     되돌릴 수 없습니다
                   </div>
-                  <div style={s('font-size:11.5px;color:#A64B32;margin-top:5px;line-height:1.6')}>
+                  <div style={s('font-size:11.5px;color:var(--warn);margin-top:5px;line-height:1.6')}>
                     계정, 분석 기록, 루틴, 장바구니, 포인트가 즉시 삭제됩니다. 주문과 문의 기록은
                     법정 보관 기간 동안 남습니다.
                   </div>
@@ -142,19 +142,19 @@ export function Withdrawals() {
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="처리 메모 (선택) — 예: 배송 완료 확인함"
-                    style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:10px;padding:9px 11px;font-size:12px;background:#FFFFFF;outline:none;margin-top:10px')}
+                    style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:9px 11px;font-size:12px;background:var(--surface);outline:none;margin-top:10px')}
                   />
 
                   <div style={s('display:flex;gap:8px;margin-top:10px')}>
                     <div
                       onClick={busy ? undefined : () => void process(row)}
-                      style={s(`cursor:${busy ? 'default' : 'pointer'};flex:1;background:#A64B32;color:#FFFFFF;border-radius:999px;padding:11px;text-align:center;font-size:12.5px;font-weight:700;opacity:${busy ? '.6' : '1'}`)}
+                      style={s(`cursor:${busy ? 'default' : 'pointer'};flex:1;background:var(--warn);color:var(--on-dark);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
                     >
                       {busy ? '처리 중…' : '삭제 실행'}
                     </div>
                     <div
                       onClick={() => setConfirming(null)}
-                      style={s('cursor:pointer;flex:1;background:#FFFFFF;border:1px solid #D8CFBF;color:#6E6252;border-radius:999px;padding:11px;text-align:center;font-size:12.5px;font-weight:700')}
+                      style={s('cursor:pointer;flex:1;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500')}
                     >
                       취소
                     </div>

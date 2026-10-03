@@ -37,9 +37,9 @@ export interface AxisTrendStrings {
   scopeNote: string
 }
 
-const UP = '#2E6B58'
-const DOWN = '#C25E43'
-const FLAT = '#8A7D6C'
+const UP = 'var(--accent)'
+const DOWN = 'var(--warn)'
+const FLAT = 'var(--ink-3)'
 
 /**
  * The series as a line.
@@ -107,17 +107,17 @@ function Row({ change, lang, t }: { change: AxisChange; lang: Lang; t: AxisTrend
   return (
     <div
       onClick={() => setOpen(!open)}
-      style={s('cursor:pointer;border-top:1px solid #F1EEE6;padding:12px 0')}
+      style={s('cursor:pointer;border-top:1px solid var(--line);padding:12px 0')}
     >
       <div style={s('display:flex;align-items:center;gap:12px')}>
         <div style={s('flex:1;min-width:0')}>
           <div style={s('display:flex;align-items:baseline;gap:7px;flex-wrap:wrap')}>
-            <span style={s('font-size:13px;font-weight:700;color:#221C15')}>{name}</span>
-            <span style={s('font-size:12px;color:#8A7D6C')}>
+            <span style={s('font-size:13px;font-weight:500;color:var(--ink)')}>{name}</span>
+            <span style={s('font-size:12px;color:var(--ink-3)')}>
               {t.firstToLatest(change.first, change.latest)}
             </span>
           </div>
-          <div style={s(`font-size:11.5px;font-weight:700;color:${totalColour};margin-top:3px`)}>
+          <div style={s(`font-size:11.5px;font-weight:500;color:${totalColour};margin-top:3px`)}>
             {totalText}
           </div>
         </div>
@@ -125,9 +125,9 @@ function Row({ change, lang, t }: { change: AxisChange; lang: Lang; t: AxisTrend
       </div>
 
       {open && (
-        <div style={s('animation:rise .2s ease both;margin-top:9px;background:#F8F5EF;border-radius:10px;padding:9px 12px')}>
-          <div style={s(`font-size:12px;font-weight:600;color:${stepColour}`)}>{stepText}</div>
-          <div style={s('font-size:11px;color:#A2957F;margin-top:3px')}>
+        <div style={s('animation:rise .2s ease both;margin-top:9px;background:var(--surface);border-radius:4px;padding:9px 12px')}>
+          <div style={s(`font-size:12px;font-weight:500;color:${stepColour}`)}>{stepText}</div>
+          <div style={s('font-size:11px;color:var(--ink-4);margin-top:3px')}>
             {t.range(change.readings, change.worst, change.best)}
           </div>
         </div>
@@ -146,12 +146,12 @@ export function AxisTrends({
   t: AxisTrendStrings
 }) {
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:12px')}>
-      <div style={s('font-family:Marcellus,serif;font-size:16px')}>{t.title}</div>
-      <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>{t.sub}</div>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{t.title}</div>
+      <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{t.sub}</div>
 
       {changes.length === 0 ? (
-        <div style={s('border:1px dashed #D3C9B7;border-radius:12px;padding:16px;margin-top:12px;font-size:12.5px;color:#8A7D6C;text-align:center;line-height:1.5')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:16px;margin-top:12px;font-size:12.5px;color:var(--ink-3);text-align:center;line-height:1.5')}>
           {t.needsTwo}
         </div>
       ) : (
@@ -164,7 +164,7 @@ export function AxisTrends({
           {/* Only six measurements survive into the history; the sixteen
               concerns below come back with each scan and are not stored, so
               saying which is which here prevents the obvious wrong inference. */}
-          <div style={s('font-size:10.5px;color:#B9AC93;line-height:1.5;margin-top:10px')}>
+          <div style={s('font-size:10.5px;color:var(--ink-4);line-height:1.5;margin-top:10px')}>
             {t.scopeNote}
           </div>
         </>

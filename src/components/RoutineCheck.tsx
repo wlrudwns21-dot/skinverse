@@ -19,13 +19,13 @@ function Tick({ done, open }: { done: boolean; open: boolean }) {
   return (
     <div
       style={s(
-        'width:26px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;' +
-          'font-size:14px;font-weight:700;flex-shrink:0;transition:background .15s ease;' +
+        'width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;' +
+          'font-size:14px;font-weight:500;flex-shrink:0;transition:background .15s ease;' +
           (done
-            ? 'background:#2E6B58;color:#FFFFFF'
+            ? 'background:var(--accent);color:var(--on-dark)'
             : open
-              ? 'background:#FFFFFF;border:1.5px solid #CFC5B0;color:transparent'
-              : 'background:#F1EEE6;border:1.5px solid #E4DCCB;color:transparent'),
+              ? 'background:var(--surface);border:1.5px solid var(--line-2);color:transparent'
+              : 'background:var(--surface-2);border:1.5px solid var(--line-2);color:transparent'),
       )}
     >
       ✓
@@ -41,7 +41,7 @@ function StepRow({ step }: { step: RoutineStepView }) {
     <div
       onClick={step.canToggle ? step.toggle : undefined}
       style={s(
-        'background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;' +
+        'background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;' +
           'display:flex;gap:12px;align-items:center;' +
           (step.canToggle ? 'cursor:pointer' : 'cursor:default'),
       )}
@@ -50,13 +50,13 @@ function StepRow({ step }: { step: RoutineStepView }) {
       <div style={s('flex:1;min-width:0')}>
         <div
           style={s(
-            'font-size:13px;font-weight:600;' +
-              (step.done ? 'color:#8A7D6C;text-decoration:line-through' : dim ? 'color:#A2957F' : ''),
+            'font-size:13px;font-weight:500;' +
+              (step.done ? 'color:var(--ink-3);text-decoration:line-through' : dim ? 'color:var(--ink-4)' : ''),
           )}
         >
           {step.name}
         </div>
-        <div style={s(`font-size:11.5px;color:${dim ? '#BCB1A0' : '#8A7D6C'}`)}>{step.note}</div>
+        <div style={s(`font-size:11.5px;color:${dim ? 'var(--ink-4)' : 'var(--ink-3)'}`)}>{step.note}</div>
       </div>
       {step.extraId && (
         <span
@@ -64,7 +64,7 @@ function StepRow({ step }: { step: RoutineStepView }) {
             e.stopPropagation()
             st.removeExtra(step.extraId!)
           }}
-          style={s('cursor:pointer;font-size:11px;color:#B9AC93;flex-shrink:0;padding:4px')}
+          style={s('cursor:pointer;font-size:11px;color:var(--ink-4);flex-shrink:0;padding:4px')}
         >
           {removeStep[st.lang]}
         </span>
@@ -85,7 +85,7 @@ function AddExtra({ slot }: { slot: Slot }) {
     return (
       <div
         onClick={() => setOpen(true)}
-        style={s('cursor:pointer;border:1px dashed #D3C9B7;border-radius:12px;padding:11px;text-align:center;font-size:12.5px;font-weight:600;color:#8A7D6C')}
+        style={s('cursor:pointer;border:1px dashed var(--line-2);border-radius:4px;padding:11px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-3)')}
       >
         + {addStep[st.lang]}
       </div>
@@ -93,19 +93,19 @@ function AddExtra({ slot }: { slot: Slot }) {
   }
 
   return (
-    <div style={s('background:#F8F5EF;border:1px solid #E7E1D4;border-radius:12px;padding:12px;animation:rise .2s ease both')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line-2);border-radius:4px;padding:12px;animation:rise .2s ease both')}>
       <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:8px')}>
-        <div style={s('font-size:12.5px;font-weight:700;color:#4A4234')}>{extrasTitle[st.lang]}</div>
-        <div onClick={() => setOpen(false)} style={s('cursor:pointer;font-size:11.5px;color:#8A7D6C;flex-shrink:0')}>
+        <div style={s('font-size:12.5px;font-weight:500;color:var(--ink-2)')}>{extrasTitle[st.lang]}</div>
+        <div onClick={() => setOpen(false)} style={s('cursor:pointer;font-size:11.5px;color:var(--ink-3);flex-shrink:0')}>
           ✕
         </div>
       </div>
-      <div style={s('font-size:11px;color:#A2957F;line-height:1.5;margin-top:3px')}>
+      <div style={s('font-size:11px;color:var(--ink-4);line-height:1.5;margin-top:3px')}>
         {extrasSub[st.lang]}
       </div>
 
       {full ? (
-        <div style={s('font-size:12px;color:#9A8455;background:#FBF3E4;border-radius:8px;padding:9px 11px;margin-top:9px')}>
+        <div style={s('font-size:12px;color:var(--warn);background:var(--surface-2);border-radius:4px;padding:9px 11px;margin-top:9px')}>
           {extrasFull[st.lang]}
         </div>
       ) : (
@@ -117,12 +117,12 @@ function AddExtra({ slot }: { slot: Slot }) {
                 st.addExtra(slot, preset.id)
                 setOpen(false)
               }}
-              style={s('cursor:pointer;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:10px;padding:10px 12px')}
+              style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px')}
             >
-              <div style={s('font-size:12.5px;font-weight:600;color:#221C15')}>
+              <div style={s('font-size:12.5px;font-weight:500;color:var(--ink)')}>
                 {preset.name[st.lang]}
               </div>
-              <div style={s('font-size:11px;color:#8A7D6C;line-height:1.45;margin-top:2px')}>
+              <div style={s('font-size:11px;color:var(--ink-3);line-height:1.45;margin-top:2px')}>
                 {preset.note[st.lang]}
               </div>
             </div>
@@ -149,8 +149,8 @@ export function RoutineCheck({
   return (
     <>
       <div style={s('display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:18px 2px 8px')}>
-        <div style={s('font-family:Marcellus,serif;font-size:17px')}>{heading}</div>
-        <div style={s(`font-size:11px;flex-shrink:0;${shut ? 'color:#B9AC93' : 'color:#2E6B58;font-weight:600'}`)}>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:17px')}>{heading}</div>
+        <div style={s(`font-size:11px;flex-shrink:0;${shut ? 'color:var(--ink-4)' : 'color:var(--accent);font-weight:500'}`)}>
           {shut ? c.windowShut(st.slotWindowLabel[slot]) : st.slotWindowLabel[slot]}
         </div>
       </div>

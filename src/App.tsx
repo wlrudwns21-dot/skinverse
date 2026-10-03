@@ -9,8 +9,8 @@ const AdminApp = lazy(() => import('./AdminApp').then((m) => ({ default: m.Admin
 
 /** The two prototypes sit on different page grounds; only body shows through. */
 const BODY_BACKGROUND: Record<string, string> = {
-  store: '#E7E1D6',
-  admin: '#EFEBE2',
+  store: 'var(--bg)',
+  admin: 'var(--bg)',
 }
 
 function useBodyBackground() {
@@ -25,7 +25,7 @@ function useBodyBackground() {
 function Loading() {
   return (
     <div style={s('min-height:100vh;display:flex;align-items:center;justify-content:center')}>
-      <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid #E4DCCB;border-top-color:#2E6B58;animation:spin 1s linear infinite')} />
+      <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
     </div>
   )
 }

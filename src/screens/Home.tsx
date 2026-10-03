@@ -1,3 +1,4 @@
+import { PhotoBanner } from '../components/PhotoBanner'
 import {
   categoryNames,
   minutesLabel,
@@ -13,160 +14,218 @@ import { useStore } from '../store/StoreContext'
 /** How many story cards the home strip shows before "see all". */
 const HOME_STORIES = 4
 
+/* The screen is built from a few repeated pieces rather than a shape per
+   block, which is what keeps it reading as one screen. A section stays inside
+   a 20px gutter; banners, and nothing else, break out to both edges. */
+const GUTTER = 'padding:0 20px'
+const KICKER = 'font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--ink-3)'
+const MORE = 'cursor:pointer;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:500'
+const RULE = 'height:1px;background:var(--line)'
+const EYEBROW = 'font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--on-dark-2)'
+/** The display face. Light and tight, and with Hangul that actually renders. */
+const DISPLAY = 'font-family:Albert Sans,"Noto Sans KR",sans-serif;font-weight:300;letter-spacing:-0.01em'
+
 export function Home() {
   const st = useStore()
   const lang = st.lang
+  const dusty = Boolean(st.airAdvice)
+
+  /* Three readings as numbers rather than a sentence — a glance is all anyone
+     gives the weather, and the one that matters today is the one that is
+     coloured. Fine dust is only a reading on the days the service reported it;
+     on the days it is silent the slot carries UV instead, so the row never has
+     a hole where a number should be. */
+  const readings: { label: string; value: string; warn?: boolean }[] = [
+    { label: st.t.temp, value: st.weather.t + '°' },
+    { label: st.t.humidity, value: st.weather.h + '%' },
+    st.weather.air === null || st.weather.air === undefined
+      ? { label: 'UV', value: String(st.weather.uv) }
+      : { label: st.t.dust, value: String(st.weather.air), warn: dusty },
+  ]
 
   return (
-    <div style={s('padding:20px;animation:rise .4s ease both')}>
-      <div style={s('background:#221C15;color:#F5F0E6;border-radius:20px;padding:24px 22px;position:relative;overflow:hidden')}>
-        <div style={s('position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#3C6B58 0%,transparent 70%);opacity:.6')} />
-        <div style={s('font-size:11px;letter-spacing:0.14em;color:#C7B99E')}>{st.t.kicker}</div>
-        <div style={s('font-family:Marcellus,serif;font-size:27px;line-height:1.25;margin:10px 0 6px')}>{st.t.heroT}</div>
-        <div style={s('font-size:13px;color:#BDB2A0;line-height:1.5')}>{st.t.heroSub}</div>
-        <div onClick={st.goScan} style={s('cursor:pointer;display:inline-block;margin-top:16px;background:#F5F0E6;color:#221C15;border-radius:999px;padding:11px 20px;font-size:13px;font-weight:700')}>
-          {st.scansLeft === 0 && st.state.scanned ? st.t.viewReport : st.t.startBtn} →
+    <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
+      {/* ① The hero. Runs to both edges: the photograph is the first thing on
+          the screen, and a margin around it would make it a card instead. */}
+      <PhotoBanner src="/banner/hero.webp" ratio="390/318" slot="hero 390 × 318">
+        <div style={s(EYEBROW)}>{st.t.kicker}</div>
+        <div style={s(`${DISPLAY};font-size:25px;line-height:1.3;margin-top:10px;color:var(--on-dark)`)}>
+          {st.t.heroT}
         </div>
-        {/* What today actually allows, before the tap rather than after it.
-            An allowance the server enforces and the screen never mentions is
-            a refusal the customer meets by surprise. */}
-        {st.quotaLine && (
-          <div style={s(`font-size:11.5px;margin-top:10px;font-weight:600;color:${st.scansLeft === 0 ? '#C7B99E' : '#9ECFB4'}`)}>
-            {st.quotaLine}
+        <div style={s('font-size:11.5px;color:var(--on-dark-2);line-height:1.6;margin-top:7px')}>{st.t.heroSub}</div>
+        <div style={s('display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap')}>
+          <div
+            onClick={st.goScan}
+            style={s('cursor:pointer;background:var(--surface);color:var(--ink);border-radius:3px;padding:14px 24px;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+          >
+            {st.scansLeft === 0 && st.state.scanned ? st.t.viewReport : st.t.startBtn}
           </div>
+          {/* What today actually allows, before the tap rather than after it.
+              An allowance the server enforces and the screen never mentions is
+              a refusal the customer meets by surprise. */}
+          {st.quotaLine && (
+            <span style={s(`font-size:11.5px;letter-spacing:0.05em;color:${st.scansLeft === 0 ? 'var(--warn-mid)' : 'var(--on-dark-2)'}`)}>
+              {st.quotaLine}
+            </span>
+          )}
+        </div>
+      </PhotoBanner>
+
+      {/* The readings, then today's advice. Directly under the hero, because
+          it is the other thing on this screen that is true only of today. */}
+      <div style={s(GUTTER)}>
+        <div style={s('padding:17px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px')}>
+          {readings.map((r) => (
+            <div key={r.label}>
+              <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>{r.label}</div>
+              <div style={s(`font-family:Albert Sans,sans-serif;font-weight:200;font-size:28px;margin-top:6px;line-height:1;color:${r.warn ? 'var(--warn)' : 'var(--ink)'}`)}>
+                {r.value}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={s(RULE)} />
+
+        <div onClick={st.goRoutine} style={s('cursor:pointer;padding:15px 0 18px;font-size:12.5px;line-height:1.8;color:var(--ink-2)')}>
+          {st.wHint}
+          {/* Only on the days it is warranted. A line that appears every
+              morning stops being read, and then it says nothing on the day it
+              mattered. */}
+          {st.airAdvice && <span style={s('color:var(--warn);font-weight:500')}> {st.airAdvice}</span>}
+          <span style={s('color:var(--ink-4)')}> ›</span>
+        </div>
+
+        <div style={s(RULE)} />
+
+        {/* The score, written as a row of readings rather than a card, so it
+            belongs to the same column of information as the weather above it
+            instead of interrupting it. */}
+        {st.state.scanned ? (
+          <div onClick={st.goScan} style={s('cursor:pointer;padding:18px 0;display:flex;align-items:center;gap:16px')}>
+            <div style={s(st.dialSmStyle)}>
+              <div style={s('width:40px;height:40px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:Albert Sans,sans-serif;font-weight:300;font-size:15px')}>
+                {st.overall}
+              </div>
+            </div>
+            <div style={s('flex:1;min-width:0')}>
+              <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>
+                {st.t.skinScore}
+              </div>
+              <div style={s(`${DISPLAY};font-size:17px;margin-top:5px`)}>{st.skinType}</div>
+              {/* What the record adds to today's number. A score on its own
+                  says how the skin is; the pair says whether anything is
+                  working. */}
+              {st.vsLast && (
+                <div style={s(`font-size:11.5px;font-weight:500;margin-top:5px;color:${st.vsLast.colour}`)}>
+                  {st.vsLast.text}
+                </div>
+              )}
+              {st.cumulativeLine && (
+                <div style={s('font-size:11px;color:var(--ink-3);margin-top:2px')}>{st.cumulativeLine}</div>
+              )}
+            </div>
+            <div style={s('color:var(--ink-4);font-size:15px;flex-shrink:0')}>›</div>
+          </div>
+        ) : (
+          <div style={s('padding:18px 0;font-size:12.5px;color:var(--ink-3);line-height:1.7')}>{st.t.noScan}</div>
         )}
       </div>
 
-      {/* 성분 분석. Sits above the weather card because it answers a question
-          people arrive with — "what is actually in this" — rather than one the
-          app raises. Unmetered, unlike the face scan, so there is no allowance
-          to explain here. */}
-      <div onClick={st.goLabel} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:13px')}>
-        <div style={s('width:40px;height:40px;border-radius:11px;background:#F1EFE8;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0')}>
-          🧾
-        </div>
+      {/* ③ Today's missions, as the dark strip. It is the one thing here a
+          customer can act on whether or not they scan or buy, and the strip is
+          what separates the column of readings above from the pictures below.
+          No photograph: the text fills the width, and a picture behind it
+          would only make it harder to read. */}
+      <div
+        onClick={st.goMissions}
+        style={s('cursor:pointer;background:var(--ink);padding:22px 20px;display:flex;align-items:center;gap:14px')}
+      >
         <div style={s('flex:1;min-width:0')}>
-          <div style={s('font-size:14px;font-weight:600')}>성분 분석</div>
-          <div style={s('font-size:12px;color:#8A7D6C;margin-top:3px;line-height:1.5')}>
-            전성분을 식약처 등록 정보와 대조하고, 어린이 제한 성분을 확인합니다
+          <div style={s(EYEBROW)}>{st.t.earnP}</div>
+          <div style={s(`${DISPLAY};font-size:16px;margin-top:7px;color:var(--on-dark)`)}>
+            {st.t.todayMissions} {st.dailyDoneS}
+          </div>
+          <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:5px')}>
+            {st.streakLine} · Lv. {st.levelName}
           </div>
         </div>
-        <div style={s('color:#B0A490;font-size:15px;flex-shrink:0')}>›</div>
+        <div style={s('color:var(--on-dark-2);font-size:15px;flex-shrink:0')}>→</div>
       </div>
 
-      <div onClick={st.goRoutine} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px')}>
-        <div>
-          <div style={s('font-size:12px;color:#8A7D6C')}>{st.t.todayIn} {st.placeLabel}</div>
-          <div style={s('font-size:14px;font-weight:600;margin-top:3px')}>{st.wLine}</div>
-          <div style={s('font-size:12px;color:#2E6B58;margin-top:3px;font-weight:500')}>{st.wHint}</div>
-          {/* Only on the days it is warranted. A line that appears every
-              morning stops being read, and then it is missing on the day it
-              mattered. */}
-          {st.airAdvice && (
-            <div style={s('font-size:12px;color:#B4622F;margin-top:4px;font-weight:600;line-height:1.5')}>
-              {st.airAdvice}
+      {/* ② 성분 분석, as an editorial banner rather than a menu row. It answers
+          a question people arrive with — what is actually in this — and it is
+          unmetered, unlike the face scan, so there is no allowance to explain
+          here. */}
+      <PhotoBanner
+        src="/banner/ingredients.webp"
+        ratio="390/228"
+        slot="editorial 390 × 228"
+        tint="var(--accent-soft)"
+        deep
+        onClick={st.goLabel}
+      >
+        <div style={s(EYEBROW)}>ingredients</div>
+        <div style={s(`${DISPLAY};font-size:22px;line-height:1.34;margin-top:9px;color:var(--on-dark)`)}>
+          성분을 읽습니다
+        </div>
+        <div style={s('font-size:11.5px;color:var(--on-dark-2);letter-spacing:0.02em;margin-top:11px;line-height:1.6')}>
+          전성분을 식약처 등록 정보와 대조하고, 어린이 제한 성분을 확인합니다 →
+        </div>
+      </PhotoBanner>
+
+      {/* The shelf. 4:5 rather than a square, which reads as a photograph
+          instead of a thumbnail, and two across rather than a scrolling strip,
+          so nothing sits off the edge of the screen unseen. */}
+      <div style={s(`${GUTTER};padding-top:24px;padding-bottom:13px;display:flex;align-items:baseline;justify-content:space-between`)}>
+        <span style={s(KICKER)}>{st.t.matched}</span>
+        <span onClick={st.goShop} style={s(MORE)}>{st.t.allProducts}</span>
+      </div>
+
+      <div style={s(`${GUTTER};display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px`)}>
+        {st.homeRecs.map((p) => (
+          <div key={p.id} onClick={p.open} style={s('cursor:pointer')}>
+            <div style={s(`width:100%;aspect-ratio:4/5;background:${p.grad}`)} />
+            <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3);margin-top:10px')}>
+              {p.brand} · {p.kind}
             </div>
-          )}
-        </div>
-        <div style={s('color:#B0A490;font-size:18px')}>→</div>
-      </div>
-
-      {st.state.scanned ? (
-        <div onClick={st.goScan} style={s('cursor:pointer;margin-top:14px;background:#EAF1EC;border:1px solid #CFE0D4;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px')}>
-          <div style={s(st.dialSmStyle)}>
-            <div style={s('width:40px;height:40px;border-radius:50%;background:#EAF1EC;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px')}>
-              {st.overall}
-            </div>
-          </div>
-          <div style={s('flex:1;min-width:0')}>
-            <div style={s('font-size:13px;font-weight:700')}>{st.t.skinScore} {st.overall} — {st.skinType}</div>
-            {/* What the record adds to today's number. A score on its own says
-                how the skin is; the pair says whether anything is working. */}
-            {st.vsLast && (
-              <div style={s(`font-size:11.5px;font-weight:600;margin-top:3px;color:${st.vsLast.colour}`)}>
-                {st.vsLast.text}
-              </div>
-            )}
-            {st.cumulativeLine && (
-              <div style={s('font-size:11px;color:#8A7D6C;margin-top:2px')}>{st.cumulativeLine}</div>
-            )}
-            <div style={s('font-size:12px;color:#5E7A6C;margin-top:4px')}>{st.t.viewReport} →</div>
-          </div>
-        </div>
-      ) : (
-        <div style={s('margin-top:14px;border:1px dashed #D3C9B7;border-radius:16px;padding:14px 16px;font-size:12px;color:#8A7D6C;line-height:1.5')}>
-          {st.t.noScan}
-        </div>
-      )}
-
-      {/* Today's missions, straight under the score. The score is the reason
-          someone opened the app; the missions are the one thing on this screen
-          they can act on right now, and they were sitting below a product shelf
-          most visits never reached. */}
-      <div onClick={st.goMissions} style={s('cursor:pointer;margin-top:14px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px')}>
-        <div style={s('min-width:0')}>
-          <div style={s('font-size:13px;font-weight:700')}>{st.t.todayMissions} {st.dailyDoneS}</div>
-          <div style={s('font-size:12px;color:#8A7D6C;margin-top:2px')}>🔥 {st.streakLine} · Lv. {st.levelName}</div>
-        </div>
-        <div style={s('background:#C29A5B;color:#FFF;border-radius:999px;font-size:11px;font-weight:700;padding:6px 10px;flex-shrink:0')}>{st.t.earnP} →</div>
-      </div>
-
-      {/* Skin Stories, above the shelf. Most visits are not a scan and not a
-          purchase, so what a customer can do *today* has to be within reach —
-          burying the reading under the product strip made it the last thing on
-          a screen most people never scrolled to the end of. */}
-      <div style={s('display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 2px')}>
-        <div style={s('font-family:Marcellus,serif;font-size:18px')}>{storiesTitle[lang]}</div>
-        <div onClick={st.goStories} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600')}>
-          {storiesHomeCta[lang]} →
-        </div>
-      </div>
-      <div style={s('font-size:11.5px;color:#8A7D6C;margin:0 2px 10px')}>{storiesSub[lang]}</div>
-
-      <div style={s('display:flex;gap:10px;overflow-x:auto;padding-bottom:6px')}>
-        {stories.slice(0, HOME_STORIES).map((story) => (
-          <div
-            key={story.id}
-            onClick={st.goStories}
-            style={s('cursor:pointer;min-width:190px;max-width:190px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;overflow:hidden;display:flex;flex-direction:column')}
-          >
-            <img
-              src={storyImage(story)}
-              alt={story.title[lang]}
-              loading="lazy"
-              style={s('display:block;width:100%;aspect-ratio:2/1;object-fit:cover;background:#EFE9DD')}
-            />
-            <div style={s('padding:11px 13px 13px;display:flex;flex-direction:column;gap:5px;flex:1')}>
-              <div style={s('font-size:10.5px;font-weight:700;color:#8A7D6C;letter-spacing:0.04em')}>
-                {categoryNames[story.category][lang]}
-              </div>
-              <div style={s('font-size:13px;font-weight:700;line-height:1.4;color:#221C15')}>
-                {story.title[lang]}
-              </div>
-              <div style={s('font-size:10.5px;color:#A2957F;margin-top:auto')}>
-                {minutesLabel(story.minutes, lang)}
-              </div>
+            <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{p.name}</div>
+            <div style={s('display:flex;justify-content:space-between;align-items:baseline;margin-top:5px;gap:8px')}>
+              <span style={s('font-size:12px;color:var(--ink-2);letter-spacing:0.04em')}>{p.priceS}</span>
+              <span style={s('font-size:10px;color:var(--accent);font-weight:500;flex-shrink:0')}>
+                {p.matchS} {st.t.match}
+              </span>
             </div>
           </div>
         ))}
       </div>
 
-      <div style={s('display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px')}>
-        <div style={s('font-family:Marcellus,serif;font-size:18px')}>{st.t.matched}</div>
-        <div onClick={st.goShop} style={s('cursor:pointer;font-size:12px;color:#2E6B58;font-weight:600')}>{st.t.allProducts} →</div>
+      {/* Skin Stories, in the same 4:5 grid as the shelf. A reading and a
+          product are both something a customer looks at before deciding, and
+          giving them one shape says so. */}
+      <div style={s(`${GUTTER};padding-top:26px;padding-bottom:4px;display:flex;align-items:baseline;justify-content:space-between`)}>
+        <span style={s(KICKER)}>{storiesTitle[lang]}</span>
+        <span onClick={st.goStories} style={s(MORE)}>{storiesHomeCta[lang]}</span>
+      </div>
+      <div style={s(`${GUTTER};font-size:11.5px;color:var(--ink-3);padding-bottom:13px;line-height:1.7`)}>
+        {storiesSub[lang]}
       </div>
 
-      <div style={s('display:flex;gap:10px;overflow-x:auto;padding-bottom:6px')}>
-        {st.homeRecs.map((p) => (
-          <div key={p.id} onClick={p.open} style={s('cursor:pointer;min-width:150px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:10px')}>
-            <div style={s(`height:110px;border-radius:10px;background:${p.grad};display:flex;align-items:flex-end;padding:8px;box-sizing:border-box`)}>
-              <span style={s('background:rgba(255,255,255,0.85);border-radius:6px;font-size:10px;padding:3px 6px;font-weight:600;color:#4A4234')}>{p.kind}</span>
+      <div style={s(`${GUTTER};display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px`)}>
+        {stories.slice(0, HOME_STORIES).map((story) => (
+          <div key={story.id} onClick={st.goStories} style={s('cursor:pointer')}>
+            <img
+              src={storyImage(story)}
+              alt={story.title[lang]}
+              loading="lazy"
+              style={s('display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--surface-2)')}
+            />
+            <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3);margin-top:10px')}>
+              {categoryNames[story.category][lang]}
             </div>
-            <div style={s('font-size:10px;color:#8A7D6C;letter-spacing:0.1em;margin-top:8px')}>{p.brand}</div>
-            <div style={s('font-size:12px;font-weight:600;line-height:1.3;margin-top:2px')}>{p.name}</div>
-            <div style={s('display:flex;justify-content:space-between;align-items:center;margin-top:6px')}>
-              <span style={s('font-size:13px;font-weight:700')}>{p.priceS}</span>
-              <span style={s('font-size:10px;font-weight:700;color:#2E6B58;background:#EAF1EC;border-radius:6px;padding:2px 6px')}>{p.matchS} {st.t.match}</span>
+            <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{story.title[lang]}</div>
+            <div style={s('font-size:11px;color:var(--ink-4);margin-top:4px')}>
+              {minutesLabel(story.minutes, lang)}
             </div>
           </div>
         ))}

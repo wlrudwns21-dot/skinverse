@@ -52,11 +52,11 @@ function levelFor(points: number): string {
 
 function deltaText(today: number, yesterday: number, unit: string): { text: string; color: string } {
   const diff = today - yesterday
-  if (yesterday === 0 && today === 0) return { text: '0' + unit, color: '#8A7D6C' }
+  if (yesterday === 0 && today === 0) return { text: '0' + unit, color: 'var(--ink-3)' }
   const sign = diff > 0 ? '+' : diff < 0 ? '−' : ''
   return {
     text: sign + Math.abs(diff).toLocaleString() + unit,
-    color: diff > 0 ? '#2E6B58' : diff < 0 ? '#C25E43' : '#8A7D6C',
+    color: diff > 0 ? 'var(--accent)' : diff < 0 ? 'var(--warn)' : 'var(--ink-3)',
   }
 }
 
@@ -325,7 +325,7 @@ function useAdminValue() {
     hasBadge: badge > 0,
     go: go(id),
     bg: view === id ? 'rgba(255,255,255,0.12)' : 'transparent',
-    color: view === id ? '#F5F0E6' : '#B0A490',
+    color: view === id ? 'var(--on-dark)' : 'var(--ink-4)',
   }))
 
   const toOrderView = (o: AdminOrder) => {
@@ -337,7 +337,7 @@ function useAdminValue() {
       stLabel: meta[0],
       stStyle:
         'justify-self:start;background:' + meta[2] + ';color:' + meta[1] +
-        ';border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700',
+        ';border-radius:6px;padding:3px 9px;font-size:11px;font-weight:500',
       setStatus: (status: OrderStatus) => void setOrderStatus(o.no, status),
     }
   }
@@ -352,10 +352,10 @@ function useAdminValue() {
     label: l,
     pick: () => setOrderFilter(id),
     style:
-      'cursor:pointer;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;' +
+      'cursor:pointer;border-radius:3px;padding:8px 14px;font-size:12px;font-weight:500;' +
       (orderFilter === id
-        ? 'background:#221C15;color:#F5F0E6'
-        : 'background:#FFFFFF;border:1px solid #D8CFBF;color:#4A4234'),
+        ? 'background:var(--ink);color:var(--on-dark)'
+        : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
   }))
 
   const maxSales = stats?.countrySales[0]?.[1] ?? 0
@@ -539,12 +539,12 @@ function useAdminValue() {
     prodList: products.map((p) => ({
       ...p,
       grad: p.g,
-      stockColor: p.stock <= 5 ? '#C25E43' : '#221C15',
+      stockColor: p.stock <= 5 ? 'var(--warn)' : 'var(--ink)',
       inc: () => void bumpStock(p.id, STOCK_STEP),
       dec: () => void bumpStock(p.id, -STOCK_STEP),
       toggle: () => void toggleProduct(p.id),
       activeLabel: p.active ? '판매중' : '판매중지',
-      activeStyle: p.active ? 'background:#EAF1EC;color:#2E6B58' : 'background:#EFE9DD;color:#8A7D6C',
+      activeStyle: p.active ? 'background:var(--surface-2);color:var(--accent)' : 'background:var(--surface-2);color:var(--ink-3)',
     })),
 
     /**
@@ -571,10 +571,10 @@ function useAdminValue() {
       cat: m.kind === 'daily' ? '일일' : '주간',
       pts: m.pts,
       on: m.active,
-      txtColor: m.active ? '#221C15' : '#B0A490',
+      txtColor: m.active ? 'var(--ink)' : 'var(--ink-4)',
       setPts: (pts: number) => void changeMissionPoints(m.id, pts),
       toggle: () => void toggleMission(m.id),
-      togBg: m.active ? '#2E6B58' : '#D8CFBF',
+      togBg: m.active ? 'var(--accent)' : 'var(--line-2)',
       togLeft: m.active ? '19px' : '3px',
     })),
 
@@ -592,7 +592,7 @@ function useAdminValue() {
       name: r.l.ko,
       cost: r.cost,
       stock: r.stock,
-      color: r.stock <= 5 ? '#C25E43' : '#221C15',
+      color: r.stock <= 5 ? 'var(--warn)' : 'var(--ink)',
       inc: () => void bumpRewardStock(r.id, STOCK_STEP),
       dec: () => void bumpRewardStock(r.id, -STOCK_STEP),
     })),

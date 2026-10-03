@@ -228,17 +228,17 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
    * way out of both that and the surrounding stacking context.
    */
   return createPortal(
-    <div style={s('position:fixed;inset:0;z-index:100;background:#12100D;display:flex;flex-direction:column')}>
+    <div style={s('position:fixed;inset:0;z-index:100;background:var(--ink);display:flex;flex-direction:column')}>
       {problem ? (
         <div style={s('flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center')}>
-          <div style={s('font-size:14px;line-height:1.6;color:#EDE6D8;max-width:300px')}>{message}</div>
+          <div style={s('font-size:14px;line-height:1.6;color:var(--on-dark-2);max-width:300px')}>{message}</div>
           <div
             onClick={() => { onClose(); onUsePicker() }}
-            style={s('cursor:pointer;background:#F5F0E6;color:#221C15;border-radius:999px;padding:13px 22px;font-size:13px;font-weight:700')}
+            style={s('cursor:pointer;background:var(--surface-2);color:var(--ink);border-radius:3px;padding:13px 22px;font-size:13px;font-weight:500')}
           >
             {t.usePicker}
           </div>
-          <div onClick={onClose} style={s('cursor:pointer;font-size:13px;color:#A2957F;text-decoration:underline')}>
+          <div onClick={onClose} style={s('cursor:pointer;font-size:13px;color:var(--ink-4);text-decoration:underline')}>
             {t.cancel}
           </div>
         </div>
@@ -258,6 +258,9 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
 
             {/* The target framing, drawn over the preview. Everything outside
                 the oval is dimmed so the customer can see where to be. */}
+            {/* The #000 below is an alpha mask, not a colour: in a mask, black
+                means "keep this pixel" and transparent means "cut it away". It
+                is the one hex in the app that must not become a token. */}
             <div
               style={s(
                 `position:absolute;inset:0;background:rgba(18,16,13,0.55);` +
@@ -284,20 +287,20 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
             />
 
             {counting !== null && (
-              <div style={s('position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Marcellus,serif;font-size:96px;color:#F5F0E6;text-shadow:0 2px 24px rgba(0,0,0,0.6)')}>
+              <div style={s('position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Marcellus,"Noto Serif KR",serif;font-size:96px;color:var(--on-dark);text-shadow:0 2px 24px rgba(0,0,0,0.6)')}>
                 {counting}
               </div>
             )}
 
-            <div style={s('position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12.5px;color:#EDE6D8;padding:0 28px;line-height:1.5;text-shadow:0 1px 8px rgba(0,0,0,0.7)')}>
+            <div style={s('position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12.5px;color:var(--on-dark-2);padding:0 28px;line-height:1.5;text-shadow:0 1px 8px rgba(0,0,0,0.7)')}>
               {t.guide}
             </div>
           </div>
 
-          <div style={s('flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px 26px;background:#12100D')}>
+          <div style={s('flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px 26px;background:var(--ink)')}>
             <div
               onClick={onClose}
-              style={s('cursor:pointer;font-size:13px;color:#A2957F;min-width:64px')}
+              style={s('cursor:pointer;font-size:13px;color:var(--ink-4);min-width:64px')}
             >
               {t.cancel}
             </div>
@@ -306,7 +309,7 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
               onClick={shoot}
               aria-label={t.shutter}
               style={s(
-                'cursor:pointer;width:68px;height:68px;border-radius:50%;background:#F5F0E6;' +
+                'cursor:pointer;width:68px;height:68px;border-radius:50%;background:var(--surface-2);' +
                   'border:4px solid rgba(245,240,230,0.35);box-sizing:border-box;flex-shrink:0' +
                   (ready && counting === null ? '' : ';opacity:0.45'),
               )}
@@ -315,7 +318,7 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
             <div
               onClick={() => hasMultiple && setFacing((f) => (f === 'user' ? 'environment' : 'user'))}
               style={s(
-                'cursor:pointer;font-size:13px;color:#A2957F;min-width:64px;text-align:right' +
+                'cursor:pointer;font-size:13px;color:var(--ink-4);min-width:64px;text-align:right' +
                   (hasMultiple ? '' : ';visibility:hidden'),
               )}
             >

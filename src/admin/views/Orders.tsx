@@ -19,7 +19,7 @@ export function Orders() {
 
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>
-      <div style={s('font-family:Marcellus,serif;font-size:24px')}>주문 관리</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>주문 관리</div>
 
       <div style={s('display:flex;gap:8px;margin:14px 0;flex-wrap:wrap')}>
         {admin.orderChips.map((c) => (
@@ -28,14 +28,14 @@ export function Orders() {
       </div>
 
       {admin.orderList.length === 0 && (
-        <div style={s('border:1px dashed #D3C9B7;border-radius:12px;padding:22px;text-align:center;font-size:12.5px;color:#8A7D6C;line-height:1.6')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);line-height:1.6')}>
           {admin.hasOrders ? '이 상태의 주문이 없습니다.' : '아직 주문이 없습니다. 스토어에서 결제가 완료되면 여기에 나타납니다.'}
         </div>
       )}
 
-      <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:14px;padding:6px 16px 16px;overflow-x:auto')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px 16px 16px;overflow-x:auto')}>
         <div style={s('min-width:760px')}>
-          <div style={s(ROW_COLS + ';font-size:11px;color:#8A7D6C;font-weight:700;padding:10px 6px;border-bottom:1px solid #ECE6DA')}>
+          <div style={s(ROW_COLS + ';font-size:11px;color:var(--ink-3);font-weight:500;padding:10px 6px;border-bottom:1px solid var(--line)')}>
             <span>주문번호 / 일시</span><span>고객 / 국가</span><span>금액</span><span>배송 방법</span><span>운송장</span><span>상태 변경</span>
           </div>
           {admin.orderList.map((o) => {
@@ -43,14 +43,14 @@ export function Orders() {
             const canRefund = o.capturable && remaining > 0.005
             return (
             <div key={o.no}>
-            <div style={s(ROW_COLS + ';font-size:12.5px;padding:11px 6px;border-bottom:1px solid #F1ECE2;align-items:center')}>
+            <div style={s(ROW_COLS + ';font-size:12.5px;padding:11px 6px;border-bottom:1px solid var(--line);align-items:center')}>
               <div>
                 <b>{o.no}</b>
-                <div style={s('font-size:11px;color:#8A7D6C')}>{o.date}</div>
+                <div style={s('font-size:11px;color:var(--ink-3)')}>{o.date}</div>
               </div>
               <div>
                 {o.name}
-                <div style={s('font-size:11px;color:#8A7D6C')}>{o.country}</div>
+                <div style={s('font-size:11px;color:var(--ink-3)')}>{o.country}</div>
               </div>
               <div>
                 <b>{o.amtS}</b>
@@ -58,13 +58,13 @@ export function Orders() {
                     without this, which is how the same order gets refunded
                     twice. */}
                 {o.refunded > 0 && (
-                  <div style={s('font-size:10.5px;color:#B4622F;font-weight:700')}>
+                  <div style={s('font-size:10.5px;color:var(--warn);font-weight:500')}>
                     −${o.refunded.toFixed(2)}
                   </div>
                 )}
               </div>
-              <span style={s('color:#6E6252')}>{o.carrier}</span>
-              <span style={s('font-size:11.5px;color:#6E6252')}>{o.tracking}</span>
+              <span style={s('color:var(--ink-2)')}>{o.carrier}</span>
+              <span style={s('font-size:11.5px;color:var(--ink-2)')}>{o.tracking}</span>
               {isPaymentLocked(o.status) ? (
                 /*
                  * Not a dropdown, because there is nothing to choose. PayPal
@@ -74,7 +74,7 @@ export function Orders() {
                  */
                 <span
                   title="결제사에서 확정된 상태입니다. 콘솔에서는 변경할 수 없습니다."
-                  style={s('border-radius:6px;padding:5px 9px;font-size:11.5px;font-weight:700;text-align:center;white-space:nowrap;' +
+                  style={s('border-radius:6px;padding:5px 9px;font-size:11.5px;font-weight:500;text-align:center;white-space:nowrap;' +
                     `color:${orderStatusMeta[o.status][1]};background:${orderStatusMeta[o.status][2]}`)}
                 >
                   {orderStatusMeta[o.status][0]}
@@ -83,7 +83,7 @@ export function Orders() {
                 <select
                   value={o.status}
                   onChange={(e) => o.setStatus(e.target.value as OrderStatus)}
-                  style={s('border:1px solid #D8CFBF;border-radius:8px;padding:7px 8px;font-size:12px;background:#FFFFFF;outline:none;cursor:pointer;max-width:130px')}
+                  style={s('border:1px solid var(--line-2);border-radius:4px;padding:7px 8px;font-size:12px;background:var(--surface);outline:none;cursor:pointer;max-width:130px')}
                 >
                   {orderStatusOrder.map((st) => (
                     <option key={st} value={st}>{orderStatusMeta[st][0]}</option>
@@ -100,13 +100,13 @@ export function Orders() {
                 {refunding !== o.no ? (
                   <span
                     onClick={() => { setRefunding(o.no); setAmount(''); setNote('') }}
-                    style={s('cursor:pointer;font-size:11.5px;font-weight:700;color:#B4622F;text-decoration:underline')}
+                    style={s('cursor:pointer;font-size:11.5px;font-weight:500;color:var(--warn);text-decoration:underline')}
                   >
                     환불하기
                   </span>
                 ) : (
-                  <div style={s('background:#FBF6EE;border:1px solid #EBD9B8;border-radius:12px;padding:11px 13px;margin-top:4px')}>
-                    <div style={s('font-size:11.5px;color:#8A6D32;line-height:1.6')}>
+                  <div style={s('background:var(--surface);border:1px solid var(--warn-mid);border-radius:4px;padding:11px 13px;margin-top:4px')}>
+                    <div style={s('font-size:11.5px;color:var(--warn);line-height:1.6')}>
                       남은 환불 가능 금액 <b>${remaining.toFixed(2)}</b> · 비우면 전액 환불됩니다.
                       적립 포인트는 자동 회수되고, <b>재고는 자동 복구되지 않습니다.</b>
                     </div>
@@ -116,17 +116,17 @@ export function Orders() {
                         onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
                         inputMode="decimal"
                         placeholder={remaining.toFixed(2)}
-                        style={s('width:110px;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:12.5px;outline:none;text-align:right')}
+                        style={s('width:110px;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:12.5px;outline:none;text-align:right')}
                       />
                       <input
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         placeholder="메모 (선택)"
-                        style={s('flex:1;min-width:140px;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:9px;padding:8px 10px;font-size:12.5px;outline:none')}
+                        style={s('flex:1;min-width:140px;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:12.5px;outline:none')}
                       />
                       <span
                         onClick={() => setRefunding(null)}
-                        style={s('cursor:pointer;font-size:12px;font-weight:700;color:#8A7D6C;padding:8px 10px')}
+                        style={s('cursor:pointer;font-size:12px;font-weight:500;color:var(--ink-3);padding:8px 10px')}
                       >
                         취소
                       </span>
@@ -139,10 +139,10 @@ export function Orders() {
                           setRefunding(null)
                         }}
                         style={s(
-                          'border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700;' +
+                          'border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500;' +
                             (admin.refundBusy
-                              ? 'background:#EFE9DD;color:#B0A490'
-                              : 'cursor:pointer;background:#221C15;color:#F3E9D6'),
+                              ? 'background:var(--surface-2);color:var(--ink-4)'
+                              : 'cursor:pointer;background:var(--ink);color:var(--on-dark-2)'),
                         )}
                       >
                         {admin.refundBusy === o.no ? '처리 중…' : 'PayPal 환불 실행'}

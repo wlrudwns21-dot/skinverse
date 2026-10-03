@@ -41,7 +41,8 @@ export interface ConcernReportProps {
   t: ConcernReportStrings
 }
 
-const colourFor = (score: number) => (score < 50 ? '#C25E43' : score < 70 ? '#B08133' : '#2E6B58')
+const colourFor = (score: number) =>
+  score < 50 ? 'var(--danger)' : score < 70 ? 'var(--warn-mid)' : 'var(--accent)'
 
 interface Row {
   key: string
@@ -86,16 +87,16 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
   if (grouped.length === 0) return null
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:12px')}>
-      <div style={s('font-family:Marcellus,serif;font-size:16px')}>{t.title}</div>
-      <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>{t.sub}</div>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{t.title}</div>
+      <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{t.sub}</div>
 
       {/* The vendor's own classification, per zone. T-zone and U-zone are
           standard here and meaningless to most people elsewhere, so the
           explanation sits with the reading rather than in a help page. */}
       {skinType && (skinType.whole || skinType.tZone || skinType.uZone) && (
-        <div style={s('background:#F1EEE6;border-radius:12px;padding:12px 14px;margin-top:12px')}>
-          <div style={s('font-size:11.5px;color:#8A7D6C;font-weight:600')}>{t.skinType}</div>
+        <div style={s('background:var(--surface-2);border-radius:4px;padding:12px 14px;margin-top:12px')}>
+          <div style={s('font-size:11.5px;color:var(--ink-3);font-weight:500')}>{t.skinType}</div>
           <div style={s('display:flex;flex-wrap:wrap;gap:10px;margin-top:6px')}>
             {([
               ['whole', skinType.whole],
@@ -105,12 +106,12 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
               .filter(([, label]) => !!label)
               .map(([region, label]) => (
                 <div key={region}>
-                  <div style={s('font-size:10.5px;color:#A2957F')}>{regionName(region, lang)}</div>
-                  <div style={s('font-size:13px;font-weight:700;color:#4A4234')}>{label}</div>
+                  <div style={s('font-size:10.5px;color:var(--ink-4)')}>{regionName(region, lang)}</div>
+                  <div style={s('font-size:13px;font-weight:500;color:var(--ink-2)')}>{label}</div>
                 </div>
               ))}
           </div>
-          <div style={s('font-size:11.5px;color:#8A7D6C;line-height:1.55;margin-top:8px')}>
+          <div style={s('font-size:11.5px;color:var(--ink-3);line-height:1.55;margin-top:8px')}>
             {zoneHelp[lang]}
           </div>
         </div>
@@ -118,7 +119,7 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
 
       {grouped.map(({ group, rows: groupRows }) => (
         <div key={group} style={s('margin-top:16px')}>
-          <div style={s('font-size:11px;color:#A2957F;letter-spacing:0.08em;font-weight:700;margin-bottom:8px')}>
+          <div style={s('font-size:11px;color:var(--ink-4);letter-spacing:0.08em;font-weight:500;margin-bottom:8px')}>
             {groupNames[group as ConcernGroup][lang]}
           </div>
 
@@ -128,40 +129,40 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
               return (
                 <div key={row.key} onClick={() => setOpen(expanded ? null : row.key)} style={s('cursor:pointer')}>
                   <div style={s('display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:4px;gap:8px')}>
-                    <span style={s('font-weight:600')}>
+                    <span style={s('font-weight:500')}>
                       {row.def.name[lang]}
-                      <span style={s('color:#C6BBA8;font-weight:400;margin-left:5px')}>
+                      <span style={s('color:var(--ink-4);font-weight:400;margin-left:5px')}>
                         {expanded ? '−' : '+'}
                       </span>
                     </span>
-                    <span style={s(`font-weight:700;color:${colourFor(row.score)};flex-shrink:0`)}>
+                    <span style={s(`font-weight:500;color:${colourFor(row.score)};flex-shrink:0`)}>
                       {row.score}
                     </span>
                   </div>
 
-                  <div style={s('height:6px;background:#EFE9DD;border-radius:99px;overflow:hidden')}>
+                  <div style={s('height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden')}>
                     <div style={s(`height:100%;border-radius:99px;width:${row.score}%;background:${colourFor(row.score)};transition:width .8s ease`)} />
                   </div>
 
                   {expanded && (
-                    <div style={s('background:#F8F5EF;border-radius:12px;padding:12px 14px;margin-top:8px')}>
-                      <div style={s('font-size:11px;color:#A2957F;font-weight:700;letter-spacing:0.06em')}>
+                    <div style={s('background:var(--surface);border-radius:4px;padding:12px 14px;margin-top:8px')}>
+                      <div style={s('font-size:11px;color:var(--ink-4);font-weight:500;letter-spacing:0.06em')}>
                         {t.measured}
                       </div>
-                      <div style={s('font-size:12.5px;line-height:1.6;color:#4A4234;margin-top:4px')}>
+                      <div style={s('font-size:12.5px;line-height:1.6;color:var(--ink-2);margin-top:4px')}>
                         {row.def.means[lang]}
                       </div>
 
                       {row.regions.length > 0 && (
-                        <div style={s('display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #E7E1D4')}>
+                        <div style={s('display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line-2)')}>
                           {row.regions
                             .sort((a, b) => a.score - b.score)
                             .map((r) => (
                               <div key={r.region}>
-                                <div style={s('font-size:10.5px;color:#A2957F')}>
+                                <div style={s('font-size:10.5px;color:var(--ink-4)')}>
                                   {regionName(r.region, lang)}
                                 </div>
-                                <div style={s(`font-size:13px;font-weight:700;color:${colourFor(r.score)}`)}>
+                                <div style={s(`font-size:13px;font-weight:500;color:${colourFor(r.score)}`)}>
                                   {r.score}
                                 </div>
                               </div>
@@ -170,11 +171,11 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
                       )}
 
                       {row.score < 70 && (
-                        <div style={s('margin-top:10px;padding-top:10px;border-top:1px solid #E7E1D4')}>
-                          <div style={s('font-size:11px;color:#A2957F;font-weight:700;letter-spacing:0.06em')}>
+                        <div style={s('margin-top:10px;padding-top:10px;border-top:1px solid var(--line-2)')}>
+                          <div style={s('font-size:11px;color:var(--ink-4);font-weight:500;letter-spacing:0.06em')}>
                             {t.whatToDo}
                           </div>
-                          <div style={s('font-size:12.5px;line-height:1.6;color:#2C4A3E;margin-top:4px')}>
+                          <div style={s('font-size:12.5px;line-height:1.6;color:var(--accent);margin-top:4px')}>
                             {row.def.low[lang]}
                           </div>
                         </div>

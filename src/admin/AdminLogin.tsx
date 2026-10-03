@@ -7,8 +7,8 @@ import { useAdmin } from './AdminContext'
 import { WORDMARK } from '../data/brand'
 
 const field =
-  'width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none'
-const label = 'font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px'
+  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
+const label = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 
 /**
  * Where the note survives an email confirmation.
@@ -38,11 +38,11 @@ const keepNote = (note: string) => {
 
 function Frame({ children }: { children: React.ReactNode }) {
   return (
-    <div style={s('min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#EFEBE2')}>
-      <div style={s('width:100%;max-width:380px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:20px;padding:28px 24px;box-shadow:0 8px 40px rgba(60,45,25,0.10)')}>
-        <div style={s('font-family:Marcellus,serif;font-size:21px;letter-spacing:0.06em')}>{WORDMARK}</div>
-        <div style={s('font-size:10px;letter-spacing:0.14em;color:#8A7D6C;margin-top:3px')}>ADMIN CONSOLE · 관리자</div>
-        <div style={s('height:1px;background:#ECE6DA;margin:18px 0')} />
+    <div style={s('min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--surface-2)')}>
+      <div style={s('width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:28px 24px;box-shadow:0 8px 40px rgba(60,45,25,0.10)')}>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:21px;letter-spacing:0.06em')}>{WORDMARK}</div>
+        <div style={s('font-size:10px;letter-spacing:0.14em;color:var(--ink-3);margin-top:3px')}>ADMIN CONSOLE · 관리자</div>
+        <div style={s('height:1px;background:var(--surface-2);margin:18px 0')} />
         {children}
       </div>
     </div>
@@ -77,7 +77,7 @@ export function AdminLogin() {
     return (
       <Frame>
         <div style={s('display:flex;justify-content:center;padding:20px')}>
-          <div style={s('width:32px;height:32px;border-radius:50%;border:3px solid #E4DCCB;border-top-color:#2E6B58;animation:spin 1s linear infinite')} />
+          <div style={s('width:32px;height:32px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
         </div>
       </Frame>
     )
@@ -92,15 +92,15 @@ export function AdminLogin() {
     if (status === 'pending') {
       return (
         <Frame>
-          <div style={s('font-size:15px;font-weight:700')}>승인 대기 중입니다</div>
-          <div style={s('font-size:13px;color:#6E6252;margin-top:8px;line-height:1.6')}>
+          <div style={s('font-size:15px;font-weight:500')}>승인 대기 중입니다</div>
+          <div style={s('font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.6')}>
             <b>{admin.email}</b> 계정으로 운영자 신청이 접수되었습니다. 마스터 관리자가 승인하면 바로
             이용하실 수 있습니다.
           </div>
-          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:#FFFFFF;border:1px solid #D8CFBF;color:#4A4234;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700')}>
+          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
             로그아웃
           </div>
-          <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px')}>← 스토어로 돌아가기</a>
+          <a href="/" style={s('display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}>← 스토어로 돌아가기</a>
         </Frame>
       )
     }
@@ -108,36 +108,36 @@ export function AdminLogin() {
     if (status === 'rejected') {
       return (
         <Frame>
-          <div style={s('font-size:15px;font-weight:700')}>신청이 반려되었습니다</div>
-          <div style={s('font-size:13px;color:#6E6252;margin-top:8px;line-height:1.6')}>
+          <div style={s('font-size:15px;font-weight:500')}>신청이 반려되었습니다</div>
+          <div style={s('font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.6')}>
             <b>{admin.email}</b> 계정의 운영자 신청은 승인되지 않았습니다. 다시 신청하려면 마스터
             관리자에게 문의해주세요.
           </div>
-          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:#FFFFFF;border:1px solid #D8CFBF;color:#4A4234;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700')}>
+          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
             로그아웃
           </div>
-          <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px')}>← 스토어로 돌아가기</a>
+          <a href="/" style={s('display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}>← 스토어로 돌아가기</a>
         </Frame>
       )
     }
 
     return (
       <Frame>
-        <div style={s('font-size:15px;font-weight:700')}>운영자 신청</div>
-        <div style={s('font-size:13px;color:#6E6252;margin-top:8px;line-height:1.6')}>
+        <div style={s('font-size:15px;font-weight:500')}>운영자 신청</div>
+        <div style={s('font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.6')}>
           <b>{admin.email}</b> 계정은 아직 운영자로 등록되어 있지 않습니다. 아래에서 신청하면 마스터
           관리자의 승인 후 이용하실 수 있습니다.
         </div>
 
         <div style={s('margin-top:16px')}>
-          <div style={s(label)}>소속 · 담당 업무 <span style={s('color:#A2957F;font-weight:600')}>· 선택</span></div>
+          <div style={s(label)}>소속 · 담당 업무 <span style={s('color:var(--ink-4);font-weight:500')}>· 선택</span></div>
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="예: 마케팅팀 / CS 담당"
             style={s(field)}
           />
-          <div style={s('font-size:11px;color:#A2957F;line-height:1.5;margin-top:5px')}>
+          <div style={s('font-size:11px;color:var(--ink-4);line-height:1.5;margin-top:5px')}>
             승인하는 사람이 누구인지 알아볼 수 있도록 적어주세요.
           </div>
         </div>
@@ -145,7 +145,7 @@ export function AdminLogin() {
         {/* Every application is a plain admin. Master is granted afterwards by
             a master, never asked for here — which is also what the database
             enforces, so this line is a description rather than a promise. */}
-        <div style={s('background:#F8F5EF;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:#8A7D6C;line-height:1.5')}>
+        <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--ink-3);line-height:1.5')}>
           모든 신청은 <b>일반 관리자</b>로 접수됩니다. 마스터 권한은 승인 후 마스터 관리자가 부여합니다.
         </div>
 
@@ -158,14 +158,14 @@ export function AdminLogin() {
                   void admin.apply(note.trim())
                 }
           }
-          style={s(`cursor:${admin.applying ? 'default' : 'pointer'};margin-top:16px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700;opacity:${admin.applying ? '.6' : '1'}`)}
+          style={s(`cursor:${admin.applying ? 'default' : 'pointer'};margin-top:16px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500;opacity:${admin.applying ? '.6' : '1'}`)}
         >
           {admin.applying ? '신청 중…' : '운영자 신청하기'}
         </div>
-        <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:10px;text-align:center;font-size:12px;color:#8A7D6C')}>
+        <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:10px;text-align:center;font-size:12px;color:var(--ink-3)')}>
           다른 계정으로 로그인
         </div>
-        <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:12px')}>← 스토어로 돌아가기</a>
+        <a href="/" style={s('display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:12px')}>← 스토어로 돌아가기</a>
       </Frame>
     )
   }
@@ -175,8 +175,8 @@ export function AdminLogin() {
   if (sentTo) {
     return (
       <Frame>
-        <div style={s('font-size:15px;font-weight:700')}>이메일을 확인해주세요</div>
-        <div style={s('font-size:13px;color:#6E6252;margin-top:8px;line-height:1.6')}>
+        <div style={s('font-size:15px;font-weight:500')}>이메일을 확인해주세요</div>
+        <div style={s('font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.6')}>
           <b>{sentTo}</b> 로 인증 메일을 보냈습니다. 메일의 링크를 누른 뒤 이 화면에서 로그인하면
           운영자 신청을 이어서 하실 수 있습니다.
         </div>
@@ -187,11 +187,11 @@ export function AdminLogin() {
             setPassword('')
             setConfirm('')
           }}
-          style={s('cursor:pointer;margin-top:20px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700')}
+          style={s('cursor:pointer;margin-top:20px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}
         >
           로그인하러 가기
         </div>
-        <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px')}>← 스토어로 돌아가기</a>
+        <a href="/" style={s('display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}>← 스토어로 돌아가기</a>
       </Frame>
     )
   }
@@ -251,7 +251,7 @@ export function AdminLogin() {
 
   return (
     <Frame>
-      <div style={s('display:flex;gap:6px;background:#F3EFE6;border-radius:999px;padding:4px;margin-bottom:18px')}>
+      <div style={s('display:flex;gap:6px;background:var(--surface-2);border-radius:3px;padding:4px;margin-bottom:18px')}>
         {(['login', 'signup'] as const).map((m) => (
           <div
             key={m}
@@ -260,8 +260,8 @@ export function AdminLogin() {
               setError('')
             }}
             style={s(
-              'cursor:pointer;flex:1;text-align:center;border-radius:999px;padding:9px 0;font-size:12.5px;font-weight:700;' +
-                (mode === m ? 'background:#FFFFFF;color:#221C15;box-shadow:0 1px 3px rgba(60,45,25,0.12)' : 'color:#8A7D6C'),
+              'cursor:pointer;flex:1;text-align:center;border-radius:3px;padding:9px 0;font-size:12.5px;font-weight:500;' +
+                (mode === m ? 'background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(60,45,25,0.12)' : 'color:var(--ink-3)'),
             )}
           >
             {m === 'login' ? '로그인' : '운영자 가입'}
@@ -269,8 +269,8 @@ export function AdminLogin() {
         ))}
       </div>
 
-      <div style={s('font-size:15px;font-weight:700')}>{isSignUp ? '운영자 계정 만들기' : '운영자 로그인'}</div>
-      <div style={s('font-size:12.5px;color:#8A7D6C;margin-top:6px;line-height:1.6')}>
+      <div style={s('font-size:15px;font-weight:500')}>{isSignUp ? '운영자 계정 만들기' : '운영자 로그인'}</div>
+      <div style={s('font-size:12.5px;color:var(--ink-3);margin-top:6px;line-height:1.6')}>
         {isSignUp
           ? '계정을 만든 뒤 운영자 신청이 접수됩니다. 마스터 관리자가 승인해야 콘솔을 이용할 수 있습니다.'
           : '관리자로 등록된 계정만 접근할 수 있습니다.'}
@@ -329,7 +329,7 @@ export function AdminLogin() {
             </div>
             <div>
               <div style={s(label)}>
-                소속 · 담당 업무 <span style={s('color:#A2957F;font-weight:600')}>· 선택</span>
+                소속 · 담당 업무 <span style={s('color:var(--ink-4);font-weight:500')}>· 선택</span>
               </div>
               <input
                 value={note}
@@ -338,7 +338,7 @@ export function AdminLogin() {
                 placeholder="예: 마케팅팀 / CS 담당"
                 style={s(field)}
               />
-              <div style={s('font-size:11px;color:#A2957F;line-height:1.5;margin-top:5px')}>
+              <div style={s('font-size:11px;color:var(--ink-4);line-height:1.5;margin-top:5px')}>
                 승인하는 사람이 누구인지 알아볼 수 있도록 적어주세요.
               </div>
             </div>
@@ -347,7 +347,7 @@ export function AdminLogin() {
       </div>
 
       {isSignUp && (
-        <div style={s('background:#F8F5EF;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:#8A7D6C;line-height:1.5')}>
+        <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--ink-3);line-height:1.5')}>
           모든 신청은 <b>일반 관리자</b>로 접수됩니다. 마스터 권한은 승인 후 마스터 관리자가 부여합니다.
           <br />
           이 계정은 스토어 회원가입과는 <b>별개</b>입니다.
@@ -355,7 +355,7 @@ export function AdminLogin() {
       )}
 
       {error && (
-        <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;color:#A64B32;border-radius:12px;padding:11px 14px;margin-top:12px;font-size:12.5px')}>
+        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);color:var(--warn);border-radius:4px;padding:11px 14px;margin-top:12px;font-size:12.5px')}>
           {error}
         </div>
       )}
@@ -368,25 +368,25 @@ export function AdminLogin() {
 
       <div
         onClick={busy ? undefined : submit}
-        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:14px;text-align:center;font-size:14px;font-weight:700;opacity:${busy ? '.6' : '1'}`)}
+        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
       >
         {busy ? '확인 중…' : isSignUp ? '가입하고 신청하기' : '로그인'}
       </div>
 
-      <div style={s('text-align:center;font-size:12px;color:#8A7D6C;margin-top:14px')}>
+      <div style={s('text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}>
         {isSignUp ? '이미 운영자 계정이 있으신가요?' : '아직 운영자 계정이 없으신가요?'}{' '}
         <span
           onClick={() => {
             setMode(isSignUp ? 'login' : 'signup')
             setError('')
           }}
-          style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+          style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
         >
           {isSignUp ? '로그인' : '운영자 가입'}
         </span>
       </div>
 
-      <a href="/" style={s('display:block;text-align:center;font-size:12px;color:#8A7D6C;margin-top:12px')}>← 스토어로 돌아가기</a>
+      <a href="/" style={s('display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:12px')}>← 스토어로 돌아가기</a>
     </Frame>
   )
 }

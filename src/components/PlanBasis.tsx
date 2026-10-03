@@ -65,24 +65,26 @@ const axisName = (axis: MetricKey, lang: Lang) =>
 function Figure({ label, value, help }: { label: string; value: string; help?: string }) {
   return (
     <div style={s('flex:1;min-width:104px')}>
-      <div style={s('font-size:10.5px;color:#A2957F')}>{label}</div>
-      <div style={s('font-size:16px;font-weight:700;color:#4A4234;margin-top:1px')}>{value}</div>
+      <div style={s('font-size:10.5px;color:var(--ink-4)')}>{label}</div>
+      <div style={s('font-size:16px;font-weight:500;color:var(--ink-2);margin-top:1px')}>{value}</div>
       {help && (
-        <div style={s('font-size:10.5px;color:#B9AC93;line-height:1.45;margin-top:3px')}>{help}</div>
+        <div style={s('font-size:10.5px;color:var(--ink-4);line-height:1.45;margin-top:3px')}>{help}</div>
       )}
     </div>
   )
 }
 
 function Load({ label, value }: { label: string; value: number }) {
-  const colour = value < 35 ? '#2E6B58' : value < 65 ? '#B08133' : '#C25E43'
+  // Three ranks that have to be told apart at a glance, so they take three
+  // different tokens rather than two shades of the same warm tone.
+  const colour = value < 35 ? 'var(--accent)' : value < 65 ? 'var(--warn-mid)' : 'var(--danger)'
   return (
     <div style={s('flex:1;min-width:88px')}>
       <div style={s('display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:3px')}>
-        <span style={s('color:#A2957F')}>{label}</span>
-        <span style={s(`font-weight:700;color:${colour}`)}>{value}</span>
+        <span style={s('color:var(--ink-4)')}>{label}</span>
+        <span style={s(`font-weight:500;color:${colour}`)}>{value}</span>
       </div>
-      <div style={s('height:4px;background:#EFE9DD;border-radius:99px;overflow:hidden')}>
+      <div style={s('height:4px;background:var(--surface-2);border-radius:99px;overflow:hidden')}>
         <div style={s(`height:100%;width:${value}%;background:${colour};border-radius:99px`)} />
       </div>
     </div>
@@ -94,16 +96,16 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
   const b = plan.basis
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:12px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
       <div
         onClick={() => setOpen(!open)}
         style={s('cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px')}
       >
         <div>
-          <div style={s('font-family:Marcellus,serif;font-size:16px')}>{t.title}</div>
-          <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>{t.sub}</div>
+          <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{t.title}</div>
+          <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{t.sub}</div>
         </div>
-        <div style={s('font-size:11.5px;color:#8A7D6C;font-weight:600;flex-shrink:0')}>
+        <div style={s('font-size:11.5px;color:var(--ink-3);font-weight:500;flex-shrink:0')}>
           {open ? t.hide : t.show}
         </div>
       </div>
@@ -111,7 +113,7 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
       {open && (
         <div style={s('animation:rise .25s ease both')}>
           {/* What was measured outside. */}
-          <div style={s('font-size:11px;color:#A2957F;letter-spacing:0.08em;font-weight:700;margin-top:16px')}>
+          <div style={s('font-size:11px;color:var(--ink-4);letter-spacing:0.08em;font-weight:500;margin-top:16px')}>
             {t.weatherTitle}
           </div>
           <div style={s('display:flex;flex-wrap:wrap;gap:12px;margin-top:8px')}>
@@ -122,7 +124,7 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
 
           {/* And what that actually means for skin — the part a weather app
               cannot tell you, because a percentage is not a force. */}
-          <div style={s('font-size:11px;color:#A2957F;letter-spacing:0.08em;font-weight:700;margin-top:16px')}>
+          <div style={s('font-size:11px;color:var(--ink-4);letter-spacing:0.08em;font-weight:500;margin-top:16px')}>
             {t.derivedTitle}
           </div>
           <div style={s('display:flex;flex-wrap:wrap;gap:12px;margin-top:8px')}>
@@ -132,10 +134,10 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
           </div>
 
           <div style={s(
-            'font-size:11.5px;line-height:1.55;margin-top:10px;border-radius:10px;padding:9px 12px;' +
+            'font-size:11.5px;line-height:1.55;margin-top:10px;border-radius:4px;padding:9px 12px;' +
               (b.occlusive
-                ? 'background:#EAF1EC;color:#2C4A3E'
-                : 'background:#F8F5EF;color:#6E6252'),
+                ? 'background:var(--surface-2);color:var(--accent)'
+                : 'background:var(--surface);color:var(--ink-2)'),
           )}>
             {b.occlusive ? t.occlusiveYes : t.occlusiveNo}
           </div>
@@ -145,19 +147,19 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
             <Load label={t.sebumLoad} value={b.sebumLoad} />
             <Load label={t.coldStress} value={b.coldStress} />
           </div>
-          <div style={s('font-size:10.5px;color:#B9AC93;line-height:1.5;margin-top:6px')}>
+          <div style={s('font-size:10.5px;color:var(--ink-4);line-height:1.5;margin-top:6px')}>
             {t.loadHelp}
           </div>
 
           {/* And what the scan contributed. */}
-          <div style={s('font-size:11px;color:#A2957F;letter-spacing:0.08em;font-weight:700;margin-top:18px')}>
+          <div style={s('font-size:11px;color:var(--ink-4);letter-spacing:0.08em;font-weight:500;margin-top:18px')}>
             {t.faceTitle}
           </div>
-          <div style={s('background:#F8F5EF;border-radius:12px;padding:12px 14px;margin-top:8px')}>
-            <div style={s('font-size:12.5px;line-height:1.6;color:#4A4234')}>
+          <div style={s('background:var(--surface);border-radius:4px;padding:12px 14px;margin-top:8px')}>
+            <div style={s('font-size:12.5px;line-height:1.6;color:var(--ink-2)')}>
               <b>{t.weakest}</b> — {t.weakestHelp(axisName(plan.weakest, lang))}
             </div>
-            <div style={s('font-size:12.5px;line-height:1.6;color:#4A4234;margin-top:8px;padding-top:8px;border-top:1px solid #E7E1D4')}>
+            <div style={s('font-size:12.5px;line-height:1.6;color:var(--ink-2);margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)')}>
               {b.hydration < b.dehydratedBelow
                 ? t.hydrationRead(b.hydration, b.dehydratedBelow)
                 : t.hydrationOk(b.hydration, b.dehydratedBelow)}

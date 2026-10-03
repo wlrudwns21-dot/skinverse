@@ -57,8 +57,8 @@ export function Chip({ label, tone }: { label: string; tone: 'core' | 'category'
   return (
     <span
       style={s(
-        'font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 9px;letter-spacing:0.04em;' +
-          (tone === 'core' ? 'background:#221C15;color:#F3E9D6' : 'background:#EFE9DD;color:#8A7D6C'),
+        'font-size:10.5px;font-weight:500;border-radius:3px;padding:3px 9px;letter-spacing:0.04em;' +
+          (tone === 'core' ? 'background:var(--ink);color:var(--on-dark-2)' : 'background:var(--surface-2);color:var(--ink-3)'),
       )}
     >
       {label}
@@ -80,7 +80,7 @@ function Cover({ story, lang, radius }: { story: Story; lang: Lang; radius: stri
       alt={story.title[lang]}
       loading="lazy"
       style={s(
-        `display:block;width:100%;aspect-ratio:2/1;object-fit:cover;background:#EFE9DD;border-radius:${radius}`,
+        `display:block;width:100%;aspect-ratio:2/1;object-fit:cover;background:var(--surface-2);border-radius:${radius}`,
       )}
     />
   )
@@ -92,26 +92,26 @@ export function CoreTipCard({ lang, onOpen }: { lang: Lang; onOpen?: () => void 
     <div
       onClick={onOpen}
       style={s(
-        'background:#221C15;color:#F0EADC;border-radius:18px;position:relative;overflow:hidden' +
+        'background:var(--ink);color:var(--on-dark);border-radius:4px;position:relative;overflow:hidden' +
           (onOpen ? ';cursor:pointer' : ''),
       )}
     >
       <Cover story={coreTip} lang={lang} radius="0" />
       <div style={s('padding:18px 20px 20px;position:relative')}>
-        <div style={s('position:absolute;right:-50px;top:-70px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,#3C6B58 0%,transparent 70%);opacity:.55')} />
+        <div style={s('position:absolute;right:-50px;top:-70px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:.55')} />
         <div style={s('display:flex;gap:6px;align-items:center;position:relative')}>
           <Chip label={coreTipLabel[lang]} tone="core" />
-          <span style={s('font-size:10.5px;color:#9A8F7C')}>
+          <span style={s('font-size:10.5px;color:var(--ink-3)')}>
             {categoryNames[coreTip.category][lang]} · {minutesLabel(coreTip.minutes, lang)}
           </span>
         </div>
-        <div style={s('font-family:Marcellus,serif;font-size:20px;line-height:1.3;margin:10px 0 8px;position:relative')}>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:20px;line-height:1.3;margin:10px 0 8px;position:relative')}>
           {coreTip.title[lang]}
         </div>
-        <div style={s('font-size:13px;line-height:1.65;color:#C9BFA9;position:relative')}>
+        <div style={s('font-size:13px;line-height:1.65;color:var(--ink-4);position:relative')}>
           {coreTip.body[0][lang]}
         </div>
-        <div style={s('font-size:13px;line-height:1.65;color:#C9BFA9;margin-top:9px;position:relative')}>
+        <div style={s('font-size:13px;line-height:1.65;color:var(--ink-4);margin-top:9px;position:relative')}>
           {coreTip.body[1][lang]}
         </div>
       </div>
@@ -125,33 +125,33 @@ function StoryCard({ story, lang }: { story: Story; lang: Lang }) {
   return (
     <div
       onClick={() => setOpen(!open)}
-      style={s('cursor:pointer;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;overflow:hidden')}
+      style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden')}
     >
       <Cover story={story} lang={lang} radius="0" />
       <div style={s('padding:14px 16px 15px')}>
         <div style={s('display:flex;gap:6px;align-items:center;flex-wrap:wrap')}>
           <Chip label={categoryNames[story.category][lang]} tone="category" />
-          <span style={s('font-size:10.5px;color:#A2957F')}>{minutesLabel(story.minutes, lang)}</span>
+          <span style={s('font-size:10.5px;color:var(--ink-4)')}>{minutesLabel(story.minutes, lang)}</span>
         </div>
-        <div style={s('font-size:14.5px;font-weight:700;line-height:1.4;margin-top:8px;color:#221C15')}>
+        <div style={s('font-size:14.5px;font-weight:500;line-height:1.4;margin-top:8px;color:var(--ink)')}>
           {story.title[lang]}
         </div>
 
         {open ? (
           <div style={s('animation:rise .25s ease both')}>
-            <div style={s('font-size:13px;line-height:1.7;color:#5A5142;margin-top:8px')}>
+            <div style={s('font-size:13px;line-height:1.7;color:var(--ink-2);margin-top:8px')}>
               {story.body[0][lang]}
             </div>
-            <div style={s('font-size:13px;line-height:1.7;color:#5A5142;margin-top:9px')}>
+            <div style={s('font-size:13px;line-height:1.7;color:var(--ink-2);margin-top:9px')}>
               {story.body[1][lang]}
             </div>
           </div>
         ) : (
           <>
-            <div style={s('font-size:12.5px;line-height:1.6;color:#8A7D6C;margin-top:6px')}>
+            <div style={s('font-size:12.5px;line-height:1.6;color:var(--ink-3);margin-top:6px')}>
               {teaser(story.body[0][lang])}
             </div>
-            <div style={s('font-size:12px;font-weight:700;color:#2E6B58;margin-top:8px')}>
+            <div style={s('font-size:12px;font-weight:500;color:var(--accent);margin-top:8px')}>
               {readMore[lang]} →
             </div>
           </>
@@ -172,8 +172,8 @@ export function Stories() {
 
   return (
     <div style={s('padding:20px;animation:rise .4s ease both')}>
-      <div style={s('font-family:Marcellus,serif;font-size:22px')}>{storiesTitle[lang]}</div>
-      <div style={s('font-size:12px;color:#8A7D6C;margin-top:2px')}>{storiesSub[lang]}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px')}>{storiesTitle[lang]}</div>
+      <div style={s('font-size:12px;color:var(--ink-3);margin-top:2px')}>{storiesSub[lang]}</div>
 
       <div style={s('display:flex;gap:6px;overflow-x:auto;margin-top:14px;padding-bottom:4px')}>
         {[null, ...CATEGORY_ORDER].map((category) => {
@@ -183,10 +183,10 @@ export function Stories() {
               key={category ?? 'all'}
               onClick={() => setFilter(category)}
               style={s(
-                'cursor:pointer;flex-shrink:0;font-size:12px;font-weight:600;border-radius:999px;padding:7px 12px;' +
+                'cursor:pointer;flex-shrink:0;font-size:12px;font-weight:500;border-radius:3px;padding:7px 12px;' +
                   (active
-                    ? 'background:#221C15;color:#F3E9D6'
-                    : 'background:#FFFFFF;border:1px solid #ECE6DA;color:#8A7D6C'),
+                    ? 'background:var(--ink);color:var(--on-dark-2)'
+                    : 'background:var(--surface);border:1px solid var(--line);color:var(--ink-3)'),
               )}
             >
               {category === null ? storiesAll[lang] : categoryNames[category][lang]}
@@ -208,17 +208,17 @@ export function Stories() {
       </div>
 
       {!showCore && shown.length === 0 && (
-        <div style={s('border:1px dashed #D3C9B7;border-radius:16px;padding:18px;margin-top:14px;font-size:12.5px;color:#8A7D6C;text-align:center')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:18px;margin-top:14px;font-size:12.5px;color:var(--ink-3);text-align:center')}>
           {storiesEmpty[lang]}
         </div>
       )}
 
       <div
         onClick={st.goRoutine}
-        style={s('cursor:pointer;margin-top:16px;background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center')}
+        style={s('cursor:pointer;margin-top:16px;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center')}
       >
         <b>{storiesToRoutine[lang]}</b>
-        <span style={s('font-weight:700;color:#C29A5B')}>→</span>
+        <span style={s('font-weight:500;color:var(--warn)')}>→</span>
       </div>
     </div>
   )

@@ -79,7 +79,7 @@ export function PaypalButtons() {
 
   if (!paypalEnabled) {
     return (
-      <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:14px 16px;margin-top:16px;font-size:12.5px;color:#8A6D32;line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:16px;font-size:12.5px;color:var(--warn);line-height:1.6')}>
         <b>결제가 아직 연결되지 않았습니다.</b>
         <br />
         PayPal 클라이언트 ID가 설정되면 이 자리에 결제 버튼이 나타납니다.
@@ -89,7 +89,7 @@ export function PaypalButtons() {
 
   if (blocked) {
     return (
-      <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;border-radius:14px;padding:14px 16px;margin-top:16px;font-size:12.5px;color:#A64B32;line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:16px;font-size:12.5px;color:var(--warn);line-height:1.6')}>
         결제 모듈을 불러오지 못했습니다. 광고 차단 프로그램을 끄거나 다른 네트워크에서 다시
         시도해주세요.
       </div>
@@ -102,9 +102,13 @@ export function PaypalButtons() {
       <div ref={host} style={s('min-height:52px')} />
 
       {st.state.ppBusy && (
+        /* PayPal blue, deliberately outside the palette: this spinner stands in
+           for PayPal's own screen while the handoff completes, and a customer
+           about to be charged should see the brand they are being charged by.
+           It is the one colour in the app that is not a token. */
         <div style={s('display:flex;align-items:center;justify-content:center;gap:10px;padding:12px')}>
-          <div style={s('width:18px;height:18px;border-radius:50%;border:2.5px solid #E4DCCB;border-top-color:#0B3D91;animation:spin .8s linear infinite')} />
-          <span style={s('font-size:13px;font-weight:600;color:#0B3D91')}>{st.t.processing}</span>
+          <div style={s('width:18px;height:18px;border-radius:50%;border:2.5px solid var(--line-2);border-top-color:#0B3D91;animation:spin .8s linear infinite')} />
+          <span style={s('font-size:13px;font-weight:500;color:#0B3D91')}>{st.t.processing}</span>
         </div>
       )}
     </div>

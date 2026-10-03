@@ -89,7 +89,7 @@ export function Captcha({ onToken, handleRef }: Props) {
   // so beats an invisible widget and a form that refuses without explanation.
   if (blocked) {
     return (
-      <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;color:#A64B32;border-radius:12px;padding:11px 14px;font-size:12px;line-height:1.5')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);color:var(--warn);border-radius:4px;padding:11px 14px;font-size:12px;line-height:1.5')}>
         보안 확인을 불러오지 못했습니다. 광고 차단 프로그램을 끄거나 다른 네트워크에서 다시
         시도해주세요.
       </div>

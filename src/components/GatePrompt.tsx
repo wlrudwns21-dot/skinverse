@@ -39,17 +39,17 @@ export function GatePrompt() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={s('width:100%;max-width:340px;background:#FFFFFF;border-radius:20px;padding:24px 22px;animation:rise .3s ease both')}
+        style={s('width:100%;max-width:340px;background:var(--surface);border-radius:4px;padding:24px 22px;animation:rise .3s ease both')}
       >
-        <div style={s('width:48px;height:48px;border-radius:50%;background:#FBF3E4;color:#C29A5B;font-size:22px;display:flex;align-items:center;justify-content:center')}>✦</div>
+        <div style={s('width:48px;height:48px;border-radius:50%;background:var(--surface-2);color:var(--warn);font-size:22px;display:flex;align-items:center;justify-content:center')}>✦</div>
 
-        <div style={s('font-family:Marcellus,serif;font-size:20px;margin-top:14px;line-height:1.3')}>{title}</div>
-        <div style={s('font-size:13px;color:#6E6252;margin-top:8px;line-height:1.6')}>{body}</div>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:20px;margin-top:14px;line-height:1.3')}>{title}</div>
+        <div style={s('font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.6')}>{body}</div>
 
-        <div style={s('background:#EAF1EC;border-radius:12px;padding:12px 14px;margin-top:16px;display:flex;flex-direction:column;gap:7px')}>
+        <div style={s('background:var(--surface-2);border-radius:4px;padding:12px 14px;margin-top:16px;display:flex;flex-direction:column;gap:7px')}>
           {st.a.memberBenefits.map((b) => (
-            <div key={b} style={s('display:flex;gap:9px;font-size:12px;color:#2C4A3E;line-height:1.4')}>
-              <span style={s('color:#2E6B58;font-weight:700;flex-shrink:0')}>✓</span>
+            <div key={b} style={s('display:flex;gap:9px;font-size:12px;color:var(--accent);line-height:1.4')}>
+              <span style={s('color:var(--accent);font-weight:500;flex-shrink:0')}>✓</span>
               <span>{b}</span>
             </div>
           ))}
@@ -57,19 +57,19 @@ export function GatePrompt() {
 
         <div
           onClick={() => st.goAuth('signup')}
-          style={s('cursor:pointer;margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:14px;text-align:center;font-size:14px;font-weight:700')}
+          style={s('cursor:pointer;margin-top:18px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
         >
           {st.a.gateCta}
         </div>
         <div
           onClick={() => st.goAuth('login')}
-          style={s('cursor:pointer;text-align:center;font-size:12.5px;color:#2E6B58;font-weight:600;margin-top:12px')}
+          style={s('cursor:pointer;text-align:center;font-size:12.5px;color:var(--accent);font-weight:500;margin-top:12px')}
         >
           {st.a.logIn}
         </div>
         <div
           onClick={st.closeGate}
-          style={s('cursor:pointer;text-align:center;font-size:12px;color:#A2957F;margin-top:12px')}
+          style={s('cursor:pointer;text-align:center;font-size:12px;color:var(--ink-4);margin-top:12px')}
         >
           {st.a.gateLater}
         </div>

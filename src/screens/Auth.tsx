@@ -18,8 +18,8 @@ import { useAuth } from '../auth/AuthContext'
 import { useStore } from '../store/StoreContext'
 
 const field =
-  'width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:12px;padding:12px 14px;font-size:14px;background:#FFFFFF;outline:none'
-const label = 'font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px'
+  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
+const label = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 
 /** Supabase reports failures as English prose; map the ones users actually hit. */
 function translateError(raw: string, a: ReturnType<typeof useStore>['a']): string {
@@ -115,10 +115,10 @@ export function Auth() {
   if (sentTo) {
     return (
       <div style={s('padding:40px 20px;text-align:center;animation:rise .4s ease both')}>
-        <div style={s('width:64px;height:64px;border-radius:50%;background:#EAF1EC;color:#2E6B58;font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
-        <div style={s('font-family:Marcellus,serif;font-size:22px;margin-top:16px')}>{a.checkEmail}</div>
-        <div style={s('font-size:13px;color:#8A7D6C;margin-top:8px;line-height:1.6')}>{a.checkEmailSub(sentTo)}</div>
-        <div onClick={st.leaveAuth} style={s('cursor:pointer;margin-top:22px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:14px;font-size:13px;font-weight:700')}>
+        <div style={s('width:64px;height:64px;border-radius:50%;background:var(--surface-2);color:var(--accent);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px;margin-top:16px')}>{a.checkEmail}</div>
+        <div style={s('font-size:13px;color:var(--ink-3);margin-top:8px;line-height:1.6')}>{a.checkEmailSub(sentTo)}</div>
+        <div onClick={st.leaveAuth} style={s('cursor:pointer;margin-top:22px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
           {a.gotIt}
         </div>
       </div>
@@ -127,16 +127,16 @@ export function Auth() {
 
   return (
     <div style={s('padding:24px 20px;animation:rise .4s ease both')}>
-      <div onClick={st.leaveAuth} style={s('cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:12px')}>{a.back}</div>
+      <div onClick={st.leaveAuth} style={s('cursor:pointer;font-size:13px;color:var(--ink-3);margin-bottom:12px')}>{a.back}</div>
 
-      <div style={s('font-family:Marcellus,serif;font-size:24px')}>{isSignUp ? a.signUpTitle : a.logInTitle}</div>
-      <div style={s('font-size:13px;color:#8A7D6C;margin-top:4px;line-height:1.5')}>{isSignUp ? a.signUpSub : a.logInSub}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>{isSignUp ? a.signUpTitle : a.logInTitle}</div>
+      <div style={s('font-size:13px;color:var(--ink-3);margin-top:4px;line-height:1.5')}>{isSignUp ? a.signUpSub : a.logInSub}</div>
 
       {isSignUp && (
-        <div style={s('background:#EAF1EC;border-radius:14px;padding:14px 16px;margin-top:16px;display:flex;flex-direction:column;gap:8px')}>
+        <div style={s('background:var(--surface-2);border-radius:4px;padding:14px 16px;margin-top:16px;display:flex;flex-direction:column;gap:8px')}>
           {a.memberBenefits.map((b) => (
-            <div key={b} style={s('display:flex;gap:10px;font-size:12.5px;color:#2C4A3E;line-height:1.4')}>
-              <span style={s('color:#2E6B58;font-weight:700;flex-shrink:0')}>✓</span>
+            <div key={b} style={s('display:flex;gap:10px;font-size:12.5px;color:var(--accent);line-height:1.4')}>
+              <span style={s('color:var(--accent);font-weight:500;flex-shrink:0')}>✓</span>
               <span>{b}</span>
             </div>
           ))}
@@ -208,10 +208,10 @@ export function Auth() {
                       key={g.key}
                       onClick={() => setGender(g.key)}
                       style={s(
-                        'cursor:pointer;flex:1;min-width:70px;text-align:center;border-radius:10px;padding:10px 6px;font-size:12.5px;font-weight:600;' +
+                        'cursor:pointer;flex:1;min-width:70px;text-align:center;border-radius:4px;padding:10px 6px;font-size:12.5px;font-weight:500;' +
                           (on
-                            ? 'background:#221C15;color:#F5F0E6'
-                            : 'background:#FFFFFF;border:1px solid #D8CFBF;color:#6E6252'),
+                            ? 'background:var(--ink);color:var(--on-dark)'
+                            : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
                       )}
                     >
                       {g.label[st.lang]}
@@ -224,9 +224,9 @@ export function Auth() {
             {/* Everything below is for getting a parcel to them. Grouped and
                 labelled as such so it reads as one purpose rather than five
                 more questions. */}
-            <div style={s('border-top:1px solid #ECE6DA;margin-top:6px;padding-top:14px')}>
-              <div style={s('font-size:13px;font-weight:700;color:#4A4234')}>{a.deliveryTitle}</div>
-              <div style={s('font-size:11.5px;color:#A2957F;line-height:1.5;margin-top:3px')}>
+            <div style={s('border-top:1px solid var(--line);margin-top:6px;padding-top:14px')}>
+              <div style={s('font-size:13px;font-weight:500;color:var(--ink-2)')}>{a.deliveryTitle}</div>
+              <div style={s('font-size:11.5px;color:var(--ink-4);line-height:1.5;margin-top:3px')}>
                 {a.deliveryHint}
               </div>
             </div>
@@ -306,7 +306,7 @@ export function Auth() {
             <div>
               <div style={s(label)}>
                 {a.customsCode}
-                <span style={s('color:#A2957F;font-weight:600')}> · {a.optional}</span>
+                <span style={s('color:var(--ink-4);font-weight:500')}> · {a.optional}</span>
               </div>
               <input
                 value={customs}
@@ -314,7 +314,7 @@ export function Auth() {
                 placeholder={a.customsPlaceholder}
                 style={s(field)}
               />
-              <div style={s('font-size:11px;color:#A2957F;line-height:1.5;margin-top:5px')}>
+              <div style={s('font-size:11px;color:var(--ink-4);line-height:1.5;margin-top:5px')}>
                 {a.customsHelp}
               </div>
             </div>
@@ -332,18 +332,18 @@ export function Auth() {
           footer. The wording says what pressing the button means, which is the
           honest version of a pre-ticked consent box. */}
       {isSignUp && (
-        <div style={s('font-size:11.5px;color:#8A7D6C;line-height:1.6;margin-top:14px;text-align:center')}>
+        <div style={s('font-size:11.5px;color:var(--ink-3);line-height:1.6;margin-top:14px;text-align:center')}>
           회원가입을 누르면{' '}
           <span
             onClick={() => st.goLegal('terms')}
-            style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+            style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
           >
             이용약관
           </span>
           과{' '}
           <span
             onClick={() => st.goLegal('privacy')}
-            style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+            style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
           >
             개인정보처리방침
           </span>
@@ -352,14 +352,14 @@ export function Auth() {
       )}
 
       {error && (
-        <div style={s('background:#FBE9E3;border:1px solid #EFCFC3;color:#A64B32;border-radius:12px;padding:11px 14px;margin-top:12px;font-size:12.5px;line-height:1.4')}>
+        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);color:var(--warn);border-radius:4px;padding:11px 14px;margin-top:12px;font-size:12.5px;line-height:1.4')}>
           {error}
         </div>
       )}
 
       <div
         onClick={busy ? undefined : submit}
-        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:#221C15;color:#F5F0E6;border-radius:999px;padding:15px;text-align:center;font-size:14px;font-weight:700;opacity:${busy ? '.6' : '1'}`)}
+        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
       >
         {busy ? a.submitting : isSignUp ? a.signUp : a.logIn}
       </div>
@@ -378,7 +378,7 @@ export function Auth() {
             setError('')
             st.goAuth('reset')
           }}
-          style={s('cursor:pointer;text-align:center;font-size:12.5px;color:#8A7D6C;font-weight:600;margin-top:14px;text-decoration:underline')}
+          style={s('cursor:pointer;text-align:center;font-size:12.5px;color:var(--ink-3);font-weight:500;margin-top:14px;text-decoration:underline')}
         >
           {a.forgot}
         </div>
@@ -386,17 +386,17 @@ export function Auth() {
 
       {!isSignUp && (
         <>
-          <div style={s('display:flex;align-items:center;gap:10px;margin-top:20px;color:#A2957F;font-size:11.5px')}>
-            <div style={s('flex:1;height:1px;background:#E4DCCB')} />
+          <div style={s('display:flex;align-items:center;gap:10px;margin-top:20px;color:var(--ink-4);font-size:11.5px')}>
+            <div style={s('flex:1;height:1px;background:var(--line)')} />
             {a.noAccount}
-            <div style={s('flex:1;height:1px;background:#E4DCCB')} />
+            <div style={s('flex:1;height:1px;background:var(--line)')} />
           </div>
           <div
             onClick={() => {
               setError('')
               st.goAuth('signup')
             }}
-            style={s('cursor:pointer;margin-top:12px;background:#FFFFFF;border:1.5px solid #2E6B58;color:#2E6B58;border-radius:999px;padding:14px;text-align:center;font-size:14px;font-weight:700')}
+            style={s('cursor:pointer;margin-top:12px;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
           >
             {a.signUp}
           </div>
@@ -404,14 +404,14 @@ export function Auth() {
       )}
 
       {isSignUp && (
-        <div style={s('text-align:center;font-size:12.5px;color:#8A7D6C;margin-top:16px')}>
+        <div style={s('text-align:center;font-size:12.5px;color:var(--ink-3);margin-top:16px')}>
           {a.hasAccount}{' '}
           <span
             onClick={() => {
               setError('')
               st.goAuth('login')
             }}
-            style={s('cursor:pointer;color:#2E6B58;font-weight:700;text-decoration:underline')}
+            style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
           >
             {a.logIn}
           </span>

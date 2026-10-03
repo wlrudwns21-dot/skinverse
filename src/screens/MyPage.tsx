@@ -48,25 +48,25 @@ function TrendCard() {
   if (!chart) return null
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:20px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:20px')}>
       <div
         onClick={() => setOpen((v) => !v)}
         style={s('cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px')}
       >
         <div style={s('min-width:0')}>
-          <div style={s('font-family:Marcellus,serif;font-size:16px')}>{st.trendTitle}</div>
-          <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>
+          <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{st.trendTitle}</div>
+          <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>
             {open ? st.trendSub : chart.count}
           </div>
         </div>
         <div style={s('display:flex;align-items:center;gap:8px;flex-shrink:0')}>
           {/* The headline figure, so collapsing costs nothing at a glance. */}
           {!open && chart.points.length > 0 && (
-            <b style={s('font-size:18px;color:#2E6B58')}>
+            <b style={s('font-size:18px;color:var(--accent)')}>
               {chart.points[chart.points.length - 1].score}
             </b>
           )}
-          <span style={s(`font-size:11px;color:#8A7D6C;transition:transform .2s;transform:rotate(${open ? 180 : 0}deg)`)}>
+          <span style={s(`font-size:11px;color:var(--ink-3);transition:transform .2s;transform:rotate(${open ? 180 : 0}deg)`)}>
             ▾
           </span>
         </div>
@@ -75,7 +75,7 @@ function TrendCard() {
       {open && (
         <>
       {st.cumulativeLine && (
-        <div style={s('background:#F8F5EF;border-radius:10px;padding:9px 12px;margin-top:10px;font-size:12px;color:#4A4234;line-height:1.5')}>
+        <div style={s('background:var(--surface);border-radius:4px;padding:9px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.5')}>
           {st.cumulativeLine}
         </div>
       )}
@@ -89,10 +89,10 @@ function TrendCard() {
                 key={option.key ?? 'overall'}
                 onClick={() => setAxis(option.key)}
                 style={s(
-                  'cursor:pointer;flex-shrink:0;font-size:11.5px;font-weight:600;border-radius:999px;padding:5px 11px;' +
+                  'cursor:pointer;flex-shrink:0;font-size:11.5px;font-weight:500;border-radius:3px;padding:5px 11px;' +
                     (active
-                      ? 'background:#221C15;color:#F3E9D6'
-                      : 'background:#F1EEE6;color:#8A7D6C'),
+                      ? 'background:var(--ink);color:var(--on-dark-2)'
+                      : 'background:var(--surface-2);color:var(--ink-3)'),
                 )}
               >
                 {option.label}
@@ -105,7 +105,7 @@ function TrendCard() {
       <div style={s('display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:14px;overflow-x:auto')}>
         {chart.points.map((p) => (
           <div key={p.key} style={s('flex:1;min-width:26px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%')}>
-            <div style={s('font-size:10px;font-weight:700;color:#4A4234;margin-bottom:3px')}>{p.score}</div>
+            <div style={s('font-size:10px;font-weight:500;color:var(--ink-2);margin-bottom:3px')}>{p.score}</div>
             <div style={s(`width:100%;border-radius:6px 6px 0 0;background:${p.color};height:${p.height}`)} />
           </div>
         ))}
@@ -114,9 +114,9 @@ function TrendCard() {
       <div style={s('display:flex;gap:6px;margin-top:6px;overflow-x:auto')}>
         {chart.points.map((p) => (
           <div key={p.key} style={s('flex:1;min-width:26px;text-align:center')}>
-            <div style={s('font-size:9.5px;color:#8A7D6C')}>{p.date}</div>
+            <div style={s('font-size:9.5px;color:var(--ink-3)')}>{p.date}</div>
             {p.humidity && (
-              <div style={s('font-size:9px;color:#B9AC93;margin-top:1px')}>💧{p.humidity}</div>
+              <div style={s('font-size:9px;color:var(--ink-4);margin-top:1px')}>💧{p.humidity}</div>
             )}
           </div>
         ))}
@@ -139,13 +139,13 @@ export function MyPage() {
   return (
     <div style={s('padding:20px;animation:rise .4s ease both')}>
       <div style={s('display:flex;align-items:center;gap:14px')}>
-        <div style={s('width:58px;height:58px;border-radius:50%;background:#2E6B58;color:#F3EFE6;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;flex-shrink:0')}>
+        <div style={s('width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--on-dark);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;flex-shrink:0')}>
           {initials(st.state.name, email)}
         </div>
         <div style={s('min-width:0')}>
-          <div style={s('font-family:Marcellus,serif;font-size:20px')}>{st.state.name || email}</div>
-          <div style={s('font-size:12px;color:#8A7D6C')}>Lv. {st.levelName} · {st.pointsS} P · 🔥 {st.streakLine}</div>
-          <div style={s('font-size:11px;color:#A2957F;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>{email}</div>
+          <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:20px')}>{st.state.name || email}</div>
+          <div style={s('font-size:12px;color:var(--ink-3)')}>Lv. {st.levelName} · {st.pointsS} P · 🔥 {st.streakLine}</div>
+          <div style={s('font-size:11px;color:var(--ink-4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>{email}</div>
         </div>
       </div>
 
@@ -155,96 +155,96 @@ export function MyPage() {
           dip readable rather than alarming. */}
       <TrendCard />
 
-      <div style={s('font-family:Marcellus,serif;font-size:16px;margin:20px 2px 8px')}>{st.t.skinHistory}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:20px 2px 8px')}>{st.t.skinHistory}</div>
       {st.history.length > 0 ? (
         <div style={s('display:flex;flex-direction:column;gap:8px')}>
           {/* Same problem as the chart: this list is unbounded and everything
               useful sits under it. The newest few are what people look at. */}
           {(allScans ? st.history : st.history.slice(0, HISTORY_PREVIEW)).map((h, i) => (
-            <div key={h.date + i} style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center')}>
+            <div key={h.date + i} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center')}>
               <div>
-                <div style={s('font-size:13px;font-weight:600')}>{h.date}</div>
-                <div style={s('font-size:11.5px;color:#8A7D6C')}>{h.type}</div>
+                <div style={s('font-size:13px;font-weight:500')}>{h.date}</div>
+                <div style={s('font-size:11.5px;color:var(--ink-3)')}>{h.type}</div>
               </div>
-              <div style={s(`font-size:16px;font-weight:700;color:${h.color}`)}>{h.score}</div>
+              <div style={s(`font-size:16px;font-weight:500;color:${h.color}`)}>{h.score}</div>
             </div>
           ))}
           {st.history.length > HISTORY_PREVIEW && (
             <div
               onClick={() => setAllScans((v) => !v)}
-              style={s('cursor:pointer;border:1px solid #D8CFBF;border-radius:999px;padding:9px;text-align:center;font-size:12px;font-weight:700;color:#8A7D6C;background:#FFFFFF')}
+              style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
             >
               {allScans ? st.t.showLess : st.t.showAll(st.history.length - HISTORY_PREVIEW)}
             </div>
           )}
         </div>
       ) : (
-        <div style={s('border:1px dashed #D3C9B7;border-radius:12px;padding:16px;font-size:12px;color:#8A7D6C;text-align:center;line-height:1.5')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:16px;font-size:12px;color:var(--ink-3);text-align:center;line-height:1.5')}>
           {st.t.noScan}
         </div>
       )}
 
       {st.savedRoutineCount > 0 && (
         <>
-          <div style={s('font-family:Marcellus,serif;font-size:16px;margin:18px 2px 8px')}>{st.t.routineTitle}</div>
-          <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;font-size:13px;font-weight:600')}>
+          <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:18px 2px 8px')}>{st.t.routineTitle}</div>
+          <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:13px;font-weight:500')}>
             {st.a.savedRoutines(st.savedRoutineCount)}
           </div>
         </>
       )}
 
-      <div style={s('font-family:Marcellus,serif;font-size:16px;margin:18px 2px 8px')}>{st.t.orders}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:18px 2px 8px')}>{st.t.orders}</div>
       <OrderHistory />
 
-      <div style={s('font-family:Marcellus,serif;font-size:16px;margin:18px 2px 8px')}>{st.t.settings}</div>
-      <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;overflow:hidden;font-size:13px')}>
-        <div style={s('padding:13px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #F1ECE2')}>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:18px 2px 8px')}>{st.t.settings}</div>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;font-size:13px')}>
+        <div style={s('padding:13px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)')}>
           <span>{st.t.language}</span>
           <select
             value={st.lang}
             onChange={(e) => st.setLang(e.target.value as Lang)}
-            style={s('border:1px solid #D8CFBF;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:600;background:#FFFFFF;outline:none;cursor:pointer')}
+            style={s('border:1px solid var(--line-2);border-radius:4px;padding:6px 8px;font-size:12px;font-weight:500;background:var(--surface);outline:none;cursor:pointer')}
           >
             {langOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.full}</option>
             ))}
           </select>
         </div>
-        <div style={s('padding:13px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #F1ECE2')}>
+        <div style={s('padding:13px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)')}>
           <span>{st.t.currency}</span>
           <select
             value={st.currency}
             onChange={(e) => st.setCurrency(e.target.value)}
-            style={s('border:1px solid #D8CFBF;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:600;background:#FFFFFF;outline:none;cursor:pointer')}
+            style={s('border:1px solid var(--line-2);border-radius:4px;padding:6px 8px;font-size:12px;font-weight:500;background:var(--surface);outline:none;cursor:pointer')}
           >
             {st.currencyOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
         </div>
-        <div style={s('padding:13px 14px;display:flex;justify-content:space-between;border-bottom:1px solid #F1ECE2')}>
+        <div style={s('padding:13px 14px;display:flex;justify-content:space-between;border-bottom:1px solid var(--line)')}>
           <span>{st.t.shipRegion}</span>
           <b>{st.state.country}</b>
         </div>
         <div onClick={st.toggleNotif} style={s('cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center')}>
           <span>{st.t.reminders}</span>
           <div style={s(`width:40px;height:24px;border-radius:99px;background:${st.notifBg};position:relative;transition:background .2s`)}>
-            <div style={s(`position:absolute;top:3px;left:${st.notifLeft};width:18px;height:18px;border-radius:50%;background:#FFF;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)`)} />
+            <div style={s(`position:absolute;top:3px;left:${st.notifLeft};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)`)} />
           </div>
         </div>
       </div>
 
       <div
         onClick={st.goSupport}
-        style={s('cursor:pointer;margin-top:18px;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600')}
+        style={s('cursor:pointer;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:500')}
       >
         <span>💬 {st.a.support}</span>
-        <span style={s('color:#B0A490')}>→</span>
+        <span style={s('color:var(--ink-4)')}>→</span>
       </div>
 
       <div
         onClick={st.signOut}
-        style={s('cursor:pointer;margin-top:10px;border:1px solid #D8CFBF;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700;color:#8A7D6C;background:#FFFFFF')}
+        style={s('cursor:pointer;margin-top:10px;border:1px solid var(--line-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
       >
         {st.a.logOut}
       </div>
@@ -252,10 +252,10 @@ export function MyPage() {
       <Withdraw />
 
       {/* Findable after signup too, not only at the moment of agreeing. */}
-      <div style={s('display:flex;justify-content:center;gap:14px;margin-top:20px;font-size:12px;color:#8A7D6C')}>
+      <div style={s('display:flex;justify-content:center;gap:14px;margin-top:20px;font-size:12px;color:var(--ink-3)')}>
         <span onClick={() => st.goLegal('terms')} style={s('cursor:pointer')}>이용약관</span>
-        <span style={s('color:#D8CFBF')}>·</span>
-        <span onClick={() => st.goLegal('privacy')} style={s('cursor:pointer;font-weight:700;color:#6E6252')}>
+        <span style={s('color:var(--on-dark-2)')}>·</span>
+        <span onClick={() => st.goLegal('privacy')} style={s('cursor:pointer;font-weight:500;color:var(--ink-2)')}>
           개인정보처리방침
         </span>
       </div>
@@ -278,16 +278,16 @@ function Withdraw() {
 
   if (st.deletionPending) {
     return (
-      <div style={s('background:#FBF3E4;border:1px solid #EBD9B8;border-radius:14px;padding:14px 16px;margin-top:20px')}>
-        <div style={s('font-size:13px;font-weight:700;color:#8A6D32')}>탈퇴 요청 처리 중</div>
-        <div style={s('font-size:12px;color:#9A8455;margin-top:6px;line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:20px')}>
+        <div style={s('font-size:13px;font-weight:500;color:var(--warn)')}>탈퇴 요청 처리 중</div>
+        <div style={s('font-size:12px;color:var(--warn);margin-top:6px;line-height:1.6')}>
           요청이 접수되었습니다. 배송 중인 주문이 있는지 확인한 뒤 처리해드립니다.
           <br />
           처리가 끝나기 전까지는 취소하실 수 있습니다.
         </div>
         <div
           onClick={st.cancelDeletion}
-          style={s('cursor:pointer;margin-top:12px;background:#FFFFFF;border:1px solid #D8CFBF;border-radius:999px;padding:11px;text-align:center;font-size:12.5px;font-weight:700;color:#4A4234')}
+          style={s('cursor:pointer;margin-top:12px;background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-2)')}
         >
           탈퇴 요청 취소
         </div>
@@ -300,7 +300,7 @@ function Withdraw() {
       <div style={s('text-align:center;margin-top:22px')}>
         <span
           onClick={() => setOpen(true)}
-          style={s('cursor:pointer;font-size:12px;color:#A2957F;text-decoration:underline')}
+          style={s('cursor:pointer;font-size:12px;color:var(--ink-4);text-decoration:underline')}
         >
           회원 탈퇴
         </span>
@@ -309,10 +309,10 @@ function Withdraw() {
   }
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #EFCFC3;border-radius:14px;padding:16px;margin-top:20px')}>
-      <div style={s('font-size:13.5px;font-weight:700;color:#A64B32')}>정말 탈퇴하시겠어요?</div>
+    <div style={s('background:var(--surface);border:1px solid var(--warn-mid);border-radius:4px;padding:16px;margin-top:20px')}>
+      <div style={s('font-size:13.5px;font-weight:500;color:var(--warn)')}>정말 탈퇴하시겠어요?</div>
 
-      <div style={s('font-size:12px;color:#6E6252;margin-top:10px;line-height:1.7')}>
+      <div style={s('font-size:12px;color:var(--ink-2);margin-top:10px;line-height:1.7')}>
         <b>삭제되는 것</b>
         <br />
         계정과 로그인 정보, 피부 분석 기록 전체, 루틴 기록, 장바구니, 보유 포인트
@@ -320,38 +320,38 @@ function Withdraw() {
 
       {/* Said plainly here rather than buried in the privacy policy, because
           "왜 아직 내 이름이 남아 있냐"는 탈퇴 후에 나오는 질문입니다. */}
-      <div style={s('font-size:12px;color:#6E6252;margin-top:10px;line-height:1.7')}>
+      <div style={s('font-size:12px;color:var(--ink-2);margin-top:10px;line-height:1.7')}>
         <b>법령에 따라 보관되는 것</b>
         <br />
         주문·결제 기록 5년, 문의 기록 3년 (전자상거래법). 이 기록은 계정과의 연결이
         끊긴 상태로 보관되며, 로그인해서 볼 수는 없습니다.
       </div>
 
-      <div style={s('background:#FBE9E3;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:#A64B32;line-height:1.5')}>
+      <div style={s('background:var(--surface-2);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--warn);line-height:1.5')}>
         보유하신 포인트는 즉시 소멸하며 복구되지 않습니다.
       </div>
 
       <div style={s('margin-top:14px')}>
-        <div style={s('font-size:11px;font-weight:700;color:#6E6252;letter-spacing:0.06em;margin-bottom:5px')}>
-          탈퇴 사유 <span style={s('color:#A2957F;font-weight:600')}>· 선택</span>
+        <div style={s('font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px')}>
+          탈퇴 사유 <span style={s('color:var(--ink-4);font-weight:500')}>· 선택</span>
         </div>
         <input
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="더 나은 서비스를 만드는 데 쓰겠습니다"
-          style={s('width:100%;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:10px;padding:10px 12px;font-size:13px;background:#FFFFFF;outline:none')}
+          style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:10px 12px;font-size:13px;background:var(--surface);outline:none')}
         />
       </div>
 
       <div
         onClick={() => st.requestDeletion(reason.trim())}
-        style={s('cursor:pointer;margin-top:14px;background:#A64B32;color:#FFFFFF;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:700')}
+        style={s('cursor:pointer;margin-top:14px;background:var(--warn);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}
       >
         탈퇴 요청하기
       </div>
       <div
         onClick={() => setOpen(false)}
-        style={s('cursor:pointer;margin-top:8px;text-align:center;font-size:12.5px;color:#8A7D6C;padding:6px')}
+        style={s('cursor:pointer;margin-top:8px;text-align:center;font-size:12.5px;color:var(--ink-3);padding:6px')}
       >
         돌아가기
       </div>

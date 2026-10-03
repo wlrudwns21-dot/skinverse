@@ -77,15 +77,15 @@ function StoreShell() {
   const st = useStore()
 
   return (
-    <div style={s('min-height:100vh;display:flex;justify-content:center;background:radial-gradient(120% 80% at 50% 0%, #F0EBE1 0%, #E7E1D6 60%)')}>
-      <div style={s('width:100%;max-width:430px;min-height:100vh;background:#F8F5EF;box-shadow:0 0 60px rgba(60,45,25,0.12);display:flex;flex-direction:column;position:relative')}>
+    <div style={s('min-height:100vh;display:flex;justify-content:center;background:var(--surface-2)')}>
+      <div style={s('width:100%;max-width:430px;min-height:100vh;background:var(--bg);box-shadow:0 0 60px rgba(16,16,16,0.07);display:flex;flex-direction:column;position:relative')}>
         <Header />
         <div style={s('flex:1;padding:0 0 96px')}>
           {/* Hold the first paint until the stored session is read, so a signed-in
               member never flashes the guest header on reload. */}
           {st.authLoading ? (
             <div style={s('display:flex;align-items:center;justify-content:center;padding:80px 20px')}>
-              <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid #E4DCCB;border-top-color:#2E6B58;animation:spin 1s linear infinite')} />
+              <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
             </div>
           ) : (
             <CurrentScreen />

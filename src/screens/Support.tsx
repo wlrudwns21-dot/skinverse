@@ -3,14 +3,14 @@ import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 import * as support from '../support/remote'
 
-const bubbleBase = 'max-width:80%;border-radius:14px;padding:11px 13px;font-size:13px;line-height:1.55;white-space:pre-wrap'
+const bubbleBase = 'max-width:80%;border-radius:4px;padding:11px 13px;font-size:13px;line-height:1.55;white-space:pre-wrap'
 
 function Bubble({ msg, label }: { msg: support.SupportMessage; label: string }) {
   const mine = msg.sender === 'member'
   return (
     <div style={s(`display:flex;flex-direction:column;gap:3px;align-items:${mine ? 'flex-end' : 'flex-start'}`)}>
-      <div style={s('font-size:10.5px;color:#A2957F;padding:0 4px')}>{label}</div>
-      <div style={s(bubbleBase + ';' + (mine ? 'background:#221C15;color:#F5F0E6' : msg.sender === 'bot' ? 'background:#EAF1EC;color:#2C4A3E' : 'background:#FFFFFF;border:1px solid #ECE6DA;color:#221C15'))}>
+      <div style={s('font-size:10.5px;color:var(--ink-4);padding:0 4px')}>{label}</div>
+      <div style={s(bubbleBase + ';' + (mine ? 'background:var(--ink);color:var(--on-dark)' : msg.sender === 'bot' ? 'background:var(--surface-2);color:var(--accent)' : 'background:var(--surface);border:1px solid var(--line);color:var(--ink)'))}>
         {msg.body}
       </div>
     </div>
@@ -74,12 +74,12 @@ export function Support() {
 
   const statusChip = (status: support.ThreadStatus) => {
     const color =
-      status === 'open' ? 'background:#FBF3E4;color:#9A8455'
-      : status === 'answered' ? 'background:#EAF1EC;color:#2E6B58'
-      : status === 'bot' ? 'background:#F1EAF3;color:#6B4B78'
-      : 'background:#F1EEE6;color:#8A7D6C'
+      status === 'open' ? 'background:var(--surface-2);color:var(--warn)'
+      : status === 'answered' ? 'background:var(--surface-2);color:var(--accent)'
+      : status === 'bot' ? 'background:var(--surface-2);color:var(--viz-4)'
+      : 'background:var(--surface-2);color:var(--ink-3)'
     return (
-      <span style={s('font-size:10.5px;font-weight:700;border-radius:6px;padding:3px 8px;' + color)}>
+      <span style={s('font-size:10.5px;font-weight:500;border-radius:6px;padding:3px 8px;' + color)}>
         {a.supportStatus[status]}
       </span>
     )
@@ -89,7 +89,7 @@ export function Support() {
   if (openId) {
     return (
       <div style={s('padding:20px;animation:rise .4s ease both')}>
-        <div onClick={() => setOpenId(null)} style={s('cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:12px')}>
+        <div onClick={() => setOpenId(null)} style={s('cursor:pointer;font-size:13px;color:var(--ink-3);margin-bottom:12px')}>
           {a.back}
         </div>
 
@@ -110,11 +110,11 @@ export function Support() {
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') void send() }}
             placeholder={a.supportPlaceholder}
-            style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:999px;padding:12px 16px;font-size:13px;background:#FFFFFF;outline:none')}
+            style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid var(--line-2);border-radius:3px;padding:12px 16px;font-size:13px;background:var(--surface);outline:none')}
           />
           <div
             onClick={() => void send()}
-            style={s(`cursor:pointer;background:#221C15;color:#F5F0E6;border-radius:999px;padding:12px 18px;font-size:13px;font-weight:700;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
+            style={s(`cursor:pointer;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
           >
             {a.supportSend}
           </div>
@@ -126,10 +126,10 @@ export function Support() {
   // ── entry point ───────────────────────────────────────────────────────────
   return (
     <div style={s('padding:20px;animation:rise .4s ease both')}>
-      <div onClick={st.goMy} style={s('cursor:pointer;font-size:13px;color:#8A7D6C;margin-bottom:12px')}>{a.back}</div>
+      <div onClick={st.goMy} style={s('cursor:pointer;font-size:13px;color:var(--ink-3);margin-bottom:12px')}>{a.back}</div>
 
-      <div style={s('font-family:Marcellus,serif;font-size:22px')}>{a.supportTitle}</div>
-      <div style={s('font-size:12.5px;color:#8A7D6C;margin-top:4px;line-height:1.5')}>{a.supportSub}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px')}>{a.supportTitle}</div>
+      <div style={s('font-size:12.5px;color:var(--ink-3);margin-top:4px;line-height:1.5')}>{a.supportSub}</div>
 
       <div style={s('display:flex;gap:8px;margin-top:16px')}>
         <input
@@ -137,11 +137,11 @@ export function Support() {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') void send() }}
           placeholder={a.supportPlaceholder}
-          style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid #D8CFBF;border-radius:999px;padding:12px 16px;font-size:13px;background:#FFFFFF;outline:none')}
+          style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid var(--line-2);border-radius:3px;padding:12px 16px;font-size:13px;background:var(--surface);outline:none')}
         />
         <div
           onClick={() => void send()}
-          style={s(`cursor:pointer;background:#221C15;color:#F5F0E6;border-radius:999px;padding:12px 18px;font-size:13px;font-weight:700;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
+          style={s(`cursor:pointer;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
         >
           {a.supportSend}
         </div>
@@ -151,43 +151,43 @@ export function Support() {
           same place a typed question would. */}
       {faqs.length > 0 && (
         <>
-          <div style={s('font-family:Marcellus,serif;font-size:16px;margin:22px 2px 8px')}>{a.supportFaqTitle}</div>
+          <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:22px 2px 8px')}>{a.supportFaqTitle}</div>
           <div style={s('display:flex;flex-direction:column;gap:8px')}>
             {faqs.map((f) => (
               <div
                 key={f.id}
                 onClick={() => { setDraft(support.localized(f.title, st.lang)); }}
-                style={s('cursor:pointer;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px')}
+                style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px')}
               >
                 <span>{support.localized(f.title, st.lang)}</span>
-                <span style={s('color:#B0A490;flex-shrink:0')}>→</span>
+                <span style={s('color:var(--ink-4);flex-shrink:0')}>→</span>
               </div>
             ))}
           </div>
         </>
       )}
 
-      <div style={s('font-family:Marcellus,serif;font-size:16px;margin:22px 2px 8px')}>{st.t.orders === '주문 내역' ? '문의 내역' : 'My questions'}</div>
+      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:22px 2px 8px')}>{st.t.orders === '주문 내역' ? '문의 내역' : 'My questions'}</div>
       {threads.length > 0 ? (
         <div style={s('display:flex;flex-direction:column;gap:8px')}>
           {threads.map((t) => (
             <div
               key={t.id}
               onClick={() => setOpenId(t.id)}
-              style={s('cursor:pointer;background:#FFFFFF;border:1px solid #ECE6DA;border-radius:12px;padding:12px 14px')}
+              style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}
             >
               <div style={s('display:flex;justify-content:space-between;align-items:flex-start;gap:10px')}>
-                <div style={s('font-size:13px;font-weight:600;line-height:1.4;min-width:0')}>{t.subject}</div>
+                <div style={s('font-size:13px;font-weight:500;line-height:1.4;min-width:0')}>{t.subject}</div>
                 <div style={s('flex-shrink:0')}>{statusChip(t.status)}</div>
               </div>
-              <div style={s('font-size:11px;color:#A2957F;margin-top:6px')}>
+              <div style={s('font-size:11px;color:var(--ink-4);margin-top:6px')}>
                 {new Date(t.updated_at).toLocaleDateString()}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div style={s('border:1px dashed #D3C9B7;border-radius:12px;padding:18px;text-align:center;font-size:12.5px;color:#8A7D6C')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:18px;text-align:center;font-size:12.5px;color:var(--ink-3)')}>
           {a.supportEmpty}
         </div>
       )}

@@ -27,18 +27,18 @@ export function RoutineAdherence() {
   const anything = days.some((day) => day.done > 0)
 
   return (
-    <div style={s('background:#FFFFFF;border:1px solid #ECE6DA;border-radius:16px;padding:16px;margin-top:14px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:14px')}>
       <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:8px')}>
-        <div style={s('font-family:Marcellus,serif;font-size:16px')}>{c.historyTitle}</div>
-        <div style={s('font-size:11px;color:#A2957F;flex-shrink:0')}>{c.rate(st.routineRate)}</div>
+        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{c.historyTitle}</div>
+        <div style={s('font-size:11px;color:var(--ink-4);flex-shrink:0')}>{c.rate(st.routineRate)}</div>
       </div>
-      <div style={s('font-size:11.5px;color:#A2957F;margin-top:2px')}>{c.historySub}</div>
+      <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{c.historySub}</div>
 
       <div style={s('display:flex;gap:8px;margin-top:11px;flex-wrap:wrap')}>
-        <span style={s('font-size:11.5px;font-weight:700;background:#EAF1EC;color:#2E6B58;border-radius:999px;padding:4px 10px')}>
+        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--accent);border-radius:3px;padding:4px 10px')}>
           🔥 {c.streak(st.routineStreak.current)}
         </span>
-        <span style={s('font-size:11.5px;font-weight:600;background:#F1EEE6;color:#8A7D6C;border-radius:999px;padding:4px 10px')}>
+        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--ink-3);border-radius:3px;padding:4px 10px')}>
           {c.bestStreak(st.routineStreak.best)}
         </span>
       </div>
@@ -61,27 +61,27 @@ export function RoutineAdherence() {
                   {scan && (
                     <div
                       title={`${day.day} · ${scan.overall}`}
-                      style={s(`position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:${scan.colour};box-shadow:0 0 0 2px #FFFFFF`)}
+                      style={s(`position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:${scan.colour};box-shadow:0 0 0 2px var(--line)`)}
                     />
                   )}
                   {/* Evening on top, morning below — the order of the day read
                       upwards, so the stack matches the routine it describes. */}
-                  <div style={s(`width:100%;height:${pmH}px;background:#6B4B78;border-radius:3px 3px 0 0`)} />
-                  <div style={s(`width:100%;height:${amH}px;background:#2E6B58;margin-top:1px;border-radius:${pmH ? '0' : '3px 3px 0 0'}`)} />
-                  <div style={s('width:100%;height:2px;background:#EFE9DD;margin-top:1px;border-radius:99px')} />
+                  <div style={s(`width:100%;height:${pmH}px;background:var(--viz-4);border-radius:3px 3px 0 0`)} />
+                  <div style={s(`width:100%;height:${amH}px;background:var(--accent);margin-top:1px;border-radius:${pmH ? '0' : '3px 3px 0 0'}`)} />
+                  <div style={s('width:100%;height:2px;background:var(--surface-2);margin-top:1px;border-radius:99px')} />
                 </div>
               )
             })}
           </div>
 
-          <div style={s('display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:10.5px;color:#8A7D6C')}>
-            <span><b style={s('color:#2E6B58')}>■</b> {st.t.morning}</span>
-            <span><b style={s('color:#6B4B78')}>■</b> {st.t.evening}</span>
-            <span style={s('color:#A2957F')}>{c.scanDot}</span>
+          <div style={s('display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:10.5px;color:var(--ink-3)')}>
+            <span><b style={s('color:var(--accent)')}>■</b> {st.t.morning}</span>
+            <span><b style={s('color:var(--viz-4)')}>■</b> {st.t.evening}</span>
+            <span style={s('color:var(--ink-4)')}>{c.scanDot}</span>
           </div>
         </>
       ) : (
-        <div style={s('border:1px dashed #D3C9B7;border-radius:12px;padding:16px;margin-top:12px;font-size:12px;color:#8A7D6C;text-align:center;line-height:1.5')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:16px;margin-top:12px;font-size:12px;color:var(--ink-3);text-align:center;line-height:1.5')}>
           {c.noHistory}
         </div>
       )}

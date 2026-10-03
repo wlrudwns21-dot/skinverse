@@ -1184,7 +1184,7 @@ function useStoreValue() {
       nameL: def.n[lang],
       score,
       w: score + '%',
-      color: score < 50 ? '#C25E43' : score < 70 ? '#B08133' : '#2E6B58',
+      color: score < 50 ? 'var(--warn)' : score < 70 ? 'var(--warn)' : 'var(--accent)',
       label: score < 50 ? t.low : score < 70 ? t.fair : t.good,
     }
   })
@@ -1278,11 +1278,14 @@ function useStoreValue() {
     key,
     label: chipLabels[key][lang],
     pick: () => setState((s) => ({ ...s, filter: key })),
+    /* A filter is a label, not a button. The selected one is marked by a rule
+       under it rather than by a filled shape, which is what keeps a row of six
+       of them from reading as six calls to action. */
     style:
-      'cursor:pointer;white-space:nowrap;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;' +
+      'cursor:pointer;white-space:nowrap;padding:7px 2px 8px;font-size:12px;letter-spacing:0.02em;' +
       (state.filter === key
-        ? 'background:#221C15;color:#F5F0E6'
-        : 'background:#FFFFFF;border:1px solid #D8CFBF;color:#4A4234'),
+        ? 'color:var(--ink);font-weight:500;border-bottom:1px solid var(--ink)'
+        : 'color:var(--ink-3);font-weight:400;border-bottom:1px solid transparent'),
   }))
 
   const toMissionView = (m: CatalogMission): MissionView => {
@@ -1291,10 +1294,10 @@ function useStoreValue() {
       pts: m.pts,
       label: m.l[lang],
       claim: () => claim(m),
-      bg: done ? '#F1EEE6' : '#FFFFFF',
-      boxBg: done ? '#2E6B58' : '#D8CFBF',
+      bg: done ? 'var(--surface-2)' : 'var(--surface)',
+      boxBg: done ? 'var(--accent)' : 'var(--line-2)',
       mark: done ? '✓' : '',
-      txtStyle: done ? 'color:#8A7D6C;text-decoration:line-through' : '',
+      txtStyle: done ? 'color:var(--ink-3);text-decoration:line-through' : '',
     }
   }
   const dailyList = dailyMissions.map(toMissionView)
@@ -1309,10 +1312,10 @@ function useStoreValue() {
       redeem: () => redeem(r),
       btn: isRedeemed ? t.redeemed : r.cost + ' P',
       btnStyle: isRedeemed
-        ? 'background:#EAF1EC;color:#2E6B58'
+        ? 'background:var(--surface-2);color:var(--accent)'
         : affordable
-          ? 'background:#221C15;color:#F5F0E6'
-          : 'background:#EFE9DD;color:#B0A490',
+          ? 'background:var(--ink);color:var(--on-dark)'
+          : 'background:var(--surface-2);color:var(--ink-4)',
     }
   })
 
@@ -1486,7 +1489,7 @@ function useStoreValue() {
     })()
   }
 
-  const scoreColour = (n: number) => (n < 50 ? '#C25E43' : n < 70 ? '#B08133' : '#2E6B58')
+  const scoreColour = (n: number) => (n < 50 ? 'var(--warn)' : n < 70 ? 'var(--warn)' : 'var(--accent)')
   const shortDate = (iso: string) =>
     new Date(iso).toLocaleDateString(lang === 'en' ? 'en-US' : lang, {
       month: 'short',
@@ -1579,10 +1582,10 @@ function useStoreValue() {
   const vsLast = (() => {
     if (trendPoints.length < 2) return null
     const delta = trendPoints[trendPoints.length - 1].overall - trendPoints[trendPoints.length - 2].overall
-    if (Math.abs(delta) < MOVE_THRESHOLD) return { text: ins.vsLastFlat, colour: '#8A7D6C' }
+    if (Math.abs(delta) < MOVE_THRESHOLD) return { text: ins.vsLastFlat, colour: 'var(--ink-3)' }
     return delta > 0
-      ? { text: ins.vsLastUp(delta), colour: '#2E6B58' }
-      : { text: ins.vsLastDown(Math.abs(delta)), colour: '#C25E43' }
+      ? { text: ins.vsLastUp(delta), colour: 'var(--accent)' }
+      : { text: ins.vsLastDown(Math.abs(delta)), colour: 'var(--warn)' }
   })()
 
   const tabScreens: Screen[] = ['home', 'scan', 'shop', 'routine', 'missions']
@@ -1592,8 +1595,9 @@ function useStoreValue() {
       id,
       label: t.tabs[i],
       go: go(id),
-      bar: active ? '#221C15' : 'transparent',
-      color: active ? '#221C15' : '#A2957F',
+      active,
+      bar: active ? 'var(--ink)' : 'transparent',
+      color: active ? 'var(--ink)' : 'var(--ink-3)',
     }
   })
 
@@ -1639,7 +1643,7 @@ function useStoreValue() {
         refundedS: o.refundedTotal > 0 ? money(o.refundedTotal) : '',
         date: o.createdAt.slice(0, 10),
         statusLabel: t.orderStatus[o.status] ?? o.status,
-        statusTone: settled ? '#C25E43' : o.status === 'delivered' ? '#6E6252' : '#2E6B58',
+        statusTone: settled ? 'var(--warn)' : o.status === 'delivered' ? 'var(--ink-2)' : 'var(--accent)',
         // Nothing to ask for before the money arrived, or after it has gone.
         refundable: o.paidAt !== null && !settled && !open,
         requestOpen: open,
@@ -1774,13 +1778,13 @@ function useStoreValue() {
     summary: condition.sum[lang],
     metrics,
     dialStyle:
-      'width:132px;height:132px;border-radius:50%;padding:10px;box-sizing:border-box;background:conic-gradient(#2E6B58 ' +
+      'width:132px;height:132px;border-radius:50%;padding:10px;box-sizing:border-box;background:conic-gradient(var(--accent) ' +
       overallScore * 3.6 +
-      'deg,#E8E1D3 0deg)',
+      'deg,var(--line) 0deg)',
     dialSmStyle:
-      'width:48px;height:48px;border-radius:50%;padding:4px;box-sizing:border-box;background:conic-gradient(#2E6B58 ' +
+      'width:48px;height:48px;border-radius:50%;padding:4px;box-sizing:border-box;background:conic-gradient(var(--accent) ' +
       overallScore * 3.6 +
-      'deg,#D5E2D9 0deg);flex-shrink:0',
+      'deg,var(--line) 0deg);flex-shrink:0',
 
     homeRecs: all.slice(0, 4),
     shopList,
@@ -1819,15 +1823,15 @@ function useStoreValue() {
     setCountry: (value: string) => setState((s) => ({ ...s, country: value })),
     pickDhl: () => setState((s) => ({ ...s, ship: 'dhl' })),
     pickEms: () => setState((s) => ({ ...s, ship: 'ems' })),
-    dhlBorder: state.ship === 'dhl' ? '#221C15' : '#ECE6DA',
-    emsBorder: state.ship === 'ems' ? '#221C15' : '#ECE6DA',
+    dhlBorder: state.ship === 'dhl' ? 'var(--ink)' : 'var(--line-2)',
+    emsBorder: state.ship === 'ems' ? 'var(--ink)' : 'var(--line-2)',
     toPayment: () => {
       if (isMember) void auth.updateProfile({ name: state.name, address: state.addr, country: state.country })
       setState((s) => ({ ...s, chkStep: 2 }))
     },
     backShip: () => setState((s) => ({ ...s, chkStep: 1 })),
     togglePoints: () => setState((s) => ({ ...s, usePoints: !s.usePoints })),
-    togBg: state.usePoints ? '#2E6B58' : '#D8CFBF',
+    togBg: state.usePoints ? 'var(--accent)' : 'var(--line-2)',
     togLeft: state.usePoints ? '21px' : '3px',
     beginPayment,
     capturePayment,
@@ -1852,7 +1856,7 @@ function useStoreValue() {
     locationCoords: usingLocation ? geo.coords : null,
     weatherIsLive: liveWeather !== null,
     weather,
-    uvColor: plan.uv === 'extreme' || plan.uv === 'veryHigh' ? '#C25E43' : plan.uv === 'high' ? '#B08133' : '#2E6B58',
+    uvColor: plan.uv === 'extreme' || plan.uv === 'veryHigh' ? 'var(--warn)' : plan.uv === 'high' ? 'var(--warn)' : 'var(--accent)',
     wLine:
       weather.t + '°C · ' + t.humidity + ' ' + weather.h + '% · UV ' + weather.uv +
       // Appended rather than given its own row: it is one more reading about
@@ -1908,7 +1912,7 @@ function useStoreValue() {
       setState((s) => ({ ...s, notif: next }))
       if (isMember) void auth.updateProfile({ routine_reminders: next })
     },
-    notifBg: state.notif ? '#2E6B58' : '#D8CFBF',
+    notifBg: state.notif ? 'var(--accent)' : 'var(--line-2)',
     notifLeft: state.notif ? '19px' : '3px',
 
     tabs,

@@ -1,17 +1,96 @@
-/* Ported verbatim from the Claude Design prototypes (Skinverse.dc.html /
-   Skinverse Admin.dc.html <helmet> blocks). The two prototypes share every
-   rule except the body background, which is set per route in App.tsx. */
+/* ── the palette ────────────────────────────────────────────────────────────
+   Every colour in the app comes from here. Screens are written as inline
+   `s()` strings, and `s()` passes values through untouched, so `var(--ink)`
+   works inside them exactly as it would in a stylesheet.
+
+   The rule the design rests on: one accent (deep green), one warm tone for
+   caution, one red for failure, and a single neutral ramp for everything
+   else. A new colour does not get invented at the call site — it gets a name
+   here or it reuses one of these. That is what stops the drift back to the
+   forty-odd near-identical creams this replaced. */
+:root {
+  /* grounds, lightest to darkest */
+  --bg: #FCFCFA;
+  --surface: #FFFFFF;
+  --surface-2: #F4F4F1;
+
+  /* text and icons, darkest to lightest. --ink-3 is the lightest that still
+     clears WCAG AA (4.5:1) on --surface for body text; --ink-4 is for large
+     text, disabled states and glyphs only. */
+  --ink: #101010;
+  --ink-2: #4A4A44;
+  --ink-3: #6E6E68;
+  --ink-4: #8A8A82;
+
+  /* hairlines. --line for dividers, --line-2 for input borders, which need to
+     read as an edge you can type inside. */
+  --line: #E9E7E1;
+  --line-2: #DEDCD5;
+
+  /* the accent. --accent-mid is for fills and charts, where the deep green
+     goes muddy; --accent-soft is the tinted background behind it. */
+  --accent: #1F4A3D;
+  --accent-strong: #14322A;
+  --accent-mid: #4E7A68;
+  --accent-soft: #EDF1EE;
+
+  /* text drawn on top of a dark fill or a photo. --on-dark-2 is the secondary
+     rank — a muted white, not a grey, so it holds up over a photograph. */
+  --on-accent: #FFFFFF;
+  --on-dark: #FFFFFF;
+  --on-dark-2: rgba(255, 255, 255, 0.82);
+
+  /* The two translucent grounds, for the bars that stay put while the screen
+     scrolls under them. They have to be written out rather than derived,
+     because a colour channel cannot come from another custom property. */
+  /* Stand-in grounds for product shots that have not been taken. Three tones
+     a hair apart, so a shelf of them reads as one shelf. */
+  --ph-a: #E3E6E4;
+  --ph-b: #E9E6E1;
+  --ph-c: #E4E5E8;
+
+  --bg-blur: rgba(252, 252, 250, 0.92);
+  --surface-blur: rgba(255, 255, 255, 0.94);
+
+  /* caution: a limit, a warning, a thing to watch. Not a failure. */
+  --warn: #8A4A18;
+  --warn-mid: #B5753A;
+  --warn-soft: #F5EFE7;
+
+  /* failure: a rejected payment, a dispute, an error. */
+  --danger: #8C3A33;
+  --danger-soft: #F6EAE8;
+
+  /* The chart scale. Five hues that have to stay apart from each other at a
+     glance, so they are picked for separation first and held to the same
+     lightness so none of them shouts. Used by the skin map and the trend
+     lines, where a colour is a label rather than a mood. */
+  --viz-1: #1F4A3D;
+  --viz-2: #45708A;
+  --viz-3: #8A6A3A;
+  --viz-4: #6A5A7A;
+  --viz-5: #4E7A68;
+
+  /* Laid over the bottom of a photo so white text survives a bright image.
+     Carried as a token because every banner needs the same one. */
+  --scrim: linear-gradient(to top, rgba(14, 14, 13, 0.80), rgba(14, 14, 13, 0.56) 34%, rgba(14, 14, 13, 0.26) 64%, rgba(14, 14, 13, 0));
+  --scrim-dark: linear-gradient(to top, rgba(12, 16, 13, 0.82), rgba(12, 16, 13, 0.58) 34%, rgba(12, 16, 13, 0.28) 64%, rgba(12, 16, 13, 0));
+}
 
 body {
   margin: 0;
-  background: #E7E1D6;
+  background: var(--bg);
   font-family: 'Albert Sans', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Thai', sans-serif;
   -webkit-font-smoothing: antialiased;
-  color: #221C15;
+  color: var(--ink);
+  /* Without this a browser breaks Korean mid-word, because it treats every
+     syllable as a legal break point. Every screen in the app is Korean first,
+     so it belongs here rather than at each heading. */
+  word-break: keep-all;
 }
 
-a { color: #2E6B58; text-decoration: none; }
-a:hover { color: #1F4A3D; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-strong); }
 
 input, select, button { font-family: inherit; }
 
@@ -53,9 +132,9 @@ input, select, button { font-family: inherit; }
   justify-content: center;
   /* The same ground as the app shell underneath, so the hand-off is a fade
      and not a flash of a different colour. */
-  background: radial-gradient(120% 80% at 50% 0%, #F0EBE1 0%, #E7E1D6 60%);
+  background: radial-gradient(120% 80% at 50% 0%, var(--surface) 0%, var(--bg) 60%);
   --t: 1;
-  --ring: 47, 107, 80;
+  --ring: 31, 74, 61;
   transition: opacity 320ms ease;
 }
 .splash.leaving { opacity: 0; }
@@ -64,7 +143,7 @@ input, select, button { font-family: inherit; }
   position: relative;
   width: 100%;
   max-width: 430px;
-  background: #F8F5EF;
+  background: var(--bg);
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -145,11 +224,11 @@ input, select, button { font-family: inherit; }
 
 .splash-logotype {
   margin: 0;
-  font-family: Marcellus, Georgia, 'Times New Roman', serif;
+  font-family: Marcellus, "Noto Serif KR", Georgia, 'Times New Roman', serif;
   font-weight: 400;
   font-size: 30px;
   line-height: 1;
-  color: #16150F;
+  color: var(--ink);
   display: flex;
   white-space: nowrap;
   animation: splashTrack calc(900ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(1880ms * var(--t)) both;
@@ -171,7 +250,7 @@ input, select, button { font-family: inherit; }
   font-size: 9.5px;
   letter-spacing: .34em;
   text-transform: uppercase;
-  color: #8C8579;
+  color: var(--ink-3);
   white-space: nowrap;
   animation: splashTag calc(520ms * var(--t)) cubic-bezier(.16, .84, .32, 1) calc(2600ms * var(--t)) both;
 }
