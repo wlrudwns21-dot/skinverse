@@ -3,6 +3,7 @@ import { addStep, extrasFull, extrasSub, extrasTitle, removeStep } from '../rout
 import type { Slot } from '../routine/checklist'
 import type { RoutineStepView } from '../store/StoreContext'
 import { s } from '../lib/css'
+import { KICKER } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 /**
@@ -41,8 +42,8 @@ function StepRow({ step }: { step: RoutineStepView }) {
     <div
       onClick={step.canToggle ? step.toggle : undefined}
       style={s(
-        'background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;' +
-          'display:flex;gap:12px;align-items:center;' +
+        'border-top:1px solid var(--line);padding:13px 0;' +
+          'display:flex;gap:13px;align-items:center;' +
           (step.canToggle ? 'cursor:pointer' : 'cursor:default'),
       )}
     >
@@ -50,13 +51,13 @@ function StepRow({ step }: { step: RoutineStepView }) {
       <div style={s('flex:1;min-width:0')}>
         <div
           style={s(
-            'font-size:13px;font-weight:500;' +
-              (step.done ? 'color:var(--ink-3);text-decoration:line-through' : dim ? 'color:var(--ink-4)' : ''),
+            'font-size:13px;line-height:1.5;' +
+              (step.done ? 'color:var(--ink-3);text-decoration:line-through' : dim ? 'color:var(--ink-3)' : ''),
           )}
         >
           {step.name}
         </div>
-        <div style={s(`font-size:11.5px;color:${dim ? 'var(--ink-4)' : 'var(--ink-3)'}`)}>{step.note}</div>
+        <div style={s(`font-size:11.5px;line-height:1.5;margin-top:2px;color:${dim ? 'var(--ink-4)' : 'var(--ink-3)'}`)}>{step.note}</div>
       </div>
       {step.extraId && (
         <span
@@ -85,7 +86,7 @@ function AddExtra({ slot }: { slot: Slot }) {
     return (
       <div
         onClick={() => setOpen(true)}
-        style={s('cursor:pointer;border:1px dashed var(--line-2);border-radius:4px;padding:11px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-3)')}
+        style={s('cursor:pointer;border-top:1px solid var(--line);padding:14px 0;text-align:center;font-size:12px;letter-spacing:0.04em;color:var(--accent)')}
       >
         + {addStep[st.lang]}
       </div>
@@ -148,13 +149,13 @@ export function RoutineCheck({
 
   return (
     <>
-      <div style={s('display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:18px 2px 8px')}>
-        <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:17px')}>{heading}</div>
-        <div style={s(`font-size:11px;flex-shrink:0;${shut ? 'color:var(--ink-4)' : 'color:var(--accent);font-weight:500'}`)}>
+      <div style={s('display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:26px 0 8px')}>
+        <div style={s(KICKER)}>{heading}</div>
+        <div style={s(`font-size:11px;flex-shrink:0;letter-spacing:0.04em;${shut ? 'color:var(--ink-4)' : 'color:var(--accent)'}`)}>
           {shut ? c.windowShut(st.slotWindowLabel[slot]) : st.slotWindowLabel[slot]}
         </div>
       </div>
-      <div style={s('display:flex;flex-direction:column;gap:8px')}>
+      <div>
         {steps.map((step) => (
           <StepRow key={step.slot + step.key} step={step} />
         ))}

@@ -6,6 +6,7 @@ import { RoutineAdherence } from '../components/RoutineAdherence'
 import { RoutineCheck } from '../components/RoutineCheck'
 import { CoreTipCard } from './Stories'
 import { s } from '../lib/css'
+import { BTN, DISPLAY, EYEBROW, GUTTER, KICKER, NUMERAL, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 export function Routine() {
@@ -13,87 +14,89 @@ export function Routine() {
   const w = st.weather
 
   return (
-    <div style={s('padding:20px;animation:rise .4s ease both')}>
-      <div style={s('display:flex;justify-content:space-between;align-items:center;gap:10px')}>
-        <div>
-          <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px')}>{st.t.routineTitle}</div>
-          <div style={s('font-size:12px;color:var(--ink-3)')}>{st.t.routineSub}</div>
+    <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
+      <div style={s(`${GUTTER};padding-top:22px`)}>
+        <div style={s('display:flex;justify-content:space-between;align-items:flex-start;gap:12px')}>
+          <div style={s('min-width:0')}>
+            <div style={s(KICKER)}>routine</div>
+            <div style={s(`${DISPLAY};font-size:24px;margin-top:8px`)}>{st.t.routineTitle}</div>
+            <div style={s('font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.6')}>{st.t.routineSub}</div>
+          </div>
+          <select
+            value={st.state.city}
+            onChange={(e) => {
+              if (e.target.value === CURRENT_LOCATION) st.requestLocation()
+              else st.setCity(e.target.value)
+            }}
+            style={s('border:none;border-bottom:1px solid var(--line-2);border-radius:0;padding:6px 2px;font-size:12px;letter-spacing:0.04em;background:transparent;color:var(--ink-2);outline:none;max-width:132px;flex-shrink:0;cursor:pointer')}
+          >
+            <option value={CURRENT_LOCATION}>📍 {st.a.currentLocation}</option>
+            {cityNames.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </div>
-        <select
-          value={st.state.city}
-          onChange={(e) => {
-            if (e.target.value === CURRENT_LOCATION) st.requestLocation()
-            else st.setCity(e.target.value)
-          }}
-          style={s('border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:12px;background:var(--surface);outline:none;max-width:140px')}
-        >
-          <option value={CURRENT_LOCATION}>📍 {st.a.currentLocation}</option>
-          {cityNames.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-      </div>
 
-      {/* Where the numbers come from, said plainly: a live reading, a sample
-          value, or a location request still in flight or refused. */}
-      <div style={s('display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap')}>
-        <span style={s('font-size:11px;font-weight:500;border-radius:3px;padding:4px 9px;' + (st.weatherIsLive ? 'background:var(--surface-2);color:var(--accent)' : 'background:var(--surface-2);color:var(--ink-3)'))}>
-          {st.weatherIsLive ? '● ' + st.a.liveWeather : st.a.sampleWeather}
-        </span>
-        <span style={s('font-size:12px;color:var(--ink-3)')}>{st.placeLabel}</span>
-        {st.weatherAgo && (
-          <span style={s('font-size:11.5px;color:var(--ink-4)')}>· {st.weatherAgo}</span>
-        )}
-        {/* The reading refreshes itself every two hours; this is for the
-            visitor who has just walked outside and does not want to wait. */}
-        <span
-          onClick={st.refreshWeather}
-          style={s('cursor:pointer;font-size:11.5px;font-weight:500;color:var(--accent);border:1px solid var(--accent-mid);background:var(--surface-2);border-radius:3px;padding:3px 10px;display:inline-flex;align-items:center;gap:5px')}
-        >
-          {!st.weatherBusy && <RefreshIcon />}
-          {st.weatherBusy ? st.refreshingLabel : st.refreshLabel}
-        </span>
-        {!st.usingLocation && (
-          <span onClick={st.requestLocation} style={s('cursor:pointer;font-size:12px;color:var(--accent);font-weight:500;text-decoration:underline')}>
-            📍 {st.a.useMyLocation}
+        {/* Where the numbers come from, said plainly: a live reading, a sample
+            value, or a location request still in flight or refused. Written as
+            one quiet line — it is a footnote to the readings below, and six
+            coloured pills made it look like the point of the screen. */}
+        <div style={s('display:flex;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap;font-size:11px;letter-spacing:0.04em')}>
+          <span style={s(`color:${st.weatherIsLive ? 'var(--accent)' : 'var(--ink-4)'}`)}>
+            {st.weatherIsLive ? '● ' + st.a.liveWeather : st.a.sampleWeather}
           </span>
-        )}
-      </div>
-
-      {st.geoStatus === 'asking' && (
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:11px 14px;margin-top:8px;font-size:12.5px;color:var(--ink-2)')}>
-          {st.a.locating}
-        </div>
-      )}
-      {(st.geoStatus === 'denied' || st.geoStatus === 'unavailable') && (
-        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:11px 14px;margin-top:8px;font-size:12.5px;color:var(--warn);line-height:1.5;display:flex;justify-content:space-between;gap:10px;align-items:center')}>
-          <span>{st.geoStatus === 'denied' ? st.a.locationDenied : st.a.locationUnavailable}</span>
-          <span onClick={st.clearLocation} style={s('cursor:pointer;font-weight:500;color:var(--warn);white-space:nowrap;flex-shrink:0')}>
-            {st.a.pickCity}
+          <span style={s('color:var(--ink-3)')}>{st.placeLabel}</span>
+          {st.weatherAgo && <span style={s('color:var(--ink-4)')}>{st.weatherAgo}</span>}
+          {/* The reading refreshes itself every two hours; this is for the
+              visitor who has just walked outside and does not want to wait. */}
+          <span
+            onClick={st.refreshWeather}
+            style={s('cursor:pointer;color:var(--accent);display:inline-flex;align-items:center;gap:5px;border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}
+          >
+            {!st.weatherBusy && <RefreshIcon />}
+            {st.weatherBusy ? st.refreshingLabel : st.refreshLabel}
           </span>
+          {!st.usingLocation && (
+            <span onClick={st.requestLocation} style={s('cursor:pointer;color:var(--accent);border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}>
+              {st.a.useMyLocation}
+            </span>
+          )}
         </div>
-      )}
 
-      <div style={s('display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px')}>
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px;text-align:center')}>
-          <div style={s('font-size:20px;font-weight:500')}>{w.t}°</div>
-          <div style={s('font-size:11px;color:var(--ink-3)')}>{st.t.temp}</div>
-        </div>
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px;text-align:center')}>
-          <div style={s('font-size:20px;font-weight:500')}>{w.h}%</div>
-          <div style={s('font-size:11px;color:var(--ink-3)')}>{st.t.humidity}</div>
-        </div>
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px;text-align:center')}>
-          <div style={s(`font-size:20px;font-weight:500;color:${st.uvColor}`)}>{w.uv}</div>
-          <div style={s('font-size:11px;color:var(--ink-3)')}>UV</div>
+        {st.geoStatus === 'asking' && (
+          <div style={s('margin-top:12px;font-size:12.5px;color:var(--ink-3)')}>{st.a.locating}</div>
+        )}
+        {(st.geoStatus === 'denied' || st.geoStatus === 'unavailable') && (
+          <div style={s('margin-top:12px;font-size:12.5px;color:var(--warn);line-height:1.6;display:flex;justify-content:space-between;gap:10px;align-items:baseline')}>
+            <span>{st.geoStatus === 'denied' ? st.a.locationDenied : st.a.locationUnavailable}</span>
+            <span onClick={st.clearLocation} style={s('cursor:pointer;font-weight:500;white-space:nowrap;flex-shrink:0;border-bottom:1px solid currentColor')}>
+              {st.a.pickCity}
+            </span>
+          </div>
+        )}
+
+        {/* The same three readings, in the same shape, as the home screen. */}
+        <div style={s('padding:20px 0 4px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px')}>
+          <div>
+            <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>{st.t.temp}</div>
+            <div style={s(`${NUMERAL};font-size:28px;margin-top:6px`)}>{w.t}°</div>
+          </div>
+          <div>
+            <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>{st.t.humidity}</div>
+            <div style={s(`${NUMERAL};font-size:28px;margin-top:6px`)}>{w.h}%</div>
+          </div>
+          <div>
+            <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>UV</div>
+            <div style={s(`${NUMERAL};font-size:28px;margin-top:6px;color:${st.uvColor}`)}>{w.uv}</div>
+          </div>
         </div>
       </div>
 
       {/* The three readings that decide the plan, each with what it changes.
           Showing the criteria beats an unexplained list of products. */}
-      <div style={s('background:var(--ink);color:var(--on-dark-2);border-radius:4px;padding:16px;margin-top:10px')}>
-        <div style={s('font-size:11px;letter-spacing:0.12em;color:var(--warn-on-dark);font-weight:500')}>{st.basisTitle}</div>
-        <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:4px')}>{st.basisHint}</div>
+      <div style={s('background:var(--ink);color:var(--on-dark);padding:22px 20px;margin-top:14px')}>
+        <div style={s(EYEBROW)}>{st.basisTitle}</div>
+        <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:7px;line-height:1.6')}>{st.basisHint}</div>
 
         <div style={s('display:flex;flex-direction:column;gap:11px;margin-top:13px')}>
           {[
@@ -118,11 +121,13 @@ export function Routine() {
       {/* The working behind the steps below. Collapsed by default — someone who
           just wants the routine should get the routine, and someone who wants to
           know why gets the measurements in the units they were taken in. */}
-      <PlanBasis plan={st.plan} weather={st.weatherNow} lang={st.lang} t={st.basisT} />
+      <div style={s(GUTTER)}>
+        <PlanBasis plan={st.plan} weather={st.weatherNow} lang={st.lang} t={st.basisT} />
+      </div>
 
       {/* Today's progress, before the steps themselves — a customer coming
           back at 9pm wants to know what is left, not to re-read the list. */}
-      <div style={s('background:var(--ink);color:var(--on-dark);border-radius:4px;padding:14px 16px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
+      <div style={s('background:var(--ink);color:var(--on-dark);padding:18px 20px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
         <div style={s('min-width:0')}>
           <div style={s('font-size:13px;font-weight:500')}>
             {st.todayAdherence.done === st.todayAdherence.total && st.todayAdherence.total > 0
@@ -138,8 +143,9 @@ export function Routine() {
         </div>
       </div>
 
+      <div style={s(GUTTER)}>
       {!st.isMember && (
-        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:11px 14px;margin-top:10px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
+        <div style={s('padding:14px 0;font-size:12.5px;color:var(--warn);line-height:1.6;border-bottom:1px solid var(--line)')}>
           {st.checkT.memberOnly}
         </div>
       )}
@@ -162,12 +168,9 @@ export function Routine() {
         </div>
       </div>
 
-      <div
-        onClick={st.saveRoutine}
-        style={s('cursor:pointer;margin-top:16px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}
-      >
+      <div onClick={st.saveRoutine} style={s(`${BTN};margin-top:20px`)}>
         {st.a.saveRoutineCta}
-        {!st.isMember && <span style={s('font-size:11px;font-weight:500;opacity:.7')}> · {st.a.signUp}</span>}
+        {!st.isMember && <span style={s('font-size:11px;opacity:.72')}> · {st.a.signUp}</span>}
       </div>
 
       {st.isMember && st.savedRoutineCount > 0 && (
@@ -176,9 +179,11 @@ export function Routine() {
         </div>
       )}
 
-      <div onClick={st.goMissions} style={s('cursor:pointer;margin-top:12px;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center')}>
-        <b>{st.t.completeCta}</b>
-        <span style={s('font-weight:500;color:var(--warn)')}>→</span>
+      <div style={s(`${RULE};margin-top:22px`)} />
+      <div onClick={st.goMissions} style={s('cursor:pointer;padding:16px 0 4px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px')}>
+        <span>{st.t.completeCta}</span>
+        <span style={s('color:var(--ink-4);flex-shrink:0')}>→</span>
+      </div>
       </div>
     </div>
   )

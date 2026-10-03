@@ -5,6 +5,7 @@ import { ImageSlot } from '../components/ImageSlot'
 import { AxisTrends } from '../components/AxisTrends'
 import { SkinMap } from '../components/SkinMap'
 import { s } from '../lib/css'
+import { BTN, DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 export function ScanIntro() {
@@ -13,21 +14,22 @@ export function ScanIntro() {
   const pickerRef = useRef<HTMLInputElement>(null)
 
   return (
-    <div style={s('padding:24px 20px;animation:rise .4s ease both')}>
-      <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>{st.t.scanTitle}</div>
-      <div style={s('font-size:13px;color:var(--ink-3);margin-top:4px')}>{st.t.scanSub}</div>
+    <div style={s(`${GUTTER};padding-top:22px;padding-bottom:4px;animation:rise .4s ease both`)}>
+      <div style={s(KICKER)}>skin reading</div>
+      <div style={s(`${DISPLAY};font-size:24px;margin-top:8px`)}>{st.t.scanTitle}</div>
+      <div style={s('font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.6')}>{st.t.scanSub}</div>
 
       {/* Coming here on a new day opens the camera rather than the old report,
           because a new day is the reason to scan again — but the report is one
           tap away, not lost. */}
       <div style={s('display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap')}>
         {st.quotaLine && (
-          <span style={s('font-size:11.5px;font-weight:500;border-radius:3px;padding:4px 10px;' + (st.scansLeft === 0 ? 'background:var(--surface-2);color:var(--warn)' : 'background:var(--surface-2);color:var(--accent)'))}>
+          <span style={s(`font-size:11.5px;letter-spacing:0.04em;color:${st.scansLeft === 0 ? 'var(--warn)' : 'var(--ink-3)'}`)}>
             {st.quotaLine}
           </span>
         )}
         {st.state.scanned && (
-          <span onClick={st.showLastResult} style={s('cursor:pointer;font-size:12px;color:var(--accent);font-weight:500;text-decoration:underline')}>
+          <span onClick={st.showLastResult} style={s('cursor:pointer;font-size:11.5px;color:var(--accent);border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}>
             {st.t.viewReport} →
           </span>
         )}
@@ -51,13 +53,13 @@ export function ScanIntro() {
       <div style={s('display:flex;gap:8px;justify-content:center;margin-bottom:16px')}>
         <div
           onClick={() => setCameraOpen(true)}
-          style={s('cursor:pointer;background:var(--surface);border:1.5px solid var(--ink);border-radius:3px;padding:10px 18px;font-size:12.5px;font-weight:500')}
+          style={s('cursor:pointer;border:1px solid var(--ink);border-radius:3px;padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em')}
         >
-          📷 {st.a.camera.take}
+          {st.a.camera.take}
         </div>
         <div
           onClick={() => pickerRef.current?.click()}
-          style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:10px 18px;font-size:12.5px;font-weight:500;color:var(--ink-2)')}
+          style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em;color:var(--ink-2)')}
         >
           {st.a.camera.pick}
         </div>
@@ -86,55 +88,58 @@ export function ScanIntro() {
       {/* What the pre-flight check found. A problem is a hard stop, shown in
           red; a warning is advice the customer can ignore. */}
       {st.photoCheck?.problem && (
-        <div style={s('background:var(--danger-soft);border:1px solid var(--danger-soft);border-radius:4px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--danger);line-height:1.5')}>
+        <div style={s('padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--danger);background:var(--danger-soft);border-radius:3px;line-height:1.6')}>
           {st.a.photoError[st.photoCheck.problem]}
         </div>
       )}
       {st.photoCheck?.warning && (
-        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
+        <div style={s('padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--warn);background:var(--warn-soft);border-radius:3px;line-height:1.6')}>
           {st.a.photoError[st.photoCheck.warning]}
         </div>
       )}
 
       {/* These are the vendor's own photo requirements, not general advice —
-          a photo that misses them is rejected after we have been billed. */}
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:10px')}>
-        {st.a.photoTips.map((tip) => (
-          <div key={tip} style={s('display:flex;gap:10px;font-size:13px')}>
-            <span style={s('color:var(--accent);font-weight:500')}>✓</span>
-            <span>{tip}</span>
-          </div>
-        ))}
+          a photo that misses them is rejected after we have been billed. So
+          they are a numbered list of conditions, not a box of friendly tips. */}
+      <div style={s(RULE)} />
+      <div style={s('padding:16px 0 4px')}>
+        <div style={s(KICKER)}>before you shoot</div>
+        <div style={s('margin-top:12px;display:flex;flex-direction:column;gap:9px')}>
+          {st.a.photoTips.map((tip, i) => (
+            <div key={tip} style={s('display:flex;gap:11px;font-size:12.5px;line-height:1.6;color:var(--ink-2)')}>
+              <span style={s('color:var(--ink-4);flex-shrink:0;font-variant-numeric:tabular-nums')}>
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>{tip}</span>
+            </div>
+          ))}
+        </div>
       </div>
+      <div style={s(RULE)} />
 
       {/* A guest is told before they frame a photo, not after. The pitch is
           what the account gives them — a saved record and a trend — rather than
           a refusal. */}
       {!st.isMember ? (
         <>
-          <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:13px 15px;margin-top:14px;font-size:12.5px;color:var(--warn);line-height:1.55')}>
+          <div style={s('padding:16px 0;font-size:12.5px;color:var(--ink-2);line-height:1.8')}>
             {st.a.scanMemberOnly}
           </div>
-          <div
-            onClick={() => st.goAuth('signup')}
-            style={s('cursor:pointer;margin-top:14px;background:var(--ink);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}
-          >
-            {st.a.scanMemberOnlyCta}
-          </div>
+          <div onClick={() => st.goAuth('signup')} style={s(BTN)}>{st.a.scanMemberOnlyCta}</div>
           <div
             onClick={() => st.goAuth('login')}
-            style={s('cursor:pointer;text-align:center;font-size:12px;color:var(--ink-3);margin-top:12px;text-decoration:underline')}
+            style={s('cursor:pointer;text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}
           >
-            {st.a.hasAccount} {st.a.logIn}
+            {st.a.hasAccount} <span style={s('color:var(--accent);border-bottom:1px solid var(--accent-mid)')}>{st.a.logIn}</span>
           </div>
         </>
       ) : (
         <div
           onClick={st.startScan}
           style={s(
-            'cursor:pointer;margin-top:18px;border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500' +
+            'cursor:pointer;margin-top:20px;border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em' +
               (st.photoCheck?.problem
-                ? ';background:var(--line);color:var(--on-dark)'
+                ? ';background:transparent;border:1px solid var(--line-2);color:var(--ink-4)'
                 : ';background:var(--ink);color:var(--on-dark)'),
           )}
         >

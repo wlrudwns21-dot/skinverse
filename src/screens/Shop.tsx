@@ -1,12 +1,7 @@
 import { s } from '../lib/css'
+import { DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
-/* The same pieces the home screen is built from, so the two screens read as
-   one app rather than two. */
-const GUTTER = 'padding:0 20px'
-const KICKER = 'font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--ink-3)'
-const DISPLAY = 'font-family:Albert Sans,"Noto Sans KR",sans-serif;font-weight:300;letter-spacing:-0.01em'
-const RULE = 'height:1px;background:var(--line)'
 
 export function Shop() {
   const st = useStore()

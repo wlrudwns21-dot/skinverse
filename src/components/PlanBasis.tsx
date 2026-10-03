@@ -3,6 +3,7 @@ import { metricDefs } from '../data/skin'
 import type { Lang, MetricKey, Weather } from '../data/types'
 import type { RoutinePlan } from '../routine/rules'
 import { s } from '../lib/css'
+import { KICKER, RULE } from '../lib/ui'
 
 /**
  * What the routine was actually decided from.
@@ -96,16 +97,17 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
   const b = plan.basis
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+    <div>
+      <div style={s(RULE)} />
       <div
         onClick={() => setOpen(!open)}
-        style={s('cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px')}
+        style={s('cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:16px 0')}
       >
-        <div>
-          <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{t.title}</div>
-          <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{t.sub}</div>
+        <div style={s('min-width:0')}>
+          <div style={s('font-size:13.5px')}>{t.title}</div>
+          <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:4px;line-height:1.5')}>{t.sub}</div>
         </div>
-        <div style={s('font-size:11.5px;color:var(--ink-3);font-weight:500;flex-shrink:0')}>
+        <div style={s('font-size:11px;letter-spacing:0.06em;color:var(--accent);flex-shrink:0')}>
           {open ? t.hide : t.show}
         </div>
       </div>
@@ -113,7 +115,7 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
       {open && (
         <div style={s('animation:rise .25s ease both')}>
           {/* What was measured outside. */}
-          <div style={s('font-size:11px;color:var(--ink-4);letter-spacing:0.08em;font-weight:500;margin-top:16px')}>
+          <div style={s(`${KICKER};margin-top:16px`)}>
             {t.weatherTitle}
           </div>
           <div style={s('display:flex;flex-wrap:wrap;gap:12px;margin-top:8px')}>
@@ -124,7 +126,7 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
 
           {/* And what that actually means for skin — the part a weather app
               cannot tell you, because a percentage is not a force. */}
-          <div style={s('font-size:11px;color:var(--ink-4);letter-spacing:0.08em;font-weight:500;margin-top:16px')}>
+          <div style={s(`${KICKER};margin-top:16px`)}>
             {t.derivedTitle}
           </div>
           <div style={s('display:flex;flex-wrap:wrap;gap:12px;margin-top:8px')}>
@@ -152,10 +154,10 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
           </div>
 
           {/* And what the scan contributed. */}
-          <div style={s('font-size:11px;color:var(--ink-4);letter-spacing:0.08em;font-weight:500;margin-top:18px')}>
+          <div style={s(`${KICKER};margin-top:18px`)}>
             {t.faceTitle}
           </div>
-          <div style={s('background:var(--surface);border-radius:4px;padding:12px 14px;margin-top:8px')}>
+          <div style={s('margin-top:10px')}>
             <div style={s('font-size:12.5px;line-height:1.6;color:var(--ink-2)')}>
               <b>{t.weakest}</b> — {t.weakestHelp(axisName(plan.weakest, lang))}
             </div>

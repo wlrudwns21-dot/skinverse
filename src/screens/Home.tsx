@@ -9,22 +9,13 @@ import {
   storyImage,
 } from '../data/stories'
 import { s } from '../lib/css'
+import { DISPLAY, EYEBROW, GUTTER, KICKER, MORE, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 /** How many story cards the home strip shows before "see all". Two, because
     they run at full width now rather than two to a row. */
 const HOME_STORIES = 2
 
-/* The screen is built from a few repeated pieces rather than a shape per
-   block, which is what keeps it reading as one screen. A section stays inside
-   a 20px gutter; banners, and nothing else, break out to both edges. */
-const GUTTER = 'padding:0 20px'
-const KICKER = 'font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--ink-3)'
-const MORE = 'cursor:pointer;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:500'
-const RULE = 'height:1px;background:var(--line)'
-const EYEBROW = 'font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--on-dark-2)'
-/** The display face. Light and tight, and with Hangul that actually renders. */
-const DISPLAY = 'font-family:Albert Sans,"Noto Sans KR",sans-serif;font-weight:300;letter-spacing:-0.01em'
 
 export function Home() {
   const st = useStore()
