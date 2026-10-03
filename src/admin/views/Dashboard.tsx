@@ -70,13 +70,13 @@ export function Dashboard() {
           <div style={s('display:flex;flex-direction:column;gap:8px;margin-top:14px')}>
             {admin.funnel.map((f) => (
               <div key={f.label} style={s(`background:var(--surface-2);border-radius:4px;padding:9px 12px;font-size:12px;display:flex;justify-content:space-between;width:${f.w};min-width:170px;box-sizing:border-box`)}>
-                <span style={s('font-weight:500;color:var(--accent)')}>{f.label}</span>
+                <span style={s('font-weight:500;color:var(--link)')}>{f.label}</span>
                 <b>{f.n}</b>
               </div>
             ))}
           </div>
           <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:10px;line-height:1.5')}>
-            회원 대비 구매 전환율 <b style={s('color:var(--accent)')}>{admin.conversionRate}</b>
+            회원 대비 구매 전환율 <b style={s('color:var(--link)')}>{admin.conversionRate}</b>
             {admin.scanLift !== '—' && <> · 스캔 완료 고객은 {admin.scanLift}</>}
           </div>
         </div>
@@ -85,7 +85,7 @@ export function Dashboard() {
       <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
         <div style={s('display:flex;justify-content:space-between;align-items:center')}>
           <div style={s('font-size:13px;font-weight:500')}>최근 주문</div>
-          <div onClick={admin.goOrders} style={s('cursor:pointer;font-size:12px;color:var(--accent);font-weight:500')}>전체 보기 →</div>
+          <div onClick={admin.goOrders} style={s('cursor:pointer;font-size:12px;color:var(--link);font-weight:500')}>전체 보기 →</div>
         </div>
 
         {admin.hasOrders ? (

@@ -61,7 +61,7 @@ export function Access() {
                 </div>
                 <div
                   onClick={p.approve}
-                  style={s('cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500')}
+                  style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500')}
                 >
                   승인
                 </div>
@@ -99,7 +99,7 @@ export function Access() {
             placeholder="메모 (선택)"
             style={s(field + ';flex:1;min-width:140px')}
           />
-          <div onClick={submit} style={s('cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:10px 20px;font-size:13px;font-weight:500;white-space:nowrap')}>
+          <div onClick={submit} style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:10px 20px;font-size:13px;font-weight:500;white-space:nowrap')}>
             추가
           </div>
         </div>
@@ -118,7 +118,7 @@ export function Access() {
               <div style={s('min-width:0')}>
                 <b style={s('overflow:hidden;text-overflow:ellipsis;display:block')}>{o.email}</b>
                 <div style={s('font-size:11px;display:flex;gap:6px;flex-wrap:wrap')}>
-                  {o.isSelf && <span style={s('color:var(--accent);font-weight:500')}>본인</span>}
+                  {o.isSelf && <span style={s('color:var(--link);font-weight:500')}>본인</span>}
                   {/* A turned-down application keeps its row so a master can
                       see it was decided, and delete it to let them re-apply. */}
                   {o.status === 'rejected' && (

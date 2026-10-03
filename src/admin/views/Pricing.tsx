@@ -143,7 +143,7 @@ function PriceRow({ id }: { id: string }) {
             style={s(
               'margin-top:10px;border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
                 (priceN > 0
-                  ? 'cursor:pointer;background:var(--accent);color:var(--on-dark-2)'
+                  ? 'cursor:pointer;background:var(--accent);color:var(--on-accent)'
                   : 'background:var(--surface-2);color:var(--ink-4)'),
             )}
           >
@@ -195,7 +195,7 @@ function RateRow({ code }: { code: string }) {
       {changed && code !== 'KRW' && (
         <div
           onClick={() => void admin.saveRate(code, next)}
-          style={s('cursor:pointer;border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500;background:var(--accent);color:var(--on-dark-2)')}
+          style={s('cursor:pointer;border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500;background:var(--accent);color:var(--on-accent)')}
         >
           저장
         </div>
@@ -392,7 +392,7 @@ function NewProductForm() {
           style={s(
             'flex:2;border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
               (ready && !busy
-                ? 'cursor:pointer;background:var(--accent);color:var(--on-dark-2)'
+                ? 'cursor:pointer;background:var(--accent);color:var(--on-accent)'
                 : 'background:var(--surface-2);color:var(--ink-4)'),
           )}
         >

@@ -142,7 +142,7 @@ export function Orders() {
                           'border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500;' +
                             (admin.refundBusy
                               ? 'background:var(--surface-2);color:var(--ink-4)'
-                              : 'cursor:pointer;background:var(--accent);color:var(--on-dark-2)'),
+                              : 'cursor:pointer;background:var(--accent);color:var(--on-accent)'),
                         )}
                       >
                         {admin.refundBusy === o.no ? '처리 중…' : 'PayPal 환불 실행'}

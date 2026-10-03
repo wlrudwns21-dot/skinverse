@@ -40,7 +40,7 @@ export function Shop() {
                 <div style={s('font-size:13px;color:var(--ink);letter-spacing:0.04em')}>
                   {p.priceS} <span style={s('font-size:10px;color:var(--ink-4)')}>{p.ml}</span>
                 </div>
-                <div style={s('font-size:10px;color:var(--accent);font-weight:500;margin-top:3px')}>
+                <div style={s('font-size:10px;color:var(--link);font-weight:500;margin-top:3px')}>
                   {p.matchS} {st.t.match}
                 </div>
                 {/* A percentage with no cause is just a number. */}
@@ -89,7 +89,7 @@ export function ProductDetail() {
 
         <div style={s('display:flex;align-items:baseline;gap:12px;margin-top:14px')}>
           <span style={s('font-family:Albert Sans,sans-serif;font-weight:200;font-size:26px;line-height:1')}>{sel.priceS}</span>
-          <span style={s('font-size:11px;color:var(--accent);font-weight:500')}>{sel.matchS} {st.t.match}</span>
+          <span style={s('font-size:11px;color:var(--link);font-weight:500')}>{sel.matchS} {st.t.match}</span>
         </div>
 
         {sel.reasons.length > 0 && (
@@ -124,7 +124,7 @@ export function ProductDetail() {
           </div>
           <div
             onClick={() => { sel.add(); st.goCart() }}
-            style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+            style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
           >
             {st.t.buyNow}
           </div>

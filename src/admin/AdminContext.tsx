@@ -56,7 +56,7 @@ function deltaText(today: number, yesterday: number, unit: string): { text: stri
   const sign = diff > 0 ? '+' : diff < 0 ? '−' : ''
   return {
     text: sign + Math.abs(diff).toLocaleString() + unit,
-    color: diff > 0 ? 'var(--accent)' : diff < 0 ? 'var(--warn)' : 'var(--ink-3)',
+    color: diff > 0 ? 'var(--link)' : diff < 0 ? 'var(--warn)' : 'var(--ink-3)',
   }
 }
 
@@ -354,7 +354,7 @@ function useAdminValue() {
     style:
       'cursor:pointer;border-radius:3px;padding:8px 14px;font-size:12px;font-weight:500;' +
       (orderFilter === id
-        ? 'background:var(--accent);color:var(--on-dark)'
+        ? 'background:var(--accent);color:var(--on-accent)'
         : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
   }))
 
@@ -544,7 +544,7 @@ function useAdminValue() {
       dec: () => void bumpStock(p.id, -STOCK_STEP),
       toggle: () => void toggleProduct(p.id),
       activeLabel: p.active ? '판매중' : '판매중지',
-      activeStyle: p.active ? 'background:var(--surface-2);color:var(--accent)' : 'background:var(--surface-2);color:var(--ink-3)',
+      activeStyle: p.active ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface-2);color:var(--ink-3)',
     })),
 
     /**

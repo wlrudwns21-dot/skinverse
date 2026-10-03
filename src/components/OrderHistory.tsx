@@ -117,7 +117,7 @@ export function OrderHistory() {
                   style={s(
                     'flex:1;border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;' +
                       (reason.trim()
-                        ? 'cursor:pointer;background:var(--accent);color:var(--on-dark-2)'
+                        ? 'cursor:pointer;background:var(--accent);color:var(--on-accent)'
                         : 'background:var(--surface-2);color:var(--ink-4)'),
                   )}
                 >

@@ -103,7 +103,7 @@ export function Legal() {
         </div>
       ))}
 
-      <div onClick={st.leaveLegal} style={s('cursor:pointer;margin-top:28px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}>
+      <div onClick={st.leaveLegal} style={s('cursor:pointer;margin-top:28px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}>
         확인
       </div>
     </div>

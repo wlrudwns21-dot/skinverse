@@ -25,7 +25,7 @@ function useBodyBackground() {
 function Loading() {
   return (
     <div style={s('min-height:100vh;display:flex;align-items:center;justify-content:center')}>
-      <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
+      <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--link);animation:spin 1s linear infinite')} />
     </div>
   )
 }

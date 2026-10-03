@@ -17,14 +17,15 @@ export const KICKER =
 
 /** The "see all" partner to a KICKER, on the opposite end of the same row. */
 export const MORE =
-  'cursor:pointer;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:500'
+  'cursor:pointer;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--link);font-weight:500'
 
 /** The hairline that separates one block from the next. */
 export const RULE = 'height:1px;background:var(--line)'
 
-/** A KICKER over a photograph or a dark fill. */
+/** A KICKER over a photograph or a panel. Inside a banner it takes that
+    banner's own secondary colour; elsewhere it falls back to the panel's. */
 export const EYEBROW =
-  'font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--banner-ink-2, var(--on-dark-2))'
+  'font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--banner-ink-2, var(--on-panel-2))'
 
 /**
  * The display face: light, tight, and with Hangul that actually renders —
@@ -39,8 +40,8 @@ export const NUMERAL = 'font-family:Albert Sans,sans-serif;font-weight:200;line-
 
 /** The primary action: filled, square, quiet. */
 export const BTN =
-  'cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'
+  'cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'
 
 /** The secondary action, the same size so a pair of them sits level. */
 export const BTN_GHOST =
-  'cursor:pointer;border:1px solid var(--accent);color:var(--accent);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'
+  'cursor:pointer;border:1px solid var(--accent);color:var(--link);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em'

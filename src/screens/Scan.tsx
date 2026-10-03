@@ -29,7 +29,7 @@ export function ScanIntro() {
           </span>
         )}
         {st.state.scanned && (
-          <span onClick={st.showLastResult} style={s('cursor:pointer;font-size:11.5px;color:var(--accent);border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}>
+          <span onClick={st.showLastResult} style={s('cursor:pointer;font-size:11.5px;color:var(--link);border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}>
             {st.t.viewReport} →
           </span>
         )}
@@ -130,7 +130,7 @@ export function ScanIntro() {
             onClick={() => st.goAuth('login')}
             style={s('cursor:pointer;text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}
           >
-            {st.a.hasAccount} <span style={s('color:var(--accent);border-bottom:1px solid var(--accent-mid)')}>{st.a.logIn}</span>
+            {st.a.hasAccount} <span style={s('color:var(--link);border-bottom:1px solid var(--accent-mid)')}>{st.a.logIn}</span>
           </div>
         </>
       ) : (
@@ -140,7 +140,7 @@ export function ScanIntro() {
             'cursor:pointer;margin-top:20px;border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em' +
               (st.photoCheck?.problem
                 ? ';background:transparent;border:1px solid var(--line-2);color:var(--ink-4)'
-                : ';background:var(--accent);color:var(--on-dark)'),
+                : ';background:var(--accent);color:var(--on-accent)'),
           )}
         >
           {st.t.beginScan}
@@ -159,7 +159,7 @@ export function Scanning() {
         <div style={s('position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 14px var(--accent);animation:scanline 2.4s ease-in-out infinite')} />
         <div style={s('position:absolute;inset:14px;border:1px dashed rgba(46,107,88,0.4);border-radius:100px')} />
       </div>
-      <div style={s('margin-top:26px;width:56px;height:56px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
+      <div style={s('margin-top:26px;width:56px;height:56px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--link);animation:spin 1s linear infinite')} />
       <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:26px;margin-top:18px')}>{st.progress}%</div>
       <div style={s('font-size:13px;color:var(--ink-2);margin-top:6px;animation:pulse 1.6s ease infinite')}>{st.scanStatus}</div>
     </div>
@@ -194,7 +194,7 @@ export function ScanFailed() {
 
       <div
         onClick={st.retryScan}
-        style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px 30px;font-size:14px;font-weight:500')}
+        style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px 30px;font-size:14px;font-weight:500')}
       >
         {st.a.scanRetry}
       </div>
@@ -244,7 +244,7 @@ export function ScanResults() {
         ))}
       </div>
 
-      <div style={s('background:var(--surface-2);border-radius:4px;padding:16px;margin-top:12px;font-size:13px;line-height:1.6;color:var(--accent)')}>
+      <div style={s('background:var(--surface-2);border-radius:4px;padding:16px;margin-top:12px;font-size:13px;line-height:1.6;color:var(--link)')}>
         <b>{st.t.insight}</b>
         <br />
         {st.summary}
@@ -296,7 +296,7 @@ export function ScanResults() {
       )}
 
       <div style={s('display:flex;gap:10px;margin-top:16px')}>
-        <div onClick={st.goShop} style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
+        <div onClick={st.goShop} style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
           {st.t.matchedBtn}
         </div>
         <div onClick={st.goRoutine} style={s('cursor:pointer;flex:1;background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>

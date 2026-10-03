@@ -7,11 +7,11 @@ const ROW_COLS = 'display:grid;grid-template-columns:150px 130px 1.1fr 1.4fr;gap
 /** What each action is called, and how loud it should look. */
 const ACTIONS: Record<string, { label: string; tone: string; bg: string }> = {
   'points.change': { label: '포인트 변동', tone: 'var(--warn)', bg: 'var(--surface-2)' },
-  'operator.add': { label: '운영자 추가', tone: 'var(--accent)', bg: 'var(--surface-2)' },
+  'operator.add': { label: '운영자 추가', tone: 'var(--link)', bg: 'var(--surface-2)' },
   'operator.change': { label: '권한 변경', tone: 'var(--warn)', bg: 'var(--surface-2)' },
   'operator.remove': { label: '운영자 삭제', tone: 'var(--warn)', bg: 'var(--surface-2)' },
   'order.update': { label: '주문 처리', tone: 'var(--ink-2)', bg: 'var(--surface-2)' },
-  'order.paid': { label: '결제 완료', tone: 'var(--accent)', bg: 'var(--surface-2)' },
+  'order.paid': { label: '결제 완료', tone: 'var(--link)', bg: 'var(--surface-2)' },
   'order.void': { label: '주문 취소', tone: 'var(--ink-3)', bg: 'var(--surface-2)' },
   // The four below all mean money left again. Loud on purpose.
   'order.refunded': { label: '환불', tone: 'var(--warn)', bg: 'var(--surface-2)' },
@@ -150,7 +150,7 @@ export function Audit() {
                 style={s(
                   'cursor:pointer;border-radius:3px;padding:7px 14px;font-size:12px;font-weight:500;' +
                     (on
-                      ? 'background:var(--accent);color:var(--on-dark)'
+                      ? 'background:var(--accent);color:var(--on-accent)'
                       : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
                 )}
               >
@@ -169,7 +169,7 @@ export function Audit() {
 
           {rows === null && (
             <div style={s('padding:26px;text-align:center')}>
-              <div style={s('width:28px;height:28px;margin:0 auto;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
+              <div style={s('width:28px;height:28px;margin:0 auto;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--link);animation:spin 1s linear infinite')} />
             </div>
           )}
 

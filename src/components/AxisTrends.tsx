@@ -37,7 +37,7 @@ export interface AxisTrendStrings {
   scopeNote: string
 }
 
-const UP = 'var(--accent)'
+const UP = 'var(--link)'
 const DOWN = 'var(--warn)'
 const FLAT = 'var(--ink-3)'
 

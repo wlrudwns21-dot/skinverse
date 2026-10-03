@@ -116,10 +116,10 @@ export function Auth() {
   if (sentTo) {
     return (
       <div style={s('padding:40px 20px;text-align:center;animation:rise .4s ease both')}>
-        <div style={s('width:64px;height:64px;border-radius:50%;background:var(--surface-2);color:var(--accent);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
+        <div style={s('width:64px;height:64px;border-radius:50%;background:var(--surface-2);color:var(--link);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px;margin-top:16px')}>{a.checkEmail}</div>
         <div style={s('font-size:13px;color:var(--ink-3);margin-top:8px;line-height:1.6')}>{a.checkEmailSub(sentTo)}</div>
-        <div onClick={st.leaveAuth} style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
+        <div onClick={st.leaveAuth} style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
           {a.gotIt}
         </div>
       </div>
@@ -141,8 +141,8 @@ export function Auth() {
       {isSignUp && (
         <div style={s('background:var(--surface-2);border-radius:4px;padding:14px 16px;margin-top:16px;display:flex;flex-direction:column;gap:8px')}>
           {a.memberBenefits.map((b) => (
-            <div key={b} style={s('display:flex;gap:10px;font-size:12.5px;color:var(--accent);line-height:1.4')}>
-              <span style={s('color:var(--accent);font-weight:500;flex-shrink:0')}>✓</span>
+            <div key={b} style={s('display:flex;gap:10px;font-size:12.5px;color:var(--link);line-height:1.4')}>
+              <span style={s('color:var(--link);font-weight:500;flex-shrink:0')}>✓</span>
               <span>{b}</span>
             </div>
           ))}
@@ -216,7 +216,7 @@ export function Auth() {
                       style={s(
                         'cursor:pointer;flex:1;min-width:70px;text-align:center;border-radius:4px;padding:10px 6px;font-size:12.5px;font-weight:500;' +
                           (on
-                            ? 'background:var(--accent);color:var(--on-dark)'
+                            ? 'background:var(--accent);color:var(--on-accent)'
                             : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
                       )}
                     >
@@ -342,14 +342,14 @@ export function Auth() {
           회원가입을 누르면{' '}
           <span
             onClick={() => st.goLegal('terms')}
-            style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
+            style={s('cursor:pointer;color:var(--link);font-weight:500;text-decoration:underline')}
           >
             이용약관
           </span>
           과{' '}
           <span
             onClick={() => st.goLegal('privacy')}
-            style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
+            style={s('cursor:pointer;color:var(--link);font-weight:500;text-decoration:underline')}
           >
             개인정보처리방침
           </span>
@@ -365,7 +365,7 @@ export function Auth() {
 
       <div
         onClick={busy ? undefined : submit}
-        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
+        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
       >
         {busy ? a.submitting : isSignUp ? a.signUp : a.logIn}
       </div>
@@ -402,7 +402,7 @@ export function Auth() {
               setError('')
               st.goAuth('signup')
             }}
-            style={s('cursor:pointer;margin-top:12px;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
+            style={s('cursor:pointer;margin-top:12px;background:var(--surface);border:1.5px solid var(--accent);color:var(--link);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
           >
             {a.signUp}
           </div>
@@ -417,7 +417,7 @@ export function Auth() {
               setError('')
               st.goAuth('login')
             }}
-            style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
+            style={s('cursor:pointer;color:var(--link);font-weight:500;text-decoration:underline')}
           >
             {a.logIn}
           </span>

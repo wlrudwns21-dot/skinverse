@@ -61,9 +61,9 @@ export const adminPointRules = { earnRate: 5, useCap: 30, streakBonus: 0 }
 
 /** SAMPLE DATA — dashboard headline figures. */
 export const adminKpis: Kpi[] = [
-  { label: '오늘 매출', value: '$1,284', delta: '+18%', deltaColor: 'var(--accent)' },
-  { label: '오늘 주문', value: '23건', delta: '+4건', deltaColor: 'var(--accent)' },
-  { label: 'AI 스캔 (오늘)', value: '147회', delta: '+31%', deltaColor: 'var(--accent)' },
+  { label: '오늘 매출', value: '$1,284', delta: '+18%', deltaColor: 'var(--link)' },
+  { label: '오늘 주문', value: '23건', delta: '+4건', deltaColor: 'var(--link)' },
+  { label: 'AI 스캔 (오늘)', value: '147회', delta: '+31%', deltaColor: 'var(--link)' },
   { label: '신규 가입', value: '38명', delta: '−5%', deltaColor: 'var(--warn)' },
 ]
 
@@ -97,7 +97,7 @@ export const adminOperator = { initial: '관', name: '운영자', email: 'admin@
 export const orderStatusMeta: Record<OrderStatus, [string, string, string]> = {
   paid: ['결제완료', 'var(--warn)', 'var(--warn-soft)'],
   preparing: ['배송준비', 'var(--viz-4)', 'var(--surface-2)'],
-  shipped: ['발송완료', 'var(--accent)', 'var(--accent-soft)'],
+  shipped: ['발송완료', 'var(--link)', 'var(--accent-soft)'],
   delivered: ['배송완료', 'var(--ink-2)', 'var(--surface-2)'],
   cancelled: ['취소', 'var(--ink-3)', 'var(--surface-2)'],
   // Written by the payment webhook only. Red, because each one means money has

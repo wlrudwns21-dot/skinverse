@@ -1184,7 +1184,7 @@ function useStoreValue() {
       nameL: def.n[lang],
       score,
       w: score + '%',
-      color: score < 50 ? 'var(--warn)' : score < 70 ? 'var(--warn)' : 'var(--accent)',
+      color: score < 50 ? 'var(--danger)' : score < 70 ? 'var(--warn-mid)' : 'var(--link)',
       label: score < 50 ? t.low : score < 70 ? t.fair : t.good,
     }
   })
@@ -1312,9 +1312,9 @@ function useStoreValue() {
       redeem: () => redeem(r),
       btn: isRedeemed ? t.redeemed : r.cost + ' P',
       btnStyle: isRedeemed
-        ? 'background:var(--surface-2);color:var(--accent)'
+        ? 'background:var(--surface-2);color:var(--link)'
         : affordable
-          ? 'background:var(--accent);color:var(--on-dark)'
+          ? 'background:var(--accent);color:var(--on-accent)'
           : 'background:transparent;border:1px solid var(--line-2);color:var(--ink-3)',
     }
   })
@@ -1489,7 +1489,7 @@ function useStoreValue() {
     })()
   }
 
-  const scoreColour = (n: number) => (n < 50 ? 'var(--warn)' : n < 70 ? 'var(--warn)' : 'var(--accent)')
+  const scoreColour = (n: number) => (n < 50 ? 'var(--danger)' : n < 70 ? 'var(--warn-mid)' : 'var(--link)')
   const shortDate = (iso: string) =>
     new Date(iso).toLocaleDateString(lang === 'en' ? 'en-US' : lang, {
       month: 'short',
@@ -1584,7 +1584,7 @@ function useStoreValue() {
     const delta = trendPoints[trendPoints.length - 1].overall - trendPoints[trendPoints.length - 2].overall
     if (Math.abs(delta) < MOVE_THRESHOLD) return { text: ins.vsLastFlat, colour: 'var(--ink-3)' }
     return delta > 0
-      ? { text: ins.vsLastUp(delta), colour: 'var(--accent)' }
+      ? { text: ins.vsLastUp(delta), colour: 'var(--link)' }
       : { text: ins.vsLastDown(Math.abs(delta)), colour: 'var(--warn)' }
   })()
 
@@ -1643,7 +1643,7 @@ function useStoreValue() {
         refundedS: o.refundedTotal > 0 ? money(o.refundedTotal) : '',
         date: o.createdAt.slice(0, 10),
         statusLabel: t.orderStatus[o.status] ?? o.status,
-        statusTone: settled ? 'var(--warn)' : o.status === 'delivered' ? 'var(--ink-2)' : 'var(--accent)',
+        statusTone: settled ? 'var(--warn)' : o.status === 'delivered' ? 'var(--ink-2)' : 'var(--link)',
         // Nothing to ask for before the money arrived, or after it has gone.
         refundable: o.paidAt !== null && !settled && !open,
         requestOpen: open,
@@ -1856,7 +1856,7 @@ function useStoreValue() {
     locationCoords: usingLocation ? geo.coords : null,
     weatherIsLive: liveWeather !== null,
     weather,
-    uvColor: plan.uv === 'extreme' || plan.uv === 'veryHigh' ? 'var(--warn)' : plan.uv === 'high' ? 'var(--warn)' : 'var(--accent)',
+    uvColor: plan.uv === 'extreme' || plan.uv === 'veryHigh' ? 'var(--warn)' : plan.uv === 'high' ? 'var(--warn)' : 'var(--link)',
     wLine:
       weather.t + '°C · ' + t.humidity + ' ' + weather.h + '% · UV ' + weather.uv +
       // Appended rather than given its own row: it is one more reading about

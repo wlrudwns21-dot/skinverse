@@ -54,13 +54,13 @@ export function Routine() {
               visitor who has just walked outside and does not want to wait. */}
           <span
             onClick={st.refreshWeather}
-            style={s('cursor:pointer;color:var(--accent);display:inline-flex;align-items:center;gap:5px;border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}
+            style={s('cursor:pointer;color:var(--link);display:inline-flex;align-items:center;gap:5px;border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}
           >
             {!st.weatherBusy && <RefreshIcon />}
             {st.weatherBusy ? st.refreshingLabel : st.refreshLabel}
           </span>
           {!st.usingLocation && (
-            <span onClick={st.requestLocation} style={s('cursor:pointer;color:var(--accent);border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}>
+            <span onClick={st.requestLocation} style={s('cursor:pointer;color:var(--link);border-bottom:1px solid var(--accent-mid);padding-bottom:1px')}>
               {st.a.useMyLocation}
             </span>
           )}
@@ -139,16 +139,16 @@ export function Routine() {
 
       {/* Today's progress, before the steps themselves — a customer coming
           back at 9pm wants to know what is left, not to re-read the list. */}
-      <div style={s('background:var(--panel);color:var(--on-dark);padding:18px 20px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
+      <div style={s('background:var(--panel);color:var(--on-panel);padding:18px 20px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
         <div style={s('min-width:0')}>
           <div style={s('font-size:13px;font-weight:500')}>
             {st.todayAdherence.done === st.todayAdherence.total && st.todayAdherence.total > 0
               ? st.checkT.allDone
               : st.checkT.doneToday(st.todayAdherence.done, st.todayAdherence.total)}
           </div>
-          <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:2px')}>{st.checkT.sub}</div>
+          <div style={s('font-size:11.5px;color:var(--on-panel-2);margin-top:2px')}>{st.checkT.sub}</div>
         </div>
-        <div style={s('width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;background:conic-gradient(var(--accent) ' + st.todayAdherence.pct + '%, rgba(255,255,255,0.14) 0)')}>
+        <div style={s('width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;background:conic-gradient(var(--link) ' + st.todayAdherence.pct + '%, var(--line-2) 0)')}>
           <div style={s('width:34px;height:34px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center')}>
             {st.todayAdherence.pct}%
           </div>
@@ -174,7 +174,7 @@ export function Routine() {
         <CoreTipCard lang={st.lang} onOpen={st.goStories} />
         <div
           onClick={st.goStories}
-          style={s('cursor:pointer;text-align:center;font-size:12px;font-weight:500;color:var(--accent);margin-top:10px')}
+          style={s('cursor:pointer;text-align:center;font-size:12px;font-weight:500;color:var(--link);margin-top:10px')}
         >
           {storiesHomeCta[st.lang]} →
         </div>

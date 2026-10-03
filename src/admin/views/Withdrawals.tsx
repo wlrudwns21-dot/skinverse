@@ -72,7 +72,7 @@ export function Withdrawals() {
 
       {rows === null && (
         <div style={s('padding:30px;text-align:center')}>
-          <div style={s('width:28px;height:28px;margin:0 auto;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
+          <div style={s('width:28px;height:28px;margin:0 auto;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--link);animation:spin 1s linear infinite')} />
         </div>
       )}
 
@@ -124,7 +124,7 @@ export function Withdrawals() {
               {!isOpen ? (
                 <div
                   onClick={() => { setConfirming(row.userId); setNote('') }}
-                  style={s('cursor:pointer;margin-top:12px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500')}
+                  style={s('cursor:pointer;margin-top:12px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500')}
                 >
                   탈퇴 처리하기
                 </div>

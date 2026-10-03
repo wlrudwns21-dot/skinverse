@@ -58,7 +58,7 @@ export function Chip({ label, tone }: { label: string; tone: 'core' | 'category'
     <span
       style={s(
         'font-size:10.5px;font-weight:500;border-radius:3px;padding:3px 9px;letter-spacing:0.04em;' +
-          (tone === 'core' ? 'background:rgba(255,255,255,0.14);color:var(--on-dark)' : 'background:var(--surface-2);color:var(--ink-3)'),
+          (tone === 'core' ? 'background:var(--surface);color:var(--on-panel)' : 'background:var(--surface-2);color:var(--ink-3)'),
       )}
     >
       {label}
@@ -92,26 +92,26 @@ export function CoreTipCard({ lang, onOpen }: { lang: Lang; onOpen?: () => void 
     <div
       onClick={onOpen}
       style={s(
-        'background:var(--panel);color:var(--on-dark);border-radius:4px;position:relative;overflow:hidden' +
+        'background:var(--panel);color:var(--on-panel);border-radius:4px;position:relative;overflow:hidden' +
           (onOpen ? ';cursor:pointer' : ''),
       )}
     >
       <Cover story={coreTip} lang={lang} radius="0" />
       <div style={s('padding:18px 20px 20px;position:relative')}>
-        <div style={s('position:absolute;right:-50px;top:-70px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:.55')} />
+        <div style={s('position:absolute;right:-50px;top:-70px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,var(--accent-mid) 0%,transparent 70%);opacity:.35')} />
         <div style={s('display:flex;gap:6px;align-items:center;position:relative')}>
           <Chip label={coreTipLabel[lang]} tone="core" />
-          <span style={s('font-size:10.5px;color:var(--on-dark-2)')}>
+          <span style={s('font-size:10.5px;color:var(--on-panel-2)')}>
             {categoryNames[coreTip.category][lang]} · {minutesLabel(coreTip.minutes, lang)}
           </span>
         </div>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:20px;line-height:1.3;margin:10px 0 8px;position:relative')}>
           {coreTip.title[lang]}
         </div>
-        <div style={s('font-size:13px;line-height:1.65;color:var(--on-dark-2);position:relative')}>
+        <div style={s('font-size:13px;line-height:1.65;color:var(--on-panel-2);position:relative')}>
           {coreTip.body[0][lang]}
         </div>
-        <div style={s('font-size:13px;line-height:1.65;color:var(--on-dark-2);margin-top:9px;position:relative')}>
+        <div style={s('font-size:13px;line-height:1.65;color:var(--on-panel-2);margin-top:9px;position:relative')}>
           {coreTip.body[1][lang]}
         </div>
       </div>
@@ -151,7 +151,7 @@ function StoryCard({ story, lang }: { story: Story; lang: Lang }) {
             <div style={s('font-size:12.5px;line-height:1.6;color:var(--ink-3);margin-top:6px')}>
               {teaser(story.body[0][lang])}
             </div>
-            <div style={s('font-size:12px;font-weight:500;color:var(--accent);margin-top:8px')}>
+            <div style={s('font-size:12px;font-weight:500;color:var(--link);margin-top:8px')}>
               {readMore[lang]} →
             </div>
           </>
@@ -185,7 +185,7 @@ export function Stories() {
               style={s(
                 'cursor:pointer;flex-shrink:0;font-size:12px;font-weight:500;border-radius:3px;padding:7px 12px;' +
                   (active
-                    ? 'background:var(--accent);color:var(--on-dark)'
+                    ? 'background:var(--accent);color:var(--on-accent)'
                     : 'background:var(--surface);border:1px solid var(--line);color:var(--ink-3)'),
               )}
             >

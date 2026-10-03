@@ -9,7 +9,7 @@ const field =
   'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
 const label = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 const primary =
-  'margin-top:16px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
+  'margin-top:16px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
 const disabled =
   'margin-top:16px;background:var(--surface-2);color:var(--ink-4);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
 
@@ -55,7 +55,7 @@ export function PasswordReset() {
   if (sentTo) {
     return (
       <div style={s('padding:40px 20px;text-align:center;animation:rise .4s ease both')}>
-        <div style={s('width:64px;height:64px;border-radius:50%;background:var(--surface-2);color:var(--accent);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
+        <div style={s('width:64px;height:64px;border-radius:50%;background:var(--surface-2);color:var(--link);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto')}>✉</div>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:22px;margin-top:16px')}>{a.resetSentTitle}</div>
         <div style={s('font-size:13px;color:var(--ink-3);margin-top:8px;line-height:1.6')}>{a.resetSentSub(sentTo)}</div>
         <div onClick={st.goResetBack} style={s('cursor:pointer;' + primary)}>{a.gotIt}</div>

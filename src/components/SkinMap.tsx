@@ -133,7 +133,7 @@ export function SkinMap({ visuals, lang, t }: SkinMapProps) {
             {shown.def.means[lang]}
           </div>
           {shown.score < 70 && (
-            <div style={s('font-size:12.5px;line-height:1.6;color:var(--accent);margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)')}>
+            <div style={s('font-size:12.5px;line-height:1.6;color:var(--link);margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)')}>
               {shown.def.low[lang]}
             </div>
           )}

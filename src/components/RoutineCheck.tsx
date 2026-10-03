@@ -23,7 +23,7 @@ function Tick({ done, open }: { done: boolean; open: boolean }) {
         'width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;' +
           'font-size:14px;font-weight:500;flex-shrink:0;transition:background .15s ease;' +
           (done
-            ? 'background:var(--accent);color:var(--on-dark)'
+            ? 'background:var(--accent);color:var(--on-accent)'
             : open
               ? 'background:var(--surface);border:1.5px solid var(--line-2);color:transparent'
               : 'background:var(--surface-2);border:1.5px solid var(--line-2);color:transparent'),
@@ -86,7 +86,7 @@ function AddExtra({ slot }: { slot: Slot }) {
     return (
       <div
         onClick={() => setOpen(true)}
-        style={s('cursor:pointer;border-top:1px solid var(--line);padding:14px 0;text-align:center;font-size:12px;letter-spacing:0.04em;color:var(--accent)')}
+        style={s('cursor:pointer;border-top:1px solid var(--line);padding:14px 0;text-align:center;font-size:12px;letter-spacing:0.04em;color:var(--link)')}
       >
         + {addStep[st.lang]}
       </div>
@@ -151,7 +151,7 @@ export function RoutineCheck({
     <>
       <div style={s('display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:26px 0 8px')}>
         <div style={s(KICKER)}>{heading}</div>
-        <div style={s(`font-size:11px;flex-shrink:0;letter-spacing:0.04em;${shut ? 'color:var(--ink-4)' : 'color:var(--accent)'}`)}>
+        <div style={s(`font-size:11px;flex-shrink:0;letter-spacing:0.04em;${shut ? 'color:var(--ink-4)' : 'color:var(--link)'}`)}>
           {shut ? c.windowShut(st.slotWindowLabel[slot]) : st.slotWindowLabel[slot]}
         </div>
       </div>

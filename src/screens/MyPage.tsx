@@ -62,7 +62,7 @@ function TrendCard() {
         <div style={s('display:flex;align-items:center;gap:8px;flex-shrink:0')}>
           {/* The headline figure, so collapsing costs nothing at a glance. */}
           {!open && chart.points.length > 0 && (
-            <b style={s('font-size:18px;color:var(--accent)')}>
+            <b style={s('font-size:18px;color:var(--link)')}>
               {chart.points[chart.points.length - 1].score}
             </b>
           )}
@@ -91,7 +91,7 @@ function TrendCard() {
                 style={s(
                   'cursor:pointer;flex-shrink:0;font-size:11.5px;font-weight:500;border-radius:3px;padding:5px 11px;' +
                     (active
-                      ? 'background:var(--accent);color:var(--on-dark-2)'
+                      ? 'background:var(--accent);color:var(--on-accent)'
                       : 'background:var(--surface-2);color:var(--ink-3)'),
                 )}
               >
@@ -139,7 +139,7 @@ export function MyPage() {
   return (
     <div style={s('padding:20px;animation:rise .4s ease both')}>
       <div style={s('display:flex;align-items:center;gap:14px')}>
-        <div style={s('width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--on-dark);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;flex-shrink:0')}>
+        <div style={s('width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;flex-shrink:0')}>
           {initials(st.state.name, email)}
         </div>
         <div style={s('min-width:0')}>

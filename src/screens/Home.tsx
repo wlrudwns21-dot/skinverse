@@ -135,14 +135,14 @@ export function Home() {
       >
         <div style={s('flex:1;min-width:0')}>
           <div style={s(EYEBROW)}>{st.t.earnP}</div>
-          <div style={s(`${DISPLAY};font-size:16px;margin-top:7px;color:var(--on-dark)`)}>
+          <div style={s(`${DISPLAY};font-size:16px;margin-top:7px;color:var(--on-panel)`)}>
             {st.t.todayMissions} {st.dailyDoneS}
           </div>
-          <div style={s('font-size:11.5px;color:var(--on-dark-2);margin-top:5px')}>
+          <div style={s('font-size:11.5px;color:var(--on-panel-2);margin-top:5px')}>
             {st.streakLine} · Lv. {st.levelName}
           </div>
         </div>
-        <div style={s('color:var(--on-dark-2);font-size:15px;flex-shrink:0')}>→</div>
+        <div style={s('color:var(--on-panel-2);font-size:15px;flex-shrink:0')}>→</div>
       </div>
 
       {/* The shelf, directly under the readings. This is a shop: a customer who
@@ -166,7 +166,7 @@ export function Home() {
             <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{p.name}</div>
             <div style={s('display:flex;justify-content:space-between;align-items:baseline;margin-top:5px;gap:8px')}>
               <span style={s('font-size:12px;color:var(--ink-2);letter-spacing:0.04em')}>{p.priceS}</span>
-              <span style={s('font-size:10px;color:var(--accent);font-weight:500;flex-shrink:0')}>
+              <span style={s('font-size:10px;color:var(--link);font-weight:500;flex-shrink:0')}>
                 {p.matchS} {st.t.match}
               </span>
             </div>

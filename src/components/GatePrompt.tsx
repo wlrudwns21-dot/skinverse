@@ -48,8 +48,8 @@ export function GatePrompt() {
 
         <div style={s('background:var(--surface-2);border-radius:4px;padding:12px 14px;margin-top:16px;display:flex;flex-direction:column;gap:7px')}>
           {st.a.memberBenefits.map((b) => (
-            <div key={b} style={s('display:flex;gap:9px;font-size:12px;color:var(--accent);line-height:1.4')}>
-              <span style={s('color:var(--accent);font-weight:500;flex-shrink:0')}>✓</span>
+            <div key={b} style={s('display:flex;gap:9px;font-size:12px;color:var(--link);line-height:1.4')}>
+              <span style={s('color:var(--link);font-weight:500;flex-shrink:0')}>✓</span>
               <span>{b}</span>
             </div>
           ))}
@@ -57,13 +57,13 @@ export function GatePrompt() {
 
         <div
           onClick={() => st.goAuth('signup')}
-          style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
+          style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
         >
           {st.a.gateCta}
         </div>
         <div
           onClick={() => st.goAuth('login')}
-          style={s('cursor:pointer;text-align:center;font-size:12.5px;color:var(--accent);font-weight:500;margin-top:12px')}
+          style={s('cursor:pointer;text-align:center;font-size:12.5px;color:var(--link);font-weight:500;margin-top:12px')}
         >
           {st.a.logIn}
         </div>

@@ -31,7 +31,7 @@ function MissionRow({ m }: { m: MissionView }) {
       <div style={s(`flex:1;min-width:0;font-size:13px;line-height:1.5;${done ? 'color:var(--ink-3)' : ''}`)}>
         {m.label}
       </div>
-      <div style={s(`font-size:11.5px;flex-shrink:0;letter-spacing:0.04em;color:${done ? 'var(--ink-4)' : 'var(--accent)'}`)}>
+      <div style={s(`font-size:11.5px;flex-shrink:0;letter-spacing:0.04em;color:${done ? 'var(--ink-4)' : 'var(--link)'}`)}>
         +{m.pts} P
       </div>
     </div>
@@ -46,7 +46,7 @@ export function Missions() {
       {/* The balance, full bleed. It is the one number anyone opens this screen
           for, so it gets the width of the screen and the weight of a reading
           rather than a card's worth of padding around it. */}
-      <div style={s('background:var(--panel);color:var(--on-dark);padding:24px 20px 22px')}>
+      <div style={s('background:var(--panel);color:var(--on-panel);padding:24px 20px 22px')}>
         <div style={s('display:flex;align-items:flex-start;justify-content:space-between;gap:12px')}>
           <div style={s('min-width:0')}>
             <div style={s(EYEBROW)}>{st.t.glowPts}</div>
@@ -55,18 +55,18 @@ export function Missions() {
             </div>
           </div>
           <div style={s('text-align:right;flex-shrink:0')}>
-            <div style={s('font-size:11px;letter-spacing:0.08em;color:var(--on-dark)')}>Lv. {st.levelName}</div>
-            <div style={s('font-size:11px;color:var(--warn-on-dark);margin-top:6px')}>🔥 {st.streakLine}</div>
+            <div style={s('font-size:11px;letter-spacing:0.08em;color:var(--on-panel)')}>Lv. {st.levelName}</div>
+            <div style={s('font-size:11px;color:var(--warn);margin-top:6px')}>🔥 {st.streakLine}</div>
           </div>
         </div>
 
         {/* How far to the next level, as a line rather than a pill. */}
-        <div style={s('margin-top:20px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.08em;color:var(--on-dark-2)')}>
+        <div style={s('margin-top:20px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.08em;color:var(--on-panel-2)')}>
           <span>{st.levelName}</span>
           <span>{st.nextLevelS}</span>
         </div>
-        <div style={s('height:1px;background:rgba(255,255,255,0.22);margin-top:7px')}>
-          <div style={s(`height:1px;width:${st.levelPct};background:var(--on-dark)`)} />
+        <div style={s('height:1px;background:var(--line-2);margin-top:7px')}>
+          <div style={s(`height:1px;width:${st.levelPct};background:var(--on-panel)`)} />
         </div>
       </div>
 

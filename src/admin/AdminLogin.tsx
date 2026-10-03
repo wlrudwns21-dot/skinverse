@@ -77,7 +77,7 @@ export function AdminLogin() {
     return (
       <Frame>
         <div style={s('display:flex;justify-content:center;padding:20px')}>
-          <div style={s('width:32px;height:32px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
+          <div style={s('width:32px;height:32px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--link);animation:spin 1s linear infinite')} />
         </div>
       </Frame>
     )
@@ -158,7 +158,7 @@ export function AdminLogin() {
                   void admin.apply(note.trim())
                 }
           }
-          style={s(`cursor:${admin.applying ? 'default' : 'pointer'};margin-top:16px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500;opacity:${admin.applying ? '.6' : '1'}`)}
+          style={s(`cursor:${admin.applying ? 'default' : 'pointer'};margin-top:16px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500;opacity:${admin.applying ? '.6' : '1'}`)}
         >
           {admin.applying ? '신청 중…' : '운영자 신청하기'}
         </div>
@@ -187,7 +187,7 @@ export function AdminLogin() {
             setPassword('')
             setConfirm('')
           }}
-          style={s('cursor:pointer;margin-top:20px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}
+          style={s('cursor:pointer;margin-top:20px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}
         >
           로그인하러 가기
         </div>
@@ -368,7 +368,7 @@ export function AdminLogin() {
 
       <div
         onClick={busy ? undefined : submit}
-        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
+        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
       >
         {busy ? '확인 중…' : isSignUp ? '가입하고 신청하기' : '로그인'}
       </div>
@@ -380,7 +380,7 @@ export function AdminLogin() {
             setMode(isSignUp ? 'login' : 'signup')
             setError('')
           }}
-          style={s('cursor:pointer;color:var(--accent);font-weight:500;text-decoration:underline')}
+          style={s('cursor:pointer;color:var(--link);font-weight:500;text-decoration:underline')}
         >
           {isSignUp ? '로그인' : '운영자 가입'}
         </span>

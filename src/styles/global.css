@@ -28,26 +28,35 @@
   --line: #E9E7E1;
   --line-2: #DEDCD5;
 
-  /* The ground for a panel that inverts — the points header, the missions
-     strip, the progress bar — and for every filled button.
-     
-     It was --ink, which is near-black, and a slab of it was the heaviest
-     thing on any screen it landed on. It is the brand green now: the same
-     colour the links and the accents already use, so the filled things on a
-     screen belong to the palette instead of punching a hole in it. White on
-     it is 10:1, the muted white is 7:1, and the caution tone is 5.2:1. */
-  --panel: #1F4A3D;
+  /* The ground for a panel — the points header, the missions strip, the
+     progress bar, the core tip. It used to invert the page: near-black with
+     white text, which made it the heaviest thing on any screen it landed on.
+     It is a warm light grey now, so a panel separates a section without
+     punching a hole in the page, and the text on it is ink like everywhere
+     else. --on-panel-2 is the secondary rank, at 4.9:1. */
+  --panel: #E7E3DB;
+  --on-panel: #101010;
+  --on-panel-2: #5A5247;
 
-  /* the accent. --accent-mid is for fills and charts, where the deep green
-     goes muddy; --accent-soft is the tinted background behind it. */
-  --accent: #1F4A3D;
-  --accent-strong: #14322A;
-  --accent-mid: #4E7A68;
-  --accent-soft: #EDF1EE;
+  /* The accent, and the one lesson of getting here: a token that is both a
+     fill and a text colour cannot be made light. --accent went pale and every
+     link on the screen went with it. So they are two things now.
+
+     --accent fills: buttons, panels, the strip behind the missions. A warm
+     light grey, so the only colour left on a screen is the photograph on it.
+     --link writes: links, prices, the "see all" at the end of a section. Dark
+     enough to read on the page (9.4:1) and on the fill (7.5:1) alike. */
+  --accent: #E7E3DB;
+  --accent-strong: #D8D3C8;
+  --link: #4A443A;
+  /* Fills and tints that sit under or beside the accent. */
+  --accent-mid: #BFB8AA;
+  --accent-soft: #F3F1EC;
 
   /* text drawn on top of a dark fill or a photo. --on-dark-2 is the secondary
      rank — a muted white, not a grey, so it holds up over a photograph. */
-  --on-accent: #FFFFFF;
+  /* Text on an --accent fill. It is ink now, not white: the fill is light. */
+  --on-accent: #101010;
   --on-dark: #FFFFFF;
   --on-dark-2: rgba(255, 255, 255, 0.82);
   /* The accent and caution tones again, mixed for a dark ground. The light

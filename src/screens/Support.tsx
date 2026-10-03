@@ -10,7 +10,7 @@ function Bubble({ msg, label }: { msg: support.SupportMessage; label: string }) 
   return (
     <div style={s(`display:flex;flex-direction:column;gap:3px;align-items:${mine ? 'flex-end' : 'flex-start'}`)}>
       <div style={s('font-size:10.5px;color:var(--ink-4);padding:0 4px')}>{label}</div>
-      <div style={s(bubbleBase + ';' + (mine ? 'background:var(--accent);color:var(--on-dark)' : msg.sender === 'bot' ? 'background:var(--surface-2);color:var(--accent)' : 'background:var(--surface);border:1px solid var(--line);color:var(--ink)'))}>
+      <div style={s(bubbleBase + ';' + (mine ? 'background:var(--accent);color:var(--on-accent)' : msg.sender === 'bot' ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface);border:1px solid var(--line);color:var(--ink)'))}>
         {msg.body}
       </div>
     </div>
@@ -75,7 +75,7 @@ export function Support() {
   const statusChip = (status: support.ThreadStatus) => {
     const color =
       status === 'open' ? 'background:var(--surface-2);color:var(--warn)'
-      : status === 'answered' ? 'background:var(--surface-2);color:var(--accent)'
+      : status === 'answered' ? 'background:var(--surface-2);color:var(--link)'
       : status === 'bot' ? 'background:var(--surface-2);color:var(--viz-4)'
       : 'background:var(--surface-2);color:var(--ink-3)'
     return (
@@ -114,7 +114,7 @@ export function Support() {
           />
           <div
             onClick={() => void send()}
-            style={s(`cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
+            style={s(`cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
           >
             {a.supportSend}
           </div>
@@ -141,7 +141,7 @@ export function Support() {
         />
         <div
           onClick={() => void send()}
-          style={s(`cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
+          style={s(`cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
         >
           {a.supportSend}
         </div>

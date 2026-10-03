@@ -78,7 +78,7 @@ function Figure({ label, value, help }: { label: string; value: string; help?: s
 function Load({ label, value }: { label: string; value: number }) {
   // Three ranks that have to be told apart at a glance, so they take three
   // different tokens rather than two shades of the same warm tone.
-  const colour = value < 35 ? 'var(--accent)' : value < 65 ? 'var(--warn-mid)' : 'var(--danger)'
+  const colour = value < 35 ? 'var(--link)' : value < 65 ? 'var(--warn-mid)' : 'var(--danger)'
   return (
     <div style={s('flex:1;min-width:88px')}>
       <div style={s('display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:3px')}>
@@ -107,7 +107,7 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
           <div style={s('font-size:13.5px')}>{t.title}</div>
           <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:4px;line-height:1.5')}>{t.sub}</div>
         </div>
-        <div style={s('font-size:11px;letter-spacing:0.06em;color:var(--accent);flex-shrink:0')}>
+        <div style={s('font-size:11px;letter-spacing:0.06em;color:var(--link);flex-shrink:0')}>
           {open ? t.hide : t.show}
         </div>
       </div>
@@ -138,7 +138,7 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
           <div style={s(
             'font-size:11.5px;line-height:1.55;margin-top:10px;border-radius:4px;padding:9px 12px;' +
               (b.occlusive
-                ? 'background:var(--surface-2);color:var(--accent)'
+                ? 'background:var(--surface-2);color:var(--link)'
                 : 'background:var(--surface);color:var(--ink-2)'),
           )}>
             {b.occlusive ? t.occlusiveYes : t.occlusiveNo}

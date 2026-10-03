@@ -42,7 +42,7 @@ export interface ConcernReportProps {
 }
 
 const colourFor = (score: number) =>
-  score < 50 ? 'var(--danger)' : score < 70 ? 'var(--warn-mid)' : 'var(--accent)'
+  score < 50 ? 'var(--danger)' : score < 70 ? 'var(--warn-mid)' : 'var(--link)'
 
 interface Row {
   key: string
@@ -175,7 +175,7 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
                           <div style={s('font-size:11px;color:var(--ink-4);font-weight:500;letter-spacing:0.06em')}>
                             {t.whatToDo}
                           </div>
-                          <div style={s('font-size:12.5px;line-height:1.6;color:var(--accent);margin-top:4px')}>
+                          <div style={s('font-size:12.5px;line-height:1.6;color:var(--link);margin-top:4px')}>
                             {row.def.low[lang]}
                           </div>
                         </div>

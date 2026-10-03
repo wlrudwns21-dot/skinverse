@@ -85,7 +85,7 @@ function StoreShell() {
               member never flashes the guest header on reload. */}
           {st.authLoading ? (
             <div style={s('display:flex;align-items:center;justify-content:center;padding:80px 20px')}>
-              <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1s linear infinite')} />
+              <div style={s('width:36px;height:36px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--link);animation:spin 1s linear infinite')} />
             </div>
           ) : (
             <CurrentScreen />

@@ -89,7 +89,7 @@ function Detail({ m }: { m: AdminMember }) {
         <Field label="이메일" value={m.email} />
         <div style={s('min-width:0')}>
           <div style={s('font-size:10.5px;color:var(--ink-4)')}>이메일 인증</div>
-          <div style={s(`font-size:12.5px;margin-top:2px;font-weight:500;color:${confirmed ? 'var(--accent)' : 'var(--warn)'}`)}>
+          <div style={s(`font-size:12.5px;margin-top:2px;font-weight:500;color:${confirmed ? 'var(--link)' : 'var(--warn)'}`)}>
             {confirmed ? '완료' : '미인증'}
           </div>
         </div>
@@ -194,7 +194,7 @@ export function Users() {
                     </div>
                   </div>
                   <span>{u.country}</span>
-                  <span style={s('background:var(--surface-2);color:var(--accent);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:500;justify-self:start')}>{u.level}</span>
+                  <span style={s('background:var(--surface-2);color:var(--link);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:500;justify-self:start')}>{u.level}</span>
                   <b>{u.ptsS} P</b>
                   <span style={s('color:var(--ink-2)')}>{u.activity}</span>
                   <div
@@ -202,7 +202,7 @@ export function Users() {
                       e.stopPropagation()
                       u.grant()
                     }}
-                    style={s('cursor:pointer;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:110px')}
+                    style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:110px')}
                   >
                     +{admin.grantPoints} P 지급
                   </div>

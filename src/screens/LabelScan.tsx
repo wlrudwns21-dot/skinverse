@@ -127,7 +127,7 @@ export function LabelScan() {
           <button
             onClick={() => void analyse(text)}
             disabled={busy || !text.trim()}
-            style={s('flex:1;min-width:130px;border:none;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:14px;font-size:13px;font-weight:500;letter-spacing:0.03em;cursor:' + (busy || !text.trim() ? 'default' : 'pointer') + ';opacity:' + (busy || !text.trim() ? '.5' : '1'))}
+            style={s('flex:1;min-width:130px;border:none;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;font-size:13px;font-weight:500;letter-spacing:0.03em;cursor:' + (busy || !text.trim() ? 'default' : 'pointer') + ';opacity:' + (busy || !text.trim() ? '.5' : '1'))}
           >
             {busy ? '대조 중…' : '분석하기'}
           </button>

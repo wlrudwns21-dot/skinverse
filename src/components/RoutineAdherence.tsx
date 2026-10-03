@@ -35,7 +35,7 @@ export function RoutineAdherence() {
       <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{c.historySub}</div>
 
       <div style={s('display:flex;gap:8px;margin-top:11px;flex-wrap:wrap')}>
-        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--accent);border-radius:3px;padding:4px 10px')}>
+        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--link);border-radius:3px;padding:4px 10px')}>
           🔥 {c.streak(st.routineStreak.current)}
         </span>
         <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--ink-3);border-radius:3px;padding:4px 10px')}>
@@ -75,7 +75,7 @@ export function RoutineAdherence() {
           </div>
 
           <div style={s('display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:10.5px;color:var(--ink-3)')}>
-            <span><b style={s('color:var(--accent)')}>■</b> {st.t.morning}</span>
+            <span><b style={s('color:var(--link)')}>■</b> {st.t.morning}</span>
             <span><b style={s('color:var(--viz-4)')}>■</b> {st.t.evening}</span>
             <span style={s('color:var(--ink-4)')}>{c.scanDot}</span>
           </div>

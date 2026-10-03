@@ -129,7 +129,7 @@ export function Ingredients() {
   const btn = (kind: 'ghost' | 'solid' | 'warn', disabled: boolean) => {
     const base = 'border-radius:4px;padding:9px 16px;font-size:12.5px;font-weight:500;' +
       'cursor:' + (disabled ? 'default' : 'pointer') + ';opacity:' + (disabled ? '.5' : '1') + ';'
-    if (kind === 'solid') return s(base + 'border:none;background:var(--accent);color:var(--on-dark)')
+    if (kind === 'solid') return s(base + 'border:none;background:var(--accent);color:var(--on-accent)')
     if (kind === 'warn') return s(base + 'border:1px solid var(--warn-mid);background:var(--surface);color:var(--warn)')
     return s(base + 'border:1px solid var(--line-2);background:var(--surface);color:var(--ink-2)')
   }
@@ -199,7 +199,7 @@ export function Ingredients() {
               </div>
 
               {info?.endpoint && (
-                <div style={s('margin-top:10px;background:var(--surface);border-radius:4px;padding:8px 11px;font-size:11px;color:var(--accent);word-break:break-all;line-height:1.5')}>
+                <div style={s('margin-top:10px;background:var(--surface);border-radius:4px;padding:8px 11px;font-size:11px;color:var(--link);word-break:break-all;line-height:1.5')}>
                   응답한 주소 {info.endpoint}
                 </div>
               )}

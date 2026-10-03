@@ -126,7 +126,7 @@ export function Refunds() {
                       'flex:1;min-width:120px;border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;' +
                         (r.busy || !r.capturable
                           ? 'background:var(--surface-2);color:var(--ink-4)'
-                          : 'cursor:pointer;background:var(--accent);color:var(--on-dark-2)'),
+                          : 'cursor:pointer;background:var(--accent);color:var(--on-accent)'),
                     )}
                   >
                     {r.busy ? '처리 중…' : 'PayPal로 환불 실행'}

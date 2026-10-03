@@ -11,7 +11,7 @@ export function Cart() {
       {st.cartEmpty && (
         <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:30px;text-align:center;font-size:13px;color:var(--ink-3);margin-top:16px')}>
           {st.t.cartEmpty}
-          <div onClick={st.goShop} style={s('cursor:pointer;color:var(--accent);font-weight:500;margin-top:8px')}>{st.t.browse} →</div>
+          <div onClick={st.goShop} style={s('cursor:pointer;color:var(--link);font-weight:500;margin-top:8px')}>{st.t.browse} →</div>
         </div>
       )}
 
@@ -49,7 +49,7 @@ export function Cart() {
               <b>+{st.earnPreview} P</b>
             </div>
           </div>
-          <div onClick={st.goCheckout} style={s('cursor:pointer;margin-top:14px;background:var(--accent);color:var(--on-dark);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}>
+          <div onClick={st.goCheckout} style={s('cursor:pointer;margin-top:14px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}>
             {st.t.checkout}
           </div>
         </>
