@@ -1,4 +1,5 @@
 import type { Fit, Slot } from './analysis'
+import type { DetailHeights } from './detailPages'
 import type { Localized, MetricKey, Product, ProductTag } from '../data/types'
 
 /** A catalogue row: the storefront's view of a product plus its operational fields. */
@@ -53,6 +54,8 @@ export interface ProductRow {
   gradient: string
   /** Path under `public/` to the main product shot; empty when unphotographed. */
   image?: string | null
+  /** Locale → page height in px for the maker's detail artwork. */
+  detail_pages?: DetailHeights | null
   ingredients: string
   sub: Localized
   why: Localized
@@ -85,6 +88,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     kind: row.kind,
     g: row.gradient,
     img: row.image ?? '',
+    detail: row.detail_pages ?? undefined,
     ing: row.ingredients,
     line: row.line ?? '',
     slot: row.slot ?? 'both',

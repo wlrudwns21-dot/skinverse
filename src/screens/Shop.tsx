@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { analysisLabels as L } from '../catalog/analysis'
+import { DetailPage } from '../components/DetailPage'
 import { ProductShot } from '../components/ProductShot'
 import { s } from '../lib/css'
 import { DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
@@ -237,6 +238,11 @@ export function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {/* Last, and outside the gutter: the maker's artwork is typeset to its
+          own margins and goes full-bleed. It sits below the buttons so a
+          customer who has decided never has to scroll past it to act. */}
+      <DetailPage id={sel.id} lang={st.lang} heights={sel.detail} name={sel.name} />
     </div>
   )
 }

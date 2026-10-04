@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
 import { aesturaProducts } from '../data/aestura'
+import { detailPages } from './detailPages'
 import { dailyMissions, rewards as seedRewards, weeklyMissions } from '../data/rewards'
 import { pointsRules, shipping as seedShipping } from '../data/commerce'
 import type { ShipMethod } from '../data/commerce'
@@ -66,6 +67,7 @@ export const SEED_CATALOG: Catalog = {
     kind: p.kind,
     g: p.gradient,
     img: p.image,
+    detail: detailPages[p.id],
     ing: p.ingredients,
     sub: p.sub,
     why: p.why,
