@@ -173,7 +173,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'both',
     step: 'cream',
     gradient: G.sand,
-    image: '',
+    image: '/products/ae-atobarrier365-cream-80/main.webp',
     sub: {
       ko: '세라마이드 장벽 크림',
       en: 'Ceramide barrier cream',
@@ -265,7 +265,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'both',
     step: 'toner',
     gradient: G.sage,
-    image: '',
+    image: '/products/ae-atobarrier365-cream-mist-120/main.webp',
     sub: {
       ko: '유분을 품은 보습 미스트',
       en: 'Moisturising mist with oils',
@@ -347,7 +347,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'pm',
     step: 'serum',
     gradient: G.stone,
-    image: '',
+    image: '/products/ae-regederm365-capsule-serum-30/main.webp',
     sub: {
       ko: '모공·탄력 캡슐 세럼',
       en: 'Pore and firmness capsule serum',
@@ -455,7 +455,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'am',
     step: 'spf',
     gradient: G.sage,
-    image: '',
+    image: '/products/ae-dermauv365-mineral-40/main.webp',
     sub: {
       ko: '징크 단일 무기자차 · SPF50+ PA++++',
       en: 'Zinc-only mineral sunscreen · SPF50+ PA++++',
@@ -636,7 +636,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'both',
     step: 'cream',
     gradient: G.stone,
-    image: '',
+    image: '/products/ae-atobarrier365-hydro-soothing-80/main.webp',
     sub: { ko: '', en: '', zh: '', th: '' },
     why: { ko: '', en: '', zh: '', th: '' },
     checked: false,
