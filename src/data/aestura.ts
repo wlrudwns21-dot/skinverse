@@ -594,7 +594,7 @@ export const aesturaProducts: AesturaProduct[] = [
     slot: 'pm',
     step: 'serum',
     gradient: G.sage,
-    image: '',
+    image: '/products/ae-acica365-soothing-serum-duo/main.webp',
     sub: {
       ko: '흔적진정세럼 2개 세트',
       en: 'Two bottles of the soothing serum',
