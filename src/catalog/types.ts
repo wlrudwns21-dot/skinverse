@@ -1,6 +1,6 @@
 import type { Fit, Slot } from './analysis'
 import type { DetailHeights } from './detailPages'
-import type { Localized, MetricKey, Product, ProductTag } from '../data/types'
+import type { Lang, Localized, MetricKey, Product, ProductTag } from '../data/types'
 
 /** A catalogue row: the storefront's view of a product plus its operational fields. */
 export interface CatalogProduct extends Product {
@@ -43,6 +43,8 @@ export interface ProductRow {
   id: string
   brand: string
   name: string
+  /** Name per locale, for display. Missing locale falls back to `name`. */
+  name_l?: Partial<Record<Lang, string>> | null
   price: string | number
   /** The authored price, in won. `price` is derived from it. */
   price_krw?: string | number | null
@@ -79,6 +81,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     id: row.id,
     brand: row.brand,
     name: row.name,
+    nameL: row.name_l ?? undefined,
     price: Number(row.price),
     priceKrw: Number(row.price_krw ?? 0),
     useDays: Number(row.use_days ?? 60),

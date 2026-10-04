@@ -1266,6 +1266,9 @@ function useStoreValue() {
   )
 
   const targetProduct = products.find((p) => p.metric === lowest.k) ?? products[0]
+  /* The routine names this product inside a sentence in the reader's language,
+     so it has to be the reader's name for it, not the invoice's. */
+  const targetName = targetProduct.nameL?.[lang] ?? targetProduct.name
 
   const toView = (p: CatalogProduct): ProductView => {
     const match = recommendations.get(p.id)
@@ -1277,7 +1280,11 @@ function useStoreValue() {
       reasons: orderedReasons(match?.reasons ?? []).map((kind) => ins.reason[kind]),
       id: p.id,
       brand: p.brand,
-      name: p.name,
+      /* The maker publishes a name per market and they are not translations of
+         each other, so this is a lookup, not a transformation. Falling back to
+         `name` is what makes a missing locale show the English name rather
+         than nothing. */
+      name: p.nameL?.[lang] ?? p.name,
       kind: p.kind,
       ml: p.ml,
       grad: p.g,
@@ -1391,7 +1398,7 @@ function useStoreValue() {
     {
       n: 3,
       key: 'treatment',
-      name: r.step.amTreatment + ': ' + targetProduct.name,
+      name: r.step.amTreatment + ': ' + targetName,
       note: r.note.weakest(lowest.n[lang]),
     },
     {
@@ -1418,7 +1425,7 @@ function useStoreValue() {
     {
       n: 3,
       key: 'treatment',
-      name: r.step.pmTreatment + ': ' + targetProduct.name,
+      name: r.step.pmTreatment + ': ' + targetName,
       note: r.note.pmTreatment,
     },
     {

@@ -72,7 +72,18 @@ export type ProductTag = 'Hydration' | 'Soothing' | 'Pore' | 'Brightening' | 'SP
 export interface Product {
   id: string
   brand: string
+  /**
+   * The maker's English name. This is what an order records, in every
+   * language — an invoice is read by operators, refunds and customs, not by
+   * the shopper, so it stays in one stable language.
+   */
   name: string
+  /**
+   * The name per locale, for the screen only. A locale that is absent falls
+   * back to `name`; Thai is absent throughout because the maker's own Thai
+   * pages print the English name.
+   */
+  nameL?: Partial<Record<Lang, string>>
   price: number
   tag: ProductTag
   /** Which scan axis this product answers to. `uv` matches on local UV index. */

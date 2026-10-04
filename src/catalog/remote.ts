@@ -58,6 +58,7 @@ export const SEED_CATALOG: Catalog = {
     id: p.id,
     brand: 'AESTURA',
     name: p.name,
+    nameL: { ko: p.nameKo, zh: p.nameZh },
     price: Math.round((p.krw / FALLBACK_RATES.USD.krwPerUnit) * 100) / 100,
     priceKrw: p.krw,
     useDays: p.useDays,

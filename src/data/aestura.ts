@@ -34,8 +34,15 @@ export interface AesturaProduct {
   /** The folder the detail pages live in, so a later upload can find its row. */
   folder: string
   line: string
+  /**
+   * The maker's English name, as printed in the Product details table of its
+   * own detail page. This is the name an order records.
+   */
   name: string
+  /** The maker's Korean name. 에스트라 is dropped — `brand` carries it. */
   nameKo: string
+  /** The maker's Chinese name. Not a transliteration of the English one. */
+  nameZh: string
   ml: string
   kind: string
   /** 'single' or 'set' — a set prices and ships as one item. */
@@ -163,6 +170,7 @@ export const aesturaProducts: AesturaProduct[] = [
     line: '아토베리어365',
     name: 'Atobarrier365 Cream',
     nameKo: '아토베리어365 크림',
+    nameZh: 'Atobarrier365 面霜',
     ml: '80ml',
     kind: 'Cream',
     bundle: 'single',
@@ -255,6 +263,7 @@ export const aesturaProducts: AesturaProduct[] = [
     line: '아토베리어365',
     name: 'Atobarrier365 Cream Mist',
     nameKo: '아토베리어365 크림미스트',
+    nameZh: 'Atobarrier365 乳霜喷雾',
     ml: '120ml',
     kind: 'Mist',
     bundle: 'single',
@@ -335,8 +344,9 @@ export const aesturaProducts: AesturaProduct[] = [
     id: 'ae-regederm365-capsule-serum-30',
     folder: 'Regederm365_Capsule_Serum',
     line: '리제덤365',
-    name: 'Regederm365 Capsule Serum',
+    name: 'Regederm365 Skin Tightening Capsule Serum',
     nameKo: '리제덤365 모공탄력 캡슐세럼',
+    nameZh: 'Regederm365 毛孔弹力胶囊精华',
     ml: '30ml',
     kind: 'Serum',
     bundle: 'single',
@@ -443,8 +453,9 @@ export const aesturaProducts: AesturaProduct[] = [
     id: 'ae-dermauv365-mineral-40',
     folder: 'DermaUV365_Mineral_Sunscreen',
     line: '더마UV365',
-    name: 'DermaUV365 Mineral Sunscreen SPF50+ PA++++',
+    name: 'Derma UV365 Barrier Hydro Mineral Sunscreen',
     nameKo: '더마UV365 장벽수분 무기자차 선크림',
+    nameZh: 'Derma UV365 屏障水润物理防晒霜',
     ml: '40ml',
     kind: 'Sunscreen',
     bundle: 'single',
@@ -545,8 +556,9 @@ export const aesturaProducts: AesturaProduct[] = [
     id: 'ae-acica365-soothing-serum-40',
     folder: 'ACICA365_Soothing_Serum',
     line: '에이시카365',
-    name: 'ACICA365 Soothing Serum pH4.5',
+    name: 'A-CICA365 Soothing Relief Serum pH4.5',
     nameKo: '에이시카365 흔적진정세럼 pH4.5',
+    nameZh: 'A-CICA365 舒缓淡印精华 pH4.5',
     ml: '40ml',
     kind: 'Serum',
     bundle: 'single',
@@ -582,8 +594,9 @@ export const aesturaProducts: AesturaProduct[] = [
     id: 'ae-acica365-soothing-serum-duo',
     folder: 'ACICA365_Soothing_Serum_Duo',
     line: '에이시카365',
-    name: 'ACICA365 Soothing Serum pH4.5 Duo',
+    name: 'A-CICA365 Soothing Relief Serum pH4.5 Duo',
     nameKo: '에이시카365 흔적진정세럼 pH4.5 듀오',
+    nameZh: 'A-CICA365 舒缓淡印精华 pH4.5 Duo',
     ml: '40ml × 2',
     kind: 'Serum',
     bundle: 'set',
@@ -626,6 +639,7 @@ export const aesturaProducts: AesturaProduct[] = [
     line: '아토베리어365',
     name: 'Atobarrier365 Hydro Soothing Cream',
     nameKo: '아토베리어365 하이드로 수딩크림',
+    nameZh: 'Atobarrier365 水润舒缓面霜',
     ml: '80ml',
     kind: 'Cream',
     bundle: 'single',
