@@ -14,6 +14,7 @@ import { loadAllThreads } from '../support/remote'
 import { useAuth } from '../auth/AuthContext'
 import { useCatalog } from '../catalog/CatalogContext'
 import * as catalogRemote from '../catalog/remote'
+import { BLOCKING, canSell, gapLabels, gapsOf } from '../catalog/readiness'
 import type { StoreSettings } from '../catalog/types'
 // The console always speaks the settlement currency: an operator refunding an
 // order needs the figure PayPal will move, not a converted one.
@@ -220,10 +221,39 @@ function useAdminValue() {
   const toggleProduct = async (id: string) => {
     const product = products.find((p) => p.id === id)
     if (!product) return
+    /* The database refuses `active` on an unverified product, so without this
+       the operator gets a bare "저장 실패" for a rule that has a reason. */
+    if (!product.active && !canSell(product)) {
+      return toastMsg(product.name + ' — 전성분을 확인해야 판매할 수 있습니다')
+    }
     const ok = await catalogRemote.setProductActive(id, !product.active)
     if (!ok) return toastMsg(product.name + ' — 저장 실패')
     await catalog.refresh()
     toastMsg(product.name + (product.active ? ' — 판매 중지' : ' — 판매 재개'))
+  }
+
+  const saveCopy = async (id: string, copy: catalogRemote.ProductCopy) => {
+    if (!(await catalogRemote.saveProductCopy(id, copy))) return toastMsg('상품 내용 저장 실패')
+    await catalog.refresh()
+    toastMsg('상품 내용이 저장되었습니다')
+  }
+
+  /**
+   * The switch that decides whether an analysis may be published at all.
+   *
+   * Turning it off also withdraws the product from sale, in one statement, so
+   * the catalogue can never hold a product that is on sale on the strength of
+   * a list nobody stands behind.
+   */
+  const setChecked = async (id: string, checked: boolean) => {
+    const product = products.find((p) => p.id === id)
+    if (!(await catalogRemote.setIngredientsChecked(id, checked))) return toastMsg('전성분 확인 저장 실패')
+    await catalog.refresh()
+    toastMsg(
+      checked
+        ? '전성분 확인됨 — 이제 판매를 시작할 수 있습니다'
+        : (product?.active ? '전성분 확인 해제 — 판매도 함께 중지했습니다' : '전성분 확인 해제됨'),
+    )
   }
 
   const changeMissionPoints = async (id: string, points: number) => {
@@ -543,6 +573,11 @@ function useAdminValue() {
       inc: () => void bumpStock(p.id, STOCK_STEP),
       dec: () => void bumpStock(p.id, -STOCK_STEP),
       toggle: () => void toggleProduct(p.id),
+      /** What this product still needs; the first one may block the sale. */
+      gaps: gapsOf(p).map((g) => ({ key: g, label: gapLabels[g], blocking: g === BLOCKING })),
+      sellable: canSell(p),
+      saveCopy: (copy: catalogRemote.ProductCopy) => saveCopy(p.id, copy),
+      setChecked: (checked: boolean) => setChecked(p.id, checked),
       activeLabel: p.active ? '판매중' : '판매중지',
       activeStyle: p.active ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface-2);color:var(--ink-3)',
     })),

@@ -205,6 +205,11 @@ function RateRow({ code }: { code: string }) {
 }
 
 const TAGS = ['Hydration', 'Soothing', 'Pore', 'Brightening', 'SPF']
+const STEPS: [string, string][] = [
+  ['cleanser', '클렌저'], ['toner', '토너 · 미스트'], ['serum', '세럼'],
+  ['cream', '크림'], ['spf', '자외선차단'], ['mask', '마스크'],
+]
+
 const METRICS = [
   ['hydration', '수분'], ['elasticity', '탄력'], ['pores', '모공'],
   ['pigmentation', '색소침착'], ['wrinkles', '주름'], ['sensitivity', '민감도'],
@@ -223,6 +228,14 @@ const GRADIENTS = [
   'linear-gradient(150deg,var(--surface-2),var(--ink-4))',
 ]
 
+/* One literal, used for the initial state and for the reset. Two copies of it
+   is how a reset quietly stops matching what the form started as. */
+const BLANK: NewProduct = {
+  brand: 'AESTURA', name: '', kind: '', ml: '', tag: 'Hydration', metric: 'hydration',
+  gradient: GRADIENTS[0], ingredients: '', priceKrw: 0, stock: 0,
+  line: '', slot: 'both', step: '', useDays: 60,
+}
+
 const field = 'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none'
 const label = 'font-size:11px;color:var(--ink-3);font-weight:500'
 
@@ -238,10 +251,7 @@ function NewProductForm() {
   const admin = useAdmin()
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [f, setF] = useState<NewProduct>({
-    brand: '', name: '', kind: '', ml: '', tag: 'Hydration', metric: 'hydration',
-    gradient: GRADIENTS[0], ingredients: '', priceKrw: 0, stock: 0,
-  })
+  const [f, setF] = useState<NewProduct>(BLANK)
   const [cost, setCost] = useState('')
   const [margin, setMargin] = useState('40')
 
@@ -260,10 +270,7 @@ function NewProductForm() {
     await admin.addProduct({ ...f, priceKrw: priceN }, costN, costN > 0 ? marginFromPrice(costN, priceN) : 0)
     setBusy(false)
     setOpen(false)
-    setF({
-      brand: '', name: '', kind: '', ml: '', tag: 'Hydration', metric: 'hydration',
-      gradient: GRADIENTS[0], ingredients: '', priceKrw: 0, stock: 0,
-    })
+    setF(BLANK)
     setCost('')
   }
 
@@ -330,6 +337,40 @@ function NewProductForm() {
         </div>
       </div>
 
+      {/* Where it sits in a routine. The product page prints these two and the
+          routine builder reads `step`, so a product registered without them
+          shows two blank cells and never appears in a routine. */}
+      <div style={s('display:flex;gap:10px;flex-wrap:wrap;margin-top:8px')}>
+        <label style={s('flex:1;min-width:130px')}>
+          <div style={s(label)}>라인</div>
+          <input value={f.line} onChange={(e) => set('line', e.target.value)} placeholder="아토베리어365" style={s(field)} />
+        </label>
+        <label style={s('flex:1;min-width:110px')}>
+          <div style={s(label)}>사용 시간</div>
+          <select value={f.slot} onChange={(e) => set('slot', e.target.value as NewProduct['slot'])} style={s(field)}>
+            <option value="both">아침 · 저녁</option>
+            <option value="am">아침</option>
+            <option value="pm">저녁</option>
+          </select>
+        </label>
+        <label style={s('flex:1;min-width:110px')}>
+          <div style={s(label)}>루틴 단계</div>
+          <select value={f.step} onChange={(e) => set('step', e.target.value)} style={s(field)}>
+            <option value="">—</option>
+            {STEPS.map(([k, ko]) => <option key={k} value={k}>{ko}</option>)}
+          </select>
+        </label>
+        <label style={s('flex:1;min-width:110px')}>
+          <div style={s(label)}>사용 기간 (일)</div>
+          <input
+            value={f.useDays || ''}
+            onChange={(e) => set('useDays', Number(e.target.value.replace(/[^0-9]/g, '')) || 0)}
+            inputMode="numeric"
+            style={s(field)}
+          />
+        </label>
+      </div>
+
       <label style={s('display:block;margin-top:8px')}>
         <div style={s(label)}>주요 성분</div>
         <input value={f.ingredients} onChange={(e) => set('ingredients', e.target.value)} style={s(field)} />
@@ -377,7 +418,8 @@ function NewProductForm() {
       )}
 
       <div style={s('background:var(--surface-2);border-radius:4px;padding:9px 12px;margin-top:8px;font-size:11.5px;color:var(--warn);line-height:1.6')}>
-        등록 후에는 <b>판매중지</b> 상태로 들어갑니다. 상품 관리에서 내용을 확인한 뒤 판매를 시작하세요.
+        등록 후에는 <b>판매중지</b> 상태로 들어갑니다. 4개 언어 설명과 전성분은 상품 관리에서 입력하고,
+        전성분을 제조사 표기와 대조한 뒤에야 판매를 시작할 수 있습니다.
       </div>
 
       <div style={s('display:flex;gap:8px;margin-top:10px')}>

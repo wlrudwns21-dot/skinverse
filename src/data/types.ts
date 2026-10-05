@@ -112,6 +112,8 @@ export interface Product {
   slot: Slot
   /** Which step of that routine, keyed into `stepNames`. */
   step: string
+  /** The same ingredient list in INCI. Not shown in the shop. */
+  inci: string
   /** Whether a human checked `ing` against the maker's own label. */
   checked: boolean
   /** Which scan readings it speaks to, strongest first. */

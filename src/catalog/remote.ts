@@ -4,6 +4,7 @@ import { detailPages } from './detailPages'
 import { dailyMissions, rewards as seedRewards, weeklyMissions } from '../data/rewards'
 import { pointsRules, shipping as seedShipping } from '../data/commerce'
 import type { ShipMethod } from '../data/commerce'
+import type { Lang, Localized } from '../data/types'
 import { FALLBACK_RATES, type FxRate, type FxRates } from '../money/fx'
 import {
   toCatalogProduct,
@@ -70,6 +71,7 @@ export const SEED_CATALOG: Catalog = {
     img: p.image,
     detail: detailPages[p.id],
     ing: p.ingredients,
+    inci: p.inci,
     sub: p.sub,
     why: p.why,
     line: p.line,
@@ -371,6 +373,14 @@ export interface NewProduct {
   ingredients: string
   priceKrw: number
   stock: number
+  /** The maker's product line, e.g. 아토베리어365. */
+  line: string
+  /** Which of the two daily routines it belongs to. */
+  slot: 'am' | 'pm' | 'both'
+  /** Which routine step, keyed into `stepNames`. */
+  step: string
+  /** Roughly how long one unit lasts, for the reorder nudge. */
+  useDays: number
 }
 
 /**
@@ -399,6 +409,17 @@ export async function createProduct(input: NewProduct): Promise<string | null> {
     metric: input.metric,
     gradient: input.gradient,
     ingredients: input.ingredients.trim(),
+    // These were being dropped on the floor: the form collected them and the
+    // insert did not send them, so every product registered through the UI
+    // came out with no line, no routine slot and the default 60-day life.
+    line: input.line.trim(),
+    slot: input.slot,
+    step: input.step.trim(),
+    use_days: Math.max(1, Math.min(730, Math.round(input.useDays || 60))),
+    // Never set from a form. A product is sellable only once a human has
+    // compared its ingredient list with the maker's own label, and that is a
+    // separate, deliberate action — see `setIngredientsChecked`.
+    ingredients_checked: false,
     // `price` is set by the trigger from price_krw; sending one here would be
     // the browser deciding what a customer pays.
     price: 0,
@@ -427,5 +448,72 @@ export async function setProductUseDays(id: string, days: number): Promise<boole
   const clamped = Math.max(1, Math.min(730, Math.round(days)))
   const { error } = await supabase.from('products').update({ use_days: clamped }).eq('id', id)
   if (error) console.error('[skinverse] 사용 기간 저장 실패', error.message)
+  return !error
+}
+
+/** The product copy an operator can edit after a product exists. */
+export interface ProductCopy {
+  /** The maker's English name — what an order records. */
+  name: string
+  /** The maker's name per locale, for the screen. */
+  nameL: Partial<Record<Lang, string>>
+  /** One line under the name, in all four languages. */
+  sub: Localized
+  /** Why it matched, in all four languages. */
+  why: Localized
+  /** The ingredient list as the maker prints it, in Korean. */
+  ingredients: string
+  /** The same list in INCI. */
+  inci: string
+  line: string
+  slot: 'am' | 'pm' | 'both'
+  step: string
+}
+
+/**
+ * Save the copy for an existing product.
+ *
+ * Deliberately cannot touch `ingredients_checked`, `price_krw`, `stock` or
+ * `active`. Those are the fields that decide what a customer is charged and
+ * whether unverified claims can be published, and a text-editing screen is not
+ * where they should be reachable by accident.
+ */
+export async function saveProductCopy(id: string, copy: ProductCopy): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase
+    .from('products')
+    .update({
+      name: copy.name.trim(),
+      name_l: copy.nameL,
+      sub: copy.sub,
+      why: copy.why,
+      ingredients: copy.ingredients.trim(),
+      inci: copy.inci.trim(),
+      line: copy.line.trim(),
+      slot: copy.slot,
+      step: copy.step.trim(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+  if (error) console.error('[skinverse] 상품 내용 저장 실패', error.message)
+  return !error
+}
+
+/**
+ * Record that a human compared this product's ingredient list with the maker's
+ * own label — which is what lets it go on sale at all.
+ *
+ * It is its own call, with its own confirmation in the UI, because it is the
+ * single switch standing between the catalogue and an analysis written from a
+ * product name. Turning it off while the product is on sale would violate the
+ * CHECK constraint, so the sale is withdrawn in the same statement.
+ */
+export async function setIngredientsChecked(id: string, checked: boolean): Promise<boolean> {
+  if (!supabase) return false
+  const patch = checked
+    ? { ingredients_checked: true }
+    : { ingredients_checked: false, active: false }
+  const { error } = await supabase.from('products').update(patch).eq('id', id)
+  if (error) console.error('[skinverse] 전성분 확인 저장 실패', error.message)
   return !error
 }

@@ -69,6 +69,8 @@ export interface ProductRow {
   line?: string | null
   slot?: Slot | null
   step?: string | null
+  /** The same list in INCI, for the operator screen and for export paperwork. */
+  inci?: string | null
   /** Whether a human checked `ingredients` against the maker's own label. */
   ingredients_checked?: boolean | null
   fits?: Fit[] | null
@@ -96,6 +98,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     line: row.line ?? '',
     slot: row.slot ?? 'both',
     step: row.step ?? '',
+    inci: row.inci ?? '',
     checked: row.ingredients_checked ?? false,
     fits: row.fits ?? [],
     pros: row.pros ?? [],
