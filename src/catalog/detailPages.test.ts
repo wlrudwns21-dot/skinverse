@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { detailPages, detailTiles, TILE_H, TILE_W } from './detailPages'
+import { detailPages, detailTiles, TILE_H } from './detailPages'
 
 describe('detailTiles', () => {
   it('covers the page exactly, with no gap and no overrun', () => {
-    for (const [id, heights] of Object.entries(detailPages)) {
-      for (const [lang, total] of Object.entries(heights)) {
+    for (const [id, art] of Object.entries(detailPages)) {
+      for (const [lang, total] of Object.entries(art.pages)) {
         const tiles = detailTiles(id, lang as never)
         expect(tiles.reduce((n, t) => n + t.h, 0), `${id} ${lang}`).toBe(total)
       }
@@ -30,14 +30,21 @@ describe('detailTiles', () => {
     const tiles = detailTiles('ae-atobarrier365-cream-80', 'ko')
     expect(tiles.at(-1)?.h).toBe(12769 % TILE_H)
     expect(tiles[0].h).toBe(TILE_H)
-    expect(tiles[0].w).toBe(TILE_W)
+    expect(tiles[0].w).toBe(1170)
   })
 
   it('returns nothing rather than another language, when a page is missing', () => {
     // Every registered page is in all four languages today, so the case that
     // has to be proven is the product with no artwork at all.
-    expect(detailTiles('ae-acica365-soothing-serum-40', 'ko')).toEqual([])
     expect(detailTiles('nope', 'ko')).toEqual([])
-    expect(detailTiles('ae-atobarrier365-cream-80', 'ko', { en: 100 })).toEqual([])
+    expect(detailTiles('ae-atobarrier365-cream-80', 'ko', { w: 1170, pages: { en: 100 } })).toEqual([])
+  })
+
+  it('declares each product\'s own export width, not a shared one', () => {
+    // The ACICA serum is exported at 860 and everything else at 1170. Declaring
+    // 1170 for it would reserve 36% too much height per tile and shove the page
+    // around as tiles load.
+    expect(detailTiles('ae-acica365-soothing-serum-40', 'ko')[0].w).toBe(860)
+    expect(detailTiles('ae-acica365-soothing-serum-duo', 'ko')[0].w).toBe(1170)
   })
 })

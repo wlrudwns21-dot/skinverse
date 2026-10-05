@@ -1,7 +1,7 @@
 /** Shared shapes for the sample data in this folder. */
 
 import type { Fit, Slot } from '../catalog/analysis'
-import type { DetailHeights } from '../catalog/detailPages'
+import type { DetailArt } from '../catalog/detailPages'
 
 export type Lang = 'en' | 'ko' | 'zh' | 'th'
 
@@ -100,10 +100,10 @@ export interface Product {
   img: string
   ing: string
   /**
-   * Page heights for the maker's detail artwork, by locale. Undefined falls
-   * back to the table bundled with the build.
+   * The maker's detail artwork — export width and page height per locale.
+   * Undefined falls back to the table bundled with the build.
    */
-  detail?: DetailHeights
+  detail?: DetailArt
   sub: Localized
   why: Localized
   /** The product line, e.g. 아토베리어365. Empty when the maker has none. */

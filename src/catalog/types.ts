@@ -1,5 +1,5 @@
 import type { Fit, Slot } from './analysis'
-import type { DetailHeights } from './detailPages'
+import type { DetailArt } from './detailPages'
 import type { Lang, Localized, MetricKey, Product, ProductTag } from '../data/types'
 
 /** A catalogue row: the storefront's view of a product plus its operational fields. */
@@ -56,8 +56,8 @@ export interface ProductRow {
   gradient: string
   /** Path under `public/` to the main product shot; empty when unphotographed. */
   image?: string | null
-  /** Locale → page height in px for the maker's detail artwork. */
-  detail_pages?: DetailHeights | null
+  /** The maker's detail artwork: export width and page height per locale. */
+  detail_pages?: DetailArt | null
   ingredients: string
   sub: Localized
   why: Localized

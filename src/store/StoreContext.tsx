@@ -19,7 +19,7 @@ import { useGeolocation } from '../weather/useGeolocation'
 import { useCatalog } from '../catalog/CatalogContext'
 import type { CatalogMission, CatalogProduct, CatalogReward } from '../catalog/types'
 import { axisName, slotNames, stepName, type FitStrength } from '../catalog/analysis'
-import type { DetailHeights } from '../catalog/detailPages'
+import type { DetailArt } from '../catalog/detailPages'
 import { can, type Capability } from '../auth/capabilities'
 import { deviceTimezone, useAuth } from '../auth/AuthContext'
 import { chipKeys, chipLabels, type ChipKey } from '../i18n/chips'
@@ -84,7 +84,7 @@ export interface ProductView {
   /** Path under `public/` to the product shot; empty when unphotographed. */
   img: string
   /** Detail-artwork page heights by locale, when the database carries them. */
-  detail?: DetailHeights
+  detail?: DetailArt
   /** The product line, e.g. 아토베리어365. Empty when the maker has none. */
   line: string
   /** When in the day it goes on, already in the reader's language. */

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { detailTiles, type DetailHeights } from '../catalog/detailPages'
+import { detailTiles, type DetailArt } from '../catalog/detailPages'
 import { s } from '../lib/css'
 import type { Lang } from '../data/types'
 
@@ -16,8 +16,8 @@ const LABEL: Record<Lang, { open: string; close: string }> = {
 export interface DetailPageProps {
   id: string
   lang: Lang
-  /** The maker's page heights for this product, when they came from the database. */
-  heights?: DetailHeights
+  /** The maker's artwork dimensions, when they came from the database. */
+  heights?: DetailArt
   /** For the alt text, so a screen reader says which product's page this is. */
   name: string
 }
