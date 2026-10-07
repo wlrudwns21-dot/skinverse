@@ -35,8 +35,6 @@ function CopyEditor({ p, onDone }: { p: Row; onDone: () => void }) {
     nameL: { ...p.nameL },
     sub: fill(p.sub),
     why: fill(p.why),
-    ingredients: p.ing,
-    inci: p.inci ?? '',
     line: p.line,
     slot: p.slot,
     step: p.step,
@@ -120,25 +118,6 @@ function CopyEditor({ p, onDone }: { p: Row; onDone: () => void }) {
         </label>
       </div>
 
-      <label style={s('display:block;margin-top:10px')}>
-        <div style={s(label)}>전성분 (한글) — 제조사 표기 그대로</div>
-        <textarea
-          value={c.ingredients}
-          onChange={(e) => set('ingredients', e.target.value)}
-          rows={4}
-          style={s(field + ';resize:vertical;line-height:1.6')}
-        />
-      </label>
-      <label style={s('display:block;margin-top:8px')}>
-        <div style={s(label)}>전성분 (영문 INCI)</div>
-        <textarea
-          value={c.inci}
-          onChange={(e) => set('inci', e.target.value)}
-          rows={4}
-          style={s(field + ';resize:vertical;line-height:1.6')}
-        />
-      </label>
-
       <div style={s('display:flex;gap:8px;margin-top:12px')}>
         <div
           onClick={onDone}
@@ -163,39 +142,87 @@ function CopyEditor({ p, onDone }: { p: Row; onDone: () => void }) {
 }
 
 /**
- * The one switch that decides whether a product may be sold at all.
+ * The switch that decides whether this product may say anything about its own
+ * ingredients.
  *
  * Kept visually apart from 저장, and asking before it goes on, because it is
  * not a preference: it is a claim that somebody compared this list with the
- * maker's own label. The database enforces what it means — `active` is refused
- * while it is off — so the confirmation is the only part the screen owns.
+ * maker's own label. The database enforces what it means — while it is off the
+ * product may hold no ingredient list and no analysis at all — so the
+ * confirmation is the only part the screen owns. It no longer stops the
+ * product being sold; a listing with a name and a price claims nothing.
  */
 function VerifyRow({ p }: { p: Row }) {
-  const on = p.sellable
+  const on = p.checked
+  const [ing, setIng] = useState(p.ing)
+  const [inci, setInci] = useState(p.inci)
+  const [busy, setBusy] = useState(false)
+
+  const act = async () => {
+    if (busy) return
+    if (on) {
+      if (!confirm(`${p.name}\n\n확인을 해제하면 전성분 · INCI · 성분 분석이 모두 지워집니다.\n판매는 계속됩니다. 계속할까요?`)) return
+      setBusy(true)
+      await p.setChecked(false, '', '')
+      setIng('')
+      setInci('')
+    } else {
+      if (!ing.trim()) return alert('전성분을 먼저 입력해주세요.')
+      if (!confirm(`${p.name}\n\n입력한 전성분을 제조사 표기와 직접 대조하셨나요?\n확인하면 고객 화면에 성분 분석이 표시됩니다.`)) return
+      setBusy(true)
+      await p.setChecked(true, ing, inci)
+    }
+    setBusy(false)
+  }
+
   return (
     <div
       style={s(
-        'margin-top:12px;border-radius:4px;padding:11px 13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;' +
+        'margin-top:12px;border-radius:4px;padding:12px 13px;' +
           (on ? 'background:var(--surface-2)' : 'background:var(--warn-soft)'),
       )}
     >
-      <div style={s('flex:1;min-width:200px;font-size:11.5px;line-height:1.6;' + (on ? 'color:var(--ink-2)' : 'color:var(--warn)'))}>
+      <div style={s('font-size:11.5px;line-height:1.7;' + (on ? 'color:var(--ink-2)' : 'color:var(--warn)'))}>
         {on
-          ? '전성분이 제조사 표기와 대조된 상태입니다. 판매할 수 있습니다.'
-          : '전성분이 확인되지 않아 판매할 수 없습니다. 위 전성분을 제조사 표기와 대조한 뒤 확인하세요.'}
+          ? '전성분이 제조사 표기와 대조된 상태입니다. 고객 화면에 성분 분석이 표시됩니다.'
+          : '전성분이 비어 있어 고객 화면에 성분 분석이 표시되지 않습니다. 판매는 가능합니다.'}
       </div>
+
+      {/* The list and the claim that it was checked are saved together,
+          because the database will not hold one without the other. Typing it
+          here and ticking the box afterwards would simply be refused — so the
+          box is what saves the text. */}
+      <label style={s('display:block;margin-top:10px')}>
+        <div style={s(label)}>전성분 (한글) — 제조사 표기 그대로</div>
+        <textarea
+          value={ing}
+          onChange={(e) => setIng(e.target.value)}
+          rows={4}
+          style={s(field + ';resize:vertical;line-height:1.6;background:var(--surface)')}
+        />
+      </label>
+      <label style={s('display:block;margin-top:8px')}>
+        <div style={s(label)}>전성분 (영문 INCI)</div>
+        <textarea
+          value={inci}
+          onChange={(e) => setInci(e.target.value)}
+          rows={4}
+          style={s(field + ';resize:vertical;line-height:1.6;background:var(--surface)')}
+        />
+      </label>
+
       <div
-        onClick={() => {
-          if (on && !confirm(`${p.name}\n\n전성분 확인을 해제하면 판매도 함께 중지됩니다. 계속할까요?`)) return
-          if (!on && !confirm(`${p.name}\n\n전성분을 제조사 표기와 직접 대조하셨나요?`)) return
-          void p.setChecked(!on)
-        }}
+        onClick={() => void act()}
         style={s(
-          'cursor:pointer;flex-shrink:0;border-radius:3px;padding:8px 14px;font-size:12px;font-weight:500;' +
-            (on ? 'border:1px solid var(--line-2);color:var(--ink-3)' : 'background:var(--ink);color:var(--on-dark)'),
+          'border-radius:3px;padding:10px;margin-top:10px;text-align:center;font-size:12.5px;font-weight:500;' +
+            (busy
+              ? 'background:var(--surface-2);color:var(--ink-4)'
+              : on
+                ? 'cursor:pointer;border:1px solid var(--line-2);color:var(--ink-3)'
+                : 'cursor:pointer;background:var(--ink);color:var(--on-dark)'),
         )}
       >
-        {on ? '확인 해제' : '전성분 확인'}
+        {busy ? '저장 중…' : on ? '확인 해제 — 전성분과 분석을 지웁니다' : '전성분 확인하고 저장'}
       </div>
     </div>
   )
@@ -205,7 +232,7 @@ export function Products() {
   const admin = useAdmin()
   const [openId, setOpenId] = useState<string | null>(null)
 
-  const waiting = admin.prodList.filter((p) => !p.sellable).length
+  const waiting = admin.prodList.filter((p) => p.gaps.some((g) => g.key === 'ingredients')).length
 
   return (
     <div style={s('animation:riseAdmin .3s ease both')}>

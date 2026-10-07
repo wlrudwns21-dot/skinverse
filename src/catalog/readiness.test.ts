@@ -40,10 +40,15 @@ describe('gapsOf', () => {
     expect(gapsOf(base())).toEqual([])
   })
 
-  it('reports an unverified ingredient list, and only that blocks selling', () => {
+  it('reports an unverified ingredient list without blocking the sale', () => {
+    // A listing with a name, a price and a photograph makes no claim that
+    // could be wrong. What may not happen is the claim itself, and the
+    // database refuses that separately: an unchecked product may hold no
+    // ingredient list and no analysis at all.
     expect(gapsOf(base({ checked: false }))).toContain('ingredients')
-    expect(canSell(base({ checked: false }))).toBe(false)
-    // Missing photographs, copy and artwork are judgement calls, not refusals.
+    expect(canSell(base({ checked: false }))).toBe(true)
+    expect(saleBlockers(base({ checked: false }))).toEqual([])
+    // Missing photographs, copy and artwork are judgement calls too.
     expect(canSell(base({ img: '', sub: {} as never, detail: undefined }))).toBe(true)
   })
 
@@ -67,7 +72,7 @@ describe('gapsOf', () => {
     expect(gapsOf(base({ priceKrw: 0 }))).toContain('price')
     expect(canSell(base({ priceKrw: 0 }))).toBe(false)
     expect(saleBlockers(base({ priceKrw: 0 }))).toEqual(['price'])
-    expect(saleBlockers(base({ priceKrw: 0, checked: false }))).toEqual(['ingredients', 'price'])
+    expect(saleBlockers(base({ priceKrw: 0, checked: false }))).toEqual(['price'])
     expect(saleBlockers(base())).toEqual([])
   })
 

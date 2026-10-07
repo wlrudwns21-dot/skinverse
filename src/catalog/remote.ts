@@ -83,9 +83,10 @@ export const SEED_CATALOG: Catalog = {
     cons: p.cons,
     stock: 0,
     sold: 0,
-    // Mirrors the database rule: an unverified ingredient list cannot be sold,
-    // and the fallback is not a way around it.
-    active: p.checked,
+    // Mirrors the database rule, which is now the price rather than the
+    // ingredient list: a product may be sold without an analysis, but not
+    // for nothing.
+    active: p.krw > 0,
   })),
   missions: [
     ...dailyMissions.map((m) => ({ id: m.id, kind: 'daily' as const, pts: m.pts, l: m.l, active: true })),
@@ -461,10 +462,6 @@ export interface ProductCopy {
   sub: Localized
   /** Why it matched, in all four languages. */
   why: Localized
-  /** The ingredient list as the maker prints it, in Korean. */
-  ingredients: string
-  /** The same list in INCI. */
-  inci: string
   line: string
   slot: 'am' | 'pm' | 'both'
   step: string
@@ -473,10 +470,11 @@ export interface ProductCopy {
 /**
  * Save the copy for an existing product.
  *
- * Deliberately cannot touch `ingredients_checked`, `price_krw`, `stock` or
- * `active`. Those are the fields that decide what a customer is charged and
- * whether unverified claims can be published, and a text-editing screen is not
- * where they should be reachable by accident.
+ * Deliberately cannot touch the ingredient list, `price_krw`, `stock` or
+ * `active`. Those decide what a customer is charged and what the shop asserts
+ * about a product's composition, and a text-editing screen is not where they
+ * should be reachable by accident. The ingredient list travels with the
+ * verification instead — see `setIngredientsChecked`.
  */
 export async function saveProductCopy(id: string, copy: ProductCopy): Promise<boolean> {
   if (!supabase) return false
@@ -487,8 +485,6 @@ export async function saveProductCopy(id: string, copy: ProductCopy): Promise<bo
       name_l: copy.nameL,
       sub: copy.sub,
       why: copy.why,
-      ingredients: copy.ingredients.trim(),
-      inci: copy.inci.trim(),
       line: copy.line.trim(),
       slot: copy.slot,
       step: copy.step.trim(),
@@ -500,20 +496,37 @@ export async function saveProductCopy(id: string, copy: ProductCopy): Promise<bo
 }
 
 /**
- * Record that a human compared this product's ingredient list with the maker's
- * own label — which is what lets it go on sale at all.
+ * Publish an ingredient list, together with the claim that a human compared it
+ * with the maker's own label.
  *
- * It is its own call, with its own confirmation in the UI, because it is the
- * single switch standing between the catalogue and an analysis written from a
- * product name. Turning it off while the product is on sale would violate the
- * CHECK constraint, so the sale is withdrawn in the same statement.
+ * The two travel in one statement because the database will not hold one
+ * without the other: `products_no_unverified_claims` means an unchecked
+ * product carries no ingredient list at all. Saving the text first and
+ * ticking the box afterwards would simply be refused, so the box is what
+ * saves the text.
+ *
+ * Turning it off clears the list, the INCI and all three analysis arrays —
+ * everything derived from a list nobody now stands behind. The product stays
+ * on sale: a listing with a name and a price claims nothing.
  */
-export async function setIngredientsChecked(id: string, checked: boolean): Promise<boolean> {
+export async function setIngredientsChecked(
+  id: string,
+  checked: boolean,
+  ingredients = '',
+  inci = '',
+): Promise<boolean> {
   if (!supabase) return false
   const patch = checked
-    ? { ingredients_checked: true }
-    : { ingredients_checked: false, active: false }
+    ? { ingredients_checked: true, ingredients: ingredients.trim(), inci: inci.trim() }
+    : {
+        ingredients_checked: false,
+        ingredients: '',
+        inci: '',
+        fits: [],
+        pros: [],
+        cons: [],
+      }
   const { error } = await supabase.from('products').update(patch).eq('id', id)
-  if (error) console.error('[skinverse] 전성분 확인 저장 실패', error.message)
+  if (error) console.error('[skinverse] 전성분 저장 실패', error.message)
   return !error
 }

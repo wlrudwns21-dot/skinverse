@@ -40,14 +40,18 @@ export const gapLabels: Record<Gap, string> = {
 /**
  * The gaps the database itself refuses to let past.
  *
- * Both are CHECK constraints — `products_checked_when_active` and
- * `products_priced_when_active` — so neither can be talked around however the
- * request is sent. Everything else on this list is a judgement call an
- * operator is allowed to make: selling before the photographs arrive is a
- * decision, while selling an analysis nobody verified, or a product at ₩0,
- * is not.
+ * Only one now. `products_priced_when_active` is a CHECK constraint, so a
+ * product cannot go on sale for nothing however the request is sent.
+ *
+ * An unverified ingredient list used to be here too. It is not any more: a
+ * listing with a name, a price and a photograph makes no claim that could be
+ * wrong, and refusing to sell it protected nobody. What the database still
+ * refuses is the claim itself — `products_no_unverified_claims` means an
+ * unchecked product may carry no ingredient list and no analysis at all. So
+ * 'ingredients' stays on this list as something to go and do, and stops being
+ * a reason the sale is blocked.
  */
-export const BLOCKING: Gap[] = ['ingredients', 'price']
+export const BLOCKING: Gap[] = ['price']
 
 const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
@@ -78,7 +82,7 @@ export function gapsOf(p: CatalogProduct): Gap[] {
 
 /** Whether the database will accept `active = true` for this product. */
 export function canSell(p: CatalogProduct): boolean {
-  return p.checked && p.priceKrw > 0
+  return p.priceKrw > 0
 }
 
 /** Why the database would refuse to put this product on sale, if it would. */

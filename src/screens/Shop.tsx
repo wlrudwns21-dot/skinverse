@@ -173,12 +173,18 @@ export function ProductDetail() {
           </>
         )}
 
-        <div style={s('padding:16px 0')}>
-          <div style={s(KICKER)}>{st.t.whyT}</div>
-          <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.why}</div>
-        </div>
-
-        <div style={s(RULE)} />
+        {/* A product the maker has not published an ingredient list for has
+            no analysis and no recommendation paragraph. Rendering the heading
+            over nothing makes the page look broken rather than incomplete. */}
+        {sel.why && (
+          <>
+            <div style={s('padding:16px 0')}>
+              <div style={s(KICKER)}>{st.t.whyT}</div>
+              <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.why}</div>
+            </div>
+            <div style={s(RULE)} />
+          </>
+        )}
 
         {/* Pros and cons sit together, in that order, and neither can be
             collapsed away: a product shown with only its merits is an
@@ -207,12 +213,15 @@ export function ProductDetail() {
           </>
         )}
 
-        <div style={s('padding:16px 0')}>
-          <div style={s(KICKER)}>{st.t.ingT}</div>
-          <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.ing}</div>
-        </div>
-
-        <div style={s(RULE)} />
+        {sel.ing && (
+          <>
+            <div style={s('padding:16px 0')}>
+              <div style={s(KICKER)}>{st.t.ingT}</div>
+              <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.ing}</div>
+            </div>
+            <div style={s(RULE)} />
+          </>
+        )}
 
         {!sel.checked && (
           <>

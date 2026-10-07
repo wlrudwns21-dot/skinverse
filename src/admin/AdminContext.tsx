@@ -242,19 +242,16 @@ function useAdminValue() {
   /**
    * The switch that decides whether an analysis may be published at all.
    *
-   * Turning it off also withdraws the product from sale, in one statement, so
-   * the catalogue can never hold a product that is on sale on the strength of
-   * a list nobody stands behind.
+   * The list travels with it, because the database holds neither without the
+   * other. Turning it off clears everything derived from a list nobody now
+   * stands behind; the product stays on sale, claiming nothing.
    */
-  const setChecked = async (id: string, checked: boolean) => {
-    const product = products.find((p) => p.id === id)
-    if (!(await catalogRemote.setIngredientsChecked(id, checked))) return toastMsg('전성분 확인 저장 실패')
+  const setChecked = async (id: string, checked: boolean, ingredients = '', inci = '') => {
+    if (!(await catalogRemote.setIngredientsChecked(id, checked, ingredients, inci))) {
+      return toastMsg('전성분 저장 실패')
+    }
     await catalog.refresh()
-    toastMsg(
-      checked
-        ? '전성분 확인됨 — 이제 판매를 시작할 수 있습니다'
-        : (product?.active ? '전성분 확인 해제 — 판매도 함께 중지했습니다' : '전성분 확인 해제됨'),
-    )
+    toastMsg(checked ? '전성분 확인됨 — 성분 분석이 표시됩니다' : '전성분과 성분 분석을 지웠습니다')
   }
 
   const changeMissionPoints = async (id: string, points: number) => {
@@ -578,7 +575,8 @@ function useAdminValue() {
       gaps: gapsOf(p).map((g) => ({ key: g, label: gapLabels[g], blocking: BLOCKING.includes(g) })),
       sellable: canSell(p),
       saveCopy: (copy: catalogRemote.ProductCopy) => saveCopy(p.id, copy),
-      setChecked: (checked: boolean) => setChecked(p.id, checked),
+      setChecked: (checked: boolean, ingredients?: string, inci?: string) =>
+        setChecked(p.id, checked, ingredients, inci),
       activeLabel: p.active ? '판매중' : '판매중지',
       activeStyle: p.active ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface-2);color:var(--ink-3)',
     })),
