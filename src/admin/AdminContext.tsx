@@ -14,7 +14,7 @@ import { loadAllThreads } from '../support/remote'
 import { useAuth } from '../auth/AuthContext'
 import { useCatalog } from '../catalog/CatalogContext'
 import * as catalogRemote from '../catalog/remote'
-import { BLOCKING, canSell, gapLabels, gapsOf } from '../catalog/readiness'
+import { BLOCKING, canSell, gapLabels, gapsOf, saleBlockers } from '../catalog/readiness'
 import type { StoreSettings } from '../catalog/types'
 // The console always speaks the settlement currency: an operator refunding an
 // order needs the figure PayPal will move, not a converted one.
@@ -224,7 +224,8 @@ function useAdminValue() {
     /* The database refuses `active` on an unverified product, so without this
        the operator gets a bare "저장 실패" for a rule that has a reason. */
     if (!product.active && !canSell(product)) {
-      return toastMsg(product.name + ' — 전성분을 확인해야 판매할 수 있습니다')
+      const why = saleBlockers(product).map((g) => gapLabels[g]).join(' · ')
+      return toastMsg(product.name + ' — ' + why + ' 상태로는 판매할 수 없습니다')
     }
     const ok = await catalogRemote.setProductActive(id, !product.active)
     if (!ok) return toastMsg(product.name + ' — 저장 실패')
@@ -574,7 +575,7 @@ function useAdminValue() {
       dec: () => void bumpStock(p.id, -STOCK_STEP),
       toggle: () => void toggleProduct(p.id),
       /** What this product still needs; the first one may block the sale. */
-      gaps: gapsOf(p).map((g) => ({ key: g, label: gapLabels[g], blocking: g === BLOCKING })),
+      gaps: gapsOf(p).map((g) => ({ key: g, label: gapLabels[g], blocking: BLOCKING.includes(g) })),
       sellable: canSell(p),
       saveCopy: (copy: catalogRemote.ProductCopy) => saveCopy(p.id, copy),
       setChecked: (checked: boolean) => setChecked(p.id, checked),

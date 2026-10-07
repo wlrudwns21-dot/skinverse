@@ -24,6 +24,8 @@ export type Gap =
   | 'detail'
   /** Nothing to ship. */
   | 'stock'
+  /** No price, so the product cannot be sold at any figure. */
+  | 'price'
 
 export const gapLabels: Record<Gap, string> = {
   ingredients: '전성분 미확인',
@@ -32,18 +34,20 @@ export const gapLabels: Record<Gap, string> = {
   nameEn: '영문명 없음',
   detail: '상세페이지 없음',
   stock: '재고 0',
+  price: '가격 미입력',
 }
 
 /**
- * The one gap the database itself refuses to let past.
+ * The gaps the database itself refuses to let past.
  *
- * `products_checked_when_active` is a CHECK constraint, so an unverified
- * product cannot be made active however the request is sent. Everything else
- * on this list is a judgement call an operator is allowed to make — selling
- * before the photographs arrive is a decision; selling an analysis nobody
- * verified is not.
+ * Both are CHECK constraints — `products_checked_when_active` and
+ * `products_priced_when_active` — so neither can be talked around however the
+ * request is sent. Everything else on this list is a judgement call an
+ * operator is allowed to make: selling before the photographs arrive is a
+ * decision, while selling an analysis nobody verified, or a product at ₩0,
+ * is not.
  */
-export const BLOCKING: Gap = 'ingredients'
+export const BLOCKING: Gap[] = ['ingredients', 'price']
 
 const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
@@ -68,10 +72,16 @@ export function gapsOf(p: CatalogProduct): Gap[] {
   if (!p.img.trim()) gaps.push('photo')
   if (!p.detail || Object.keys(p.detail.pages ?? {}).length === 0) gaps.push('detail')
   if (p.stock <= 0) gaps.push('stock')
+  if (!(p.priceKrw > 0)) gaps.push('price')
   return gaps
 }
 
 /** Whether the database will accept `active = true` for this product. */
 export function canSell(p: CatalogProduct): boolean {
-  return p.checked
+  return p.checked && p.priceKrw > 0
+}
+
+/** Why the database would refuse to put this product on sale, if it would. */
+export function saleBlockers(p: CatalogProduct): Gap[] {
+  return gapsOf(p).filter((g) => BLOCKING.includes(g))
 }

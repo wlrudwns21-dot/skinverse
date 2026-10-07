@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canSell, gapsOf, type Gap } from './readiness'
+import { canSell, gapsOf, saleBlockers, type Gap } from './readiness'
 import { SEED_CATALOG } from './remote'
 import type { CatalogProduct } from './types'
 
@@ -58,6 +58,23 @@ describe('gapsOf', () => {
     expect(gapsOf(base({ sub: { ko: 'a' } as never }))).toContain('copy')
     expect(gapsOf(base({ why: { ko: 'b', en: 'b', zh: 'b' } as never }))).toContain('copy')
     expect(gapsOf(base({ sub: { ko: ' ', en: 'a', zh: 'a', th: 'a' } as never }))).toContain('copy')
+  })
+
+  it('refuses to sell a product with no price', () => {
+    // A ₩0 product settles to the one-cent floor rather than to a refusal, so
+    // without this the first person to notice would be whoever bought a toner
+    // for a penny. The database carries the same rule as a CHECK.
+    expect(gapsOf(base({ priceKrw: 0 }))).toContain('price')
+    expect(canSell(base({ priceKrw: 0 }))).toBe(false)
+    expect(saleBlockers(base({ priceKrw: 0 }))).toEqual(['price'])
+    expect(saleBlockers(base({ priceKrw: 0, checked: false }))).toEqual(['ingredients', 'price'])
+    expect(saleBlockers(base())).toEqual([])
+  })
+
+  it('names only the gaps the database would actually refuse', () => {
+    // Missing photographs and copy are judgement calls; they must never appear
+    // as a reason the sale was blocked.
+    expect(saleBlockers(base({ img: '', detail: undefined, stock: 0 }))).toEqual([])
   })
 
   it('reports the photograph, the artwork and empty stock separately', () => {
