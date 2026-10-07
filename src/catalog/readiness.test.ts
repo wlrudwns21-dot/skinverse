@@ -53,8 +53,10 @@ describe('gapsOf', () => {
   })
 
   it('treats a Korean name in `name` as a missing English name', () => {
-    // These are the 24 registered from the price list: the sheet gives only a
-    // Korean name, so that is what `name` holds until the maker's page arrives.
+    // A price list gives only a Korean name, so a bulk-loaded row holds that
+    // in `name` until the maker's own page arrives with the English one. The
+    // rows that prompted this have since been removed, but the next load will
+    // arrive the same way.
     expect(gapsOf(base({ name: '아토베리어365 로션', nameL: { ko: '아토베리어365 로션' } }))).toContain('nameEn')
     expect(gapsOf(base({ name: 'Atobarrier365 Lotion' }))).not.toContain('nameEn')
   })
