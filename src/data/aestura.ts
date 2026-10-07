@@ -645,19 +645,82 @@ export const aesturaProducts: AesturaProduct[] = [
     bundle: 'single',
     krw: 22842,
     useDays: 60,
-    tag: 'Soothing',
-    metric: 'sensitivity',
+    tag: 'Hydration',
+    metric: 'hydration',
     slot: 'both',
     step: 'cream',
     gradient: G.stone,
     image: '/products/ae-atobarrier365-hydro-soothing-80/main.webp',
     sub: { ko: '', en: '', zh: '', th: '' },
     why: { ko: '', en: '', zh: '', th: '' },
-    checked: false,
-    ingredients: '',
+    checked: true,
+    ingredients:
+      '정제수, 글리세린, 부틸렌글라이콜, 다이메티콘, 스쿠알란, 1,2-헥산다이올, 베타인, 세테아릴알코올, 암모늄아크릴로일다이메틸타우레이트/브이피코폴리머, 하이드로제네이티드쌀겨오일, 하이드로제네이티드레시틴, 폴리글리세릴-3메틸글루코오스다이스테아레이트, 폴리아크릴레이트크로스폴리머-6, 만니톨, 세틸-피지하이드록시에틸팔미타마이드, 스테아릭애씨드, 에틸헥실글리세린, 글리세릴카프릴레이트, 프로판다이올, 글리세릴스테아레이트, 소듐메타포스페이트, 세라마이드엔피, 카보머, 팔미틱애씨드, 실리카, 징크클로라이드, 콜레스테롤, 베타-글루칸, 스핑고리피드, 소듐하이알루로네이트, 하이드록시프로필메틸셀룰로오스, 미리스틱애씨드, 프로필렌글라이콜, 라우릭애씨드, 토코페롤',
+    /* The maker has not published an English list for this one; the Korean
+       list above is what the 필수정보 table prints, and the analysis rests on
+       it. Transliterating it here would be our words, not theirs. */
     inci: '',
-    fits: [],
-    pros: [],
-    cons: [],
+    fits: [
+      {
+        axis: 'hydration',
+        strength: 'primary',
+        note: {
+          ko: '세라마이드엔피·콜레스테롤·지방산이 모두 들어 있습니다.',
+          en: 'Ceramide NP, cholesterol and fatty acids are all present.',
+          zh: '神经酰胺NP、胆固醇与脂肪酸俱全。',
+          th: 'มีทั้งเซราไมด์ NP คอเลสเตอรอล และกรดไขมัน',
+        },
+      },
+      {
+        axis: 'sensitivity',
+        strength: 'secondary',
+        note: {
+          ko: '향료가 적혀 있지 않고, 베타-글루칸이 함께 들어갑니다.',
+          en: 'No fragrance on the list, and beta-glucan alongside.',
+          zh: '成分表中未见香料，并含β-葡聚糖。',
+          th: 'ไม่พบน้ำหอมในรายการ และมีเบต้ากลูแคนร่วมด้วย',
+        },
+      },
+    ],
+    pros: [
+      {
+        ko: '세라마이드엔피, 콜레스테롤, 그리고 스테아릭·팔미틱·미리스틱·라우릭애씨드 — 장벽을 이루는 지질 세 종류가 모두 적혀 있습니다.',
+        en: 'Ceramide NP, cholesterol, and stearic, palmitic, myristic and lauric acids: all three lipid families the barrier is built from.',
+        zh: '神经酰胺NP、胆固醇，以及硬脂酸、棕榈酸、肉豆蔻酸与月桂酸——构成屏障的三类脂质全部在列。',
+        th: 'เซราไมด์ NP คอเลสเตอรอล และกรดสเตียริก ปาล์มิติก ไมริสติก ลอริก ครบทั้งสามกลุ่มไขมันที่ประกอบเป็นเกราะผิว',
+      },
+      {
+        ko: '세틸-피지하이드록시에틸팔미타마이드와 스핑고리피드가 함께 들어가, 세라마이드 계열이 한 가지 형태로만 있지 않습니다.',
+        en: 'Cetyl-PG hydroxyethyl palmitamide and sphingolipids sit alongside it, so the ceramide family is not represented by a single form.',
+        zh: '另含鲸蜡基-PG羟乙基棕榈酰胺与鞘脂，神经酰胺类并非仅以单一形式存在。',
+        th: 'มี cetyl-PG hydroxyethyl palmitamide และสฟิงโกลิพิดร่วมด้วย กลุ่มเซราไมด์จึงไม่ได้มีเพียงรูปแบบเดียว',
+      },
+      {
+        ko: '소듐하이알루로네이트와 베타-글루칸이 들어 있어, 지질만이 아니라 수분을 끌어오는 쪽도 함께 들어갑니다.',
+        en: 'Sodium hyaluronate and beta-glucan are in there too, so it is not only lipids but something to draw water in.',
+        zh: '同时含透明质酸钠与β-葡聚糖，不只补充脂质，也有吸水的成分。',
+        th: 'มีโซเดียมไฮยาลูโรเนตและเบต้ากลูแคนด้วย จึงไม่ได้มีแต่ไขมัน แต่มีตัวดึงน้ำเข้าสู่ผิวด้วย',
+      },
+    ],
+    cons: [
+      {
+        ko: '기능성 화장품이 아닙니다. 미백이나 주름 개선 고시 성분은 들어 있지 않고, 장벽과 보습 쪽 제품입니다.',
+        en: 'It holds no Korean functional-cosmetic designation — no brightening or wrinkle-care ingredient here. This is a barrier and moisture product.',
+        zh: '并非功能性化妆品。配方中没有美白或抗皱的功效成分，这是一款屏障与保湿产品。',
+        th: 'ไม่ใช่เครื่องสำอางฟังก์ชัน ไม่มีสารด้านความกระจ่างใสหรือริ้วรอย เป็นผลิตภัณฑ์ด้านเกราะผิวและความชุ่มชื้น',
+      },
+      {
+        ko: '다이메티콘이 네 번째로 앞쪽에 있습니다. 바른 직후의 산뜻함은 상당 부분 이 실리콘 질감이고, 저녁에는 클렌징을 꼼꼼히 해야 합니다.',
+        en: 'Dimethicone is fourth on the list. Much of the fresh finish is that silicone, and it needs a proper cleanse at night.',
+        zh: '聚二甲基硅氧烷位列第四。上脸即刻的清爽感很大程度来自这类硅，晚间需认真卸洗。',
+        th: 'ไดเมทิโคนอยู่ลำดับที่สี่ ความรู้สึกสดชื่นทันทีที่ทาส่วนใหญ่มาจากซิลิโคนนี้ และต้องล้างให้สะอาดในตอนกลางคืน',
+      },
+      {
+        ko: '프로필렌글라이콜이 들어 있습니다. 민감하다면 팔 안쪽에 먼저 발라보세요.',
+        en: 'It contains propylene glycol. On sensitive skin, try it inside a forearm first.',
+        zh: '含丙二醇。敏感肌建议先在手臂内侧试用。',
+        th: 'มีโพรพิลีนไกลคอล ผิวแพ้ง่ายควรทดสอบที่ท้องแขนก่อน',
+      },
+    ],
   },
 ]

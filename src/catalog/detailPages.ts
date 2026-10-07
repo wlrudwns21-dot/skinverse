@@ -63,6 +63,10 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 15361, ko: 15007, th: 15152, zh: 14828 },
   },
+  'rj-rebalancing-toner-120': {
+    w: 1170,
+    pages: { en: 11329, ko: 11089, th: 11057, zh: 10787 },
+  },
   'ae-regederm365-capsule-serum-30': {
     w: 1170,
     pages: { en: 17309, ko: 17070, th: 17308, zh: 16819 },

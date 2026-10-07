@@ -97,12 +97,12 @@ describe('the catalogue as it actually stands', () => {
     }
   })
 
-  it('reports gaps only for the product that has them', () => {
-    const byId = new Map(SEED_CATALOG.products.map((p) => [p.id, gapsOf(p)]))
-    const blocked = [...byId].filter(([, g]) => g.includes('ingredients')).map(([id]) => id)
-    // The bundled seed carries the seven analysed products; of those exactly
-    // one is still waiting on the maker's ingredient list.
-    expect(blocked).toEqual(['ae-atobarrier365-hydro-soothing-80'])
+  it('carries a verified ingredient list for every product it bundles', () => {
+    // The seed holds the seven products whose lists were checked against the
+    // maker's own. Everything registered since lives in the database only, so
+    // a product appearing here without a list means the seed fell behind.
+    const unverified = SEED_CATALOG.products.filter((p) => gapsOf(p).includes('ingredients'))
+    expect(unverified.map((p) => p.id)).toEqual([])
   })
 
   it('does not call stock a gap that stops the shop working', () => {
