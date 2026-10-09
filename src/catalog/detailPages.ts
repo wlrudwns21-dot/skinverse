@@ -47,6 +47,10 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 14277, ko: 14211, th: 14324, zh: 14050 },
   },
+  'ae-atobarrier365-body-lotion-400': {
+    w: 1170,
+    pages: { en: 14292, ko: 14137, th: 14218, zh: 13752 },
+  },
   'ae-atobarrier365-cream-80': {
     w: 1170,
     pages: { en: 12889, ko: 12769, th: 12769, zh: 12382 },
