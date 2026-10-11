@@ -43,6 +43,10 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 15668, ko: 15558, th: 15568, zh: 15327 },
   },
+  'an-pdrn-ha-cleansing-foam-150': {
+    w: 1170,
+    pages: { en: 14537, ko: 14462, th: 14464, zh: 14086 },
+  },
   'an-niacinamide10-txa4-serum-30': {
     w: 1170,
     pages: { en: 12907, ko: 12782, th: 12915, zh: 12480 },

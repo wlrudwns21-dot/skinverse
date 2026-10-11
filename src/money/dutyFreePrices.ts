@@ -75,7 +75,12 @@ export const ANUA_DUTY_FREE: DutyFreeRow[] = [
   { ko: '어성초 77 수딩 토너 250ml (리뉴얼)', usd: 10.2, krw: 13660 },
   { ko: '어성초 포어 컨트롤 클렌징 오일 200ml (리뉴얼)', usd: 9, krw: 12053 },
   { ko: 'PDRN 히알루론산 캡슐 100 세럼 50ml 리필 듀오 세트', usd: 42, krw: 56247 },
-  { ko: 'PDRN 히알루론산 수분 클렌징 폼 150ml', usd: 6.6, krw: 8839 },
+  {
+    ko: 'PDRN 히알루론산 수분 클렌징 폼 150ml',
+    usd: 6.6,
+    krw: 8839,
+    productId: 'an-pdrn-ha-cleansing-foam-150',
+  },
   { ko: 'PDRN 히알루론산 100 수분 크림 60ml', usd: 12.6, krw: 16874 },
   {
     // Read off the capture as "싱크 토너블". The maker's own page says 징크
