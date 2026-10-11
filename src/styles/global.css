@@ -118,9 +118,38 @@ body {
   font-family: 'Albert Sans', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Thai', sans-serif;
   -webkit-font-smoothing: antialiased;
   color: var(--ink);
-  /* Without this a browser breaks Korean mid-word, because it treats every
-     syllable as a legal break point. Every screen in the app is Korean first,
-     so it belongs here rather than at each heading. */
+
+  /* The last resort. A single token longer than its box — a sixty-character
+     INCI name, a URL — breaks rather than pushing the page sideways. It only
+     ever applies when the alternative is overflow, so it costs nothing the
+     rest of the time. */
+  overflow-wrap: break-word;
+}
+
+/*
+ * `word-break: keep-all` is a Korean rule, and only a Korean rule.
+ *
+ * Korean needs it: without it a browser treats every syllable as a legal
+ * break point and chops words in half. This used to sit on `body` for every
+ * language, which was wrong in a way that only showed up in Chinese.
+ *
+ * Chinese has no spaces. `keep-all` suppresses the breaks between ideographs,
+ * which are the only breaks Chinese has — so a sentence becomes one
+ * unbreakable token. Measured: one of our Chinese paragraphs has a min-content
+ * width of 180px with `keep-all` and 49px without, and a paragraph with no
+ * spaces at all has a min-content width of the whole paragraph. Chromium
+ * hides this by force-breaking rather than overflowing, WebKit does not, so
+ * on an iPhone the paragraph ran off the side, the document grew to several
+ * times the viewport, and Safari zoomed the whole page out to fit. The
+ * storefront rendered as a narrow strip down the left of the screen.
+ *
+ * Thai is unaffected either way — `keep-all` acts on ideographs, and Thai
+ * line breaking is dictionary-based.
+ *
+ * `index.html` ships with data-lang="ko" so a Korean reader never sees a
+ * frame of mid-word breaking before the app mounts and sets the real value.
+ */
+:root[data-lang='ko'] body {
   word-break: keep-all;
 }
 
