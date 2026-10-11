@@ -324,7 +324,7 @@ Deno.serve(async (req: Request) => {
     `${count}${bar}
      <p style="margin-top:1.5rem">잠시만 기다려 주세요. 화면이 알아서 다음으로 넘어갑니다.</p>
      <p class="muted">창을 닫아도 괜찮습니다 — 다시 같은 주소를 열면 이어서 합니다.</p>
-     <noscript><a class="btn" href="${esc(here(reached))}">다음</a></noscript>`,
-    here(reached),
+     <noscript><a class="btn" href="${esc(here(resume))}">다음</a></noscript>`,
+    here(resume),
   )
 })
