@@ -65,7 +65,12 @@ export const ANUA_DUTY_FREE: DutyFreeRow[] = [
     krw: 20892,
     productId: 'an-pdrn-ha-capsule100-serum-30',
   },
-  { ko: '나이아신아마이드 10 TXA 4 세럼 30ml', usd: 12.6, krw: 16874 },
+  {
+    ko: '나이아신아마이드 10 TXA 4 세럼 30ml',
+    usd: 12.6,
+    krw: 16874,
+    productId: 'an-niacinamide10-txa4-serum-30',
+  },
   { ko: 'PDRN 히알루론산 수분크림 트리오 세트', usd: 25.8, krw: 34552, unsureName: true },
   { ko: '어성초 77 수딩 토너 250ml (리뉴얼)', usd: 10.2, krw: 13660 },
   { ko: '어성초 포어 컨트롤 클렌징 오일 200ml (리뉴얼)', usd: 9, krw: 12053 },

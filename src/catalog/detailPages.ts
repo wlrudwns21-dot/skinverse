@@ -39,6 +39,10 @@ export interface DetailArt {
 }
 
 export const detailPages: Record<string, DetailArt> = {
+  'an-niacinamide10-txa4-serum-30': {
+    w: 1170,
+    pages: { en: 12907, ko: 12782, th: 12915, zh: 12480 },
+  },
   'an-pdrn-ha-capsule100-serum-30': {
     w: 1170,
     pages: { en: 15058, ko: 14912, th: 15056, zh: 14625 },
