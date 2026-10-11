@@ -1,7 +1,23 @@
+import { SectionHead } from '../components/SectionHead'
 import type { MissionView } from '../store/StoreContext'
 import { s } from '../lib/css'
-import { DISPLAY, EYEBROW, GUTTER, KICKER, NUMERAL, RULE } from '../lib/ui'
+import { DISPLAY, EYEBROW, GUTTER, NUMERAL, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
+
+const countDone = (list: MissionView[]): number => list.filter((m) => m.mark).length
+
+/**
+ * What is still on the table in this block.
+ *
+ * Shown rather than the total because the total never moves — it is the same
+ * number on the day you clear everything as on the day you clear nothing,
+ * which makes it decoration. What is left does move, and goes quiet at zero.
+ */
+function pointsLeft(list: MissionView[]): { text: string; dim?: boolean } | undefined {
+  const left = list.reduce((n, m) => (m.mark ? n : n + m.pts), 0)
+  if (!list.length) return undefined
+  return { text: '+' + left + ' P', dim: left === 0 }
+}
 
 /**
  * One mission, as a row rather than a card.
@@ -60,31 +76,44 @@ export function Missions() {
           </div>
         </div>
 
-        {/* How far to the next level, as a line rather than a pill. */}
+        {/* How far to the next level. This was a 1px fill on a 1px track,
+            which on a dark panel is indistinguishable from the rule it sits
+            on — the one number people come here to watch was invisible. */}
         <div style={s('margin-top:20px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.08em;color:var(--on-panel-2)')}>
           <span>{st.levelName}</span>
           <span>{st.nextLevelS}</span>
         </div>
-        <div style={s('height:1px;background:var(--line-2);margin-top:7px')}>
-          <div style={s(`height:1px;width:${st.levelPct};background:var(--on-panel)`)} />
+        <div style={s('height:4px;border-radius:2px;background:var(--on-panel-track);margin-top:8px;overflow:hidden')}>
+          <div style={s(`height:4px;border-radius:2px;width:${st.levelPct};background:var(--on-panel);transition:width .35s ease`)} />
         </div>
       </div>
 
-      <div style={s(`${GUTTER};padding-top:26px`)}>
-        <div style={s('display:flex;align-items:baseline;justify-content:space-between;padding-bottom:4px')}>
-          <span style={s(KICKER)}>{st.t.daily}</span>
-          <span style={s('font-size:11px;color:var(--ink-3);letter-spacing:0.06em')}>{st.dailyDoneS}</span>
+      <div style={s(GUTTER)}>
+        {/* Each block says how far through it you are, and draws it. The
+            points still to be had sit on the right, because that is the
+            question someone opening this screen is actually asking. */}
+        <SectionHead
+          label={st.t.daily}
+          done={countDone(st.dailyList)}
+          total={st.dailyList.length}
+          meta={pointsLeft(st.dailyList)}
+        />
+        <div style={s('margin-top:8px')}>
+          {st.dailyList.map((m) => <MissionRow key={m.label} m={m} />)}
         </div>
-        {st.dailyList.map((m) => <MissionRow key={m.label} m={m} />)}
 
-        <div style={s('display:flex;align-items:baseline;justify-content:space-between;padding:28px 0 4px')}>
-          <span style={s(KICKER)}>{st.t.weekly}</span>
+        <SectionHead
+          label={st.t.weekly}
+          done={countDone(st.weeklyList)}
+          total={st.weeklyList.length}
+          meta={pointsLeft(st.weeklyList)}
+        />
+        <div style={s('margin-top:8px')}>
+          {st.weeklyList.map((m) => <MissionRow key={m.label} m={m} />)}
         </div>
-        {st.weeklyList.map((m) => <MissionRow key={m.label} m={m} />)}
 
-        <div style={s('padding:28px 0 14px')}>
-          <span style={s(KICKER)}>{st.t.redeem}</span>
-        </div>
+        <SectionHead label={st.t.redeem} />
+        <div style={s('height:14px')} />
       </div>
 
       {/* What the points are for. Two across, with the cost under the name the

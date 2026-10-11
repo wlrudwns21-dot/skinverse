@@ -24,7 +24,9 @@ export function Header() {
           style={s('border:1px solid var(--line-2);border-radius:3px;padding:6px 2px 6px 6px;font-size:10.5px;font-weight:500;letter-spacing:0.04em;background:transparent;color:var(--ink-2);outline:none;cursor:pointer;width:44px;flex-shrink:0')}
         >
           {langOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.short}</option>
+            /* Each option is in its own language, not the page's — so mark it,
+               and the Thai one stops being tracked out by the select's style. */
+            <option key={o.value} value={o.value} lang={o.value}>{o.short}</option>
           ))}
         </select>
 

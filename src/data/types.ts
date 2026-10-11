@@ -112,8 +112,22 @@ export interface Product {
   slot: Slot
   /** Which step of that routine, keyed into `stepNames`. */
   step: string
-  /** The same ingredient list in INCI. Not shown in the shop. */
+  /**
+   * The same ingredient list in INCI.
+   *
+   * Also what the shop shows a reader whose language the maker never
+   * published — see `catalog/ingredients.ts`. It used to be export paperwork
+   * only, which is why the field sits next to `ing` rather than inside a
+   * localized object.
+   */
   inci: string
+  /**
+   * The ingredient list in the other languages the maker published it in.
+   *
+   * Korean is `ing` and INCI is `inci`, so this holds only what those two
+   * cannot — in practice Chinese. Nothing in here is translated by us.
+   */
+  ingL?: Partial<Record<Lang, string>>
   /** Whether a human checked `ing` against the maker's own label. */
   checked: boolean
   /** Which scan readings it speaks to, strongest first. */

@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { addStep, extrasFull, extrasSub, extrasTitle, removeStep } from '../routine/extras'
 import type { Slot } from '../routine/checklist'
 import type { RoutineStepView } from '../store/StoreContext'
+import { SectionHead } from './SectionHead'
 import { s } from '../lib/css'
-import { KICKER } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 /**
@@ -34,7 +34,7 @@ function Tick({ done, open }: { done: boolean; open: boolean }) {
   )
 }
 
-function StepRow({ step }: { step: RoutineStepView }) {
+function StepRow({ step, n }: { step: RoutineStepView; n: number }) {
   const st = useStore()
   const dim = !step.open && !step.done
 
@@ -43,10 +43,22 @@ function StepRow({ step }: { step: RoutineStepView }) {
       onClick={step.canToggle ? step.toggle : undefined}
       style={s(
         'border-top:1px solid var(--line);padding:13px 0;' +
-          'display:flex;gap:13px;align-items:center;' +
+          'display:flex;gap:11px;align-items:center;' +
           (step.canToggle ? 'cursor:pointer' : 'cursor:default'),
       )}
     >
+      {/* The order matters — toner before cream, cream before sunscreen — and
+          nine unnumbered rows do not say so. Tabular figures keep the ticks
+          in a straight line once the count passes nine. */}
+      <div
+        style={s(
+          'width:13px;flex-shrink:0;text-align:right;font-size:10.5px;' +
+            'font-variant-numeric:tabular-nums;letter-spacing:0;' +
+            `color:${step.done ? 'var(--ink-4)' : 'var(--ink-3)'}`,
+        )}
+      >
+        {n}
+      </div>
       <Tick done={step.done} open={step.open} />
       <div style={s('flex:1;min-width:0')}>
         <div
@@ -146,18 +158,22 @@ export function RoutineCheck({
   const st = useStore()
   const c = st.checkT
   const shut = !steps.some((step) => step.open)
+  const done = steps.filter((step) => step.done).length
 
   return (
     <>
-      <div style={s('display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:26px 0 8px')}>
-        <div style={s(KICKER)}>{heading}</div>
-        <div style={s(`font-size:11px;flex-shrink:0;letter-spacing:0.04em;${shut ? 'color:var(--ink-4)' : 'color:var(--link)'}`)}>
-          {shut ? c.windowShut(st.slotWindowLabel[slot]) : st.slotWindowLabel[slot]}
-        </div>
-      </div>
-      <div>
-        {steps.map((step) => (
-          <StepRow key={step.slot + step.key} step={step} />
+      <SectionHead
+        label={heading}
+        done={done}
+        total={steps.length}
+        meta={{
+          text: shut ? c.windowShut(st.slotWindowLabel[slot]) : st.slotWindowLabel[slot],
+          dim: shut,
+        }}
+      />
+      <div style={s('margin-top:8px')}>
+        {steps.map((step, i) => (
+          <StepRow key={step.slot + step.key} step={step} n={i + 1} />
         ))}
         {st.isMember && <AddExtra slot={slot} />}
       </div>

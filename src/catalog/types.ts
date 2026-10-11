@@ -71,6 +71,8 @@ export interface ProductRow {
   step?: string | null
   /** The same list in INCI, for the operator screen and for export paperwork. */
   inci?: string | null
+  /** The maker's list in the locales `ingredients` and `inci` cannot hold. */
+  ingredients_l?: Partial<Record<Lang, string>> | null
   /** Whether a human checked `ingredients` against the maker's own label. */
   ingredients_checked?: boolean | null
   fits?: Fit[] | null
@@ -99,6 +101,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     slot: row.slot ?? 'both',
     step: row.step ?? '',
     inci: row.inci ?? '',
+    ingL: row.ingredients_l ?? undefined,
     checked: row.ingredients_checked ?? false,
     fits: row.fits ?? [],
     pros: row.pros ?? [],

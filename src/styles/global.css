@@ -37,6 +37,11 @@
   --panel: #E7E3DB;
   --on-panel: #101010;
   --on-panel-2: #5A5247;
+  /* The empty part of a progress bar drawn on the panel. --line-2 is only
+     three steps off the panel itself, so a track painted in it disappears and
+     a bar at 0% looks like no bar at all. Ink at 14% is faint enough to stay
+     a track and dark enough to show where the fill is going. */
+  --on-panel-track: rgba(16, 16, 16, 0.14);
 
   /* The accent, and the one lesson of getting here: a token that is both a
      fill and a text colour cannot be made light. --accent went pale and every
@@ -239,4 +244,37 @@ input, select, button { font-family: inherit; }
     animation: none;
   }
   .splash-logotype { letter-spacing: 0.17em; }
+}
+
+/* ── Thai ───────────────────────────────────────────────────────────────────
+ *
+ * This design tracks almost everything out — kickers at 0.2em, labels at
+ * 0.16em, the wordmark further still. That reads as composure in Latin and in
+ * hangul, where every glyph is a standalone box.
+ *
+ * Thai is not built that way. A syllable is a consonant with vowels and tone
+ * marks stacked above and below it, and the eye reads the stack as one unit.
+ * Pull the letters apart and the stack comes apart with them: at 9px type we
+ * were adding 2.34px between glyphs, a quarter of the font size, and
+ * "ควรรู้ก่อนใช้" arrived looking like loose characters rather than a word.
+ *
+ * Inline styles are what the app writes, so !important is the only lever that
+ * reaches them. It is scoped to one language and one property, which is the
+ * narrowest form this can take.
+ *
+ * The extra line-height is the same problem in the vertical: those stacked
+ * marks need somewhere to go, and 1.6 on Latin leaves them touching the line
+ * above. */
+/* Both the whole document in Thai, and any single element marked Thai inside
+ * a page in another language — the language picker's own Thai label, and the
+ * ingredient list when it falls back to a language the reader did not pick. */
+:root[data-lang='th'] body,
+:root[data-lang='th'] body *,
+[lang='th'],
+[lang='th'] * {
+  letter-spacing: normal !important;
+}
+
+:root[data-lang='th'] body {
+  line-height: 1.75;
 }

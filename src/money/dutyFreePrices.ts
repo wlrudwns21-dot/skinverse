@@ -143,7 +143,15 @@ export const DALBA_DUTY_FREE: DutyFreeRow[] = [
   { ko: '[롯데단독] 비타 토닝 세럼 토너 180ml', usd: 13.87, krw: 18575, unsureName: true },
   { ko: '화이트 트러플 비타딥 스프레이 세럼 100ml', usd: 14.06, krw: 18830, unsureName: true },
   { ko: '화이트 트러플 너리싱 트리트먼트 마스크 1box (5매입)', usd: 8.8, krw: 11785, unsureName: true },
-  { ko: '클린 디톡시 리프레쉬 톤업 선크림 (그린) 50ml', usd: 15.84, krw: 21213, unsureName: true },
+  {
+    // 캡처에서 '클린 디톡시 리프레쉬'로 읽었는데 제조사 표기는 '클린 티트리
+    // 리포좀'이었습니다. '클린 … 톤업 선크림 (그린)'이라는 뼈대와 가격은
+    // 맞았고, 가운데 두 단어가 틀렸습니다.
+    ko: '클린 티트리 리포좀 톤업 선크림 (그린) 50ml',
+    usd: 15.84,
+    krw: 21213,
+    productId: 'da-cleantea-liposome-sun-green-50',
+  },
   { ko: '워터풀 에센스 선크림 50ml', usd: 12.32, krw: 16499 },
   { ko: '[롯데단독] 비타 토닝 마스크 세럼 앰 나이아신아마이드 5퍼센트', usd: 8.8, krw: 11785, unsureName: true },
   { ko: '워터풀 톤업 선크림 (베이지) 50ml', usd: 15.84, krw: 21213, unsureName: true },

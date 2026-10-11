@@ -104,7 +104,17 @@ export interface ProductView {
   checked: boolean
   sub: string
   why: string
+  /**
+   * The ingredient list, per source, left unresolved on purpose.
+   *
+   * Everything else on this view is already a string in the reader's
+   * language. These three are not, because picking between them is a
+   * judgement — see `catalog/ingredients.ts` — and the screen has to be able
+   * to say which language it ended up showing.
+   */
   ing: string
+  inci: string
+  ingL?: Partial<Record<Lang, string>>
   priceS: string
   matchS: string
   matchN: number
@@ -369,6 +379,21 @@ function useStoreValue() {
   useEffect(() => {
     writeLocal(LOCAL_KEYS.prefs, { lang: state.lang, city: state.city } satisfies Prefs)
   }, [state.lang, state.city])
+
+  /*
+   * Tell the document which language it is in.
+   *
+   * `lang` is what a screen reader picks a voice from and what the browser
+   * line-breaks by. `data-lang` is what `global.css` hangs the Thai
+   * typography rules on — the tracking this design uses everywhere is right
+   * for Latin and hangul and wrong for Thai, where it separates a consonant
+   * from the vowel sitting on top of it.
+   */
+  useEffect(() => {
+    const el = document.documentElement
+    el.lang = state.lang
+    el.dataset.lang = state.lang
+  }, [state.lang])
 
   /** A guest's bag lives in the browser; a member's lives in Postgres. */
   useEffect(() => {
@@ -1304,6 +1329,8 @@ function useStoreValue() {
       sub: p.sub[lang],
       why: p.why[lang],
       ing: p.ing,
+      inci: p.inci,
+      ingL: p.ingL,
       priceS: money(p.price),
       matchS: matchN + '%',
       matchN,

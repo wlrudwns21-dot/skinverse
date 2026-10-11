@@ -1,7 +1,16 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { analysisLabels as L } from '../catalog/analysis'
+import {
+  INCI_NOTE,
+  ingredientPreview,
+  ingredientsFor,
+  lessLabel,
+  moreLabel,
+  needsCollapse,
+} from '../catalog/ingredients'
 import { DetailPage } from '../components/DetailPage'
 import { ProductShot } from '../components/ProductShot'
+import type { Lang } from '../data/types'
 import { s } from '../lib/css'
 import { DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
@@ -76,6 +85,70 @@ export function Shop() {
  * so the cons list can be marked in a different colour without the browser's
  * bullet ignoring it.
  */
+/**
+ * The ingredient list — in the reader's language where there is one, and
+ * folded away until they ask for it.
+ *
+ * Two problems in one block. It was the longest thing on the page, sitting
+ * between the analysis and the buy buttons so everybody scrolled the whole
+ * seventy-six ingredients whether they wanted to or not. And it was always
+ * Korean, which for a reader in Bangkok was a wall of a script they cannot
+ * read dropped into the middle of their own page.
+ *
+ * Both are fixed here rather than by shortening the list: the people who open
+ * this block are usually checking for one specific thing they react to, and
+ * an abridged ingredient list is useless for that.
+ */
+function Ingredients({
+  lang, heading, ko, inci, extra,
+}: {
+  lang: Lang
+  heading: string
+  ko: string
+  inci: string
+  extra?: Partial<Record<Lang, string>>
+}) {
+  const [open, setOpen] = useState(false)
+  const view = ingredientsFor(lang, { ko, inci, extra })
+  if (!view) return null
+
+  const long = needsCollapse(view.text)
+  const shown = open || !long ? view.text : ingredientPreview(view.text)
+
+  return (
+    <>
+      <div style={s('padding:16px 0')}>
+        <div style={s(KICKER)}>{heading}</div>
+        <div
+          /* `lang` so the browser hyphenates and line-breaks by the right
+             rules — Chinese and Thai break between characters, Latin does not. */
+          lang={view.shownIn}
+          style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px;word-break:break-word')}
+        >
+          {shown}
+        </div>
+        {view.isFallback && (
+          <div style={s('font-size:10.5px;line-height:1.6;color:var(--ink-4);margin-top:8px')}>
+            {INCI_NOTE[lang]}
+          </div>
+        )}
+        {long && (
+          <div
+            onClick={() => setOpen((v) => !v)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setOpen((v) => !v) }}
+            style={s('cursor:pointer;display:inline-block;margin-top:11px;font-size:11.5px;color:var(--ink-3);border-bottom:1px solid var(--line-2);padding-bottom:2px')}
+          >
+            {(open ? lessLabel : moreLabel)[lang]}
+          </div>
+        )}
+      </div>
+      <div style={s(RULE)} />
+    </>
+  )
+}
+
 function Note({ mark, tint, children }: { mark: string; tint: string; children: ReactNode }) {
   return (
     <div style={s('display:flex;gap:9px;margin-top:10px')}>
@@ -213,15 +286,7 @@ export function ProductDetail() {
           </>
         )}
 
-        {sel.ing && (
-          <>
-            <div style={s('padding:16px 0')}>
-              <div style={s(KICKER)}>{st.t.ingT}</div>
-              <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.ing}</div>
-            </div>
-            <div style={s(RULE)} />
-          </>
-        )}
+        <Ingredients lang={st.lang} heading={st.t.ingT} ko={sel.ing} inci={sel.inci} extra={sel.ingL} />
 
         {!sel.checked && (
           <>
