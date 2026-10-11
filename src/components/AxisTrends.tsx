@@ -125,7 +125,7 @@ function Row({ change, lang, t }: { change: AxisChange; lang: Lang; t: AxisTrend
       </div>
 
       {open && (
-        <div style={s('animation:rise .2s ease both;margin-top:9px;background:var(--surface);border-radius:4px;padding:9px 12px')}>
+        <div style={s('animation:rise .2s ease both;margin-top:9px;background:var(--surface);border-radius:var(--radius-sm);padding:9px 12px')}>
           <div style={s(`font-size:12px;font-weight:500;color:${stepColour}`)}>{stepText}</div>
           <div style={s('font-size:11px;color:var(--ink-4);margin-top:3px')}>
             {t.range(change.readings, change.worst, change.best)}
@@ -146,12 +146,12 @@ export function AxisTrends({
   t: AxisTrendStrings
 }) {
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:12px')}>
       <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{t.title}</div>
       <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{t.sub}</div>
 
       {changes.length === 0 ? (
-        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:16px;margin-top:12px;font-size:12.5px;color:var(--ink-3);text-align:center;line-height:1.5')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:16px;margin-top:12px;font-size:12.5px;color:var(--ink-3);text-align:center;line-height:1.5')}>
           {t.needsTwo}
         </div>
       ) : (

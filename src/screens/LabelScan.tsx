@@ -121,13 +121,13 @@ export function LabelScan() {
           onChange={(e) => setText(e.target.value)}
           placeholder={'전성분을 붙여넣거나 입력하세요\n예: 정제수, 글리세린, 나이아신아마이드, 판테놀'}
           rows={5}
-          style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:3px;padding:12px 13px;font-size:13px;font-family:inherit;line-height:1.7;resize:vertical;background:var(--surface)')}
+          style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:12px 13px;font-size:13px;font-family:inherit;line-height:1.7;resize:vertical;background:var(--surface)')}
         />
         <div style={s('display:flex;gap:8px;margin-top:10px;flex-wrap:wrap')}>
           <button
             onClick={() => void analyse(text)}
             disabled={busy || !text.trim()}
-            style={s('flex:1;min-width:130px;border:none;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;font-size:13px;font-weight:500;letter-spacing:0.03em;cursor:' + (busy || !text.trim() ? 'default' : 'pointer') + ';opacity:' + (busy || !text.trim() ? '.5' : '1'))}
+            style={s('flex:1;min-width:130px;border:none;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:14px;font-size:13px;font-weight:500;letter-spacing:0.03em;cursor:' + (busy || !text.trim() ? 'default' : 'pointer') + ';opacity:' + (busy || !text.trim() ? '.5' : '1'))}
           >
             {busy ? '대조 중…' : '분석하기'}
           </button>
@@ -135,7 +135,7 @@ export function LabelScan() {
               while OCR is unconfigured — the error it returns says which, and
               points at the box above. */}
           <label
-            style={s('border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:3px;padding:14px 16px;font-size:13px;font-weight:500;letter-spacing:0.03em;cursor:pointer;text-align:center')}
+            style={s('border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;font-weight:500;letter-spacing:0.03em;cursor:pointer;text-align:center')}
           >
             사진으로
             <input
@@ -173,7 +173,7 @@ export function LabelScan() {
           </div>
 
           {/* ── children ─────────────────────────────────────────────────── */}
-          <div style={s('background:' + (childNote ? 'var(--warn-soft)' : 'var(--accent-soft)') + ';border-radius:4px;padding:14px 16px;margin-top:12px')}>
+          <div style={s('background:' + (childNote ? 'var(--warn-soft)' : 'var(--accent-soft)') + ';border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px')}>
             <b style={s('font-size:13px;color:' + (childNote ? 'var(--warn)' : 'var(--accent)'))}>
               영유아·어린이 관련
             </b>
@@ -194,7 +194,7 @@ export function LabelScan() {
                 {byRole(scan).map(({ role, items }) => (
                   <div
                     key={role}
-                    style={s('background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);border-radius:3px;padding:6px 11px;font-size:11.5px')}
+                    style={s('background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);border-radius:var(--radius-sm);padding:6px 11px;font-size:11.5px')}
                   >
                     {role} {items.length}
                   </div>
@@ -244,7 +244,7 @@ function IngredientCard({
   const note = STATUS_LABEL[item.status]
 
   return (
-    <div style={s('background:var(--surface);border:1px solid ' + (item.childRestricted ? 'var(--warn-mid)' : 'var(--line)') + ';border-radius:4px;overflow:hidden')}>
+    <div style={s('background:var(--surface);border:1px solid ' + (item.childRestricted ? 'var(--warn-mid)' : 'var(--line)') + ';border-radius:var(--radius-sm);overflow:hidden')}>
       <button
         onClick={onToggle}
         style={s('width:100%;border:none;background:transparent;text-align:left;padding:12px 14px;cursor:pointer;font-family:inherit;display:flex;gap:10px;align-items:flex-start')}
@@ -255,12 +255,12 @@ function IngredientCard({
               {item.korName ?? item.inputName}
             </b>
             {item.role && (
-              <span style={s('background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);border-radius:3px;padding:2px 7px;font-size:10px')}>
+              <span style={s('background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);border-radius:var(--radius-sm);padding:2px 7px;font-size:10px')}>
                 {item.role}
               </span>
             )}
             {item.childRestricted && (
-              <span style={s('background:var(--warn-soft);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--warn);font-weight:500')}>
+              <span style={s('background:var(--warn-soft);border-radius:var(--radius-sm);padding:2px 8px;font-size:10px;color:var(--warn);font-weight:500')}>
                 어린이 제한
               </span>
             )}
@@ -306,13 +306,13 @@ function IngredientCard({
               scan genuinely cannot tell which — 폴리솔베이트20 and 21 score
               identically against a blurred 2O. */}
           {item.candidates.length > 0 && (
-            <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:10px')}>
+            <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px')}>
               <div style={s('font-size:11.5px;color:var(--ink-2);line-height:1.6')}>
                 다음 중 하나로 보입니다. 라벨을 다시 확인해주세요.
               </div>
               <div style={s('display:flex;flex-wrap:wrap;gap:6px;margin-top:7px')}>
                 {item.candidates.map((c) => (
-                  <span key={c.korName} style={s('background:var(--surface);border:1px solid var(--line-2);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--ink-2)')}>
+                  <span key={c.korName} style={s('background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:4px 10px;font-size:11px;color:var(--ink-2)')}>
                     {c.korName}
                   </span>
                 ))}
@@ -321,7 +321,7 @@ function IngredientCard({
           )}
 
           {item.facts.length > 0 && (
-            <div style={s('background:var(--surface);border-radius:4px;padding:11px 13px;margin-top:10px')}>
+            <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:11px 13px;margin-top:10px')}>
               <b style={s('font-size:11.5px;color:var(--warn)')}>식약처 제한 사항 (국내)</b>
               <div style={s('display:flex;flex-direction:column;gap:6px;margin-top:6px')}>
                 {item.facts.map((f, j) => (

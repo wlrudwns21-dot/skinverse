@@ -7,7 +7,7 @@ import { RoutineAdherence } from '../components/RoutineAdherence'
 import { RoutineCheck } from '../components/RoutineCheck'
 import { CoreTipCard } from './Stories'
 import { s } from '../lib/css'
-import { BTN, DISPLAY, EYEBROW, GUTTER, KICKER, NUMERAL, RULE } from '../lib/ui'
+import { BTN, CARD, DISPLAY, EYEBROW, GUTTER, KICKER, NUMERAL, RULE, SECTION } from '../lib/ui'
 import { skyFor, skyImage } from '../weather/sky'
 import { useStore } from '../store/StoreContext'
 
@@ -78,8 +78,9 @@ export function Routine() {
           </div>
         )}
 
-        {/* The same three readings, in the same shape, as the home screen. */}
-        <div style={s('padding:20px 0 4px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px')}>
+        {/* The same three readings, in the same shape — and now on the same
+            card — as the home screen. */}
+        <div style={s(`margin-top:18px;padding:17px 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;${CARD}`)}>
           <div>
             <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>{st.t.temp}</div>
             <div style={s(`${NUMERAL};font-size:28px;margin-top:6px`)}>{w.t}°</div>
@@ -133,13 +134,14 @@ export function Routine() {
       {/* The working behind the steps below. Collapsed by default — someone who
           just wants the routine should get the routine, and someone who wants to
           know why gets the measurements in the units they were taken in. */}
-      <div style={s(GUTTER)}>
+      <div style={s(`${GUTTER};${SECTION}`)}>
         <PlanBasis plan={st.plan} weather={st.weatherNow} lang={st.lang} t={st.basisT} />
       </div>
 
       {/* Today's progress, before the steps themselves — a customer coming
           back at 9pm wants to know what is left, not to re-read the list. */}
-      <div style={s('background:var(--panel);color:var(--on-panel);padding:18px 20px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
+      <div style={s(`${GUTTER};${SECTION}`)}>
+      <div style={s('background:var(--panel);color:var(--on-panel);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px')}>
         <div style={s('min-width:0')}>
           <div style={s('font-size:13px;font-weight:500')}>
             {st.todayAdherence.done === st.todayAdherence.total && st.todayAdherence.total > 0
@@ -154,10 +156,11 @@ export function Routine() {
           </div>
         </div>
       </div>
+      </div>
 
-      <div style={s(GUTTER)}>
+      <div style={s(`${GUTTER};${SECTION}`)}>
       {!st.isMember && (
-        <div style={s('padding:14px 0;font-size:12.5px;color:var(--warn);line-height:1.6;border-bottom:1px solid var(--line)')}>
+        <div style={s(`padding:13px 16px;font-size:12.5px;color:var(--warn);line-height:1.6;margin-bottom:16px;${CARD}`)}>
           {st.checkT.memberOnly}
         </div>
       )}

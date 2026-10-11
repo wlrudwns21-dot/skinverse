@@ -148,7 +148,7 @@ export function Audit() {
                 key={k}
                 onClick={() => setFilter(k)}
                 style={s(
-                  'cursor:pointer;border-radius:3px;padding:7px 14px;font-size:12px;font-weight:500;' +
+                  'cursor:pointer;border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:500;' +
                     (on
                       ? 'background:var(--accent);color:var(--on-accent)'
                       : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),
@@ -161,7 +161,7 @@ export function Audit() {
         </div>
       )}
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px 16px 16px;margin-top:14px;overflow-x:auto')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 16px 16px;margin-top:14px;overflow-x:auto')}>
         <div style={s('min-width:760px')}>
           <div style={s(ROW_COLS + ';font-size:11px;color:var(--ink-3);font-weight:500;padding:10px 6px;border-bottom:1px solid var(--line)')}>
             <span>시각</span><span>행위</span><span>수행자</span><span>내용</span>
@@ -199,7 +199,7 @@ export function Audit() {
                   </span>
 
                   <span>
-                    <span style={s(`background:${meta?.bg ?? 'var(--on-dark)'};color:${meta?.tone ?? 'var(--ink-2)'};border-radius:3px;padding:3px 9px;font-size:11px;font-weight:500;white-space:nowrap`)}>
+                    <span style={s(`background:${meta?.bg ?? 'var(--on-dark)'};color:${meta?.tone ?? 'var(--ink-2)'};border-radius:var(--radius-sm);padding:3px 9px;font-size:11px;font-weight:500;white-space:nowrap`)}>
                       {meta?.label ?? e.action}
                     </span>
                   </span>
@@ -220,7 +220,7 @@ export function Audit() {
                 </div>
 
                 {isOpen && (
-                  <div style={s('background:var(--surface);border-radius:4px;padding:12px 14px;margin:0 6px 12px;font-size:11.5px;line-height:1.7;color:var(--ink-2)')}>
+                  <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:12px 14px;margin:0 6px 12px;font-size:11.5px;line-height:1.7;color:var(--ink-2)')}>
                     <div><b>대상</b> · <span style={s('word-break:break-all')}>{e.subject ?? '—'}</span></div>
                     <div><b>정확한 시각</b> · {new Date(e.at).toLocaleString('ko-KR')}</div>
                     <div style={s('margin-top:6px')}><b>원본 기록</b></div>

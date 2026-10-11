@@ -6,9 +6,9 @@ import type { ProductCopy } from '../../catalog/remote'
 import { useAdmin } from '../AdminContext'
 
 const stepperStyle =
-  'cursor:pointer;width:24px;height:24px;border:1px solid var(--line-2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:500'
+  'cursor:pointer;width:24px;height:24px;border:1px solid var(--line-2);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-weight:500'
 const field =
-  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-family:inherit'
+  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-family:inherit'
 const label = 'font-size:11px;color:var(--ink-3);font-weight:500'
 
 const LANGS: [Lang, string][] = [['ko', '한국어'], ['en', 'English'], ['zh', '中文'], ['th', 'ไทย']]
@@ -122,14 +122,14 @@ function CopyEditor({ p, onDone }: { p: Row; onDone: () => void }) {
       <div style={s('display:flex;gap:8px;margin-top:12px')}>
         <div
           onClick={onDone}
-          style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-3)')}
+          style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-3)')}
         >
           닫기
         </div>
         <div
           onClick={() => void save()}
           style={s(
-            'flex:2;border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
+            'flex:2;border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
               (busy ? 'background:var(--surface-2);color:var(--ink-4)' : 'cursor:pointer;background:var(--accent);color:var(--on-accent)'),
           )}
         >
@@ -179,7 +179,7 @@ function VerifyRow({ p }: { p: Row }) {
   return (
     <div
       style={s(
-        'margin-top:12px;border-radius:4px;padding:12px 13px;' +
+        'margin-top:12px;border-radius:var(--radius-sm);padding:12px 13px;' +
           (on ? 'background:var(--surface-2)' : 'background:var(--warn-soft)'),
       )}
     >
@@ -215,7 +215,7 @@ function VerifyRow({ p }: { p: Row }) {
       <div
         onClick={() => void act()}
         style={s(
-          'border-radius:3px;padding:10px;margin-top:10px;text-align:center;font-size:12.5px;font-weight:500;' +
+          'border-radius:var(--radius-sm);padding:10px;margin-top:10px;text-align:center;font-size:12.5px;font-weight:500;' +
             (busy
               ? 'background:var(--surface-2);color:var(--ink-4)'
               : on
@@ -255,16 +255,16 @@ export function Products() {
 
       <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:14px')}>
         {admin.prodList.map((p) => (
-          <div key={p.id} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}>
+          <div key={p.id} style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px')}>
             <div style={s('display:flex;gap:14px;align-items:center;flex-wrap:wrap')}>
               {/* The real photograph when there is one: a row of identical
                   gradients tells the operator nothing about which product is
                   which, and "has a photo yet" is one of the things this screen
                   is for. */}
               {p.img ? (
-                <img src={p.img} alt="" style={s('width:52px;height:65px;object-fit:cover;border-radius:4px;flex-shrink:0;display:block')} />
+                <img src={p.img} alt="" style={s('width:52px;height:65px;object-fit:cover;border-radius:var(--radius-sm);flex-shrink:0;display:block')} />
               ) : (
-                <div style={s(`width:52px;height:65px;border-radius:4px;background:${p.grad};flex-shrink:0`)} />
+                <div style={s(`width:52px;height:65px;border-radius:var(--radius-sm);background:${p.grad};flex-shrink:0`)} />
               )}
 
               <div style={s('flex:1;min-width:160px')}>
@@ -294,7 +294,7 @@ export function Products() {
               <div
                 onClick={p.toggle}
                 style={s(
-                  `border-radius:3px;padding:7px 14px;font-size:12px;font-weight:500;${p.activeStyle}` +
+                  `border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:500;${p.activeStyle}` +
                     (p.active || p.sellable ? ';cursor:pointer' : ';cursor:not-allowed;opacity:.55'),
                 )}
               >
@@ -303,7 +303,7 @@ export function Products() {
 
               <div
                 onClick={() => setOpenId(openId === p.id ? null : p.id)}
-                style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:7px 12px;font-size:12px;font-weight:500;color:var(--ink-3)')}
+                style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:7px 12px;font-size:12px;font-weight:500;color:var(--ink-3)')}
               >
                 {openId === p.id ? '닫기' : '내용'}
               </div>
@@ -318,7 +318,7 @@ export function Products() {
                   <span
                     key={g.key}
                     style={s(
-                      'font-size:10.5px;border-radius:2px;padding:3px 7px;letter-spacing:0.01em;' +
+                      'font-size:10.5px;border-radius:var(--radius-sm);padding:3px 7px;letter-spacing:0.01em;' +
                         (g.blocking
                           ? 'background:var(--warn-soft);color:var(--warn);font-weight:500'
                           : 'background:var(--surface-2);color:var(--ink-3)'),

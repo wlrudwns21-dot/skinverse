@@ -52,7 +52,7 @@ function Field({ label, value, muted }: { label: string; value: string; muted?: 
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px')}>
       <div style={s('font-size:10.5px;font-weight:500;color:var(--ink-3);letter-spacing:0.08em;margin-bottom:9px')}>
         {title}
       </div>
@@ -84,7 +84,7 @@ function Detail({ m }: { m: AdminMember }) {
   const confirmed = m.emailConfirmedAt !== null
 
   return (
-    <div style={s('background:var(--surface);border-radius:4px;padding:13px;margin:0 6px 12px;display:flex;flex-direction:column;gap:10px;animation:riseAdmin .2s ease both')}>
+    <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:13px;margin:0 6px 12px;display:flex;flex-direction:column;gap:10px;animation:riseAdmin .2s ease both')}>
       <Group title="계정">
         <Field label="이메일" value={m.email} />
         <div style={s('min-width:0')}>
@@ -148,19 +148,19 @@ export function Users() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="이름 또는 이메일 검색"
-          style={s('border:1px solid var(--line-2);border-radius:3px;padding:8px 14px;font-size:12.5px;background:var(--surface);outline:none;min-width:200px')}
+          style={s('border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 14px;font-size:12.5px;background:var(--surface);outline:none;min-width:200px')}
         />
       </div>
 
       {!admin.hasMembers && (
-        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);margin-top:14px;line-height:1.6')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);margin-top:14px;line-height:1.6')}>
           아직 가입한 회원이 없습니다.
           <br />
           스토어에서 회원가입이 이루어지면 여기에 바로 나타납니다.
         </div>
       )}
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px 16px 16px;margin-top:14px;overflow-x:auto')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 16px 16px;margin-top:14px;overflow-x:auto')}>
         <div style={s('min-width:760px')}>
           <div style={s(ROW_COLS + ';font-size:11px;color:var(--ink-3);font-weight:500;padding:10px 6px;border-bottom:1px solid var(--line)')}>
             <span>회원 / 이메일</span><span>국가</span><span>레벨</span><span>포인트</span><span>분석 / 주문</span><span>포인트 지급</span>
@@ -194,7 +194,7 @@ export function Users() {
                     </div>
                   </div>
                   <span>{u.country}</span>
-                  <span style={s('background:var(--surface-2);color:var(--link);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:500;justify-self:start')}>{u.level}</span>
+                  <span style={s('background:var(--surface-2);color:var(--link);border-radius:var(--radius-sm);padding:3px 8px;font-size:11px;font-weight:500;justify-self:start')}>{u.level}</span>
                   <b>{u.ptsS} P</b>
                   <span style={s('color:var(--ink-2)')}>{u.activity}</span>
                   <div
@@ -202,7 +202,7 @@ export function Users() {
                       e.stopPropagation()
                       u.grant()
                     }}
-                    style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:110px')}
+                    style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:110px')}
                   >
                     +{admin.grantPoints} P 지급
                   </div>

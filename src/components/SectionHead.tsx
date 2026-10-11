@@ -64,10 +64,10 @@ export function SectionHead({
       </div>
 
       {hasBar && (
-        <div style={s('height:3px;border-radius:2px;background:var(--line);margin-top:9px;overflow:hidden')}>
+        <div style={s('height:3px;border-radius:var(--radius-sm);background:var(--line);margin-top:9px;overflow:hidden')}>
           <div
             style={s(
-              `height:3px;border-radius:2px;background:${tone};` +
+              `height:3px;border-radius:var(--radius-sm);background:${tone};` +
                 `width:${(pct * 100).toFixed(1)}%;transition:width .35s ease`,
             )}
           />

@@ -5,7 +5,7 @@ import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 
 const fieldStyle =
-  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
+  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
 const labelStyle = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 
 export function CheckoutShipping() {
@@ -39,14 +39,14 @@ export function CheckoutShipping() {
 
       <div style={s(labelStyle + ';margin:16px 0 8px')}>{st.t.shipMethod}</div>
       <div style={s('display:flex;flex-direction:column;gap:8px')}>
-        <div onClick={st.pickDhl} style={s(`cursor:pointer;background:var(--surface);border:1.5px solid ${st.dhlBorder};border-radius:4px;padding:13px 14px;display:flex;justify-content:space-between;align-items:center`)}>
+        <div onClick={st.pickDhl} style={s(`cursor:pointer;background:var(--surface);border:1.5px solid ${st.dhlBorder};border-radius:var(--radius-sm);padding:13px 14px;display:flex;justify-content:space-between;align-items:center`)}>
           <div>
             <b style={s('font-size:13px')}>DHL Express</b>
             <div style={s('font-size:12px;color:var(--ink-3)')}>{st.t.dhlDesc}</div>
           </div>
           <b style={s('font-size:13px')}>{st.shipOptions[0].feeS}</b>
         </div>
-        <div onClick={st.pickEms} style={s(`cursor:pointer;background:var(--surface);border:1.5px solid ${st.emsBorder};border-radius:4px;padding:13px 14px;display:flex;justify-content:space-between;align-items:center`)}>
+        <div onClick={st.pickEms} style={s(`cursor:pointer;background:var(--surface);border:1.5px solid ${st.emsBorder};border-radius:var(--radius-sm);padding:13px 14px;display:flex;justify-content:space-between;align-items:center`)}>
           <div>
             <b style={s('font-size:13px')}>K-Packet / EMS</b>
             <div style={s('font-size:12px;color:var(--ink-3)')}>{st.t.emsDesc}</div>
@@ -55,7 +55,7 @@ export function CheckoutShipping() {
         </div>
       </div>
 
-      <div onClick={st.toPayment} style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500')}>
+      <div onClick={st.toPayment} style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:15px;text-align:center;font-size:14px;font-weight:500')}>
         {st.t.toPayment}
       </div>
     </div>
@@ -72,7 +72,7 @@ export function CheckoutPayment() {
         {st.t.payTitle} <span style={s("font-size:13px;color:var(--ink-4);font-family:'Albert Sans'")}>· 2/2</span>
       </div>
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;margin-top:14px;font-size:13px;display:flex;flex-direction:column;gap:6px')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;margin-top:14px;font-size:13px;display:flex;flex-direction:column;gap:6px')}>
         <div style={s('display:flex;justify-content:space-between')}>
           <span style={s('color:var(--ink-2)')}>{st.t.subtotal}</span>
           <b>{st.subS}</b>
@@ -101,12 +101,12 @@ export function CheckoutPayment() {
         )}
       </div>
 
-      <div onClick={st.togglePoints} style={s('cursor:pointer;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:13px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px')}>
+      <div onClick={st.togglePoints} style={s('cursor:pointer;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:13px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px')}>
         <div>
           <b style={s('font-size:13px')}>{st.usePtsLine}</b>
           <div style={s('font-size:12px;color:var(--warn)')}>{st.t.ptsNote}</div>
         </div>
-        <div style={s(`width:44px;height:26px;border-radius:3px;background:${st.togBg};position:relative;transition:background .2s;flex-shrink:0`)}>
+        <div style={s(`width:44px;height:26px;border-radius:var(--radius-sm);background:${st.togBg};position:relative;transition:background .2s;flex-shrink:0`)}>
           <div style={s(`position:absolute;top:3px;left:${st.togLeft};width:20px;height:20px;border-radius:50%;background:var(--surface);transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)`)} />
         </div>
       </div>
@@ -135,7 +135,7 @@ export function CheckoutConfirmed() {
 
       <div style={s('padding:20px 20px 24px;text-align:center')}>
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:18px;font-size:13px;text-align:left;display:flex;flex-direction:column;gap:8px')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:18px;font-size:13px;text-align:left;display:flex;flex-direction:column;gap:8px')}>
         <div style={s('display:flex;justify-content:space-between')}>
           <span style={s('color:var(--ink-2)')}>{st.t.orderNo}</span>
           <b>{order?.no}</b>
@@ -154,7 +154,7 @@ export function CheckoutConfirmed() {
         </div>
       </div>
 
-      <div onClick={st.goShop} style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;font-size:13px;font-weight:500')}>
+      <div onClick={st.goShop} style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:14px;font-size:13px;font-weight:500')}>
         {st.t.contShop}
       </div>
       <div onClick={st.goMy} style={s('cursor:pointer;margin-top:10px;font-size:13px;color:var(--link);font-weight:500')}>

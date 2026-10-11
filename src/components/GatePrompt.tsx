@@ -39,14 +39,14 @@ export function GatePrompt() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={s('width:100%;max-width:340px;background:var(--surface);border-radius:4px;padding:24px 22px;animation:rise .3s ease both')}
+        style={s('width:100%;max-width:340px;background:var(--surface);border-radius:var(--radius-sm);padding:24px 22px;animation:rise .3s ease both')}
       >
         <div style={s('width:48px;height:48px;border-radius:50%;background:var(--surface-2);color:var(--warn);font-size:22px;display:flex;align-items:center;justify-content:center')}>✦</div>
 
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:20px;margin-top:14px;line-height:1.3')}>{title}</div>
         <div style={s('font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.6')}>{body}</div>
 
-        <div style={s('background:var(--surface-2);border-radius:4px;padding:12px 14px;margin-top:16px;display:flex;flex-direction:column;gap:7px')}>
+        <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:12px 14px;margin-top:16px;display:flex;flex-direction:column;gap:7px')}>
           {st.a.memberBenefits.map((b) => (
             <div key={b} style={s('display:flex;gap:9px;font-size:12px;color:var(--link);line-height:1.4')}>
               <span style={s('color:var(--link);font-weight:500;flex-shrink:0')}>✓</span>
@@ -57,7 +57,7 @@ export function GatePrompt() {
 
         <div
           onClick={() => st.goAuth('signup')}
-          style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}
+          style={s('cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:14px;text-align:center;font-size:14px;font-weight:500')}
         >
           {st.a.gateCta}
         </div>

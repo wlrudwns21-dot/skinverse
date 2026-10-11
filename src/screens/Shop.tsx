@@ -12,7 +12,7 @@ import { DetailPage } from '../components/DetailPage'
 import { ProductShot } from '../components/ProductShot'
 import type { Lang } from '../data/types'
 import { s } from '../lib/css'
-import { DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
+import { CARD, DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 
@@ -37,37 +37,44 @@ export function Shop() {
       </div>
       <div style={s(`${RULE};margin-bottom:18px`)} />
 
-      <div style={s(`${GUTTER};display:grid;grid-template-columns:1fr 1fr;gap:13px 13px`)}>
+      {/* One card per product. A shelf of photographs butted edge to edge,
+          with each one's name, price, match and add-button floating in the
+          gap underneath, makes the reader work out where one product stops
+          and the next starts — and on this screen getting that wrong means
+          adding the wrong thing to the bag. */}
+      <div style={s(`${GUTTER};display:grid;grid-template-columns:1fr 1fr;gap:12px`)}>
         {st.shopList.map((p) => (
-          <div key={p.id} style={s('display:flex;flex-direction:column')}>
+          <div key={p.id} style={s(`display:flex;flex-direction:column;overflow:hidden;${CARD}`)}>
             <ProductShot src={p.img} grad={p.grad} alt={p.name} onClick={p.open} />
-            <div onClick={p.open} style={s('cursor:pointer;flex:1')}>
-              <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3);margin-top:10px')}>
-                {p.brand} · {p.kind}
+            <div style={s('padding:11px 12px 13px;display:flex;flex-direction:column;flex:1')}>
+              <div onClick={p.open} style={s('cursor:pointer;flex:1')}>
+                <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3)')}>
+                  {p.brand} · {p.kind}
+                </div>
+                <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{p.name}</div>
+                <div style={s('font-size:11px;color:var(--ink-4);margin-top:2px;line-height:1.5')}>{p.sub}</div>
               </div>
-              <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{p.name}</div>
-              <div style={s('font-size:11px;color:var(--ink-4);margin-top:2px;line-height:1.5')}>{p.sub}</div>
-            </div>
-            <div style={s('display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;gap:8px')}>
-              <div style={s('min-width:0')}>
-                <div style={s('font-size:13px;color:var(--ink);letter-spacing:0.04em')}>
-                  {p.priceS} <span style={s('font-size:10px;color:var(--ink-4)')}>{p.ml}</span>
-                </div>
-                <div style={s('font-size:10px;color:var(--link);font-weight:500;margin-top:3px')}>
-                  {p.matchS} {st.t.match}
-                </div>
-                {/* A percentage with no cause is just a number. */}
-                {p.reasons[0] && (
-                  <div style={s('font-size:9.5px;color:var(--ink-4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>
-                    {p.reasons[0]}
+              <div style={s('display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px;gap:8px')}>
+                <div style={s('min-width:0')}>
+                  <div style={s('font-size:13px;color:var(--ink);letter-spacing:0.04em')}>
+                    {p.priceS} <span style={s('font-size:10px;color:var(--ink-4)')}>{p.ml}</span>
                   </div>
-                )}
-              </div>
-              <div
-                onClick={p.add}
-                style={s('cursor:pointer;flex-shrink:0;border:1px solid var(--ink);color:var(--ink);border-radius:3px;font-size:11px;font-weight:500;letter-spacing:0.03em;padding:8px 11px')}
-              >
-                + {st.t.bag}
+                  <div style={s('font-size:10px;color:var(--link);font-weight:500;margin-top:3px')}>
+                    {p.matchS} {st.t.match}
+                  </div>
+                  {/* A percentage with no cause is just a number. */}
+                  {p.reasons[0] && (
+                    <div style={s('font-size:9.5px;color:var(--ink-4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>
+                      {p.reasons[0]}
+                    </div>
+                  )}
+                </div>
+                <div
+                  onClick={p.add}
+                  style={s('cursor:pointer;flex-shrink:0;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);font-size:11px;font-weight:500;letter-spacing:0.03em;padding:8px 11px')}
+                >
+                  + {st.t.bag}
+                </div>
               </div>
             </div>
           </div>
@@ -116,8 +123,8 @@ function Ingredients({
   const shown = open || !long ? view.text : ingredientPreview(view.text)
 
   return (
-    <>
-      <div style={s('padding:16px 0')}>
+    <Block>
+      <div>
         <div style={s(KICKER)}>{heading}</div>
         <div
           /* `lang` so the browser hyphenates and line-breaks by the right
@@ -144,9 +151,21 @@ function Ingredients({
           </div>
         )}
       </div>
-      <div style={s(RULE)} />
-    </>
+    </Block>
   )
+}
+
+/**
+ * One section of the detail page.
+ *
+ * This screen is the longest in the app — a fit table, a recommendation, three
+ * or four merits, three or four cautions, and a sixty-ingredient list. It was
+ * built as all of that in a single column with a hairline between each part,
+ * which is a page you scroll past rather than read. Each part gets its own
+ * card now, so the eye can find the section it wants and stop.
+ */
+function Block({ children }: { children: ReactNode }) {
+  return <div style={s(`${CARD};padding:16px;margin-top:12px`)}>{children}</div>
 }
 
 function Note({ mark, tint, children }: { mark: string; tint: string; children: ReactNode }) {
@@ -174,7 +193,10 @@ export function ProductDetail() {
           card around it would make it an illustration of the page instead. */}
       <ProductShot src={sel.img} grad={sel.grad} alt={sel.name} frame="max-height:430px" />
 
-      <div style={s(`${GUTTER};padding-top:20px`)}>
+      <div style={s(`${GUTTER};padding-top:16px`)}>
+        {/* Identity and price, on their own card. It is the one block on this
+            screen a customer may read and nothing else. */}
+        <div style={s(`${CARD};padding:18px`)}>
         <div style={s('font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-3)')}>
           {sel.brand} · {sel.kind} · {sel.ml}
         </div>
@@ -194,20 +216,19 @@ export function ProductDetail() {
         </div>
 
         {sel.reasons.length > 0 && (
-          <div style={s('margin-top:16px;font-size:11.5px;color:var(--ink-2);line-height:1.8')}>
+          <div style={s('margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-2);line-height:1.8')}>
             <span style={s('color:var(--ink-3)')}>{st.whyThis} </span>
             {sel.reasons.join(' · ')}
           </div>
         )}
-
-        <div style={s(`${RULE};margin-top:20px`)} />
+        </div>
 
         {/* Where it goes in a day, as two facts rather than a sentence. A
             customer deciding between two creams is deciding which one replaces
             what they already put on at night. */}
         {(sel.slotS || sel.stepS) && (
-          <>
-            <div style={s('display:flex;padding:14px 0')}>
+          <Block>
+            <div style={s('display:flex')}>
               <div style={s('flex:1')}>
                 <div style={s(KICKER)}>{L.slot[st.lang]}</div>
                 <div style={s('font-size:12.5px;margin-top:7px;line-height:1.5')}>{sel.slotS}</div>
@@ -219,13 +240,12 @@ export function ProductDetail() {
                 </div>
               )}
             </div>
-            <div style={s(RULE)} />
-          </>
+          </Block>
         )}
 
         {sel.fits.length > 0 && (
-          <>
-            <div style={s('padding:16px 0')}>
+          <Block>
+            <div>
               <div style={s(KICKER)}>{L.fits[st.lang]}</div>
               {sel.fits.map((f) => (
                 <div key={f.axis} style={s('display:flex;gap:11px;align-items:baseline;margin-top:11px')}>
@@ -242,71 +262,66 @@ export function ProductDetail() {
                 </div>
               ))}
             </div>
-            <div style={s(RULE)} />
-          </>
+          </Block>
         )}
 
         {/* A product the maker has not published an ingredient list for has
             no analysis and no recommendation paragraph. Rendering the heading
             over nothing makes the page look broken rather than incomplete. */}
         {sel.why && (
-          <>
-            <div style={s('padding:16px 0')}>
+          <Block>
+            <div>
               <div style={s(KICKER)}>{st.t.whyT}</div>
               <div style={s('font-size:12.5px;line-height:1.8;color:var(--ink-2);margin-top:9px')}>{sel.why}</div>
             </div>
-            <div style={s(RULE)} />
-          </>
+          </Block>
         )}
 
         {/* Pros and cons sit together, in that order, and neither can be
             collapsed away: a product shown with only its merits is an
             advertisement, and this screen is meant to be read. */}
         {sel.pros.length > 0 && (
-          <>
-            <div style={s('padding:16px 0')}>
+          <Block>
+            <div>
               <div style={s(KICKER)}>{L.pros[st.lang]}</div>
               {sel.pros.map((line, i) => (
                 <Note key={i} mark="—" tint="var(--ink-2)">{line}</Note>
               ))}
             </div>
-            <div style={s(RULE)} />
-          </>
+          </Block>
         )}
 
         {sel.cons.length > 0 && (
-          <>
-            <div style={s('padding:16px 0')}>
+          <Block>
+            <div>
               <div style={s(`${KICKER};color:var(--warn)`)}>{L.cons[st.lang]}</div>
               {sel.cons.map((line, i) => (
                 <Note key={i} mark="!" tint="var(--warn)">{line}</Note>
               ))}
             </div>
-            <div style={s(RULE)} />
-          </>
+          </Block>
         )}
 
         <Ingredients lang={st.lang} heading={st.t.ingT} ko={sel.ing} inci={sel.inci} extra={sel.ingL} />
 
         {!sel.checked && (
-          <>
-            <div style={s('padding:16px 0;font-size:11.5px;line-height:1.7;color:var(--ink-3)')}>
+          <Block>
+            <div style={s('font-size:11.5px;line-height:1.7;color:var(--ink-3)')}>
               {L.unchecked[st.lang]}
             </div>
-            <div style={s(RULE)} />
-          </>
+          </Block>
         )}
 
         <div style={s('display:flex;gap:10px;margin-top:20px')}>
           <div
             onClick={sel.add}
-            style={s('cursor:pointer;flex:1;border:1px solid var(--ink);color:var(--ink);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+            style={s('cursor:pointer;flex:1;border:1px solid var(--ink);color:var(--ink);border-radius:var(--radius-sm);padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
           >
             {st.t.addBag}
           </div>
           <div
             onClick={() => { sel.add(); st.goCart() }}
-            style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
+            style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em')}
           >
             {st.t.buyNow}
           </div>

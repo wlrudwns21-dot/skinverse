@@ -37,18 +37,18 @@ function FaqEditor({ faq, onSaved }: { faq: support.Faq; onSaved: () => void }) 
   }
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px')}>
       <div style={s('display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap')}>
         <div onClick={() => setOpen(!open)} style={s('cursor:pointer;flex:1;min-width:200px')}>
           <div style={s('display:flex;gap:8px;align-items:center;flex-wrap:wrap')}>
-            <span style={s('background:var(--surface-2);color:var(--link);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:500')}>{faq.category}</span>
+            <span style={s('background:var(--surface-2);color:var(--link);border-radius:var(--radius-sm);padding:3px 8px;font-size:11px;font-weight:500')}>{faq.category}</span>
             <b style={s('font-size:13.5px;' + (faq.active ? '' : 'color:var(--ink-4)'))}>{faq.title.ko}</b>
           </div>
           <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:6px')}>
             키워드 {faq.keywords.length}개 · {open ? '접기' : '펼쳐서 수정'}
           </div>
         </div>
-        <div onClick={toggle} style={s('cursor:pointer;border-radius:3px;padding:7px 14px;font-size:12px;font-weight:500;white-space:nowrap;' + (faq.active ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface-2);color:var(--ink-3)'))}>
+        <div onClick={toggle} style={s('cursor:pointer;border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:500;white-space:nowrap;' + (faq.active ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface-2);color:var(--ink-3)'))}>
           {faq.active ? '사용중' : '사용안함'}
         </div>
       </div>
@@ -61,7 +61,7 @@ function FaqEditor({ faq, onSaved }: { faq: support.Faq; onSaved: () => void }) 
           <input
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
-            style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:10px 12px;font-size:13px;background:var(--surface);outline:none')}
+            style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;background:var(--surface);outline:none')}
           />
 
           <div style={s('display:flex;gap:6px;margin:12px 0 6px;flex-wrap:wrap')}>
@@ -69,7 +69,7 @@ function FaqEditor({ faq, onSaved }: { faq: support.Faq; onSaved: () => void }) 
               <div
                 key={l}
                 onClick={() => setLang(l)}
-                style={s('cursor:pointer;border-radius:3px;padding:5px 12px;font-size:11.5px;font-weight:500;' + (lang === l ? 'background:var(--accent);color:var(--on-accent)' : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'))}
+                style={s('cursor:pointer;border-radius:var(--radius-sm);padding:5px 12px;font-size:11.5px;font-weight:500;' + (lang === l ? 'background:var(--accent);color:var(--on-accent)' : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'))}
               >
                 {LANG_LABEL[l]}
               </div>
@@ -80,12 +80,12 @@ function FaqEditor({ faq, onSaved }: { faq: support.Faq; onSaved: () => void }) 
             value={answer[lang] ?? ''}
             onChange={(e) => setAnswer({ ...answer, [lang]: e.target.value })}
             rows={5}
-            style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:10px 12px;font-size:13px;line-height:1.55;background:var(--surface);outline:none;resize:vertical;font-family:inherit')}
+            style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;line-height:1.55;background:var(--surface);outline:none;resize:vertical;font-family:inherit')}
           />
 
           <div
             onClick={saving ? undefined : save}
-            style={s('cursor:' + (saving ? 'default' : 'pointer') + ';margin-top:10px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:10px;text-align:center;font-size:13px;font-weight:500;opacity:' + (saving ? '.6' : '1'))}
+            style={s('cursor:' + (saving ? 'default' : 'pointer') + ';margin-top:10px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:13px;font-weight:500;opacity:' + (saving ? '.6' : '1'))}
           >
             {saving ? '저장 중…' : '저장'}
           </div>
@@ -147,13 +147,13 @@ export function Inquiries() {
           {openThread.memberName} {openThread.memberCountry} · {new Date(openThread.created_at).toLocaleString('ko-KR')}
         </div>
 
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:14px;display:flex;flex-direction:column;gap:12px;max-width:720px')}>
+        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:14px;display:flex;flex-direction:column;gap:12px;max-width:720px')}>
           {messages.map((m) => (
             <div key={m.id} style={s('display:flex;flex-direction:column;gap:3px;align-items:' + (m.sender === 'admin' ? 'flex-end' : 'flex-start'))}>
               <div style={s('font-size:10.5px;color:var(--ink-4)')}>
                 {m.sender === 'member' ? '고객' : m.sender === 'bot' ? '자동 응답' : '상담원'} · {new Date(m.created_at).toLocaleString('ko-KR')}
               </div>
-              <div style={s('max-width:80%;border-radius:4px;padding:11px 13px;font-size:13px;line-height:1.55;white-space:pre-wrap;' + (m.sender === 'admin' ? 'background:var(--accent);color:var(--on-accent)' : m.sender === 'bot' ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface);border:1px solid var(--line)'))}>
+              <div style={s('max-width:80%;border-radius:var(--radius-sm);padding:11px 13px;font-size:13px;line-height:1.55;white-space:pre-wrap;' + (m.sender === 'admin' ? 'background:var(--accent);color:var(--on-accent)' : m.sender === 'bot' ? 'background:var(--surface-2);color:var(--link)' : 'background:var(--surface);border:1px solid var(--line)'))}>
                 {m.body}
               </div>
             </div>
@@ -166,11 +166,11 @@ export function Inquiries() {
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
             placeholder="답변을 입력하세요"
-            style={s('flex:1;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:11px 13px;font-size:13px;line-height:1.55;background:var(--surface);outline:none;resize:vertical;font-family:inherit')}
+            style={s('flex:1;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:11px 13px;font-size:13px;line-height:1.55;background:var(--surface);outline:none;resize:vertical;font-family:inherit')}
           />
           <div
             onClick={() => void reply()}
-            style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:4px;padding:0 22px;display:flex;align-items:center;font-size:13px;font-weight:500;white-space:nowrap;opacity:' + (busy ? '.6' : '1'))}
+            style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:0 22px;display:flex;align-items:center;font-size:13px;font-weight:500;white-space:nowrap;opacity:' + (busy ? '.6' : '1'))}
           >
             답변 전송
           </div>
@@ -184,7 +184,7 @@ export function Inquiries() {
     <div style={s('animation:riseAdmin .3s ease both')}>
       <div style={s('display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px')}>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>CS 문의</div>
-        <div onClick={reload} style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:6px 12px;font-size:12px;font-weight:500;background:var(--surface)')}>
+        <div onClick={reload} style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;font-weight:500;background:var(--surface)')}>
           새로고침
         </div>
       </div>
@@ -194,7 +194,7 @@ export function Inquiries() {
           <div
             key={id}
             onClick={() => setTab(id)}
-            style={s('cursor:pointer;border-radius:3px;padding:8px 16px;font-size:12.5px;font-weight:500;' + (tab === id ? 'background:var(--accent);color:var(--on-accent)' : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'))}
+            style={s('cursor:pointer;border-radius:var(--radius-sm);padding:8px 16px;font-size:12.5px;font-weight:500;' + (tab === id ? 'background:var(--accent);color:var(--on-accent)' : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'))}
           >
             {label}
           </div>
@@ -220,11 +220,11 @@ export function Inquiries() {
               <div
                 key={id}
                 onClick={() => setFilter(id)}
-                style={s('cursor:pointer;border-radius:3px;padding:7px 13px;font-size:12px;font-weight:500;' + (filter === id ? 'background:var(--accent);color:var(--on-accent)' : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'))}
+                style={s('cursor:pointer;border-radius:var(--radius-sm);padding:7px 13px;font-size:12px;font-weight:500;' + (filter === id ? 'background:var(--accent);color:var(--on-accent)' : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'))}
               >
                 {label}
                 {id === 'open' && waiting > 0 && (
-                  <span style={s('margin-left:6px;background:var(--warn-mid);color:var(--on-dark);border-radius:3px;font-size:10px;font-weight:500;padding:1px 6px')}>
+                  <span style={s('margin-left:6px;background:var(--warn-mid);color:var(--on-dark);border-radius:var(--radius-sm);font-size:10px;font-weight:500;padding:1px 6px')}>
                     {waiting}
                   </span>
                 )}
@@ -237,7 +237,7 @@ export function Inquiries() {
               <div
                 key={t.id}
                 onClick={() => setOpenId(t.id)}
-                style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px')}
+                style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px')}
               >
                 <div style={s('display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap')}>
                   <div style={s('flex:1;min-width:220px')}>
@@ -249,7 +249,7 @@ export function Inquiries() {
                       {t.memberName} {t.memberCountry} · {new Date(t.updated_at).toLocaleString('ko-KR')}
                     </div>
                   </div>
-                  <span style={s('border-radius:6px;padding:3px 9px;font-size:11px;font-weight:500;white-space:nowrap;' + STATUS_STYLE[t.status][1])}>
+                  <span style={s('border-radius:var(--radius-sm);padding:3px 9px;font-size:11px;font-weight:500;white-space:nowrap;' + STATUS_STYLE[t.status][1])}>
                     {STATUS_STYLE[t.status][0]}
                   </span>
                 </div>
@@ -257,7 +257,7 @@ export function Inquiries() {
             ))}
 
             {shown.length === 0 && (
-              <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);line-height:1.6')}>
+              <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);line-height:1.6')}>
                 {threads.length === 0
                   ? '아직 접수된 문의가 없습니다. 스토어 마이페이지 > 문의하기에서 들어옵니다.'
                   : '이 상태의 문의가 없습니다.'}

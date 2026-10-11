@@ -57,12 +57,12 @@ function PriceRow({ id }: { id: string }) {
   const usdPrice = admin.usdRate > 0 ? priceN / admin.usdRate : 0
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px')}>
       <div
         onClick={() => setOpen((v) => !v)}
         style={s('cursor:pointer;display:flex;gap:12px;align-items:center')}
       >
-        <div style={s(`width:40px;height:40px;border-radius:4px;background:${product.grad};flex-shrink:0`)} />
+        <div style={s(`width:40px;height:40px;border-radius:var(--radius-sm);background:${product.grad};flex-shrink:0`)} />
         <div style={s('flex:1;min-width:0')}>
           <div style={s('font-size:10px;color:var(--ink-3);letter-spacing:0.1em')}>{product.brand}</div>
           <div style={s('font-size:13.5px;font-weight:500')}>{product.name}</div>
@@ -82,7 +82,7 @@ function PriceRow({ id }: { id: string }) {
                 value={cost}
                 onChange={(e) => applyCost(e.target.value.replace(/[^0-9]/g, ''))}
                 inputMode="numeric"
-                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
               />
             </label>
             <label style={s('flex:1;min-width:90px')}>
@@ -91,7 +91,7 @@ function PriceRow({ id }: { id: string }) {
                 value={margin}
                 onChange={(e) => applyMargin(e.target.value.replace(/[^0-9.-]/g, ''))}
                 inputMode="decimal"
-                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
               />
             </label>
             <label style={s('flex:1;min-width:110px')}>
@@ -100,7 +100,7 @@ function PriceRow({ id }: { id: string }) {
                 value={price}
                 onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ''))}
                 inputMode="numeric"
-                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-weight:500')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-weight:500')}
               />
             </label>
             <label style={s('flex:1;min-width:110px')}>
@@ -109,7 +109,7 @@ function PriceRow({ id }: { id: string }) {
                 value={days}
                 onChange={(e) => setDays(e.target.value.replace(/[^0-9]/g, ''))}
                 inputMode="numeric"
-                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:4px;outline:none')}
               />
             </label>
           </div>
@@ -121,7 +121,7 @@ function PriceRow({ id }: { id: string }) {
             추천에서 "다 쓰실 때가 됐어요"로 다시 올라옵니다.
           </div>
 
-          <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.7')}>
+          <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.7')}>
             <div>
               개당 이익 <b>{won(profit)}</b>
               {costN > 0 && <> · 실제 마진 <b>{realMargin.toFixed(1)}%</b></>}
@@ -141,7 +141,7 @@ function PriceRow({ id }: { id: string }) {
           <div
             onClick={() => void admin.savePricing(id, costN, realMargin, priceN, Number(days) || 60)}
             style={s(
-              'margin-top:10px;border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
+              'margin-top:10px;border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
                 (priceN > 0
                   ? 'cursor:pointer;background:var(--accent);color:var(--on-accent)'
                   : 'background:var(--surface-2);color:var(--ink-4)'),
@@ -171,7 +171,7 @@ function RateRow({ code }: { code: string }) {
   const isUsd = code === 'USD'
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap')}>
       <div style={s('flex:1;min-width:120px')}>
         <div style={s('font-size:13px;font-weight:500')}>
           {rate.symbol} {rate.code}
@@ -187,7 +187,7 @@ function RateRow({ code }: { code: string }) {
           onChange={(e) => setValue(e.target.value.replace(/[^0-9.]/g, ''))}
           inputMode="decimal"
           disabled={code === 'KRW'}
-          style={s('width:100px;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;outline:none;text-align:right')}
+          style={s('width:100px;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;outline:none;text-align:right')}
         />
         <span style={s('font-size:11.5px;color:var(--ink-3)')}>원</span>
       </div>
@@ -195,7 +195,7 @@ function RateRow({ code }: { code: string }) {
       {changed && code !== 'KRW' && (
         <div
           onClick={() => void admin.saveRate(code, next)}
-          style={s('cursor:pointer;border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500;background:var(--accent);color:var(--on-accent)')}
+          style={s('cursor:pointer;border-radius:var(--radius-sm);padding:8px 16px;font-size:12px;font-weight:500;background:var(--accent);color:var(--on-accent)')}
         >
           저장
         </div>
@@ -236,7 +236,7 @@ const BLANK: NewProduct = {
   line: '', slot: 'both', step: '', useDays: 60,
 }
 
-const field = 'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:4px;outline:none'
+const field = 'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:4px;outline:none'
 const label = 'font-size:11px;color:var(--ink-3);font-weight:500'
 
 /**
@@ -278,7 +278,7 @@ function NewProductForm() {
     return (
       <div
         onClick={() => setOpen(true)}
-        style={s('cursor:pointer;border:1px dashed var(--line-2);border-radius:4px;padding:14px;text-align:center;font-size:13px;font-weight:500;color:var(--ink-3);margin-bottom:10px')}
+        style={s('cursor:pointer;border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:14px;text-align:center;font-size:13px;font-weight:500;color:var(--ink-3);margin-bottom:10px')}
       >
         + 새 상품 등록
       </div>
@@ -286,7 +286,7 @@ function NewProductForm() {
   }
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-bottom:10px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px')}>
       <div style={s('font-size:14px;font-weight:500')}>새 상품 등록</div>
 
       <div style={s('display:flex;gap:10px;flex-wrap:wrap;margin-top:10px')}>
@@ -330,7 +330,7 @@ function NewProductForm() {
             <div
               key={g}
               onClick={() => set('gradient', g)}
-              style={s(`cursor:pointer;width:38px;height:38px;border-radius:4px;background:${g};` +
+              style={s(`cursor:pointer;width:38px;height:38px;border-radius:var(--radius-sm);background:${g};` +
                 (f.gradient === g ? 'outline:2px solid var(--ink);outline-offset:2px' : ''))}
             />
           ))}
@@ -406,7 +406,7 @@ function NewProductForm() {
       </div>
 
       {priceN > 0 && (
-        <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.7')}>
+        <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.7')}>
           <div>
             판매가 <b>{won(priceN)}</b>
             {costN > 0 && <> · 개당 이익 <b>{won(priceN - costN)}</b> · 실제 마진 <b>{marginFromPrice(costN, priceN).toFixed(1)}%</b></>}
@@ -417,7 +417,7 @@ function NewProductForm() {
         </div>
       )}
 
-      <div style={s('background:var(--surface-2);border-radius:4px;padding:9px 12px;margin-top:8px;font-size:11.5px;color:var(--warn);line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:9px 12px;margin-top:8px;font-size:11.5px;color:var(--warn);line-height:1.6')}>
         등록 후에는 <b>판매중지</b> 상태로 들어갑니다. 4개 언어 설명과 전성분은 상품 관리에서 입력하고,
         전성분을 제조사 표기와 대조한 뒤에야 판매를 시작할 수 있습니다.
       </div>
@@ -425,14 +425,14 @@ function NewProductForm() {
       <div style={s('display:flex;gap:8px;margin-top:10px')}>
         <div
           onClick={() => setOpen(false)}
-          style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-3)')}
+          style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-3)')}
         >
           취소
         </div>
         <div
           onClick={() => void submit()}
           style={s(
-            'flex:2;border-radius:3px;padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
+            'flex:2;border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12.5px;font-weight:500;' +
               (ready && !busy
                 ? 'cursor:pointer;background:var(--accent);color:var(--on-accent)'
                 : 'background:var(--surface-2);color:var(--ink-4)'),

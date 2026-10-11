@@ -79,7 +79,7 @@ export function DetailPage({ id, lang, heights, name }: DetailPageProps) {
           onClick={() => setOpen((v) => !v)}
           style={s(
             'cursor:pointer;display:block;width:100%;margin-top:14px;' +
-              'background:none;border:1px solid var(--line-2);border-radius:3px;' +
+              'background:none;border:1px solid var(--line-2);border-radius:var(--radius-sm);' +
               'color:var(--ink);font:inherit;font-size:12px;font-weight:500;' +
               'letter-spacing:0.03em;padding:13px;text-align:center',
           )}

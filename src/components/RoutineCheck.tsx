@@ -4,6 +4,7 @@ import type { Slot } from '../routine/checklist'
 import type { RoutineStepView } from '../store/StoreContext'
 import { SectionHead } from './SectionHead'
 import { s } from '../lib/css'
+import { CARD } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 /**
@@ -20,7 +21,7 @@ function Tick({ done, open }: { done: boolean; open: boolean }) {
   return (
     <div
       style={s(
-        'width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;' +
+        'width:26px;height:26px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;' +
           'font-size:14px;font-weight:500;flex-shrink:0;transition:background .15s ease;' +
           (done
             ? 'background:var(--accent);color:var(--on-accent)'
@@ -34,7 +35,7 @@ function Tick({ done, open }: { done: boolean; open: boolean }) {
   )
 }
 
-function StepRow({ step, n }: { step: RoutineStepView; n: number }) {
+function StepRow({ step, n, first }: { step: RoutineStepView; n: number; first: boolean }) {
   const st = useStore()
   const dim = !step.open && !step.done
 
@@ -42,7 +43,11 @@ function StepRow({ step, n }: { step: RoutineStepView; n: number }) {
     <div
       onClick={step.canToggle ? step.toggle : undefined}
       style={s(
-        'border-top:1px solid var(--line);padding:13px 0;' +
+        // The rows live inside a card now, so the rule belongs between them
+        // and not above the first one — a line hard against the card's own
+        // top edge reads as a mistake rather than as a separator.
+        (first ? '' : 'border-top:1px solid var(--line);') +
+          'padding:13px 16px;' +
           'display:flex;gap:11px;align-items:center;' +
           (step.canToggle ? 'cursor:pointer' : 'cursor:default'),
       )}
@@ -98,7 +103,7 @@ function AddExtra({ slot }: { slot: Slot }) {
     return (
       <div
         onClick={() => setOpen(true)}
-        style={s('cursor:pointer;border-top:1px solid var(--line);padding:14px 0;text-align:center;font-size:12px;letter-spacing:0.04em;color:var(--link)')}
+        style={s('cursor:pointer;border-top:1px solid var(--line);padding:14px 16px;text-align:center;font-size:12px;letter-spacing:0.04em;color:var(--link)')}
       >
         + {addStep[st.lang]}
       </div>
@@ -106,7 +111,7 @@ function AddExtra({ slot }: { slot: Slot }) {
   }
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line-2);border-radius:4px;padding:12px;animation:rise .2s ease both')}>
+    <div style={s('border-top:1px solid var(--line);background:var(--surface-2);padding:12px 16px;animation:rise .2s ease both')}>
       <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:8px')}>
         <div style={s('font-size:12.5px;font-weight:500;color:var(--ink-2)')}>{extrasTitle[st.lang]}</div>
         <div onClick={() => setOpen(false)} style={s('cursor:pointer;font-size:11.5px;color:var(--ink-3);flex-shrink:0')}>
@@ -118,7 +123,7 @@ function AddExtra({ slot }: { slot: Slot }) {
       </div>
 
       {full ? (
-        <div style={s('font-size:12px;color:var(--warn);background:var(--surface-2);border-radius:4px;padding:9px 11px;margin-top:9px')}>
+        <div style={s('font-size:12px;color:var(--warn);background:var(--surface-2);border-radius:var(--radius-sm);padding:9px 11px;margin-top:9px')}>
           {extrasFull[st.lang]}
         </div>
       ) : (
@@ -130,7 +135,7 @@ function AddExtra({ slot }: { slot: Slot }) {
                 st.addExtra(slot, preset.id)
                 setOpen(false)
               }}
-              style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px')}
+              style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px')}
             >
               <div style={s('font-size:12.5px;font-weight:500;color:var(--ink)')}>
                 {preset.name[st.lang]}
@@ -171,9 +176,9 @@ export function RoutineCheck({
           dim: shut,
         }}
       />
-      <div style={s('margin-top:8px')}>
+      <div style={s(`margin-top:10px;overflow:hidden;${CARD}`)}>
         {steps.map((step, i) => (
-          <StepRow key={step.slot + step.key} step={step} n={i + 1} />
+          <StepRow key={step.slot + step.key} step={step} n={i + 1} first={i === 0} />
         ))}
         {st.isMember && <AddExtra slot={slot} />}
       </div>

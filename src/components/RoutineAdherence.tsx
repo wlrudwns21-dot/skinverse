@@ -27,7 +27,7 @@ export function RoutineAdherence() {
   const anything = days.some((day) => day.done > 0)
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:14px')}>
+    <div style={s('background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:16px;margin-top:18px')}>
       <div style={s('display:flex;justify-content:space-between;align-items:baseline;gap:8px')}>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{c.historyTitle}</div>
         <div style={s('font-size:11px;color:var(--ink-4);flex-shrink:0')}>{c.rate(st.routineRate)}</div>
@@ -35,10 +35,10 @@ export function RoutineAdherence() {
       <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{c.historySub}</div>
 
       <div style={s('display:flex;gap:8px;margin-top:11px;flex-wrap:wrap')}>
-        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--link);border-radius:3px;padding:4px 10px')}>
+        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--link);border-radius:var(--radius-sm);padding:4px 10px')}>
           🔥 {c.streak(st.routineStreak.current)}
         </span>
-        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--ink-3);border-radius:3px;padding:4px 10px')}>
+        <span style={s('font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--ink-3);border-radius:var(--radius-sm);padding:4px 10px')}>
           {c.bestStreak(st.routineStreak.best)}
         </span>
       </div>
@@ -66,7 +66,7 @@ export function RoutineAdherence() {
                   )}
                   {/* Evening on top, morning below — the order of the day read
                       upwards, so the stack matches the routine it describes. */}
-                  <div style={s(`width:100%;height:${pmH}px;background:var(--viz-4);border-radius:3px 3px 0 0`)} />
+                  <div style={s(`width:100%;height:${pmH}px;background:var(--viz-4);border-radius:var(--radius-sm) 3px 0 0`)} />
                   <div style={s(`width:100%;height:${amH}px;background:var(--accent);margin-top:1px;border-radius:${pmH ? '0' : '3px 3px 0 0'}`)} />
                   <div style={s('width:100%;height:2px;background:var(--surface-2);margin-top:1px;border-radius:99px')} />
                 </div>
@@ -81,7 +81,7 @@ export function RoutineAdherence() {
           </div>
         </>
       ) : (
-        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:16px;margin-top:12px;font-size:12px;color:var(--ink-3);text-align:center;line-height:1.5')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:16px;margin-top:12px;font-size:12px;color:var(--ink-3);text-align:center;line-height:1.5')}>
           {c.noHistory}
         </div>
       )}

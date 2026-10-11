@@ -9,24 +9,54 @@
    here or it reuses one of these. That is what stops the drift back to the
    forty-odd near-identical creams this replaced. */
 :root {
-  /* grounds, lightest to darkest */
-  --bg: #FCFCFA;
+  /* ── grounds ───────────────────────────────────────────────────────────────
+     Three rungs, and they have to be far enough apart to see.
+
+     They used to be #FCFCFA, #FFFFFF and #F4F4F1: a page and a card one step
+     apart, which is 1.03:1. Sixty-one cards were drawn on --surface and not
+     one of them read as a card, so every screen arrived as a single column of
+     text with nothing to hold on to. The page is the darkest rung now and the
+     card is white, 1.17:1 apart, which is a visible edge without a border.
+
+     Order matters: --surface-2 sits between them, so an inset inside a card
+     reads as recessed and a panel on the page reads as raised, using the one
+     token either way. */
+  --bg: #EFEDE7;
   --surface: #FFFFFF;
-  --surface-2: #F4F4F1;
+  --surface-2: #F7F6F2;
+
+  /* Corner radius. A card, a control, a photograph frame. */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+
+  /* Elevation. Two layers: a hairline-weight shadow that defines the edge at
+     any size, and a wider soft one that lifts it off the page. Neither is
+     dark enough to read as a drop shadow — they do the job a border would,
+     without the border's hard line. */
+  --shadow-card: 0 1px 2px rgba(20, 18, 12, 0.05), 0 8px 20px -12px rgba(20, 18, 12, 0.14);
+  --shadow-raised: 0 2px 4px rgba(20, 18, 12, 0.06), 0 14px 32px -16px rgba(20, 18, 12, 0.20);
 
   /* Text and icons, darkest to lightest. Every rank here clears WCAG AA
-     (4.5:1) on --bg, including --ink-4 at 4.58:1 — the ramp was a third of a
-     stop too light and the screens used --ink-4 for real sentences anyway, so
-     the rule the ramp states is now one the ramp can keep. */
+     (4.5:1) on --bg, and the screens use --ink-4 for real sentences, so that
+     is a rule the ramp has to keep rather than a guideline.
+
+     --ink-4 went from #74746D to #6A6A63 when the page ground was darkened:
+     at the old value it measured 4.58:1 on the old page and would have been
+     4.02:1 on this one, which is a fail. It is 4.65:1 now on the page, 5.45:1
+     on a card. The darker ground buys the other three ranks nothing they
+     needed and costs them nothing. */
   --ink: #101010;
   --ink-2: #4A4A44;
   --ink-3: #5C5C57;
-  --ink-4: #74746D;
+  --ink-4: #6A6A63;
 
   /* hairlines. --line for dividers, --line-2 for input borders, which need to
-     read as an edge you can type inside. */
-  --line: #E9E7E1;
-  --line-2: #DEDCD5;
+     read as an edge you can type inside. Both were a step too pale to survive
+     the new ground — the old --line was 1.06:1 on the page, which is a line
+     nobody can see doing the job of separating two things. */
+  --line: #E2DFD7;
+  --line-2: #D6D1C5;
 
   /* The ground for a panel — the points header, the missions strip, the
      progress bar, the core tip. It used to invert the page: near-black with
@@ -34,7 +64,7 @@
      It is a warm light grey now, so a panel separates a section without
      punching a hole in the page, and the text on it is ink like everywhere
      else. --on-panel-2 is the secondary rank, at 4.9:1. */
-  --panel: #E7E3DB;
+  --panel: #E4DFD4;
   --on-panel: #101010;
   --on-panel-2: #5A5247;
   /* The empty part of a progress bar drawn on the panel. --line-2 is only
@@ -47,12 +77,21 @@
      fill and a text colour cannot be made light. --accent went pale and every
      link on the screen went with it. So they are two things now.
 
-     --accent fills: buttons, panels, the strip behind the missions. A warm
-     light grey, so the only colour left on a screen is the photograph on it.
-     --link writes: links, prices, the "see all" at the end of a section. Dark
-     enough to read on the page (9.4:1) and on the fill (7.5:1) alike. */
-  --accent: #E7E3DB;
-  --accent-strong: #D8D3C8;
+     --accent fills, and only fills — fifty-four call sites, every one a
+     background, not one a colour. Almost all of them are the same kind of
+     thing: the primary button, the selected chip, the sent message, the bar
+     in a chart. They are what a reader is meant to find first.
+
+     It was a warm light grey, one step off the page, on the reasoning that
+     the photograph should be the only colour on screen. That holds for a
+     panel and fails for a button: a call to action at 1.09:1 against its own
+     page is not quiet, it is missing. Dark ink gives every screen one anchor
+     and still introduces no new hue — the palette is the same warm neutral
+     ramp, used at the other end.
+
+     --link writes: links, prices, the "see all" at the end of a section. */
+  --accent: #262621;
+  --accent-strong: #3B3B33;
   --link: #4A443A;
   /* Fills and tints that sit under or beside the accent. */
   --accent-mid: #BFB8AA;
@@ -60,8 +99,8 @@
 
   /* text drawn on top of a dark fill or a photo. --on-dark-2 is the secondary
      rank — a muted white, not a grey, so it holds up over a photograph. */
-  /* Text on an --accent fill. It is ink now, not white: the fill is light. */
-  --on-accent: #101010;
+  /* Text on an --accent fill. White again, because the fill is dark again. */
+  --on-accent: #FFFFFF;
   --on-dark: #FFFFFF;
   --on-dark-2: rgba(255, 255, 255, 0.82);
   /* The accent and caution tones again, mixed for a dark ground. The light
@@ -80,7 +119,7 @@
   --ph-b: #E9E6E1;
   --ph-c: #E4E5E8;
 
-  --bg-blur: rgba(252, 252, 250, 0.92);
+  --bg-blur: rgba(239, 237, 231, 0.92);
   --surface-blur: rgba(255, 255, 255, 0.94);
 
   /* caution: a limit, a warning, a thing to watch. Not a failure. */
@@ -109,7 +148,7 @@
   /* The same ramp the other way up, for a photograph whose lower third is
      already pale. It lifts the background toward --bg rather than darkening
      it, so ink text reads without the picture turning grey. */
-  --scrim-light: linear-gradient(to top, rgba(252, 252, 250, 0.90), rgba(252, 252, 250, 0.66) 34%, rgba(252, 252, 250, 0.28) 64%, rgba(252, 252, 250, 0));
+  --scrim-light: linear-gradient(to top, rgba(239, 237, 231, 0.90), rgba(239, 237, 231, 0.66) 34%, rgba(239, 237, 231, 0.28) 64%, rgba(239, 237, 231, 0));
 }
 
 body {
@@ -153,8 +192,12 @@ body {
   word-break: keep-all;
 }
 
-a { color: var(--accent); text-decoration: none; }
-a:hover { color: var(--accent-strong); }
+/* --link, not --accent: --accent is a fill and has been light and is now
+   dark, and an anchor that inherits a fill colour is unreadable at one of
+   those two settings. Every anchor in the app sets its own colour, so this is
+   only the floor — but a floor that was 1.26:1 was a latent blank line. */
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--ink); }
 
 input, select, button { font-family: inherit; }
 

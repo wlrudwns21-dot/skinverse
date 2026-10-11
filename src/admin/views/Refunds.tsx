@@ -33,14 +33,14 @@ export function Refunds() {
       </div>
 
       {admin.refundQueue.length === 0 && (
-        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);margin-top:14px')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:22px;text-align:center;font-size:12.5px;color:var(--ink-3);margin-top:14px')}>
           대기 중인 환불 요청이 없습니다.
         </div>
       )}
 
       <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:14px')}>
         {admin.refundQueue.map((r) => (
-          <div key={r.orderNo} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px')}>
+          <div key={r.orderNo} style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px')}>
             <div style={s('display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap')}>
               <div style={s('min-width:0')}>
                 <b style={s('font-size:14px')}>{r.orderNo}</b>
@@ -59,12 +59,12 @@ export function Refunds() {
             {/* The customer's own words. An operator deciding without them is
                 deciding on the amount alone, which is how good customers get
                 refused and bad ones get paid. */}
-            <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--ink-2);line-height:1.6;white-space:pre-wrap')}>
+            <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--ink-2);line-height:1.6;white-space:pre-wrap')}>
               {r.reason || '(사유 없음)'}
             </div>
 
             {!r.capturable && (
-              <div style={s('background:var(--surface-2);border-radius:4px;padding:8px 11px;margin-top:8px;font-size:11.5px;color:var(--warn)')}>
+              <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 11px;margin-top:8px;font-size:11.5px;color:var(--warn)')}>
                 이 주문에는 PayPal 결제 기록이 없어 자동 환불할 수 없습니다.
               </div>
             )}
@@ -73,7 +73,7 @@ export function Refunds() {
               <div style={s('display:flex;gap:8px;margin-top:10px')}>
                 <div
                   onClick={() => start(r.orderNo)}
-                  style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3)')}
+                  style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3)')}
                 >
                   처리하기
                 </div>
@@ -88,7 +88,7 @@ export function Refunds() {
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
                   inputMode="decimal"
                   placeholder={String(r.remaining.toFixed(2))}
-                  style={s('width:140px;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:13px;margin-top:5px;outline:none')}
+                  style={s('width:140px;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:5px;outline:none')}
                 />
 
                 <div style={s('font-size:11.5px;color:var(--ink-3);font-weight:500;margin-top:10px')}>
@@ -99,19 +99,19 @@ export function Refunds() {
                   onChange={(e) => setNote(e.target.value)}
                   rows={2}
                   placeholder="거절하려면 사유를 반드시 적어주세요 — 고객에게 그대로 표시됩니다"
-                  style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:12.5px;font-family:inherit;margin-top:5px;outline:none;resize:vertical')}
+                  style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:12.5px;font-family:inherit;margin-top:5px;outline:none;resize:vertical')}
                 />
 
                 <div style={s('display:flex;gap:8px;margin-top:10px;flex-wrap:wrap')}>
                   <div
                     onClick={() => setOpen(null)}
-                    style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:9px 16px;font-size:12px;font-weight:500;color:var(--ink-3)')}
+                    style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:9px 16px;font-size:12px;font-weight:500;color:var(--ink-3)')}
                   >
                     닫기
                   </div>
                   <div
                     onClick={() => void admin.refuseRefund(r.orderNo, note)}
-                    style={s('cursor:pointer;border:1px solid var(--warn-mid);background:var(--surface-2);border-radius:3px;padding:9px 16px;font-size:12px;font-weight:500;color:var(--warn)')}
+                    style={s('cursor:pointer;border:1px solid var(--warn-mid);background:var(--surface-2);border-radius:var(--radius-sm);padding:9px 16px;font-size:12px;font-weight:500;color:var(--warn)')}
                   >
                     거절
                   </div>
@@ -123,7 +123,7 @@ export function Refunds() {
                       void admin.issueRefund(r.orderNo, value, note)
                     }}
                     style={s(
-                      'flex:1;min-width:120px;border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;' +
+                      'flex:1;min-width:120px;border-radius:var(--radius-sm);padding:9px;text-align:center;font-size:12px;font-weight:500;' +
                         (r.busy || !r.capturable
                           ? 'background:var(--surface-2);color:var(--ink-4)'
                           : 'cursor:pointer;background:var(--accent);color:var(--on-accent)'),

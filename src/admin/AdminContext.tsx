@@ -365,7 +365,7 @@ function useAdminValue() {
       stLabel: meta[0],
       stStyle:
         'justify-self:start;background:' + meta[2] + ';color:' + meta[1] +
-        ';border-radius:6px;padding:3px 9px;font-size:11px;font-weight:500',
+        ';border-radius:var(--radius-sm);padding:3px 9px;font-size:11px;font-weight:500',
       setStatus: (status: OrderStatus) => void setOrderStatus(o.no, status),
     }
   }
@@ -380,7 +380,7 @@ function useAdminValue() {
     label: l,
     pick: () => setOrderFilter(id),
     style:
-      'cursor:pointer;border-radius:3px;padding:8px 14px;font-size:12px;font-weight:500;' +
+      'cursor:pointer;border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;font-weight:500;' +
       (orderFilter === id
         ? 'background:var(--accent);color:var(--on-accent)'
         : 'background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2)'),

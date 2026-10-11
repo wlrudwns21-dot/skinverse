@@ -21,7 +21,7 @@ export function Header() {
         <select
           value={st.lang}
           onChange={(e) => st.setLang(e.target.value as Lang)}
-          style={s('border:1px solid var(--line-2);border-radius:3px;padding:6px 2px 6px 6px;font-size:10.5px;font-weight:500;letter-spacing:0.04em;background:transparent;color:var(--ink-2);outline:none;cursor:pointer;width:44px;flex-shrink:0')}
+          style={s('border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:6px 2px 6px 6px;font-size:10.5px;font-weight:500;letter-spacing:0.04em;background:transparent;color:var(--ink-2);outline:none;cursor:pointer;width:44px;flex-shrink:0')}
         >
           {langOptions.map((o) => (
             /* Each option is in its own language, not the page's — so mark it,
@@ -38,7 +38,7 @@ export function Header() {
           </div>
         )}
 
-        <div onClick={st.goCart} style={s('cursor:pointer;position:relative;border:1px solid var(--line-2);border-radius:3px;padding:7px 10px;font-size:11px;font-weight:500;letter-spacing:0.04em;background:transparent;white-space:nowrap;flex-shrink:0')}>
+        <div onClick={st.goCart} style={s('cursor:pointer;position:relative;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:7px 10px;font-size:11px;font-weight:500;letter-spacing:0.04em;background:transparent;white-space:nowrap;flex-shrink:0')}>
           {st.t.bag}
           {st.hasCart && (
             <span style={s('position:absolute;top:-5px;right:-5px;background:var(--warn-mid);color:var(--on-dark);border-radius:999px;font-size:10px;min-width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;padding:0 3px')}>
@@ -48,11 +48,11 @@ export function Header() {
         </div>
 
         {st.isMember ? (
-          <div onClick={st.goMy} style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:8px 12px;font-size:11px;font-weight:500;letter-spacing:0.04em;white-space:nowrap;flex-shrink:0')}>
+          <div onClick={st.goMy} style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:8px 12px;font-size:11px;font-weight:500;letter-spacing:0.04em;white-space:nowrap;flex-shrink:0')}>
             {st.t.myPage}
           </div>
         ) : (
-          <div onClick={() => st.goAuth('login')} style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:8px 12px;font-size:11px;font-weight:500;letter-spacing:0.04em;white-space:nowrap;flex-shrink:0')}>
+          <div onClick={() => st.goAuth('login')} style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:8px 12px;font-size:11px;font-weight:500;letter-spacing:0.04em;white-space:nowrap;flex-shrink:0')}>
             {st.a.logIn}
           </div>
         )}

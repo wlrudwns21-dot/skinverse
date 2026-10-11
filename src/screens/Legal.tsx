@@ -22,13 +22,13 @@ export function Legal() {
         ← 뒤로
       </div>
 
-      <div style={s('display:flex;gap:6px;background:var(--surface-2);border-radius:3px;padding:4px')}>
+      <div style={s('display:flex;gap:6px;background:var(--surface-2);border-radius:var(--radius-sm);padding:4px')}>
         {legalDocs.map((d) => (
           <div
             key={d.id}
             onClick={() => setWhich(d.id)}
             style={s(
-              'cursor:pointer;flex:1;text-align:center;border-radius:3px;padding:10px 0;font-size:13px;font-weight:500;' +
+              'cursor:pointer;flex:1;text-align:center;border-radius:var(--radius-sm);padding:10px 0;font-size:13px;font-weight:500;' +
                 (which === d.id
                   ? 'background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(60,45,25,0.12)'
                   : 'color:var(--ink-3)'),
@@ -41,7 +41,7 @@ export function Legal() {
 
       {/* The one thing a reader must not miss. These are drafts written from
           what the code does; nobody has signed off on them as law yet. */}
-      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:16px;font-size:12px;color:var(--warn);line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:14px 16px;margin-top:16px;font-size:12px;color:var(--warn);line-height:1.6')}>
         <b>검토 중인 초안입니다.</b>
         <br />
         이 문서는 법률 전문가의 검토를 받지 않았으며, 대괄호 <b>[ ]</b>로 표시된 항목은 아직
@@ -65,7 +65,7 @@ export function Legal() {
                 'font-size:13px;color:var(--ink-2);line-height:1.75;margin:10px 0 0;' +
                   // A paragraph the reader is told not to skip gets to look like one.
                   (p.startsWith('⚠️')
-                    ? 'background:var(--surface-2);border-radius:4px;padding:10px 12px;color:var(--warn);font-weight:500'
+                    ? 'background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px;color:var(--warn);font-weight:500'
                     : ''),
               )}
             >
@@ -75,7 +75,7 @@ export function Legal() {
 
           {section.table && (
             <div style={s('margin-top:12px;overflow-x:auto;-webkit-overflow-scrolling:touch')}>
-              <div style={s('min-width:420px;border:1px solid var(--line-2);border-radius:4px;overflow:hidden')}>
+              <div style={s('min-width:420px;border:1px solid var(--line-2);border-radius:var(--radius-sm);overflow:hidden')}>
                 <div
                   style={s(
                     `display:grid;grid-template-columns:repeat(${section.table.head.length},1fr);background:var(--surface-2);font-size:11px;font-weight:500;color:var(--ink-2)`,
@@ -103,7 +103,7 @@ export function Legal() {
         </div>
       ))}
 
-      <div onClick={st.leaveLegal} style={s('cursor:pointer;margin-top:28px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500')}>
+      <div onClick={st.leaveLegal} style={s('cursor:pointer;margin-top:28px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:14px;text-align:center;font-size:14px;font-weight:500')}>
         확인
       </div>
     </div>

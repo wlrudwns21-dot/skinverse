@@ -23,7 +23,7 @@ export function OrderHistory() {
 
   if (!st.hasOrders) {
     return (
-      <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:16px;font-size:12px;color:var(--ink-3);text-align:center')}>
+      <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:16px;font-size:12px;color:var(--ink-3);text-align:center')}>
         {st.t.ordersEmpty}
       </div>
     )
@@ -34,7 +34,7 @@ export function OrderHistory() {
   return (
     <div style={s('display:flex;flex-direction:column;gap:8px')}>
       {shown.map((o) => (
-        <div key={o.orderNo} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}>
+        <div key={o.orderNo} style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px')}>
           <div style={s('display:flex;justify-content:space-between;align-items:flex-start;gap:10px')}>
             <div style={s('min-width:0')}>
               <div style={s('font-size:13px;font-weight:500')}>{o.orderNo}</div>
@@ -60,7 +60,7 @@ export function OrderHistory() {
           )}
 
           {o.requestOpen && (
-            <div style={s('background:var(--surface-2);border-radius:4px;padding:8px 10px;margin-top:8px;font-size:11.5px;color:var(--warn);display:flex;justify-content:space-between;align-items:center;gap:8px')}>
+            <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 10px;margin-top:8px;font-size:11.5px;color:var(--warn);display:flex;justify-content:space-between;align-items:center;gap:8px')}>
               <span>{st.t.refundPending}</span>
               <span
                 onClick={() => st.cancelRefund(o.orderNo)}
@@ -74,7 +74,7 @@ export function OrderHistory() {
           {/* A decline without a reason is just a wall. The operator has to
               give one, so it is shown here rather than kept in the console. */}
           {o.declined && (
-            <div style={s('background:var(--surface-2);border-radius:4px;padding:8px 10px;margin-top:8px;font-size:11.5px;color:var(--warn);line-height:1.5')}>
+            <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 10px;margin-top:8px;font-size:11.5px;color:var(--warn);line-height:1.5')}>
               <b>{st.t.refundDeclined}</b>
               {o.declineNote && <div style={s('margin-top:2px')}>{o.declineNote}</div>}
             </div>
@@ -83,7 +83,7 @@ export function OrderHistory() {
           {o.refundable && asking !== o.orderNo && (
             <div
               onClick={() => { setAsking(o.orderNo); setReason('') }}
-              style={s('cursor:pointer;margin-top:9px;border:1px solid var(--line-2);border-radius:3px;padding:8px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3)')}
+              style={s('cursor:pointer;margin-top:9px;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3)')}
             >
               {st.t.refundAsk}
             </div>
@@ -96,7 +96,7 @@ export function OrderHistory() {
                 onChange={(e) => setReason(e.target.value)}
                 placeholder={st.t.refundReason}
                 rows={3}
-                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:9px 11px;font-size:12.5px;font-family:inherit;outline:none;resize:vertical')}
+                style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:9px 11px;font-size:12.5px;font-family:inherit;outline:none;resize:vertical')}
               />
               <div style={s('font-size:11px;color:var(--ink-4);line-height:1.5;margin-top:5px')}>
                 {st.t.refundNote}
@@ -104,7 +104,7 @@ export function OrderHistory() {
               <div style={s('display:flex;gap:8px;margin-top:8px')}>
                 <div
                   onClick={() => setAsking(null)}
-                  style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3)')}
+                  style={s('flex:1;cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3)')}
                 >
                   {st.t.refundWithdraw}
                 </div>
@@ -115,7 +115,7 @@ export function OrderHistory() {
                     setAsking(null)
                   }}
                   style={s(
-                    'flex:1;border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;' +
+                    'flex:1;border-radius:var(--radius-sm);padding:9px;text-align:center;font-size:12px;font-weight:500;' +
                       (reason.trim()
                         ? 'cursor:pointer;background:var(--accent);color:var(--on-accent)'
                         : 'background:var(--surface-2);color:var(--ink-4)'),
@@ -132,7 +132,7 @@ export function OrderHistory() {
       {st.orderHistory.length > PREVIEW && (
         <div
           onClick={() => setAll((v) => !v)}
-          style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
+          style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
         >
           {all ? st.t.showLess : st.t.showAll(st.orderHistory.length - PREVIEW)}
         </div>

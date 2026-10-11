@@ -2,10 +2,10 @@ import { s } from '../../lib/css'
 import { useAdmin } from '../AdminContext'
 
 const numberInput =
-  'width:56px;border:1px solid var(--line-2);border-radius:4px;padding:7px 8px;font-size:13px;font-weight:500;text-align:right;outline:none'
+  'width:56px;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:7px 8px;font-size:13px;font-weight:500;text-align:right;outline:none'
 const ruleRow = 'display:flex;justify-content:space-between;align-items:center'
 const smallStepper =
-  'cursor:pointer;width:22px;height:22px;border:1px solid var(--line-2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px'
+  'cursor:pointer;width:22px;height:22px;border:1px solid var(--line-2);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px'
 
 export function MissionConfig() {
   const admin = useAdmin()
@@ -16,7 +16,7 @@ export function MissionConfig() {
       <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:24px')}>미션 · 포인트 설정</div>
 
       <div style={s('display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:14px')}>
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px')}>
+        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px')}>
           <div style={s('font-size:13px;font-weight:500')}>미션 보상 (P)</div>
           <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:12px')}>
             {admin.missionCfg.map((m) => (
@@ -29,7 +29,7 @@ export function MissionConfig() {
                   type="number"
                   value={m.pts}
                   onChange={(e) => m.setPts(parseInt(e.target.value, 10) || 0)}
-                  style={s('width:64px;border:1px solid var(--line-2);border-radius:4px;padding:7px 8px;font-size:13px;font-weight:500;text-align:right;outline:none;background:var(--surface)')}
+                  style={s('width:64px;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:7px 8px;font-size:13px;font-weight:500;text-align:right;outline:none;background:var(--surface)')}
                 />
                 <div onClick={m.toggle} style={s(`cursor:pointer;width:40px;height:24px;border-radius:99px;background:${m.togBg};position:relative;transition:background .2s;flex-shrink:0`)}>
                   <div style={s(`position:absolute;top:3px;left:${m.togLeft};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)`)} />
@@ -40,7 +40,7 @@ export function MissionConfig() {
         </div>
 
         <div style={s('display:flex;flex-direction:column;gap:12px')}>
-          <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px')}>
+          <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px')}>
             <div style={s('font-size:13px;font-weight:500')}>구매 적립 · 사용 규칙</div>
             <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:12px;font-size:13px')}>
               <div style={s(ruleRow)}>
@@ -67,7 +67,7 @@ export function MissionConfig() {
             </div>
           </div>
 
-          <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px')}>
+          <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px')}>
             <div style={s('font-size:13px;font-weight:500')}>교환 리워드 재고</div>
             <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:12px')}>
               {admin.rewardCfg.map((r) => (

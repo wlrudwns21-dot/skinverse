@@ -18,11 +18,11 @@ export function Sidebar() {
           <div
             key={m.id}
             onClick={m.go}
-            style={s(`cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border-radius:4px;font-size:13.5px;font-weight:500;background:${m.bg};color:${m.color}`)}
+            style={s(`cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;background:${m.bg};color:${m.color}`)}
           >
             <span>{m.label}</span>
             {m.hasBadge && (
-              <span style={s('background:var(--warn-mid);color:var(--on-dark);border-radius:3px;font-size:10px;font-weight:500;padding:2px 7px')}>
+              <span style={s('background:var(--warn-mid);color:var(--on-dark);border-radius:var(--radius-sm);font-size:10px;font-weight:500;padding:2px 7px')}>
                 {m.badge}
               </span>
             )}
@@ -41,7 +41,7 @@ export function Sidebar() {
             <div style={s('font-size:10.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>{admin.email}</div>
           </div>
         </div>
-        <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:12px;border:1px solid rgba(255,255,255,0.16);border-radius:3px;padding:8px;text-align:center;font-size:11.5px;font-weight:500;color:var(--ink-4)')}>
+        <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:12px;border:1px solid rgba(255,255,255,0.16);border-radius:var(--radius-sm);padding:8px;text-align:center;font-size:11.5px;font-weight:500;color:var(--ink-4)')}>
           로그아웃
         </div>
       </div>

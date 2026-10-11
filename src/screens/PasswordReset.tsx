@@ -6,12 +6,12 @@ import { useAuth } from '../auth/AuthContext'
 import { useStore } from '../store/StoreContext'
 
 const field =
-  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
+  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
 const label = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 const primary =
-  'margin-top:16px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
+  'margin-top:16px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:15px;text-align:center;font-size:14px;font-weight:500'
 const disabled =
-  'margin-top:16px;background:var(--surface-2);color:var(--ink-4);border-radius:3px;padding:15px;text-align:center;font-size:14px;font-weight:500'
+  'margin-top:16px;background:var(--surface-2);color:var(--ink-4);border-radius:var(--radius-sm);padding:15px;text-align:center;font-size:14px;font-weight:500'
 
 /**
  * Asking for a reset link.
@@ -88,7 +88,7 @@ export function PasswordReset() {
       )}
 
       {error && (
-        <div style={s('background:var(--surface-2);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
+        <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px;margin-top:12px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
           {error}
         </div>
       )}
@@ -160,7 +160,7 @@ export function NewPassword() {
       </div>
 
       {error && (
-        <div style={s('background:var(--surface-2);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
+        <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px;margin-top:12px;font-size:12.5px;color:var(--warn);line-height:1.5')}>
           {error}
         </div>
       )}

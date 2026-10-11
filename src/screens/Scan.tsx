@@ -53,13 +53,13 @@ export function ScanIntro() {
       <div style={s('display:flex;gap:8px;justify-content:center;margin-bottom:16px')}>
         <div
           onClick={() => setCameraOpen(true)}
-          style={s('cursor:pointer;border:1px solid var(--ink);border-radius:3px;padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em')}
+          style={s('cursor:pointer;border:1px solid var(--ink);border-radius:var(--radius-sm);padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em')}
         >
           {st.a.camera.take}
         </div>
         <div
           onClick={() => pickerRef.current?.click()}
-          style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em;color:var(--ink-2)')}
+          style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em;color:var(--ink-2)')}
         >
           {st.a.camera.pick}
         </div>
@@ -88,12 +88,12 @@ export function ScanIntro() {
       {/* What the pre-flight check found. A problem is a hard stop, shown in
           red; a warning is advice the customer can ignore. */}
       {st.photoCheck?.problem && (
-        <div style={s('padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--danger);background:var(--danger-soft);border-radius:3px;line-height:1.6')}>
+        <div style={s('padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--danger);background:var(--danger-soft);border-radius:var(--radius-sm);line-height:1.6')}>
           {st.a.photoError[st.photoCheck.problem]}
         </div>
       )}
       {st.photoCheck?.warning && (
-        <div style={s('padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--warn);background:var(--warn-soft);border-radius:3px;line-height:1.6')}>
+        <div style={s('padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--warn);background:var(--warn-soft);border-radius:var(--radius-sm);line-height:1.6')}>
           {st.a.photoError[st.photoCheck.warning]}
         </div>
       )}
@@ -137,7 +137,7 @@ export function ScanIntro() {
         <div
           onClick={st.startScan}
           style={s(
-            'cursor:pointer;margin-top:20px;border-radius:3px;padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em' +
+            'cursor:pointer;margin-top:20px;border-radius:var(--radius-sm);padding:15px;text-align:center;font-size:13px;font-weight:500;letter-spacing:0.03em' +
               (st.photoCheck?.problem
                 ? ';background:transparent;border:1px solid var(--line-2);color:var(--ink-4)'
                 : ';background:var(--accent);color:var(--on-accent)'),
@@ -155,7 +155,7 @@ export function Scanning() {
 
   return (
     <div style={s('padding:40px 20px;display:flex;flex-direction:column;align-items:center;animation:rise .3s ease both')}>
-      <div style={s('width:220px;height:280px;border-radius:3px;background:linear-gradient(160deg,var(--surface-2),var(--line));position:relative;overflow:hidden;border:1px solid var(--line-2)')}>
+      <div style={s('width:220px;height:280px;border-radius:var(--radius-sm);background:linear-gradient(160deg,var(--surface-2),var(--line));position:relative;overflow:hidden;border:1px solid var(--line-2)')}>
         <div style={s('position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 14px var(--accent);animation:scanline 2.4s ease-in-out infinite')} />
         <div style={s('position:absolute;inset:14px;border:1px dashed rgba(46,107,88,0.4);border-radius:100px')} />
       </div>
@@ -188,13 +188,13 @@ export function ScanFailed() {
         {st.scanError || st.a.analysisFailed}
       </div>
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-top:22px;font-size:12.5px;color:var(--ink-2);line-height:1.6;text-align:left')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;margin-top:22px;font-size:12.5px;color:var(--ink-2);line-height:1.6;text-align:left')}>
         {st.a.scanFailedHelp}
       </div>
 
       <div
         onClick={st.retryScan}
-        style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:15px 30px;font-size:14px;font-weight:500')}
+        style={s('cursor:pointer;margin-top:22px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:15px 30px;font-size:14px;font-weight:500')}
       >
         {st.a.scanRetry}
       </div>
@@ -224,13 +224,13 @@ export function ScanResults() {
 
         {/* A canned profile must never pass for a measurement. */}
         {!st.scanIsReal && (
-          <div style={s('display:inline-block;margin-top:10px;background:var(--surface-2);border:1px solid var(--warn-mid);color:var(--warn);border-radius:3px;padding:5px 12px;font-size:11.5px;font-weight:500')}>
+          <div style={s('display:inline-block;margin-top:10px;background:var(--surface-2);border:1px solid var(--warn-mid);color:var(--warn);border-radius:var(--radius-sm);padding:5px 12px;font-size:11.5px;font-weight:500')}>
             {st.a.demoResult}
           </div>
         )}
       </div>
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:18px;display:flex;flex-direction:column;gap:12px')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:18px;display:flex;flex-direction:column;gap:12px')}>
         {st.metrics.map((m) => (
           <div key={m.nameL}>
             <div style={s('display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px')}>
@@ -244,7 +244,7 @@ export function ScanResults() {
         ))}
       </div>
 
-      <div style={s('background:var(--surface-2);border-radius:4px;padding:16px;margin-top:12px;font-size:13px;line-height:1.6;color:var(--link)')}>
+      <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:16px;margin-top:12px;font-size:13px;line-height:1.6;color:var(--link)')}>
         <b>{st.t.insight}</b>
         <br />
         {st.summary}
@@ -274,7 +274,7 @@ export function ScanResults() {
       {/* What the numbers say beyond the bars: what is behind, what moved, and
           whether the weather explains it better than the routine does. */}
       {st.report.length > 0 && (
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:12px')}>
           <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{st.reportTitle}</div>
           <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px;margin-bottom:12px')}>
             {st.reportSub}
@@ -296,10 +296,10 @@ export function ScanResults() {
       )}
 
       <div style={s('display:flex;gap:10px;margin-top:16px')}>
-        <div onClick={st.goShop} style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
+        <div onClick={st.goShop} style={s('cursor:pointer;flex:1;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500')}>
           {st.t.matchedBtn}
         </div>
-        <div onClick={st.goRoutine} style={s('cursor:pointer;flex:1;background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
+        <div onClick={st.goRoutine} style={s('cursor:pointer;flex:1;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500')}>
           {st.t.routineBtn}
         </div>
       </div>
@@ -307,7 +307,7 @@ export function ScanResults() {
       {!st.isMember && (
         <div
           onClick={() => st.goAuth('signup')}
-          style={s('cursor:pointer;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:13px 14px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px')}
+          style={s('cursor:pointer;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:13px 14px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px')}
         >
           <div style={s('font-size:12.5px;color:var(--warn);line-height:1.45')}>{st.a.gateSaveScan}</div>
           <span style={s('font-weight:500;color:var(--warn);flex-shrink:0')}>→</span>

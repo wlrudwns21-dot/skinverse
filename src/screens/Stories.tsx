@@ -57,7 +57,7 @@ export function Chip({ label, tone }: { label: string; tone: 'core' | 'category'
   return (
     <span
       style={s(
-        'font-size:10.5px;font-weight:500;border-radius:3px;padding:3px 9px;letter-spacing:0.04em;' +
+        'font-size:10.5px;font-weight:500;border-radius:var(--radius-sm);padding:3px 9px;letter-spacing:0.04em;' +
           (tone === 'core' ? 'background:var(--surface);color:var(--on-panel)' : 'background:var(--surface-2);color:var(--ink-3)'),
       )}
     >
@@ -92,7 +92,7 @@ export function CoreTipCard({ lang, onOpen }: { lang: Lang; onOpen?: () => void 
     <div
       onClick={onOpen}
       style={s(
-        'background:var(--panel);color:var(--on-panel);border-radius:4px;position:relative;overflow:hidden' +
+        'background:var(--panel);color:var(--on-panel);border-radius:var(--radius);box-shadow:var(--shadow-card);position:relative;overflow:hidden' +
           (onOpen ? ';cursor:pointer' : ''),
       )}
     >
@@ -125,7 +125,7 @@ function StoryCard({ story, lang }: { story: Story; lang: Lang }) {
   return (
     <div
       onClick={() => setOpen(!open)}
-      style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden')}
+      style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden')}
     >
       <Cover story={story} lang={lang} radius="0" />
       <div style={s('padding:14px 16px 15px')}>
@@ -183,7 +183,7 @@ export function Stories() {
               key={category ?? 'all'}
               onClick={() => setFilter(category)}
               style={s(
-                'cursor:pointer;flex-shrink:0;font-size:12px;font-weight:500;border-radius:3px;padding:7px 12px;' +
+                'cursor:pointer;flex-shrink:0;font-size:12px;font-weight:500;border-radius:var(--radius-sm);padding:7px 12px;' +
                   (active
                     ? 'background:var(--accent);color:var(--on-accent)'
                     : 'background:var(--surface);border:1px solid var(--line);color:var(--ink-3)'),
@@ -208,14 +208,14 @@ export function Stories() {
       </div>
 
       {!showCore && shown.length === 0 && (
-        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:18px;margin-top:14px;font-size:12.5px;color:var(--ink-3);text-align:center')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:18px;margin-top:14px;font-size:12.5px;color:var(--ink-3);text-align:center')}>
           {storiesEmpty[lang]}
         </div>
       )}
 
       <div
         onClick={st.goRoutine}
-        style={s('cursor:pointer;margin-top:16px;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center')}
+        style={s('cursor:pointer;margin-top:16px;background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:13px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center')}
       >
         <b>{storiesToRoutine[lang]}</b>
         <span style={s('font-weight:500;color:var(--warn)')}>→</span>

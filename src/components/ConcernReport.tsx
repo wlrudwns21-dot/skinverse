@@ -87,7 +87,7 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
   if (grouped.length === 0) return null
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:12px')}>
       <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px')}>{t.title}</div>
       <div style={s('font-size:11.5px;color:var(--ink-4);margin-top:2px')}>{t.sub}</div>
 
@@ -95,7 +95,7 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
           standard here and meaningless to most people elsewhere, so the
           explanation sits with the reading rather than in a help page. */}
       {skinType && (skinType.whole || skinType.tZone || skinType.uZone) && (
-        <div style={s('background:var(--surface-2);border-radius:4px;padding:12px 14px;margin-top:12px')}>
+        <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:12px 14px;margin-top:12px')}>
           <div style={s('font-size:11.5px;color:var(--ink-3);font-weight:500')}>{t.skinType}</div>
           <div style={s('display:flex;flex-wrap:wrap;gap:10px;margin-top:6px')}>
             {([
@@ -145,7 +145,7 @@ export function ConcernReport({ visuals, skinType, lang, t }: ConcernReportProps
                   </div>
 
                   {expanded && (
-                    <div style={s('background:var(--surface);border-radius:4px;padding:12px 14px;margin-top:8px')}>
+                    <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:12px 14px;margin-top:8px')}>
                       <div style={s('font-size:11px;color:var(--ink-4);font-weight:500;letter-spacing:0.06em')}>
                         {t.measured}
                       </div>

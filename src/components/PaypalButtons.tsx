@@ -79,7 +79,7 @@ export function PaypalButtons() {
 
   if (!paypalEnabled) {
     return (
-      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:16px;font-size:12.5px;color:var(--warn);line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:14px 16px;margin-top:16px;font-size:12.5px;color:var(--warn);line-height:1.6')}>
         <b>결제가 아직 연결되지 않았습니다.</b>
         <br />
         PayPal 클라이언트 ID가 설정되면 이 자리에 결제 버튼이 나타납니다.
@@ -89,7 +89,7 @@ export function PaypalButtons() {
 
   if (blocked) {
     return (
-      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:16px;font-size:12.5px;color:var(--warn);line-height:1.6')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:14px 16px;margin-top:16px;font-size:12.5px;color:var(--warn);line-height:1.6')}>
         결제 모듈을 불러오지 못했습니다. 광고 차단 프로그램을 끄거나 다른 네트워크에서 다시
         시도해주세요.
       </div>

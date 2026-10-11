@@ -5,7 +5,7 @@ import { useAdmin } from '../AdminContext'
 
 const ROW_COLS = 'display:grid;grid-template-columns:1.6fr 0.9fr 1.2fr 0.9fr;gap:8px'
 const field =
-  'box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:10px 12px;font-size:13px;background:var(--surface);outline:none'
+  'box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;background:var(--surface);outline:none'
 
 /**
  * Master-only. Adding an address here authorises it before the person has an
@@ -42,7 +42,7 @@ export function Access() {
       {/* Applications first. Anything waiting on a decision is the only thing
           on this screen that someone else is blocked by. */}
       {admin.pendingOperators.length > 0 && (
-        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:16px;margin-top:14px')}>
+        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:16px;margin-top:14px')}>
           <div style={s('font-size:13px;font-weight:500;color:var(--warn)')}>
             승인 대기 {admin.pendingOperators.length}건
           </div>
@@ -52,7 +52,7 @@ export function Access() {
 
           <div style={s('display:flex;flex-direction:column;gap:8px;margin-top:12px')}>
             {admin.pendingOperators.map((p) => (
-              <div key={p.email} style={s('background:var(--surface);border:1px solid var(--warn-mid);border-radius:4px;padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap')}>
+              <div key={p.email} style={s('background:var(--surface);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap')}>
                 <div style={s('flex:1;min-width:180px')}>
                   <div style={s('font-size:13px;font-weight:500;word-break:break-all')}>{p.email}</div>
                   <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:2px')}>
@@ -61,13 +61,13 @@ export function Access() {
                 </div>
                 <div
                   onClick={p.approve}
-                  style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500')}
+                  style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:8px 16px;font-size:12px;font-weight:500')}
                 >
                   승인
                 </div>
                 <div
                   onClick={p.reject}
-                  style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-3);border-radius:3px;padding:8px 16px;font-size:12px;font-weight:500')}
+                  style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-3);border-radius:var(--radius-sm);padding:8px 16px;font-size:12px;font-weight:500')}
                 >
                   반려
                 </div>
@@ -77,7 +77,7 @@ export function Access() {
         </div>
       )}
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:14px')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:14px')}>
         <div style={s('font-size:13px;font-weight:500')}>운영자 추가</div>
         <div style={s('display:flex;gap:8px;margin-top:12px;flex-wrap:wrap')}>
           <input
@@ -99,13 +99,13 @@ export function Access() {
             placeholder="메모 (선택)"
             style={s(field + ';flex:1;min-width:140px')}
           />
-          <div onClick={submit} style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:10px 20px;font-size:13px;font-weight:500;white-space:nowrap')}>
+          <div onClick={submit} style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:10px 20px;font-size:13px;font-weight:500;white-space:nowrap')}>
             추가
           </div>
         </div>
       </div>
 
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px 16px 16px;margin-top:12px;overflow-x:auto')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 16px 16px;margin-top:12px;overflow-x:auto')}>
         <div style={s('min-width:620px')}>
           <div style={s(ROW_COLS + ';font-size:11px;color:var(--ink-3);font-weight:500;padding:10px 6px;border-bottom:1px solid var(--line)')}>
             <span>이메일</span><span>권한</span><span>메모</span><span>관리</span>
@@ -130,7 +130,7 @@ export function Access() {
               <select
                 value={o.role}
                 onChange={(e) => o.setRole(e.target.value as AdminRole)}
-                style={s('border:1px solid var(--line-2);border-radius:4px;padding:7px 8px;font-size:12px;background:var(--surface);outline:none;cursor:pointer;max-width:130px')}
+                style={s('border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:7px 8px;font-size:12px;background:var(--surface);outline:none;cursor:pointer;max-width:130px')}
               >
                 <option value="admin">일반 관리자</option>
                 <option value="master">마스터</option>
@@ -140,7 +140,7 @@ export function Access() {
 
               <div
                 onClick={o.remove}
-                style={s('cursor:pointer;border:1px solid var(--warn-mid);color:var(--warn);background:var(--surface-2);border-radius:3px;padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:90px')}
+                style={s('cursor:pointer;border:1px solid var(--warn-mid);color:var(--warn);background:var(--surface-2);border-radius:var(--radius-sm);padding:7px 0;font-size:11.5px;font-weight:500;text-align:center;max-width:90px')}
               >
                 삭제
               </div>

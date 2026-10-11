@@ -48,7 +48,7 @@ function TrendCard() {
   if (!chart) return null
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:20px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:20px')}>
       <div
         onClick={() => setOpen((v) => !v)}
         style={s('cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px')}
@@ -75,7 +75,7 @@ function TrendCard() {
       {open && (
         <>
       {st.cumulativeLine && (
-        <div style={s('background:var(--surface);border-radius:4px;padding:9px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.5')}>
+        <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:9px 12px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.5')}>
           {st.cumulativeLine}
         </div>
       )}
@@ -89,7 +89,7 @@ function TrendCard() {
                 key={option.key ?? 'overall'}
                 onClick={() => setAxis(option.key)}
                 style={s(
-                  'cursor:pointer;flex-shrink:0;font-size:11.5px;font-weight:500;border-radius:3px;padding:5px 11px;' +
+                  'cursor:pointer;flex-shrink:0;font-size:11.5px;font-weight:500;border-radius:var(--radius-sm);padding:5px 11px;' +
                     (active
                       ? 'background:var(--accent);color:var(--on-accent)'
                       : 'background:var(--surface-2);color:var(--ink-3)'),
@@ -106,7 +106,7 @@ function TrendCard() {
         {chart.points.map((p) => (
           <div key={p.key} style={s('flex:1;min-width:26px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%')}>
             <div style={s('font-size:10px;font-weight:500;color:var(--ink-2);margin-bottom:3px')}>{p.score}</div>
-            <div style={s(`width:100%;border-radius:6px 6px 0 0;background:${p.color};height:${p.height}`)} />
+            <div style={s(`width:100%;border-radius:var(--radius-sm) 6px 0 0;background:${p.color};height:${p.height}`)} />
           </div>
         ))}
       </div>
@@ -161,7 +161,7 @@ export function MyPage() {
           {/* Same problem as the chart: this list is unbounded and everything
               useful sits under it. The newest few are what people look at. */}
           {(allScans ? st.history : st.history.slice(0, HISTORY_PREVIEW)).map((h, i) => (
-            <div key={h.date + i} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center')}>
+            <div key={h.date + i} style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;display:flex;justify-content:space-between;align-items:center')}>
               <div>
                 <div style={s('font-size:13px;font-weight:500')}>{h.date}</div>
                 <div style={s('font-size:11.5px;color:var(--ink-3)')}>{h.type}</div>
@@ -172,14 +172,14 @@ export function MyPage() {
           {st.history.length > HISTORY_PREVIEW && (
             <div
               onClick={() => setAllScans((v) => !v)}
-              style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:3px;padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
+              style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
             >
               {allScans ? st.t.showLess : st.t.showAll(st.history.length - HISTORY_PREVIEW)}
             </div>
           )}
         </div>
       ) : (
-        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:16px;font-size:12px;color:var(--ink-3);text-align:center;line-height:1.5')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:16px;font-size:12px;color:var(--ink-3);text-align:center;line-height:1.5')}>
           {st.t.noScan}
         </div>
       )}
@@ -187,7 +187,7 @@ export function MyPage() {
       {st.savedRoutineCount > 0 && (
         <>
           <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:18px 2px 8px')}>{st.t.routineTitle}</div>
-          <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:13px;font-weight:500')}>
+          <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;font-weight:500')}>
             {st.a.savedRoutines(st.savedRoutineCount)}
           </div>
         </>
@@ -197,13 +197,13 @@ export function MyPage() {
       <OrderHistory />
 
       <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:16px;margin:18px 2px 8px')}>{st.t.settings}</div>
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;font-size:13px')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;font-size:13px')}>
         <div style={s('padding:13px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)')}>
           <span>{st.t.language}</span>
           <select
             value={st.lang}
             onChange={(e) => st.setLang(e.target.value as Lang)}
-            style={s('border:1px solid var(--line-2);border-radius:4px;padding:6px 8px;font-size:12px;font-weight:500;background:var(--surface);outline:none;cursor:pointer')}
+            style={s('border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;font-weight:500;background:var(--surface);outline:none;cursor:pointer')}
           >
             {langOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.full}</option>
@@ -215,7 +215,7 @@ export function MyPage() {
           <select
             value={st.currency}
             onChange={(e) => st.setCurrency(e.target.value)}
-            style={s('border:1px solid var(--line-2);border-radius:4px;padding:6px 8px;font-size:12px;font-weight:500;background:var(--surface);outline:none;cursor:pointer')}
+            style={s('border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;font-weight:500;background:var(--surface);outline:none;cursor:pointer')}
           >
             {st.currencyOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -236,7 +236,7 @@ export function MyPage() {
 
       <div
         onClick={st.goSupport}
-        style={s('cursor:pointer;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:500')}
+        style={s('cursor:pointer;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:500')}
       >
         <span>💬 {st.a.support}</span>
         <span style={s('color:var(--ink-4)')}>→</span>
@@ -244,7 +244,7 @@ export function MyPage() {
 
       <div
         onClick={st.signOut}
-        style={s('cursor:pointer;margin-top:10px;border:1px solid var(--line-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
+        style={s('cursor:pointer;margin-top:10px;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500;color:var(--ink-3);background:var(--surface)')}
       >
         {st.a.logOut}
       </div>
@@ -278,7 +278,7 @@ function Withdraw() {
 
   if (st.deletionPending) {
     return (
-      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:4px;padding:14px 16px;margin-top:20px')}>
+      <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:14px 16px;margin-top:20px')}>
         <div style={s('font-size:13px;font-weight:500;color:var(--warn)')}>탈퇴 요청 처리 중</div>
         <div style={s('font-size:12px;color:var(--warn);margin-top:6px;line-height:1.6')}>
           요청이 접수되었습니다. 배송 중인 주문이 있는지 확인한 뒤 처리해드립니다.
@@ -287,7 +287,7 @@ function Withdraw() {
         </div>
         <div
           onClick={st.cancelDeletion}
-          style={s('cursor:pointer;margin-top:12px;background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:11px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-2)')}
+          style={s('cursor:pointer;margin-top:12px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:11px;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink-2)')}
         >
           탈퇴 요청 취소
         </div>
@@ -309,7 +309,7 @@ function Withdraw() {
   }
 
   return (
-    <div style={s('background:var(--surface);border:1px solid var(--warn-mid);border-radius:4px;padding:16px;margin-top:20px')}>
+    <div style={s('background:var(--surface);border:1px solid var(--warn-mid);border-radius:var(--radius-sm);padding:16px;margin-top:20px')}>
       <div style={s('font-size:13.5px;font-weight:500;color:var(--warn)')}>정말 탈퇴하시겠어요?</div>
 
       <div style={s('font-size:12px;color:var(--ink-2);margin-top:10px;line-height:1.7')}>
@@ -327,7 +327,7 @@ function Withdraw() {
         끊긴 상태로 보관되며, 로그인해서 볼 수는 없습니다.
       </div>
 
-      <div style={s('background:var(--surface-2);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--warn);line-height:1.5')}>
+      <div style={s('background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--warn);line-height:1.5')}>
         보유하신 포인트는 즉시 소멸하며 복구되지 않습니다.
       </div>
 
@@ -339,13 +339,13 @@ function Withdraw() {
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="더 나은 서비스를 만드는 데 쓰겠습니다"
-          style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:10px 12px;font-size:13px;background:var(--surface);outline:none')}
+          style={s('width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;background:var(--surface);outline:none')}
         />
       </div>
 
       <div
         onClick={() => st.requestDeletion(reason.trim())}
-        style={s('cursor:pointer;margin-top:14px;background:var(--warn);color:var(--on-dark);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}
+        style={s('cursor:pointer;margin-top:14px;background:var(--warn);color:var(--on-dark);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500')}
       >
         탈퇴 요청하기
       </div>

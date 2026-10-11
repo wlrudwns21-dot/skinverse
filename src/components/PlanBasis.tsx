@@ -3,7 +3,7 @@ import { metricDefs } from '../data/skin'
 import type { Lang, MetricKey, Weather } from '../data/types'
 import type { RoutinePlan } from '../routine/rules'
 import { s } from '../lib/css'
-import { KICKER, RULE } from '../lib/ui'
+import { CARD, KICKER } from '../lib/ui'
 
 /**
  * What the routine was actually decided from.
@@ -97,11 +97,13 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
   const b = plan.basis
 
   return (
-    <div>
-      <div style={s(RULE)} />
+    // A card rather than a rule and some padding: this is a disclosure, and a
+    // disclosure needs a visible edge for the reader to understand that what
+    // opens belongs to what they tapped.
+    <div style={s(`overflow:hidden;${CARD}`)}>
       <div
         onClick={() => setOpen(!open)}
-        style={s('cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:16px 0')}
+        style={s('cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:16px')}
       >
         <div style={s('min-width:0')}>
           <div style={s('font-size:13.5px')}>{t.title}</div>
@@ -113,7 +115,7 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
       </div>
 
       {open && (
-        <div style={s('animation:rise .25s ease both')}>
+        <div style={s('animation:rise .25s ease both;border-top:1px solid var(--line);padding:0 16px 18px')}>
           {/* What was measured outside. */}
           <div style={s(`${KICKER};margin-top:16px`)}>
             {t.weatherTitle}
@@ -136,10 +138,12 @@ export function PlanBasis({ plan, weather, lang, t }: PlanBasisProps) {
           </div>
 
           <div style={s(
-            'font-size:11.5px;line-height:1.55;margin-top:10px;border-radius:4px;padding:9px 12px;' +
+            'font-size:11.5px;line-height:1.55;margin-top:10px;border-radius:var(--radius-sm);padding:9px 12px;' +
+              // Both grounds are the inset tone now — on a white card the
+              // "no" case was painting white on white and losing its box.
               (b.occlusive
-                ? 'background:var(--surface-2);color:var(--link)'
-                : 'background:var(--surface);color:var(--ink-2)'),
+                ? 'background:var(--panel);color:var(--on-panel)'
+                : 'background:var(--surface-2);color:var(--ink-2)'),
           )}>
             {b.occlusive ? t.occlusiveYes : t.occlusiveNo}
           </div>

@@ -127,7 +127,7 @@ export function Ingredients() {
   const stored = stats?.stored ?? 0
   const anyBusy = busy !== null
   const btn = (kind: 'ghost' | 'solid' | 'warn', disabled: boolean) => {
-    const base = 'border-radius:4px;padding:9px 16px;font-size:12.5px;font-weight:500;' +
+    const base = 'border-radius:var(--radius-sm);padding:9px 16px;font-size:12.5px;font-weight:500;' +
       'cursor:' + (disabled ? 'default' : 'pointer') + ';opacity:' + (disabled ? '.5' : '1') + ';'
     if (kind === 'solid') return s(base + 'border:none;background:var(--accent);color:var(--on-accent)')
     if (kind === 'warn') return s(base + 'border:1px solid var(--warn-mid);background:var(--surface);color:var(--warn)')
@@ -154,7 +154,7 @@ export function Ingredients() {
           ['CAS번호 있음', pct(stats?.withCas ?? 0), (stats?.withCas ?? 0).toLocaleString() + '건'],
           ['설명 작성됨', pct(stats?.withBlurb ?? 0), (stats?.withBlurb ?? 0).toLocaleString() + '건'],
         ] as [string, string, string][]).map(([label, value, sub]) => (
-          <div key={label} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px')}>
+          <div key={label} style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px')}>
             <div style={s('font-size:11.5px;color:var(--ink-3)')}>{label}</div>
             <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:21px;margin-top:4px')}>{value}</div>
             {sub && <div style={s('font-size:11px;color:var(--ink-4);margin-top:2px')}>{sub}</div>}
@@ -175,7 +175,7 @@ export function Ingredients() {
           const from = resume[panel.id]
           const mine = busy === panel.id
           return (
-            <div key={panel.id} style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px')}>
+            <div key={panel.id} style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px')}>
               <b style={s('font-size:14px')}>{panel.title}</b>
               <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:4px;line-height:1.6')}>
                 {panel.note}
@@ -199,7 +199,7 @@ export function Ingredients() {
               </div>
 
               {info?.endpoint && (
-                <div style={s('margin-top:10px;background:var(--surface);border-radius:4px;padding:8px 11px;font-size:11px;color:var(--link);word-break:break-all;line-height:1.5')}>
+                <div style={s('margin-top:10px;background:var(--surface);border-radius:var(--radius-sm);padding:8px 11px;font-size:11px;color:var(--link);word-break:break-all;line-height:1.5')}>
                   응답한 주소 {info.endpoint}
                 </div>
               )}
@@ -207,7 +207,7 @@ export function Ingredients() {
                   restricted register's schema was a guess until now, and this is
                   the evidence for correcting it. */}
               {info?.fields && info.fields.length > 0 && (
-                <div style={s('margin-top:6px;background:var(--surface);border-radius:4px;padding:8px 11px;font-size:11px;color:var(--ink-2);word-break:break-all;line-height:1.5')}>
+                <div style={s('margin-top:6px;background:var(--surface);border-radius:var(--radius-sm);padding:8px 11px;font-size:11px;color:var(--ink-2);word-break:break-all;line-height:1.5')}>
                   응답 필드 {info.fields.join(', ')}
                 </div>
               )}
@@ -217,7 +217,7 @@ export function Ingredients() {
       </div>
 
       {log.length > 0 && (
-        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:6px')}>
+        <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:6px')}>
           {log.map((line, i) => (
             <div key={i} style={s('font-size:11.5px;color:' + (i === 0 ? 'var(--ink-2)' : 'var(--ink-4)') + ';line-height:1.6;white-space:pre-wrap;word-break:break-all')}>
               {line}
@@ -227,7 +227,7 @@ export function Ingredients() {
       )}
 
       {/* ── lookup ─────────────────────────────────────────────────────── */}
-      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-top:12px')}>
+      <div style={s('background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-top:12px')}>
         <b style={s('font-size:14px')}>성분 찾기</b>
         <div style={s('font-size:11.5px;color:var(--ink-3);margin-top:4px;line-height:1.6')}>
           띄어쓰기·하이픈·괄호는 무시하고 대조합니다. <span style={s('color:var(--ink-4)')}>예: 1,2-헥산다이올 = 1,2 헥산다이올</span>
@@ -239,7 +239,7 @@ export function Ingredients() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') void search() }}
             placeholder="성분명 (예: 나이아신아마이드)"
-            style={s('flex:1;min-width:180px;border:1px solid var(--line-2);border-radius:4px;padding:9px 12px;font-size:13px;font-family:inherit')}
+            style={s('flex:1;min-width:180px;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:9px 12px;font-size:13px;font-family:inherit')}
           />
           <button onClick={() => void search()} style={btn('ghost', false)}>찾기</button>
         </div>
@@ -263,7 +263,7 @@ export function Ingredients() {
             </div>
 
             {h.restrictions.length > 0 && (
-              <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:8px')}>
+              <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:10px 12px;margin-top:8px')}>
                 <b style={s('font-size:11.5px;color:var(--warn)')}>
                   사용제한 {h.restrictions.length}건 · {countryCount(h)}개 국가
                 </b>

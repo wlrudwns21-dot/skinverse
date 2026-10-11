@@ -3,7 +3,7 @@ import { s } from '../lib/css'
 import { useStore } from '../store/StoreContext'
 import * as support from '../support/remote'
 
-const bubbleBase = 'max-width:80%;border-radius:4px;padding:11px 13px;font-size:13px;line-height:1.55;white-space:pre-wrap'
+const bubbleBase = 'max-width:80%;border-radius:var(--radius-sm);padding:11px 13px;font-size:13px;line-height:1.55;white-space:pre-wrap'
 
 function Bubble({ msg, label }: { msg: support.SupportMessage; label: string }) {
   const mine = msg.sender === 'member'
@@ -79,7 +79,7 @@ export function Support() {
       : status === 'bot' ? 'background:var(--surface-2);color:var(--viz-4)'
       : 'background:var(--surface-2);color:var(--ink-3)'
     return (
-      <span style={s('font-size:10.5px;font-weight:500;border-radius:6px;padding:3px 8px;' + color)}>
+      <span style={s('font-size:10.5px;font-weight:500;border-radius:var(--radius-sm);padding:3px 8px;' + color)}>
         {a.supportStatus[status]}
       </span>
     )
@@ -110,11 +110,11 @@ export function Support() {
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') void send() }}
             placeholder={a.supportPlaceholder}
-            style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid var(--line-2);border-radius:3px;padding:12px 16px;font-size:13px;background:var(--surface);outline:none')}
+            style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;background:var(--surface);outline:none')}
           />
           <div
             onClick={() => void send()}
-            style={s(`cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
+            style={s(`cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
           >
             {a.supportSend}
           </div>
@@ -137,11 +137,11 @@ export function Support() {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') void send() }}
           placeholder={a.supportPlaceholder}
-          style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid var(--line-2);border-radius:3px;padding:12px 16px;font-size:13px;background:var(--surface);outline:none')}
+          style={s('flex:1;min-width:0;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;background:var(--surface);outline:none')}
         />
         <div
           onClick={() => void send()}
-          style={s(`cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
+          style={s(`cursor:pointer;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:12px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:${busy ? '.6' : '1'}`)}
         >
           {a.supportSend}
         </div>
@@ -157,7 +157,7 @@ export function Support() {
               <div
                 key={f.id}
                 onClick={() => { setDraft(support.localized(f.title, st.lang)); }}
-                style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px')}
+                style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px')}
               >
                 <span>{support.localized(f.title, st.lang)}</span>
                 <span style={s('color:var(--ink-4);flex-shrink:0')}>→</span>
@@ -174,7 +174,7 @@ export function Support() {
             <div
               key={t.id}
               onClick={() => setOpenId(t.id)}
-              style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px')}
+              style={s('cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px')}
             >
               <div style={s('display:flex;justify-content:space-between;align-items:flex-start;gap:10px')}>
                 <div style={s('font-size:13px;font-weight:500;line-height:1.4;min-width:0')}>{t.subject}</div>
@@ -187,7 +187,7 @@ export function Support() {
           ))}
         </div>
       ) : (
-        <div style={s('border:1px dashed var(--line-2);border-radius:4px;padding:18px;text-align:center;font-size:12.5px;color:var(--ink-3)')}>
+        <div style={s('border:1px dashed var(--line-2);border-radius:var(--radius-sm);padding:18px;text-align:center;font-size:12.5px;color:var(--ink-3)')}>
           {a.supportEmpty}
         </div>
       )}

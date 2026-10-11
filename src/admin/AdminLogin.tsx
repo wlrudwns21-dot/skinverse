@@ -7,7 +7,7 @@ import { useAdmin } from './AdminContext'
 import { WORDMARK } from '../data/brand'
 
 const field =
-  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:4px;padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
+  'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;background:var(--surface);outline:none'
 const label = 'font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:0.06em;margin-bottom:5px'
 
 /**
@@ -39,7 +39,7 @@ const keepNote = (note: string) => {
 function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div style={s('min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--surface-2)')}>
-      <div style={s('width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:28px 24px;box-shadow:0 8px 40px rgba(60,45,25,0.10)')}>
+      <div style={s('width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:28px 24px;box-shadow:0 8px 40px rgba(60,45,25,0.10)')}>
         <div style={s('font-family:Marcellus,"Noto Serif KR",serif;font-size:21px;letter-spacing:0.06em')}>{WORDMARK}</div>
         <div style={s('font-size:10px;letter-spacing:0.14em;color:var(--ink-3);margin-top:3px')}>ADMIN CONSOLE · 관리자</div>
         <div style={s('height:1px;background:var(--surface-2);margin:18px 0')} />
@@ -97,7 +97,7 @@ export function AdminLogin() {
             <b>{admin.email}</b> 계정으로 운영자 신청이 접수되었습니다. 마스터 관리자가 승인하면 바로
             이용하실 수 있습니다.
           </div>
-          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
+          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500')}>
             로그아웃
           </div>
           <a href="/" style={s('display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}>← 스토어로 돌아가기</a>
@@ -113,7 +113,7 @@ export function AdminLogin() {
             <b>{admin.email}</b> 계정의 운영자 신청은 승인되지 않았습니다. 다시 신청하려면 마스터
             관리자에게 문의해주세요.
           </div>
-          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}>
+          <div onClick={admin.signOut} style={s('cursor:pointer;margin-top:20px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500')}>
             로그아웃
           </div>
           <a href="/" style={s('display:block;text-align:center;font-size:12px;color:var(--ink-3);margin-top:14px')}>← 스토어로 돌아가기</a>
@@ -145,7 +145,7 @@ export function AdminLogin() {
         {/* Every application is a plain admin. Master is granted afterwards by
             a master, never asked for here — which is also what the database
             enforces, so this line is a description rather than a promise. */}
-        <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--ink-3);line-height:1.5')}>
+        <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--ink-3);line-height:1.5')}>
           모든 신청은 <b>일반 관리자</b>로 접수됩니다. 마스터 권한은 승인 후 마스터 관리자가 부여합니다.
         </div>
 
@@ -158,7 +158,7 @@ export function AdminLogin() {
                   void admin.apply(note.trim())
                 }
           }
-          style={s(`cursor:${admin.applying ? 'default' : 'pointer'};margin-top:16px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500;opacity:${admin.applying ? '.6' : '1'}`)}
+          style={s(`cursor:${admin.applying ? 'default' : 'pointer'};margin-top:16px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500;opacity:${admin.applying ? '.6' : '1'}`)}
         >
           {admin.applying ? '신청 중…' : '운영자 신청하기'}
         </div>
@@ -187,7 +187,7 @@ export function AdminLogin() {
             setPassword('')
             setConfirm('')
           }}
-          style={s('cursor:pointer;margin-top:20px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:13px;text-align:center;font-size:13px;font-weight:500')}
+          style={s('cursor:pointer;margin-top:20px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:13px;text-align:center;font-size:13px;font-weight:500')}
         >
           로그인하러 가기
         </div>
@@ -251,7 +251,7 @@ export function AdminLogin() {
 
   return (
     <Frame>
-      <div style={s('display:flex;gap:6px;background:var(--surface-2);border-radius:3px;padding:4px;margin-bottom:18px')}>
+      <div style={s('display:flex;gap:6px;background:var(--surface-2);border-radius:var(--radius-sm);padding:4px;margin-bottom:18px')}>
         {(['login', 'signup'] as const).map((m) => (
           <div
             key={m}
@@ -260,7 +260,7 @@ export function AdminLogin() {
               setError('')
             }}
             style={s(
-              'cursor:pointer;flex:1;text-align:center;border-radius:3px;padding:9px 0;font-size:12.5px;font-weight:500;' +
+              'cursor:pointer;flex:1;text-align:center;border-radius:var(--radius-sm);padding:9px 0;font-size:12.5px;font-weight:500;' +
                 (mode === m ? 'background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(60,45,25,0.12)' : 'color:var(--ink-3)'),
             )}
           >
@@ -347,7 +347,7 @@ export function AdminLogin() {
       </div>
 
       {isSignUp && (
-        <div style={s('background:var(--surface);border-radius:4px;padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--ink-3);line-height:1.5')}>
+        <div style={s('background:var(--surface);border-radius:var(--radius-sm);padding:10px 12px;margin-top:12px;font-size:11.5px;color:var(--ink-3);line-height:1.5')}>
           모든 신청은 <b>일반 관리자</b>로 접수됩니다. 마스터 권한은 승인 후 마스터 관리자가 부여합니다.
           <br />
           이 계정은 스토어 회원가입과는 <b>별개</b>입니다.
@@ -355,7 +355,7 @@ export function AdminLogin() {
       )}
 
       {error && (
-        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);color:var(--warn);border-radius:4px;padding:11px 14px;margin-top:12px;font-size:12.5px')}>
+        <div style={s('background:var(--surface-2);border:1px solid var(--warn-mid);color:var(--warn);border-radius:var(--radius-sm);padding:11px 14px;margin-top:12px;font-size:12.5px')}>
           {error}
         </div>
       )}
@@ -368,7 +368,7 @@ export function AdminLogin() {
 
       <div
         onClick={busy ? undefined : submit}
-        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:3px;padding:14px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
+        style={s(`cursor:${busy ? 'default' : 'pointer'};margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:var(--radius-sm);padding:14px;text-align:center;font-size:14px;font-weight:500;opacity:${busy ? '.6' : '1'}`)}
       >
         {busy ? '확인 중…' : isSignUp ? '가입하고 신청하기' : '로그인'}
       </div>

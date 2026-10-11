@@ -234,7 +234,7 @@ export function CameraCapture({ open, onCapture, onClose, onUsePicker, t }: Came
           <div style={s('font-size:14px;line-height:1.6;color:var(--on-dark-2);max-width:300px')}>{message}</div>
           <div
             onClick={() => { onClose(); onUsePicker() }}
-            style={s('cursor:pointer;background:var(--surface-2);color:var(--ink);border-radius:3px;padding:13px 22px;font-size:13px;font-weight:500')}
+            style={s('cursor:pointer;background:var(--surface-2);color:var(--ink);border-radius:var(--radius-sm);padding:13px 22px;font-size:13px;font-weight:500')}
           >
             {t.usePicker}
           </div>

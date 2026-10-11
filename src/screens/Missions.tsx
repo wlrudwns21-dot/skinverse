@@ -1,7 +1,7 @@
 import { SectionHead } from '../components/SectionHead'
 import type { MissionView } from '../store/StoreContext'
 import { s } from '../lib/css'
-import { DISPLAY, EYEBROW, GUTTER, NUMERAL, RULE } from '../lib/ui'
+import { CARD, DISPLAY, EYEBROW, GUTTER, NUMERAL, SECTION } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 const countDone = (list: MissionView[]): number => list.filter((m) => m.mark).length
@@ -27,16 +27,19 @@ function pointsLeft(list: MissionView[]): { text: string; dim?: boolean } | unde
  * hairline between each, and the only thing that changes when a mission is
  * done is the box on the left and the weight of its text.
  */
-function MissionRow({ m }: { m: MissionView }) {
+function MissionRow({ m, first }: { m: MissionView; first: boolean }) {
   const done = Boolean(m.mark)
   return (
     <div
       onClick={m.claim}
-      style={s('cursor:pointer;display:flex;align-items:center;gap:13px;padding:14px 0;border-top:1px solid var(--line)')}
+      style={s(
+        'cursor:pointer;display:flex;align-items:center;gap:13px;padding:14px 16px' +
+          (first ? '' : ';border-top:1px solid var(--line)'),
+      )}
     >
       <div
         style={s(
-          'width:18px;height:18px;border-radius:2px;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;' +
+          'width:18px;height:18px;border-radius:var(--radius-sm);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;' +
             (done
               ? 'background:var(--accent);color:var(--on-accent)'
               : 'border:1px solid var(--line-2)'),
@@ -58,11 +61,11 @@ export function Missions() {
   const st = useStore()
 
   return (
-    <div style={s('animation:rise .4s ease both;padding-bottom:4px')}>
+    <div style={s('animation:rise .4s ease both;padding-bottom:28px')}>
       {/* The balance, full bleed. It is the one number anyone opens this screen
           for, so it gets the width of the screen and the weight of a reading
           rather than a card's worth of padding around it. */}
-      <div style={s('background:var(--panel);color:var(--on-panel);padding:24px 20px 22px')}>
+      <div style={s('background:var(--panel);color:var(--on-panel);padding:24px 20px 26px')}>
         <div style={s('display:flex;align-items:flex-start;justify-content:space-between;gap:12px')}>
           <div style={s('min-width:0')}>
             <div style={s(EYEBROW)}>{st.t.glowPts}</div>
@@ -83,56 +86,61 @@ export function Missions() {
           <span>{st.levelName}</span>
           <span>{st.nextLevelS}</span>
         </div>
-        <div style={s('height:4px;border-radius:2px;background:var(--on-panel-track);margin-top:8px;overflow:hidden')}>
-          <div style={s(`height:4px;border-radius:2px;width:${st.levelPct};background:var(--on-panel);transition:width .35s ease`)} />
+        <div style={s('height:4px;border-radius:var(--radius-sm);background:var(--on-panel-track);margin-top:8px;overflow:hidden')}>
+          <div style={s(`height:4px;border-radius:var(--radius-sm);width:${st.levelPct};background:var(--on-panel);transition:width .35s ease`)} />
         </div>
       </div>
 
-      <div style={s(GUTTER)}>
+      <div style={s(`${GUTTER};${SECTION}`)}>
         {/* Each block says how far through it you are, and draws it. The
             points still to be had sit on the right, because that is the
-            question someone opening this screen is actually asking. */}
+            question someone opening this screen is actually asking. The rows
+            then sit inside one card, so a block is visibly one list rather
+            than four lines that happen to follow a heading. */}
         <SectionHead
           label={st.t.daily}
           done={countDone(st.dailyList)}
           total={st.dailyList.length}
           meta={pointsLeft(st.dailyList)}
         />
-        <div style={s('margin-top:8px')}>
-          {st.dailyList.map((m) => <MissionRow key={m.label} m={m} />)}
+        <div style={s(`margin-top:10px;overflow:hidden;${CARD}`)}>
+          {st.dailyList.map((m, i) => <MissionRow key={m.label} m={m} first={i === 0} />)}
         </div>
+      </div>
 
+      <div style={s(`${GUTTER};${SECTION}`)}>
         <SectionHead
           label={st.t.weekly}
           done={countDone(st.weeklyList)}
           total={st.weeklyList.length}
           meta={pointsLeft(st.weeklyList)}
         />
-        <div style={s('margin-top:8px')}>
-          {st.weeklyList.map((m) => <MissionRow key={m.label} m={m} />)}
+        <div style={s(`margin-top:10px;overflow:hidden;${CARD}`)}>
+          {st.weeklyList.map((m, i) => <MissionRow key={m.label} m={m} first={i === 0} />)}
         </div>
-
-        <SectionHead label={st.t.redeem} />
-        <div style={s('height:14px')} />
       </div>
 
-      {/* What the points are for. Two across, with the cost under the name the
-          way a price sits under a product, because that is what this is. */}
-      <div style={s(`${GUTTER};display:grid;grid-template-columns:1fr 1fr;gap:22px 13px`)}>
-        {st.rewardList.map((r) => (
-          <div key={r.label}>
-            <div style={s(RULE)} />
-            <div style={s(`${DISPLAY};font-size:14px;line-height:1.45;padding:12px 0 11px;min-height:40px`)}>
-              {r.label}
+      {/* What the points are for. Two across, each one a card with the cost
+          under the name the way a price sits under a product, because that is
+          what this is. They used to be four names under four hairlines, which
+          read as a table of contents rather than as things you can have. */}
+      <div style={s(`${GUTTER};${SECTION}`)}>
+        <SectionHead label={st.t.redeem} />
+        <div style={s('margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:12px')}>
+          {st.rewardList.map((r) => (
+            <div key={r.label} style={s(`padding:14px;display:flex;flex-direction:column;${CARD}`)}>
+              <div style={s(`${DISPLAY};font-size:14px;line-height:1.45;flex:1;min-height:40px`)}>
+                {r.label}
+              </div>
+              <div
+                onClick={r.redeem}
+                style={s(`margin-top:12px;text-align:center;border-radius:var(--radius-sm);padding:10px;font-size:11.5px;font-weight:500;letter-spacing:0.04em;${r.btnStyle}`)}
+              >
+                {r.btn}
+              </div>
             </div>
-            <div
-              onClick={r.redeem}
-              style={s(`text-align:center;border-radius:3px;padding:9px;font-size:11.5px;font-weight:500;letter-spacing:0.04em;${r.btnStyle}`)}
-            >
-              {r.btn}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
