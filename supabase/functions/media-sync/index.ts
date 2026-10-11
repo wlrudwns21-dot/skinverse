@@ -70,8 +70,55 @@ const MEDIA_PATH =
 const REF = /^[A-Za-z0-9._/-]{1,100}$/
 
 const SUPABASE_URL = (Deno.env.get('SUPABASE_URL') ?? '').replace(/\/+$/, '')
-const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-const TOKEN = Deno.env.get('MEDIA_SYNC_TOKEN') ?? ''
+
+/** A legacy `anon`/`service_role` key: three base64url segments of a JWT. */
+const looksLikeJwt = (k: string) => /^eyJ[\w-]+\.[\w-]+\.[\w-]+$/.test(k)
+
+/**
+ * How to authenticate a write to Storage.
+ *
+ * This project has moved to the new API keys, and they are not JWTs. Sending
+ * one on `Authorization: Bearer` makes the platform try to parse it as a JWT
+ * and refuse the request — which is exactly what happened on the first run:
+ * every upload came back `403 Invalid Compact JWS`. The new keys go on the
+ * `apikey` header and nowhere else.
+ *
+ * Both key families are still live here, so rather than hard-coding either
+ * convention this picks whichever key the runtime actually provides and sends
+ * it the way that key wants to be sent. A legacy JWT gets both headers, which
+ * is what every other function in this project does and is known to work; a
+ * new secret key gets `apikey` alone.
+ */
+function storageAuth(): { headers: Record<string, string>; how: string } | null {
+  const named = Deno.env.get('SUPABASE_SECRET_KEYS')
+  if (named) {
+    try {
+      const keys = JSON.parse(named) as Record<string, string>
+      const key = (keys['default'] ?? Object.values(keys)[0] ?? '').trim()
+      if (key) return { headers: { apikey: key }, how: 'secret key / apikey' }
+    } catch {
+      // Malformed JSON: fall through to the legacy key rather than give up.
+    }
+  }
+
+  const legacy = (Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '').trim()
+  if (!legacy) return null
+  return looksLikeJwt(legacy)
+    ? {
+        headers: { apikey: legacy, Authorization: `Bearer ${legacy}` },
+        how: 'service_role JWT / apikey + bearer',
+      }
+    : { headers: { apikey: legacy }, how: 'service_role (not a JWT) / apikey' }
+}
+
+const AUTH = storageAuth()
+
+/**
+ * Trimmed, because the value is pasted into a dashboard field by hand and a
+ * trailing newline is invisible there and fatal here. The owner's first attempt
+ * failed on exactly this class of problem.
+ */
+const TOKEN = (Deno.env.get('MEDIA_SYNC_TOKEN') ?? '').trim()
 
 /** Length-independent comparison, so the token cannot be guessed a byte at a time. */
 function tokenMatches(given: string): boolean {
@@ -87,6 +134,25 @@ function tokenMatches(given: string): boolean {
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+/**
+ * Every non-ASCII character as a numeric reference, so the response is pure
+ * ASCII and cannot be decoded wrongly.
+ *
+ * `charset=utf-8` is set on both the header and a meta tag and the Korean still
+ * arrived as mojibake for the owner. Rather than keep guessing which layer
+ * dropped it, this removes the question: there are no bytes above 127 left to
+ * misinterpret, under any charset. Written in Korean in the source and
+ * converted on the way out, so the source stays readable.
+ *
+ * `Array.from` walks code points, not UTF-16 units, so a character outside the
+ * BMP survives as one reference instead of two broken halves.
+ */
+const ncr = (s: string) =>
+  Array.from(s, (c) => {
+    const n = c.codePointAt(0) as number
+    return n > 127 ? `&#${n};` : c
+  }).join('')
 
 /** One page of the progress report. Korean, because the reader is the owner. */
 function page(title: string, body: string, refreshTo?: string, status = 200): Response {
@@ -120,7 +186,7 @@ ${refreshTo ? `<meta http-equiv="refresh" content="1;url=${esc(refreshTo)}">` : 
 <h1>${esc(title)}</h1>
 ${body}
 </body></html>`
-  return new Response(html, {
+  return new Response(ncr(html), {
     status,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
   })
@@ -156,7 +222,12 @@ async function loadManifest(ref: string): Promise<Manifest> {
 }
 
 /** Fetch one file from the repository and put it in the bucket. */
-async function move(path: string, size: number, ref: string): Promise<string | null> {
+async function move(
+  path: string,
+  size: number,
+  ref: string,
+  auth: Record<string, string>,
+): Promise<string | null> {
   const from = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${ref}/public/${path}`
   const got = await fetch(from, { headers: { 'User-Agent': 'skinverse-media-sync' } })
   if (!got.ok) return `${path} — 깃허브 ${got.status}`
@@ -171,7 +242,7 @@ async function move(path: string, size: number, ref: string): Promise<string | n
   const put = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${SERVICE_KEY}`,
+      ...auth,
       'Content-Type': 'image/webp',
       'x-upsert': 'true',
       // The path contains no version, but the contents of a given path never
@@ -188,6 +259,7 @@ async function move(path: string, size: number, ref: string): Promise<string | n
 async function runBatch(
   slice: [string, number][],
   ref: string,
+  auth: Record<string, string>,
 ): Promise<{ done: number; errors: string[] }> {
   let next = 0
   let done = 0
@@ -200,7 +272,7 @@ async function runBatch(
       if (i >= slice.length) return
       const [path, size] = slice[i]
       try {
-        const err = await move(path, size, ref)
+        const err = await move(path, size, ref, auth)
         if (err) errors.push(err)
         else done += 1
       } catch (e) {
@@ -232,7 +304,7 @@ Deno.serve(async (req: Request) => {
       `<p>주소 끝의 <code>token=</code> 값이 등록한 비밀값과 다릅니다.</p>`,
     )
   }
-  if (!SUPABASE_URL || !SERVICE_KEY) {
+  if (!SUPABASE_URL || !AUTH) {
     return fail(500, '설정 오류', `<p>함수에 저장소 접근 정보가 없습니다.</p>`)
   }
 
@@ -289,7 +361,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const slice = manifest.files.slice(from, from + BATCH)
-  const { done, errors } = await runBatch(slice, ref)
+  const { done, errors } = await runBatch(slice, ref, AUTH.headers)
 
   /**
    * Where the next request starts.
@@ -315,7 +387,8 @@ Deno.serve(async (req: Request) => {
        <ul>${errors.slice(0, 10).map((e) => `<li><code>${esc(e)}</code></li>`).join('')}</ul>
        ${errors.length > 10 ? `<p class="muted">그 외 ${errors.length - 10}장</p>` : ''}
        <a class="btn" href="${esc(here(resume))}">이어서 하기</a>
-       <p class="muted">계속 같은 곳에서 멈추면 이 화면을 캡처해서 클로드에게 보여주세요.</p>`,
+       <p class="muted">계속 같은 곳에서 멈추면 이 화면을 캡처해서 클로드에게 보여주세요.
+       인증 방식: <code>${esc(AUTH.how)}</code></p>`,
     )
   }
 
