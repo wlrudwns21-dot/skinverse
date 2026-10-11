@@ -1,0 +1,90 @@
+import { describe, expect, it } from 'vitest'
+import { SEED_CATALOG } from '../catalog/remote'
+import {
+  ANUA_DUTY_FREE,
+  AUTHORING_KRW_PER_USD,
+  DUTY_FREE_KRW_PER_USD,
+  authoredKrw,
+  dutyFreeUsd,
+  settledUsd,
+} from './dutyFreePrices'
+import { FALLBACK_RATES } from './fx'
+
+/**
+ * 이 표는 화면 캡처를 사람이 옮겨 적은 것이라, 숫자 하나를 잘못 봤을 수
+ * 있습니다. 그걸 잡는 게 첫 번째 테스트입니다.
+ *
+ * 면세점은 달러에 그날 환율을 곱하고 올림해서 원화를 씁니다. 그래서 두 숫자
+ * 사이에는 지켜야 할 관계가 있고, 16행이 **전부** 같은 환율 하나로 맞는다는
+ * 건 우연으로 일어나지 않습니다. 한 자리라도 잘못 읽었으면 그 행만 어긋납니다.
+ */
+describe('아누아 면세점 가격표', () => {
+  it('달러와 원화가 환율 하나로 전부 맞는다', () => {
+    for (const r of ANUA_DUTY_FREE) {
+      expect(Math.ceil(r.usd * DUTY_FREE_KRW_PER_USD), r.ko).toBe(r.krw)
+    }
+  })
+
+  it('16행이고, 같은 제품이 두 번 적혀 있지 않다', () => {
+    expect(ANUA_DUTY_FREE).toHaveLength(16)
+    expect(new Set(ANUA_DUTY_FREE.map((r) => r.ko)).size).toBe(16)
+  })
+
+  it('제품 id는 실제 카탈로그 id여야 한다', () => {
+    // 오타 난 id는 조용히 null을 돌려주고, 그러면 가격이 붙지 않은 채
+    // 등록됩니다. 적어둔 id는 전부 쓸 수 있는 id여야 합니다.
+    const known = new Set(SEED_CATALOG.products.map((p) => p.id))
+    // 아누아는 시드에 없고 DB에만 있으므로, 시드 제품에 아누아 가격이
+    // 붙는 일만 막으면 됩니다.
+    for (const r of ANUA_DUTY_FREE) {
+      if (r.productId) expect(known.has(r.productId), r.productId).toBe(false)
+    }
+    expect(dutyFreeUsd('an-pdrn-ha-capsule100-serum-30')).toBe(15.6)
+    expect(dutyFreeUsd('없는-제품')).toBeNull()
+  })
+})
+
+/**
+ * 면세점 달러를 우리 원화로 옮기는 규칙.
+ *
+ * 면세점 원화를 그대로 베끼면 안 되는 이유가 여기 있습니다: 그 원화는
+ * 1,339.2원 환율로 만들어졌고 우리 DB는 1,359.6원으로 되돌립니다. 20,892원을
+ * 그대로 넣으면 고객에게 $15.37이 찍힙니다 — 면세점가와 같다는 말이 거짓이
+ * 됩니다. 달러를 맞추는 쪽만 그 약속을 지킵니다.
+ */
+describe('면세점 달러 → 우리 원화', () => {
+  it('왕복해서 같은 달러로 돌아온다', () => {
+    for (const r of ANUA_DUTY_FREE) {
+      expect(settledUsd(authoredKrw(r.usd)), r.ko).toBe(r.usd)
+    }
+  })
+
+  it('면세점 원화를 그대로 쓰면 달러가 어긋난다 — 그래서 쓰지 않는다', () => {
+    const serum = ANUA_DUTY_FREE.find((r) => r.usd === 15.6)!
+    expect(settledUsd(serum.krw)).toBe(15.37)
+    expect(settledUsd(authoredKrw(serum.usd))).toBe(15.6)
+    expect(authoredKrw(15.6)).toBe(21210)
+  })
+
+  it('값이 아닌 입력에는 가격을 만들어내지 않는다', () => {
+    // 0을 돌려주면 `products_priced_when_active`가 막습니다. 아무 숫자나
+    // 지어내는 것보다 등록이 거절되는 편이 낫습니다.
+    expect(authoredKrw(0)).toBe(0)
+    expect(authoredKrw(-5)).toBe(0)
+    expect(authoredKrw(Number.NaN)).toBe(0)
+    expect(settledUsd(0)).toBe(0)
+    expect(settledUsd(10, 0)).toBe(0)
+  })
+
+  it('지금 팔고 있는 제품의 원화가 전부 제 달러로 돌아온다', () => {
+    // 규칙이 카탈로그와 다른 규칙이면 새 제품만 어긋난 가격으로 들어옵니다.
+    for (const p of SEED_CATALOG.products) {
+      expect(settledUsd(p.priceKrw), p.id).toBe(p.price)
+    }
+  })
+
+  it('계산에 쓰는 환율은 DB가 쓰는 환율이다', () => {
+    expect(AUTHORING_KRW_PER_USD).toBe(FALLBACK_RATES.USD.krwPerUnit)
+    expect(AUTHORING_KRW_PER_USD).not.toBe(DUTY_FREE_KRW_PER_USD)
+  })
+})
