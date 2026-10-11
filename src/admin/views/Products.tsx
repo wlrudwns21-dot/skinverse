@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { s } from '../../lib/css'
+import { mediaBase, mediaIsRemote } from '../../lib/media'
 import type { Lang, Localized } from '../../data/types'
 import type { ProductCopy } from '../../catalog/remote'
 import { useAdmin } from '../AdminContext'
@@ -242,6 +243,14 @@ export function Products() {
           재고 5개 이하 <b style={s('color:var(--warn)')}>{admin.lowStockN}건</b>
           {waiting > 0 && <> · 전성분 대기 <b style={s('color:var(--warn)')}>{waiting}건</b></>}
         </div>
+      </div>
+
+      {/* Where the photographs are coming from. The first question when an
+          image is missing is whether the app is even looking in the right
+          place, and that is one environment variable the operator cannot see
+          from inside the browser otherwise. */}
+      <div style={s('font-size:11px;color:var(--ink-4);margin-top:6px;word-break:break-all')}>
+        이미지 출처 · {mediaIsRemote ? mediaBase : '이 사이트 (public/products)'}
       </div>
 
       <div style={s('display:flex;flex-direction:column;gap:10px;margin-top:14px')}>

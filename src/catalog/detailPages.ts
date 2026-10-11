@@ -1,3 +1,4 @@
+import { media } from '../lib/media'
 import type { Lang } from '../data/types'
 
 /**
@@ -125,7 +126,7 @@ export function detailTiles(id: string, lang: Lang, art: DetailArt | undefined =
   const tiles: DetailTile[] = []
   for (let top = 0, n = 0; top < total; top += TILE_H, n += 1) {
     tiles.push({
-      src: `/products/${id}/detail/${lang}/${n}.webp`,
+      src: media(`/products/${id}/detail/${lang}/${n}.webp`),
       w: art.w,
       h: Math.min(TILE_H, total - top),
     })

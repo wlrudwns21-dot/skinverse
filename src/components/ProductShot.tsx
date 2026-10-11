@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { s } from '../lib/css'
+import { media } from '../lib/media'
 
 export interface ProductShotProps {
   /** Path under `public/`, e.g. `/products/<id>/main.webp`. */
@@ -28,6 +29,7 @@ export interface ProductShotProps {
 export function ProductShot({ src, grad, alt, onClick, frame = '' }: ProductShotProps) {
   const [broken, setBroken] = useState(false)
   const show = Boolean(src) && !broken
+  const url = media(src ?? '')
 
   return (
     <div
@@ -40,7 +42,7 @@ export function ProductShot({ src, grad, alt, onClick, frame = '' }: ProductShot
     >
       {show && (
         <img
-          src={src}
+          src={url}
           alt={alt}
           loading="lazy"
           onError={() => setBroken(true)}
