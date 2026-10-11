@@ -77,7 +77,15 @@ export const ANUA_DUTY_FREE: DutyFreeRow[] = [
   { ko: 'PDRN 히알루론산 캡슐 100 세럼 50ml 리필 듀오 세트', usd: 42, krw: 56247 },
   { ko: 'PDRN 히알루론산 수분 클렌징 폼 150ml', usd: 6.6, krw: 8839 },
   { ko: 'PDRN 히알루론산 100 수분 크림 60ml', usd: 12.6, krw: 16874 },
-  { ko: '어성초 77 B3 싱크 토너블 세럼 30ml', usd: 12.6, krw: 16874, unsureName: true },
+  {
+    // Read off the capture as "싱크 토너블". The maker's own page says 징크
+    // (zinc) 트러블 — the screenshot was right about the price and wrong about
+    // two words, which is exactly what `unsureName` was for.
+    ko: '어성초 77 B3징크 트러블 세럼 30ml',
+    usd: 12.6,
+    krw: 16874,
+    productId: 'an-heartleaf77-b3zinc-serum-30',
+  },
   { ko: 'PDRN 100 히알루론산 패드 60매', usd: 9.6, krw: 12857 },
   { ko: '어성초 70 데일리 릴리프 로션 200ml', usd: 11.4, krw: 15267, unsureName: true },
   { ko: '선크림 기획세트 (36% 할인)', usd: 14.72, krw: 19714, unsureName: true },
