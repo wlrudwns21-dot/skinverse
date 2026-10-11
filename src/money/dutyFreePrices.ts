@@ -121,7 +121,13 @@ export const ANUA_DUTY_FREE: DutyFreeRow[] = [
  */
 export const DALBA_DUTY_FREE: DutyFreeRow[] = [
   { ko: '화이트 트러플 퍼스트 스프레이 세럼 100ml', usd: 14.06, krw: 18830, unsureName: true },
-  { ko: '워터풀 톤업 선크림 (퍼플) 50ml', usd: 15.84, krw: 21213, unsureName: true },
+  {
+    // 캡처에서 "(퍼플)"로 읽은 게 맞았습니다. 제조사 표기도 같습니다.
+    ko: '워터풀 톤업 선크림 (퍼플) 50ml',
+    usd: 15.84,
+    krw: 21213,
+    productId: 'da-waterfull-toneup-sun-purple-50',
+  },
   { ko: '워터풀 톤업 선크림 50ml', usd: 15.84, krw: 21213, unsureName: true },
   { ko: '[롯데단독] 비타 토닝 캡슐 세럼 나이아신아마이드 5퍼센트', usd: 20.9, krw: 27990, unsureName: true },
   { ko: '[롯데단독] 비타 토닝 캡슐 크림 나이아신아마이드 5퍼센트 55g', usd: 24.7, krw: 33079 },
