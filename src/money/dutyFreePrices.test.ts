@@ -3,7 +3,10 @@ import { SEED_CATALOG } from '../catalog/remote'
 import {
   ANUA_DUTY_FREE,
   AUTHORING_KRW_PER_USD,
+  DALBA_DUTY_FREE,
   DUTY_FREE_KRW_PER_USD,
+  DUTY_FREE_TABLES,
+  allDutyFreeRows,
   authoredKrw,
   dutyFreeUsd,
   settledUsd,
@@ -18,28 +21,51 @@ import { FALLBACK_RATES } from './fx'
  * 사이에는 지켜야 할 관계가 있고, 16행이 **전부** 같은 환율 하나로 맞는다는
  * 건 우연으로 일어나지 않습니다. 한 자리라도 잘못 읽었으면 그 행만 어긋납니다.
  */
-describe('아누아 면세점 가격표', () => {
+describe('면세점 가격표', () => {
   it('달러와 원화가 환율 하나로 전부 맞는다', () => {
-    for (const r of ANUA_DUTY_FREE) {
-      expect(Math.ceil(r.usd * DUTY_FREE_KRW_PER_USD), r.ko).toBe(r.krw)
+    // 두 캡처가 다른 날 다른 브랜드관에서 왔는데 같은 환율 하나로 맞습니다.
+    for (const [brand, rows] of Object.entries(DUTY_FREE_TABLES)) {
+      for (const r of rows) {
+        if (r.krw === undefined) continue
+        expect(Math.ceil(r.usd * DUTY_FREE_KRW_PER_USD), `${brand} ${r.ko}`).toBe(r.krw)
+      }
     }
   })
 
-  it('16행이고, 같은 제품이 두 번 적혀 있지 않다', () => {
+  it('원화를 읽지 못한 행은 딱 하나이고, 그 사실이 보인다', () => {
+    // 비워 두는 건 봐주는 게 아니라 기록입니다. 조용히 늘어나면 검산이
+    // 통과해도 의미가 없어지므로, 몇 개인지 여기에 못 박습니다.
+    const unread = allDutyFreeRows().filter((r) => r.krw === undefined)
+    expect(unread.map((r) => r.ko)).toEqual(['화이트 트러플 더블 세럼 아이 크림 70g'])
+  })
+
+  it('표마다 행 수가 맞고, 같은 제품이 두 번 적혀 있지 않다', () => {
     expect(ANUA_DUTY_FREE).toHaveLength(16)
-    expect(new Set(ANUA_DUTY_FREE.map((r) => r.ko)).size).toBe(16)
+    expect(DALBA_DUTY_FREE).toHaveLength(25)
+    for (const [brand, rows] of Object.entries(DUTY_FREE_TABLES)) {
+      expect(new Set(rows.map((r) => r.ko)).size, brand).toBe(rows.length)
+    }
+  })
+
+  it('가격은 양수여야 한다', () => {
+    for (const r of allDutyFreeRows()) expect(r.usd, r.ko).toBeGreaterThan(0)
   })
 
   it('제품 id는 실제 카탈로그 id여야 한다', () => {
     // 오타 난 id는 조용히 null을 돌려주고, 그러면 가격이 붙지 않은 채
     // 등록됩니다. 적어둔 id는 전부 쓸 수 있는 id여야 합니다.
     const known = new Set(SEED_CATALOG.products.map((p) => p.id))
-    // 아누아는 시드에 없고 DB에만 있으므로, 시드 제품에 아누아 가격이
-    // 붙는 일만 막으면 됩니다.
-    for (const r of ANUA_DUTY_FREE) {
+    // 아누아·달바는 시드에 없고 DB에만 있으므로, 시드 제품(에스트라)에 다른
+    // 브랜드 가격이 붙는 일만 막으면 됩니다.
+    for (const r of allDutyFreeRows()) {
       if (r.productId) expect(known.has(r.productId), r.productId).toBe(false)
     }
+    // 한 id가 두 표에 적히면 어느 가격이 이기는지가 순서에 달리게 됩니다.
+    const ids = allDutyFreeRows().flatMap((r) => (r.productId ? [r.productId] : []))
+    expect(new Set(ids).size).toBe(ids.length)
+
     expect(dutyFreeUsd('an-pdrn-ha-capsule100-serum-30')).toBe(15.6)
+    expect(dutyFreeUsd('an-pdrn-ha-cleansing-foam-150')).toBe(6.6)
     expect(dutyFreeUsd('없는-제품')).toBeNull()
   })
 })
@@ -54,14 +80,16 @@ describe('아누아 면세점 가격표', () => {
  */
 describe('면세점 달러 → 우리 원화', () => {
   it('왕복해서 같은 달러로 돌아온다', () => {
-    for (const r of ANUA_DUTY_FREE) {
+    // 두 표의 41행 전부. 센트 둘째 자리까지 있는 $14.06이나 $21.42 같은
+    // 값에서 어긋나기 쉬운 부분입니다.
+    for (const r of allDutyFreeRows()) {
       expect(settledUsd(authoredKrw(r.usd)), r.ko).toBe(r.usd)
     }
   })
 
   it('면세점 원화를 그대로 쓰면 달러가 어긋난다 — 그래서 쓰지 않는다', () => {
     const serum = ANUA_DUTY_FREE.find((r) => r.usd === 15.6)!
-    expect(settledUsd(serum.krw)).toBe(15.37)
+    expect(settledUsd(serum.krw!)).toBe(15.37)
     expect(settledUsd(authoredKrw(serum.usd))).toBe(15.6)
     expect(authoredKrw(15.6)).toBe(21210)
   })
