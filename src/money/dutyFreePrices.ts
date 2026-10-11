@@ -128,7 +128,15 @@ export const DALBA_DUTY_FREE: DutyFreeRow[] = [
     krw: 21213,
     productId: 'da-waterfull-toneup-sun-purple-50',
   },
-  { ko: '워터풀 톤업 선크림 50ml', usd: 15.84, krw: 21213, unsureName: true },
+  {
+    // 롯데 목록에는 색상 접미사 없이 올라와 있습니다. 제품 사진의 로즈골드
+    // 캡과 제조사 표기(핑크)로 확인했습니다 — 핑크가 색상 없는 원본 이름을
+    // 쓰고, 퍼플·블루가 접미사를 답니다.
+    ko: '워터풀 톤업 선크림 50ml (핑크)',
+    usd: 15.84,
+    krw: 21213,
+    productId: 'da-waterfull-toneup-sun-pink-50',
+  },
   { ko: '[롯데단독] 비타 토닝 캡슐 세럼 나이아신아마이드 5퍼센트', usd: 20.9, krw: 27990, unsureName: true },
   { ko: '[롯데단독] 비타 토닝 캡슐 크림 나이아신아마이드 5퍼센트 55g', usd: 24.7, krw: 33079 },
   { ko: '[롯데단독] 비타 토닝 브라이트닝 스프레이 세럼 8퍼센트 70ml', usd: 15.25, krw: 20423, unsureName: true },

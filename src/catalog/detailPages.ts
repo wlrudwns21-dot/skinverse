@@ -43,6 +43,10 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 15668, ko: 15558, th: 15568, zh: 15327 },
   },
+  'da-waterfull-toneup-sun-pink-50': {
+    w: 1170,
+    pages: { en: 19908, ko: 19569, th: 19773, zh: 19045 },
+  },
   'da-waterfull-toneup-sun-purple-50': {
     w: 1170,
     pages: { en: 12897, ko: 12689, th: 12949, zh: 12473 },
