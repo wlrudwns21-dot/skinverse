@@ -137,7 +137,15 @@ export const DALBA_DUTY_FREE: DutyFreeRow[] = [
     krw: 21213,
     productId: 'da-waterfull-toneup-sun-pink-50',
   },
-  { ko: '[롯데단독] 비타 토닝 캡슐 세럼 나이아신아마이드 5퍼센트', usd: 20.9, krw: 27990, unsureName: true },
+  {
+    // 제품이 들어오면서 이름이 확인됐습니다. 제조사 표기는 '달바 비타 토닝
+    // 캡슐 세럼 나이아신아마이드 5퍼센트' 100mL로, 캡처에서 읽은 그대로였고
+    // 롯데 목록에만 용량이 빠져 있었습니다.
+    ko: '[롯데단독] 비타 토닝 캡슐 세럼 나이아신아마이드 5퍼센트',
+    usd: 20.9,
+    krw: 27990,
+    productId: 'da-vita-toning-capsule-serum-100',
+  },
   { ko: '[롯데단독] 비타 토닝 캡슐 크림 나이아신아마이드 5퍼센트 55g', usd: 24.7, krw: 33079 },
   { ko: '[롯데단독] 비타 토닝 브라이트닝 스프레이 세럼 8퍼센트 70ml', usd: 15.25, krw: 20423, unsureName: true },
   { ko: '[롯데단독] 비타 토닝 세럼 토너 180ml', usd: 13.87, krw: 18575, unsureName: true },
@@ -170,7 +178,15 @@ export const DALBA_DUTY_FREE: DutyFreeRow[] = [
   { ko: '클린 디톡시 시카 카밍 마스크 5매 (SET) 25ml*5', usd: 8.8, krw: 11785, unsureName: true },
   { ko: '워터풀 에센스 선 미스트 50ml', usd: 12.76, krw: 17089 },
   { ko: '화이트 트러플 프리미엄 인텐시브 세럼 100ml', usd: 21, krw: 28124, unsureName: true },
-  { ko: '[롯데단독] 비타 캡슐 안티에이징 선크림 50ml', usd: 15.84, krw: 21213, unsureName: true },
+  {
+    // 제품이 들어오면서 확인됐습니다. 제조사 표기도 '달바 비타 캡슐
+    // 안티에이징 선크림' 50mL로 같습니다. 달바 선크림 넷이 같은 $15.84인데,
+    // 이것만 톤업 안료가 없습니다.
+    ko: '[롯데단독] 비타 캡슐 안티에이징 선크림 50ml',
+    usd: 15.84,
+    krw: 21213,
+    productId: 'da-vita-capsule-antiaging-sun-50',
+  },
   { ko: '[롯데단독] 비타 트래블키트 4종 세트', usd: 8.84, krw: 11839 },
   // 그리드에는 없고 상단 추천 상품에만 있던 한 종.
   { ko: '워터풀 톤업 라이트 에센스 선 세럼 50ml', usd: 16.06, krw: 21508, unsureName: true },
