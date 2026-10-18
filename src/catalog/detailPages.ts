@@ -132,6 +132,14 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 16192, ko: 15881, th: 15958, zh: 15569 },
   },
+  'ahc-premium-hydra-soother-mask-5': {
+    w: 1170,
+    pages: { en: 12825, ko: 12416, th: 12612, zh: 12222 },
+  },
+  'ahc-lift4-overday-night-balm-50': {
+    w: 1170,
+    pages: { en: 16524, ko: 16281, th: 16464, zh: 16007 },
+  },
 }
 
 /**

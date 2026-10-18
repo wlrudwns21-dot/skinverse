@@ -73,6 +73,13 @@ export interface ProductRow {
   inci?: string | null
   /** The maker's list in the locales `ingredients` and `inci` cannot hold. */
   ingredients_l?: Partial<Record<Lang, string>> | null
+  /**
+   * The duty-free list price, before our discount. 0 when not recorded.
+   *
+   * Derived in the database by the same `settle_price` the sale price goes
+   * through, so the percentage between the two cannot drift.
+   */
+  list_price?: number | string | null
   /** Whether a human checked `ingredients` against the maker's own label. */
   ingredients_checked?: boolean | null
   /**
@@ -95,6 +102,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     name: row.name,
     nameL: row.name_l ?? undefined,
     price: Number(row.price),
+    listPrice: Number(row.list_price ?? 0),
     priceKrw: Number(row.price_krw ?? 0),
     useDays: Number(row.use_days ?? 60),
     tag: row.tag as ProductTag,

@@ -94,6 +94,15 @@ export interface Product {
    */
   nameL?: Partial<Record<Lang, string>>
   price: number
+  /**
+   * The duty-free list price this is discounted from, or 0 when unrecorded.
+   *
+   * Display only — nothing is ever charged at it, and an order records
+   * `price`. Zero means we do not know the list price, not that there is no
+   * discount: REJURAN is sold at list because its discounted price was never
+   * captured, and showing "0% off" there would be a claim we cannot make.
+   */
+  listPrice?: number
   tag: ProductTag
   /** Which scan axis this product answers to. `uv` matches on local UV index. */
   metric: MetricKey | 'uv'

@@ -56,6 +56,16 @@ export function Shop() {
               </div>
               <div style={s('display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px;gap:8px')}>
                 <div style={s('min-width:0')}>
+                  {/* What it costs elsewhere, above what it costs here. Every
+                      brand in the shop is 20–45% under the duty-free list and
+                      none of it was visible until the list price had a field
+                      to live in. */}
+                  {p.listPriceS && (
+                    <div style={s('display:flex;align-items:baseline;gap:5px;font-size:10px;margin-bottom:3px')}>
+                      <span style={s('color:var(--ink-4);text-decoration:line-through')}>{p.listPriceS}</span>
+                      <span style={s('color:var(--warn);font-weight:600')}>{p.offPct}%</span>
+                    </div>
+                  )}
                   <div style={s('font-size:13px;color:var(--ink);letter-spacing:0.04em')}>
                     {p.priceS} <span style={s('font-size:10px;color:var(--ink-4)')}>{p.ml}</span>
                   </div>
@@ -227,8 +237,14 @@ export function ProductDetail() {
         <div style={s(`${DISPLAY};font-size:23px;line-height:1.3;margin-top:8px`)}>{sel.name}</div>
         <div style={s('font-size:12.5px;color:var(--ink-3);margin-top:5px;line-height:1.6')}>{sel.sub}</div>
 
-        <div style={s('display:flex;align-items:baseline;gap:12px;margin-top:14px')}>
+        <div style={s('display:flex;align-items:baseline;gap:12px;margin-top:14px;flex-wrap:wrap')}>
           <span style={s('font-family:Albert Sans,sans-serif;font-weight:200;font-size:26px;line-height:1')}>{sel.priceS}</span>
+          {sel.listPriceS && (
+            <span style={s('display:inline-flex;align-items:baseline;gap:6px;font-size:12px')}>
+              <span style={s('color:var(--ink-4);text-decoration:line-through')}>{sel.listPriceS}</span>
+              <span style={s('color:var(--warn);font-weight:600')}>{sel.offPct}% OFF</span>
+            </span>
+          )}
           <span style={s('font-size:11px;color:var(--link);font-weight:500')}>{sel.matchS} {st.t.match}</span>
         </div>
 

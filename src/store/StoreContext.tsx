@@ -57,6 +57,7 @@ import { capturePaypalOrder, openPaypalOrder } from '../payments/paypal'
 import { arrivalError, confirmedSignup } from '../auth/landing'
 import { airBand, isPolluted, pollutionLoad } from '../routine/air'
 import { daysBetween, type Ownership } from '../routine/ownership'
+import { offPercent } from '../money/discount'
 import { display as showMoney, isSettlement, SETTLEMENT } from '../money/fx'
 import * as remote from './remote'
 import {
@@ -118,6 +119,10 @@ export interface ProductView {
   /** Already resolved to the reader's language, or absent. */
   ingSrc?: string
   priceS: string
+  /** The list price, formatted, when there is one to strike through. */
+  listPriceS?: string
+  /** Whole percent off list, when a list price is recorded and is higher. */
+  offPct?: number
   matchS: string
   matchN: number
   /** Why this product is being recommended — at most two, strongest first. */
@@ -1338,6 +1343,13 @@ function useStoreValue() {
       // than none, because it looks like it has been answered.
       ingSrc: p.ingSrc?.[lang] || p.ingSrc?.en || undefined,
       priceS: money(p.price),
+      // Both or neither. A struck-through price with no percentage makes the
+      // reader do the arithmetic, and a percentage with nothing struck
+      // through is a number with no referent — so one call decides for both.
+      ...(() => {
+        const off = offPercent(p.price, p.listPrice)
+        return off === null ? {} : { listPriceS: money(p.listPrice ?? 0), offPct: off }
+      })(),
       matchS: matchN + '%',
       matchN,
       open: () => setState((s) => ({ ...s, screen: 'detail', selId: p.id })),

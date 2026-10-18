@@ -178,7 +178,14 @@ export function Home() {
               </div>
               <div style={s('font-size:12.5px;margin-top:4px;line-height:1.5')}>{p.name}</div>
               <div style={s('display:flex;justify-content:space-between;align-items:baseline;margin-top:7px;gap:8px')}>
-                <span style={s('font-size:12px;color:var(--ink-2);letter-spacing:0.04em')}>{p.priceS}</span>
+                <span style={s('min-width:0')}>
+                  <span style={s('font-size:12px;color:var(--ink-2);letter-spacing:0.04em')}>{p.priceS}</span>
+                  {p.offPct !== undefined && (
+                    <span style={s('font-size:10px;color:var(--warn);font-weight:600;margin-left:5px')}>
+                      {p.offPct}%
+                    </span>
+                  )}
+                </span>
                 <span style={s('font-size:10px;color:var(--link);font-weight:500;flex-shrink:0')}>
                   {p.matchS} {st.t.match}
                 </span>
