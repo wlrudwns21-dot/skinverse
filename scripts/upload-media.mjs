@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 /**
- * Push `public/products` into the Supabase Storage bucket `product-media`.
+ * Push whatever is staged in `public/products` into the Storage bucket
+ * `product-media`.
+ *
+ * The directory is normally empty: the artwork lives in the bucket now and was
+ * removed from the repository. What this uploads is a new product's files,
+ * staged there until they are up. `supabase/functions/media-sync` is the way
+ * that needs no terminal and no key, and is what actually gets used — this is
+ * the fallback for when a browser is not enough.
  *
  *   SUPABASE_URL=https://xxxx.supabase.co \
  *   SUPABASE_SERVICE_ROLE_KEY=... \
@@ -147,9 +154,8 @@ if (failed) {
 if (!DRY) {
   console.log(`
   Next:
-    1. Set VITE_MEDIA_BASE in Vercel (and .env.local if you run locally) to
-       ${url}/storage/v1/object/public/${BUCKET}
-    2. Redeploy and check a product page — the photo and the detail artwork.
-    3. Only then remove public/products from the repository.
+    1. Check a product page — the photo and the detail artwork. VITE_MEDIA_BASE
+       is already set in Vercel to ${url}/storage/v1/object/public/${BUCKET}
+    2. Empty public/products again and commit, so the repository stays small.
 `)
 }

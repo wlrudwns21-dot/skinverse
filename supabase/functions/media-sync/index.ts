@@ -1,12 +1,11 @@
 /**
- * Move the product photographs into Storage, from a browser, once.
+ * Put a new product's artwork into Storage, from a browser.
  *
- * The shop's detail artwork is 543 files and 39MB sitting in `public/products`,
- * which means Vercel downloads it from GitHub on every single deploy. That has
- * already failed once with a secondary rate limit, and it gets worse with each
- * product. The fix is to serve the images from a Storage bucket instead — see
- * docs/product-media.md — and the one step that needs doing by hand is getting
- * the files in there.
+ * The shop's detail artwork used to sit in `public/products`, which meant
+ * Vercel downloaded 60MB from GitHub on every single deploy. That failed once
+ * with a secondary rate limit, and it got worse with every product. So the
+ * images are served from a Storage bucket instead — see docs/product-media.md
+ * — and the step that needs doing by hand is getting new files in there.
  *
  * `scripts/upload-media.mjs` does it from a terminal with the service_role key.
  * This does the same thing without either. The owner sets one secret, opens one
@@ -14,13 +13,26 @@
  * nothing here is exposed that a visitor could not already download — and
  * writes them into the bucket.
  *
+ * ── how a new product gets its pictures up ──────────────────────────────────
+ *
+ * Artwork goes into `public/products/<id>/`, `npm run media:manifest` adds it
+ * to the list, and both are committed and pushed. The owner then opens this
+ * address and watches it finish. Afterwards the files come back out of
+ * `public/products` so the repository stays small — the bucket is where they
+ * live now, and the manifest is the record of what is in it.
+ *
  * ── it does the work in batches on purpose ──────────────────────────────────
  *
- * 543 fetch-and-upload pairs take longer than a browser is willing to wait, and
- * longer than an edge function is allowed to run. So each request handles a
- * hundred and the page refreshes itself to the next offset. Nothing can time
- * out, the owner watches a count climb, and if a batch fails it stops there and
- * says so rather than reporting a success it did not have.
+ * Hundreds of fetch-and-upload pairs take longer than a browser is willing to
+ * wait, and longer than an edge function is allowed to run. So each request
+ * handles a hundred and the page refreshes itself to the next offset. Nothing
+ * can time out, the owner watches a count climb, and if a batch fails it stops
+ * there and says so rather than reporting a success it did not have.
+ *
+ * The list is the whole bucket, not just the new files, so most batches have
+ * nothing to do. `already()` is what makes that cheap: a file the bucket
+ * already holds at the right size is skipped without touching GitHub, which
+ * also means a re-run can never fail on artwork that has left the repository.
  *
  * Every upload upserts, so re-running any offset is free and safe. There is no
  * state anywhere: the offset in the address is all of it.
@@ -39,10 +51,14 @@
  * MEDIA_PATH after it crosses the network. It cannot be pointed at another
  * repository, another bucket, or another prefix.
  *
- * ── delete it when the migration is done ────────────────────────────────────
+ * ── it outlived the migration ───────────────────────────────────────────────
  *
- * This is a one-off. Once the bucket is serving the live site, remove the
- * function and the secret. It is not part of how the shop runs.
+ * This was written as a one-off to be deleted once the bucket was serving the
+ * live site. It is kept because the job did not turn out to be one-off: every
+ * product registered from now on needs its pictures moved the same way, and
+ * this is the only way to do it that asks the owner for a click rather than a
+ * terminal and a service_role key. Its sibling `media-pump`, which carried a
+ * key in its own source, really was a one-off and now answers 410.
  */
 
 /** Where the images come from. Fixed — not a parameter. */
