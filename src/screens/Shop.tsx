@@ -107,13 +107,15 @@ export function Shop() {
  * an abridged ingredient list is useless for that.
  */
 function Ingredients({
-  lang, heading, ko, inci, extra,
+  lang, heading, ko, inci, extra, source,
 }: {
   lang: Lang
   heading: string
   ko: string
   inci: string
   extra?: Partial<Record<Lang, string>>
+  /** Where the list came from, when it did not come from the maker. */
+  source?: string
 }) {
   const [open, setOpen] = useState(false)
   const view = ingredientsFor(lang, { ko, inci, extra })
@@ -137,6 +139,21 @@ function Ingredients({
         {view.isFallback && (
           <div style={s('font-size:10.5px;line-height:1.6;color:var(--ink-4);margin-top:8px')}>
             {INCI_NOTE[lang]}
+          </div>
+        )}
+        {/* Where the list came from, when that is not the maker. Set in the
+            caution tone rather than the muted one: a reader who has just read
+            sixty ingredient names has earned a straight answer about how firm
+            the list is, and the muted rank is where this app puts things that
+            do not change a decision. */}
+        {source && (
+          <div
+            style={s(
+              'font-size:10.5px;line-height:1.6;color:var(--warn);background:var(--warn-soft);' +
+                'border-radius:var(--radius-sm);padding:9px 11px;margin-top:10px',
+            )}
+          >
+            {source}
           </div>
         )}
         {long && (
@@ -302,7 +319,14 @@ export function ProductDetail() {
           </Block>
         )}
 
-        <Ingredients lang={st.lang} heading={st.t.ingT} ko={sel.ing} inci={sel.inci} extra={sel.ingL} />
+        <Ingredients
+          lang={st.lang}
+          heading={st.t.ingT}
+          ko={sel.ing}
+          inci={sel.inci}
+          extra={sel.ingL}
+          source={sel.ingSrc}
+        />
 
         {!sel.checked && (
           <Block>

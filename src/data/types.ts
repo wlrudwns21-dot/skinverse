@@ -67,7 +67,16 @@ export interface MetricDef {
   n: Localized
 }
 
-export type ProductTag = 'Hydration' | 'Soothing' | 'Pore' | 'Brightening' | 'SPF'
+/**
+ * The shelf a product files under.
+ *
+ * 'Firming' arrived with the AHC range: three of them hold a 주름개선 (wrinkle
+ * care) designation and are built around collagen, peptides and adenosine,
+ * and filing those under 'Hydration' would have put a lifting cream on the
+ * hydration shelf. It carries no weather weighting in `recommend.ts`, which
+ * is right — elasticity is not something the forecast moves.
+ */
+export type ProductTag = 'Hydration' | 'Soothing' | 'Pore' | 'Brightening' | 'Firming' | 'SPF'
 
 export interface Product {
   id: string
@@ -128,6 +137,15 @@ export interface Product {
    * cannot — in practice Chinese. Nothing in here is translated by us.
    */
   ingL?: Partial<Record<Lang, string>>
+  /**
+   * One line on where the list came from, printed under it.
+   *
+   * Absent when it was transcribed from the maker's own table — which is what
+   * absence should mean, and is true of most of the catalogue. Present when it
+   * was assembled from resellers or could not be confirmed, because a reader
+   * deciding on a list is entitled to know how firm it is.
+   */
+  ingSrc?: Partial<Record<Lang, string>>
   /** Whether a human checked `ing` against the maker's own label. */
   checked: boolean
   /** Which scan readings it speaks to, strongest first. */

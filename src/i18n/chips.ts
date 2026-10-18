@@ -9,6 +9,7 @@ export const chipLabels: Record<ChipKey, Localized> = {
   Soothing: { en: 'Soothing', ko: '진정', zh: '舒缓', th: 'ปลอบประโลม' },
   Pore: { en: 'Pore', ko: '모공', zh: '毛孔', th: 'รูขุมขน' },
   Brightening: { en: 'Brightening', ko: '미백', zh: '焕亮', th: 'ผิวกระจ่างใส' },
+  Firming: { en: 'Firming', ko: '탄력', zh: '紧致', th: 'กระชับผิว' },
   SPF: { en: 'SPF', ko: '자외선 차단', zh: '防晒', th: 'กันแดด' },
 }
 

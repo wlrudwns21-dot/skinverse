@@ -115,6 +115,8 @@ export interface ProductView {
   ing: string
   inci: string
   ingL?: Partial<Record<Lang, string>>
+  /** Already resolved to the reader's language, or absent. */
+  ingSrc?: string
   priceS: string
   matchS: string
   matchN: number
@@ -1331,6 +1333,10 @@ function useStoreValue() {
       ing: p.ing,
       inci: p.inci,
       ingL: p.ingL,
+      // English is the fallback rather than Korean: a provenance note is a
+      // caveat, and a caveat in a language the reader cannot read is worse
+      // than none, because it looks like it has been answered.
+      ingSrc: p.ingSrc?.[lang] || p.ingSrc?.en || undefined,
       priceS: money(p.price),
       matchS: matchN + '%',
       matchN,

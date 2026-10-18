@@ -75,6 +75,14 @@ export interface ProductRow {
   ingredients_l?: Partial<Record<Lang, string>> | null
   /** Whether a human checked `ingredients` against the maker's own label. */
   ingredients_checked?: boolean | null
+  /**
+   * Where the list came from, when that is worth saying.
+   *
+   * Empty for a list transcribed from the maker's own table, which is most of
+   * them. Set when it was assembled from resellers, cross-checked against a
+   * second source, or could not be confirmed — see the column comment.
+   */
+  ingredients_source?: Partial<Record<Lang, string>> | null
   fits?: Fit[] | null
   pros?: Localized[] | null
   cons?: Localized[] | null
@@ -102,6 +110,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     step: row.step ?? '',
     inci: row.inci ?? '',
     ingL: row.ingredients_l ?? undefined,
+    ingSrc: row.ingredients_source ?? undefined,
     checked: row.ingredients_checked ?? false,
     fits: row.fits ?? [],
     pros: row.pros ?? [],

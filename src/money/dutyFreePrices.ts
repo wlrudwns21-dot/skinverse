@@ -2,7 +2,7 @@
  * 면세점 판매가 장부 — 우리가 가격을 정할 때 보는 바깥 숫자.
  *
  * 이 앱은 롯데면세점 판매가와 같은 값에 팝니다. 그 약속은 **달러로** 한
- * 약속입니다. 면세점은 달러를 정가로 쓰고 원화는 그날 환율로 환산해서
+ * 약속입니다. 면세점은 달러를 기준 숫자로 쓰고 원화는 그날 환율로 환산해서
  * 올림할 뿐이라, 같은 제품이 어제 20,892원이고 오늘 21,100원이어도 $15.6은
  * 그대로입니다. 그래서 여기 적는 것도 달러이고, 원화는 내가 숫자를 제대로
  * 읽었는지 검산하기 위해 같이 둡니다.
@@ -39,7 +39,19 @@ export const DUTY_FREE_KRW_PER_USD = 1339.2
 export interface DutyFreeRow {
   /** 면세점 화면에 적힌 한글 제품명. */
   ko: string
-  /** 면세점 판매가(USD). 이것이 정가이고, 우리 판매가입니다. */
+  /**
+   * 면세점 **판매가**(USD) — 우리가 파는 값.
+   *
+   * 한동안 이 숫자를 정가라고 적어 두었는데, 2026-10-18에 받은 가격표가
+   * 그게 아니라고 알려줬습니다. 면세점에는 정가와 판매가가 따로 있고, 우리가
+   * 캡처에서 읽어 온 것은 내내 판매가 쪽이었습니다. 예를 들어 달바 비타 토닝
+   * 세럼은 정가 $38에 판매가 $20.90입니다.
+   *
+   * 값 자체는 고칠 것이 없습니다 — 우리는 판매가에 팔기로 했고 DB에 든 것도
+   * 판매가입니다. 틀린 것은 이름뿐이었고, 할인 폭이 브랜드마다 다르다는 사실
+   * (에스트라 20%, 아누아·AHC 40%, 달바는 제품별)이 그 이름 때문에 보이지
+   * 않았습니다. 정가를 담을 자리는 아직 없습니다.
+   */
   usd: number
   /**
    * 같은 화면의 원화. `ceil(usd × DUTY_FREE_KRW_PER_USD)`로 검산됩니다.
@@ -199,7 +211,7 @@ export const DUTY_FREE_TABLES: Record<string, DutyFreeRow[]> = {
 }
 
 /**
- * 면세점 달러 정가를 우리 `price_krw`로.
+ * 면세점 달러 판매가를 우리 `price_krw`로.
  *
  * 반올림인 이유: 트리거가 `round(price_krw / 환율, 2)`로 달러를 되돌리므로,
  * 가장 가까운 원이면 언제나 같은 달러로 돌아옵니다. 올림이든 반올림이든
@@ -222,7 +234,7 @@ export function settledUsd(krw: number, rate = AUTHORING_KRW_PER_USD): number {
   return Math.round((krw / rate) * 100) / 100
 }
 
-/** 적어둔 모든 가격표에서 제품 id로 달러 정가 찾기. 없으면 null. */
+/** 적어둔 모든 가격표에서 제품 id로 달러 판매가 찾기. 없으면 null. */
 export function dutyFreeUsd(productId: string): number | null {
   for (const rows of Object.values(DUTY_FREE_TABLES)) {
     const hit = rows.find((r) => r.productId === productId)

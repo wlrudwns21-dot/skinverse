@@ -116,6 +116,22 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 17309, ko: 17070, th: 17308, zh: 16819 },
   },
+  'ahc-proshot-volume5-eye-cream-30': {
+    w: 1170,
+    pages: { en: 17527, ko: 17096, th: 17275, zh: 16870 },
+  },
+  'ahc-volume5-night-gel-50': {
+    w: 1170,
+    pages: { en: 16100, ko: 15962, th: 15908, zh: 15618 },
+  },
+  'ahc-proshot-lift4-eye-cream-30': {
+    w: 1170,
+    pages: { en: 13820, ko: 13458, th: 13494, zh: 13067 },
+  },
+  'ahc-proshot-bright3-eye-cream-30': {
+    w: 1170,
+    pages: { en: 16192, ko: 15881, th: 15958, zh: 15569 },
+  },
 }
 
 /**

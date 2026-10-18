@@ -204,7 +204,7 @@ function RateRow({ code }: { code: string }) {
   )
 }
 
-const TAGS = ['Hydration', 'Soothing', 'Pore', 'Brightening', 'SPF']
+const TAGS = ['Hydration', 'Soothing', 'Pore', 'Brightening', 'Firming', 'SPF']
 const STEPS: [string, string][] = [
   ['cleanser', '클렌저'], ['toner', '토너 · 미스트'], ['serum', '세럼'],
   ['cream', '크림'], ['spf', '자외선차단'], ['mask', '마스크'],
