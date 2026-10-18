@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
@@ -39,13 +39,21 @@ describe('the manifest itself', () => {
     expect(sizes.size).toBe(manifest.files.length)
   })
 
-  it('records every file at the size it is on disk', () => {
+  it('records any artwork still staged in the repository at its real size', () => {
     // The function compares each download against this number and refuses to
-    // upload a mismatch. A stale manifest would therefore stop the migration
-    // rather than corrupt it — but it would stop it, so it is checked here.
+    // upload a mismatch, so a wrong size here stops a new product going up.
+    //
+    // It used to check all 814, because all 814 were in `public/products`.
+    // They are not any more — that directory was 60MB Vercel re-fetched on
+    // every deploy, and it went once the bucket held everything. What is left
+    // to check is whatever is staged for the next upload, which is usually
+    // nothing; for the rest the bucket is the authority, and the size was
+    // verified against this number at the moment each file was written.
     const wrong: string[] = []
     for (const [path, size] of manifest.files) {
-      const real = statSync(join(ROOT, 'public', path)).size
+      const abs = join(ROOT, 'public', path)
+      if (!existsSync(abs)) continue
+      const real = statSync(abs).size
       if (real !== size) wrong.push(`${path}: listed ${size}, on disk ${real}`)
     }
     expect(wrong).toEqual([])

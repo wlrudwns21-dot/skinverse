@@ -221,13 +221,51 @@ async function loadManifest(ref: string): Promise<Manifest> {
   return parsed
 }
 
+/**
+ * Returned instead of an error when there was nothing to do.
+ *
+ * A symbol rather than a string, because every other non-null return from
+ * `move` is an error message shown to the owner, and a sentinel that could be
+ * mistaken for one is a bug waiting to happen.
+ */
+const SKIP = Symbol('already in the bucket')
+
+/**
+ * Whether the bucket already holds this file, whole.
+ *
+ * This is what lets the manifest stay a record of the whole bucket after the
+ * artwork has left the repository. `public/products` is not in git any more —
+ * it was 60MB that Vercel re-fetched on every deploy — so a re-run would try
+ * to download 814 files that raw.githubusercontent.com no longer has and
+ * report 814 failures. Asking the bucket first turns that into 814 quick
+ * HEADs and no work, and leaves only genuinely new artwork to fetch.
+ *
+ * The size is checked as well as the existence, so a file that was truncated
+ * on the way in last time is re-uploaded rather than passed over. Anything
+ * unexpected — a network blip, a surprising status — answers "no" and lets the
+ * normal path run, which is safe because every upload upserts.
+ */
+async function already(path: string, size: number): Promise<boolean> {
+  try {
+    const head = await fetch(`${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`, {
+      method: 'HEAD',
+    })
+    if (!head.ok) return false
+    return Number(head.headers.get('content-length')) === size
+  } catch {
+    return false
+  }
+}
+
 /** Fetch one file from the repository and put it in the bucket. */
 async function move(
   path: string,
   size: number,
   ref: string,
   auth: Record<string, string>,
-): Promise<string | null> {
+): Promise<string | null | typeof SKIP> {
+  if (await already(path, size)) return SKIP
+
   const from = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${ref}/public/${path}`
   const got = await fetch(from, { headers: { 'User-Agent': 'skinverse-media-sync' } })
   if (!got.ok) return `${path} — 깃허브 ${got.status}`
@@ -260,9 +298,10 @@ async function runBatch(
   slice: [string, number][],
   ref: string,
   auth: Record<string, string>,
-): Promise<{ done: number; errors: string[] }> {
+): Promise<{ done: number; skipped: number; errors: string[] }> {
   let next = 0
   let done = 0
+  let skipped = 0
   const errors: string[] = []
 
   const worker = async () => {
@@ -273,7 +312,12 @@ async function runBatch(
       const [path, size] = slice[i]
       try {
         const err = await move(path, size, ref, auth)
-        if (err) errors.push(err)
+        // Skipped files count towards `done`: the caller uses it to draw a
+        // progress bar, and "already there" is as finished as a file gets.
+        if (err === SKIP) {
+          skipped += 1
+          done += 1
+        } else if (err) errors.push(err)
         else done += 1
       } catch (e) {
         errors.push(`${path} — ${e instanceof Error ? e.message : String(e)}`)
@@ -282,7 +326,7 @@ async function runBatch(
   }
 
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, slice.length) }, worker))
-  return { done, errors }
+  return { done, skipped, errors }
 }
 
 Deno.serve(async (req: Request) => {
@@ -361,7 +405,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const slice = manifest.files.slice(from, from + BATCH)
-  const { done, errors } = await runBatch(slice, ref, AUTH.headers)
+  const { done, skipped, errors } = await runBatch(slice, ref, AUTH.headers)
 
   /**
    * Where the next request starts.
@@ -396,6 +440,11 @@ Deno.serve(async (req: Request) => {
     '사진 옮기는 중',
     `${count}${bar}
      <p style="margin-top:1.5rem">잠시만 기다려 주세요. 화면이 알아서 다음으로 넘어갑니다.</p>
+     ${
+       skipped
+         ? `<p class="muted">이번 ${slice.length}장 중 ${skipped}장은 이미 저장소에 있어 건너뛰었습니다.</p>`
+         : ''
+     }
      <p class="muted">창을 닫아도 괜찮습니다 — 다시 같은 주소를 열면 이어서 합니다.</p>
      <noscript><a class="btn" href="${esc(here(resume))}">다음</a></noscript>`,
     here(resume),
