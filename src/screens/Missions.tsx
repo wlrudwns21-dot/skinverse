@@ -65,7 +65,10 @@ export function Missions() {
       {/* The balance, full bleed. It is the one number anyone opens this screen
           for, so it gets the width of the screen and the weight of a reading
           rather than a card's worth of padding around it. */}
-      <div style={s('background:var(--panel);color:var(--on-panel);padding:24px 20px 26px')}>
+      {/* --banner-ink-2 is set here because EYEBROW reads it first and falls
+          back to --on-panel-2, which is an ink tone meant for the light
+          panel. On this one it would be grey on dark green. */}
+      <div style={s('background:var(--panel-deep);color:var(--on-panel-deep);padding:24px 20px 26px;--banner-ink-2:var(--on-panel-deep-2)')}>
         <div style={s('display:flex;align-items:flex-start;justify-content:space-between;gap:12px')}>
           <div style={s('min-width:0')}>
             <div style={s(EYEBROW)}>{st.t.glowPts}</div>
@@ -74,20 +77,22 @@ export function Missions() {
             </div>
           </div>
           <div style={s('text-align:right;flex-shrink:0')}>
-            <div style={s('font-size:11px;letter-spacing:0.08em;color:var(--on-panel)')}>Lv. {st.levelName}</div>
-            <div style={s('font-size:11px;color:var(--warn);margin-top:6px')}>🔥 {st.streakLine}</div>
+            <div style={s('font-size:11px;letter-spacing:0.08em;color:var(--on-panel-deep)')}>Lv. {st.levelName}</div>
+            {/* --warn is a dark brown that disappears on this ground; the
+                dark-ground pair exists for exactly this. */}
+            <div style={s('font-size:11px;color:var(--warn-on-dark);margin-top:6px')}>🔥 {st.streakLine}</div>
           </div>
         </div>
 
         {/* How far to the next level. This was a 1px fill on a 1px track,
             which on a dark panel is indistinguishable from the rule it sits
             on — the one number people come here to watch was invisible. */}
-        <div style={s('margin-top:20px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.08em;color:var(--on-panel-2)')}>
+        <div style={s('margin-top:20px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.08em;color:var(--on-panel-deep-2)')}>
           <span>{st.levelName}</span>
           <span>{st.nextLevelS}</span>
         </div>
-        <div style={s('height:4px;border-radius:var(--radius-sm);background:var(--on-panel-track);margin-top:8px;overflow:hidden')}>
-          <div style={s(`height:4px;border-radius:var(--radius-sm);width:${st.levelPct};background:var(--on-panel);transition:width .35s ease`)} />
+        <div style={s('height:4px;border-radius:var(--radius-sm);background:var(--on-panel-deep-track);margin-top:8px;overflow:hidden')}>
+          <div style={s(`height:4px;border-radius:var(--radius-sm);width:${st.levelPct};background:var(--on-panel-deep);transition:width .35s ease`)} />
         </div>
       </div>
 

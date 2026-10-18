@@ -119,22 +119,33 @@ export function PhotoBanner({
           gradient from the page ground out to nothing, so the corners — where
           two of them overlap — come out a shade stronger, which is what a
           vignette does anyway. Drawn under the scrim: the scrim is there to
-          carry text and has to stay the darkest thing at the bottom. */}
+          carry text and has to stay the darkest thing at the bottom.
+
+          The feather used to run 16% in from the top and bottom and 11% from
+          each side. On a 390×260 banner that is 42px of the picture gone at
+          the top and 43px at each side — more than a third of the frame
+          turned into page ground, on top of a scrim already doing the same
+          thing from below. Together they left no photograph in the middle,
+          which is most of why the screen read as washed out. Softening a cut
+          edge needs a few pixels, not a third of the image. */}
       {fade && (
         <div
           style={s(
             'position:absolute;inset:0;pointer-events:none;background:' +
-              'linear-gradient(to bottom,var(--bg),transparent 16%),' +
-              'linear-gradient(to top,var(--bg),transparent 16%),' +
-              'linear-gradient(to right,var(--bg),transparent 11%),' +
-              'linear-gradient(to left,var(--bg),transparent 11%)',
+              'linear-gradient(to bottom,var(--bg),transparent 6%),' +
+              'linear-gradient(to top,var(--bg),transparent 6%),' +
+              'linear-gradient(to right,var(--bg),transparent 4%),' +
+              'linear-gradient(to left,var(--bg),transparent 4%)',
           )}
         />
       )}
       {/* Only where there is text to protect. A scrim over an empty banner is
           just a bruise along the bottom edge. */}
       {children && (
-        <div style={s(`position:absolute;left:0;right:0;bottom:0;height:78%;background:var(${scrim})`)} />
+        /* 78% of the height was the whole picture on the shorter banners. The
+           scrim only has to cover the text and the breathing room under it,
+           and anything taller is just tinting the subject. */
+        <div style={s(`position:absolute;left:0;right:0;bottom:0;height:64%;background:var(${scrim})`)} />
       )}
       {children && (
         /* The two text colours are handed down as custom properties rather

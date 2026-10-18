@@ -1684,8 +1684,8 @@ function useStoreValue() {
       label: t.tabs[i],
       go: go(id),
       active,
-      bar: active ? 'var(--ink)' : 'transparent',
-      color: active ? 'var(--ink)' : 'var(--ink-3)',
+      bar: active ? 'var(--accent)' : 'transparent',
+      color: active ? 'var(--accent)' : 'var(--ink-3)',
     }
   })
 

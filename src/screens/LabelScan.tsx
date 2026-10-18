@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { s } from '../lib/css'
+import { NUMERAL } from '../lib/ui'
 import { parseLabel } from '../ingredients/label'
 import { matchIngredients, readLabelPhoto } from '../ingredients/remote'
 import {
@@ -167,7 +168,7 @@ export function LabelScan() {
             ] as [string, number][]).map(([label, n]) => (
               <div key={label}>
                 <div style={s('font-size:9px;letter-spacing:0.18em;color:var(--ink-3);line-height:1.4')}>{label}</div>
-                <div style={s('font-family:Albert Sans,sans-serif;font-weight:200;font-size:26px;margin-top:6px;line-height:1')}>{n}</div>
+                <div style={s(`${NUMERAL};font-size:26px;margin-top:6px`)}>{n}</div>
               </div>
             ))}
           </div>

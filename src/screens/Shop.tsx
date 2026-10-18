@@ -12,7 +12,7 @@ import { DetailPage } from '../components/DetailPage'
 import { ProductShot } from '../components/ProductShot'
 import type { Lang } from '../data/types'
 import { s } from '../lib/css'
-import { CARD, DISPLAY, GUTTER, KICKER, RULE } from '../lib/ui'
+import { CARD, DISPLAY, GUTTER, KICKER, NUMERAL, RULE } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 
@@ -238,7 +238,7 @@ export function ProductDetail() {
         <div style={s('font-size:12.5px;color:var(--ink-3);margin-top:5px;line-height:1.6')}>{sel.sub}</div>
 
         <div style={s('display:flex;align-items:baseline;gap:12px;margin-top:14px;flex-wrap:wrap')}>
-          <span style={s('font-family:Albert Sans,sans-serif;font-weight:200;font-size:26px;line-height:1')}>{sel.priceS}</span>
+          <span style={s(`${NUMERAL};font-size:26px`)}>{sel.priceS}</span>
           {sel.listPriceS && (
             <span style={s('display:inline-flex;align-items:baseline;gap:6px;font-size:12px')}>
               <span style={s('color:var(--ink-4);text-decoration:line-through')}>{sel.listPriceS}</span>

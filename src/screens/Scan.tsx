@@ -50,16 +50,22 @@ export function ScanIntro() {
       {/* Taking the photo here rather than picking one is what keeps it within
           the vendor's framing rules — the guide oval is the only chance to get
           that right before the analysis is spent. */}
+      {/* Both of these were outlined, one in ink and one in a hairline. On
+          the screen whose entire purpose is "take the photo", the thing to
+          tap was a box with a slightly darker border than the box beside it —
+          the app's one accent was nowhere on it. Taking the photo is filled
+          now, and picking one keeps the hairline, so the difference is a
+          colour rather than a line weight. */}
       <div style={s('display:flex;gap:8px;justify-content:center;margin-bottom:16px')}>
         <div
           onClick={() => setCameraOpen(true)}
-          style={s('cursor:pointer;border:1px solid var(--ink);border-radius:var(--radius-sm);padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em')}
+          style={s('cursor:pointer;background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em')}
         >
           {st.a.camera.take}
         </div>
         <div
           onClick={() => pickerRef.current?.click()}
-          style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em;color:var(--ink-2)')}
+          style={s('cursor:pointer;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:11px 20px;font-size:12.5px;font-weight:500;letter-spacing:0.03em;color:var(--link)')}
         >
           {st.a.camera.pick}
         </div>

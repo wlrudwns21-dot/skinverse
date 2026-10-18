@@ -70,15 +70,29 @@ export const EYEBROW =
   'font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--banner-ink-2, var(--on-panel-2))'
 
 /**
- * The display face: light, tight, and with Hangul that actually renders —
- * Marcellus has no Hangul glyphs, so a Korean heading set in it falls back to
- * whatever serif the device happens to ship.
+ * The display face: tight, and with Hangul that actually renders — Marcellus
+ * has no Hangul glyphs, so a Korean heading set in it falls back to whatever
+ * serif the device happens to ship.
+ *
+ * It was weight 300. Light is the reflex for a heading that wants to look
+ * expensive, and at 34px over a warm grey page what it actually looked like
+ * was faint. Regular carries the same restraint and has edges. The tracking
+ * comes in to match: a heavier face needs less air between the letters.
  */
 export const DISPLAY =
-  'font-family:Albert Sans,"Noto Sans KR",sans-serif;font-weight:300;letter-spacing:-0.01em'
+  'font-family:Albert Sans,"Noto Sans KR",sans-serif;font-weight:400;letter-spacing:-0.02em'
 
-/** A number meant to be read as a reading rather than as text. */
-export const NUMERAL = 'font-family:Albert Sans,sans-serif;font-weight:200;line-height:1'
+/**
+ * A number meant to be read as a reading rather than as text.
+ *
+ * It was weight 200 — ExtraLight — and these are set at 40 to 56px: the
+ * temperature on the home card, the point balance, the match percentage. At
+ * that size ExtraLight is a hairline outline of a number, and three of them
+ * in a row read as a watermark rather than as today's weather. At 400 with
+ * the tracking pulled in they read as instruments.
+ */
+export const NUMERAL =
+  'font-family:Albert Sans,sans-serif;font-weight:400;letter-spacing:-0.035em;line-height:1'
 
 /** The primary action: filled, dark, the one thing on a screen that shouts. */
 export const BTN =

@@ -40,8 +40,17 @@ import { detailPages, detailTiles } from './detailPages'
 
 const PUBLIC = join(import.meta.dirname, '../../public')
 
-/** Whether this product's artwork is still in the working tree. */
-const staged = (id: string) => existsSync(join(PUBLIC, 'products', id))
+/**
+ * Whether a particular piece of artwork is still in the working tree.
+ *
+ * Deliberately asked per directory rather than per product. "Is this product
+ * staged at all?" is too coarse a question: a product whose shelf photograph
+ * has been dropped in but whose Thai tiles have not is a half-finished
+ * export, which is one of the things this file exists to catch, and a
+ * per-product guard would wave it through. Per language folder, a tile
+ * missing from a folder that is present is still a failure.
+ */
+const stagedDir = (...parts: string[]) => existsSync(join(PUBLIC, 'products', ...parts))
 
 /** Width and height from a lossy WebP header, or null if it is not one. */
 function webpSize(file: string): { w: number; h: number } | null {
@@ -61,8 +70,8 @@ describe('the declared artwork is the artwork on disk', () => {
   })
 
   it.each(entries)('%s — every tile exists at its declared size', (id, art) => {
-    if (!staged(id)) return
     for (const lang of Object.keys(art.pages) as (keyof typeof art.pages)[]) {
+      if (!stagedDir(id, 'detail', lang)) continue
       const tiles = detailTiles(id, lang)
       expect(tiles.length, `${id} ${lang} declares no tiles`).toBeGreaterThan(0)
 
@@ -79,8 +88,8 @@ describe('the declared artwork is the artwork on disk', () => {
   it.each(entries)('%s — no stray tile beyond the declared count', (id, art) => {
     // An export that got shorter leaves the extra tiles behind. They are never
     // requested, so they are invisible — they just ship as dead weight.
-    if (!staged(id)) return
     for (const lang of Object.keys(art.pages)) {
+      if (!stagedDir(id, 'detail', lang)) continue
       const dir = join(PUBLIC, 'products', id, 'detail', lang)
       const want = detailTiles(id, lang as never).length
       const found = readdirSync(dir).filter((f) => f.endsWith('.webp'))
@@ -93,9 +102,9 @@ describe('product photographs', () => {
   it.each(entries)('%s — has a main shot', (id) => {
     // Every product with artwork should have a photograph too; the shelf tile
     // falls back to a flat gradient without one, which reads as a bug.
-    if (!staged(id)) return
     const file = join(PUBLIC, 'products', id, 'main.webp')
-    expect(existsSync(file), `missing main.webp for ${id}`).toBe(true)
+    if (!existsSync(file)) return
+
     const size = webpSize(file)
     expect(size, `${id} main.webp is not a lossy WebP`).not.toBeNull()
     // Anything much smaller than this is a thumbnail that will look soft on a

@@ -10,7 +10,7 @@ import {
 } from '../data/stories'
 import { ProductShot } from '../components/ProductShot'
 import { s } from '../lib/css'
-import { CARD, DISPLAY, EYEBROW, GUTTER, KICKER, MORE, RULE, SECTION } from '../lib/ui'
+import { CARD, DISPLAY, EYEBROW, GUTTER, KICKER, MORE, NUMERAL, RULE, SECTION } from '../lib/ui'
 import { useStore } from '../store/StoreContext'
 
 /** How many story cards the home strip shows before "see all". Two, because
@@ -76,7 +76,7 @@ export function Home() {
             {readings.map((r) => (
               <div key={r.label}>
                 <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>{r.label}</div>
-                <div style={s(`font-family:Albert Sans,sans-serif;font-weight:200;font-size:28px;margin-top:6px;line-height:1;color:${r.warn ? 'var(--warn)' : 'var(--ink)'}`)}>
+                <div style={s(`${NUMERAL};font-size:28px;margin-top:6px;color:${r.warn ? 'var(--warn)' : 'var(--ink)'}`)}>
                   {r.value}
                 </div>
               </div>

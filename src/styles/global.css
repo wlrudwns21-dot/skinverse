@@ -7,7 +7,35 @@
    caution, one red for failure, and a single neutral ramp for everything
    else. A new colour does not get invented at the call site — it gets a name
    here or it reuses one of these. That is what stops the drift back to the
-   forty-odd near-identical creams this replaced. */
+   forty-odd near-identical creams this replaced.
+
+   ── the second pass ─────────────────────────────────────────────────────────
+
+   The rule above said "one accent (deep green)" while --accent was #262621,
+   a near-black. The green had been designed and then lost, and what was left
+   was a screen with no hue on it anywhere: a warm grey page, warm grey
+   panels, warm grey type, and the only colour in the frame coming from the
+   product photography. Held at arm's length that does not read as restraint,
+   it reads as unfinished — the owner's word for it was 흐리멍텅, washed out.
+
+   Three things were doing it, and all three are fixed here and in ui.ts:
+
+   1. No accent. Restored, for real this time, as a deep pine green.
+   2. Display type at weight 200–300. A 56px numeral in ExtraLight on a warm
+      grey ground is a ghost. See NUMERAL and DISPLAY in src/lib/ui.ts.
+   3. Shadows wide enough to read as fog rather than as an edge. Tightened.
+
+   The page also lost its yellow, and this is the change that does the most
+   work. #EFEDE7 is a visibly warm cream, which is a fine ground for a brand
+   selling botanicals and the wrong one for this catalogue: AESTURA, ANUA and
+   AHC all photograph their products on cool blue and white, and 25 product
+   tiles of cool photography on a warm cream page make the page look dirty
+   and the photographs look like they were pasted in from somewhere else.
+
+   The neutral ramp is cool now, with a trace of the accent's green in it, so
+   the page, the cards and the merchandise are finally the same temperature.
+   It is still a tinted ground rather than white — white behind a white
+   product tile would lose the tile. */
 :root {
   /* ── grounds ───────────────────────────────────────────────────────────────
      Three rungs, and they have to be far enough apart to see.
@@ -16,14 +44,14 @@
      apart, which is 1.03:1. Sixty-one cards were drawn on --surface and not
      one of them read as a card, so every screen arrived as a single column of
      text with nothing to hold on to. The page is the darkest rung now and the
-     card is white, 1.17:1 apart, which is a visible edge without a border.
+     card is white, 1.20:1 apart, which is a visible edge without a border.
 
      Order matters: --surface-2 sits between them, so an inset inside a card
      reads as recessed and a panel on the page reads as raised, using the one
      token either way. */
-  --bg: #EFEDE7;
+  --bg: #EAECEA;
   --surface: #FFFFFF;
-  --surface-2: #F7F6F2;
+  --surface-2: #F4F6F4;
 
   /* Corner radius. A card, a control, a photograph frame. */
   --radius-sm: 8px;
@@ -33,30 +61,36 @@
   /* Elevation. Two layers: a hairline-weight shadow that defines the edge at
      any size, and a wider soft one that lifts it off the page. Neither is
      dark enough to read as a drop shadow — they do the job a border would,
-     without the border's hard line. */
-  --shadow-card: 0 1px 2px rgba(20, 18, 12, 0.05), 0 8px 20px -12px rgba(20, 18, 12, 0.14);
-  --shadow-raised: 0 2px 4px rgba(20, 18, 12, 0.06), 0 14px 32px -16px rgba(20, 18, 12, 0.20);
+     without the border's hard line.
+
+     The second layer used to spread 20px at 14% from 8px down, which at card
+     size is not an edge, it is a haze: the card did not sit on the page, it
+     dissolved into it. Half the blur, a shorter drop and a touch more
+     opacity, and the same two layers draw a line you can actually find. */
+  --shadow-card: 0 1px 2px rgba(18, 24, 20, 0.07), 0 5px 12px -8px rgba(18, 24, 20, 0.16);
+  --shadow-raised: 0 2px 4px rgba(18, 24, 20, 0.08), 0 10px 22px -12px rgba(18, 24, 20, 0.22);
 
   /* Text and icons, darkest to lightest. Every rank here clears WCAG AA
      (4.5:1) on --bg, and the screens use --ink-4 for real sentences, so that
      is a rule the ramp has to keep rather than a guideline.
 
-     --ink-4 went from #74746D to #6A6A63 when the page ground was darkened:
-     at the old value it measured 4.58:1 on the old page and would have been
-     4.02:1 on this one, which is a fail. It is 4.65:1 now on the page, 5.45:1
-     on a card. The darker ground buys the other three ranks nothing they
-     needed and costs them nothing. */
+     Every rank moved down a step in the second pass. --ink-4 is the one that
+     matters, because the screens set real sentences in it: it was 4.65:1 on
+     the page, which passes and still looks faded, and is 5.02:1 on the page
+     and 6.05:1 on a card now. The three ranks above it gain the same margin.
+     Passing AA is the floor here, not the target — the complaint was never
+     that the text was illegible, it was that it looked washed out. */
   --ink: #101010;
-  --ink-2: #4A4A44;
-  --ink-3: #5C5C57;
-  --ink-4: #6A6A63;
+  --ink-2: #434340;
+  --ink-3: #54564F;
+  --ink-4: #62645C;
 
   /* hairlines. --line for dividers, --line-2 for input borders, which need to
      read as an edge you can type inside. Both were a step too pale to survive
      the new ground — the old --line was 1.06:1 on the page, which is a line
      nobody can see doing the job of separating two things. */
-  --line: #E2DFD7;
-  --line-2: #D6D1C5;
+  --line: #DBDEDA;
+  --line-2: #C9CEC9;
 
   /* The ground for a panel — the points header, the missions strip, the
      progress bar, the core tip. It used to invert the page: near-black with
@@ -64,14 +98,30 @@
      It is a warm light grey now, so a panel separates a section without
      punching a hole in the page, and the text on it is ink like everywhere
      else. --on-panel-2 is the secondary rank, at 4.9:1. */
-  --panel: #E4DFD4;
+  --panel: #DDE3DF;
   --on-panel: #101010;
-  --on-panel-2: #5A5247;
+  --on-panel-2: #4F514B;
   /* The empty part of a progress bar drawn on the panel. --line-2 is only
      three steps off the panel itself, so a track painted in it disappears and
      a bar at 0% looks like no bar at all. Ink at 14% is faint enough to stay
      a track and dark enough to show where the fill is going. */
   --on-panel-track: rgba(16, 16, 16, 0.14);
+
+  /* ── the deep panel ────────────────────────────────────────────────────────
+     One block, on one screen: the points balance at the top of Rewards.
+
+     --panel is a light tone because it has to work six times over, including
+     once where --on-panel is set on a white card (the core tip in Stories) —
+     so --panel cannot go dark without making that text white on white. But
+     the balance is the single number anyone opens that screen for, and as a
+     pale slab it read as the emptiest thing in the app.
+
+     So it gets its own pair rather than bending the shared one. Deep accent,
+     white on it at 11.9:1, and a track light enough to show a bar at 0%. */
+  --panel-deep: #1C3D30;
+  --on-panel-deep: #FFFFFF;
+  --on-panel-deep-2: rgba(255, 255, 255, 0.74);
+  --on-panel-deep-track: rgba(255, 255, 255, 0.22);
 
   /* The accent, and the one lesson of getting here: a token that is both a
      fill and a text colour cannot be made light. --accent went pale and every
@@ -85,17 +135,28 @@
      It was a warm light grey, one step off the page, on the reasoning that
      the photograph should be the only colour on screen. That holds for a
      panel and fails for a button: a call to action at 1.09:1 against its own
-     page is not quiet, it is missing. Dark ink gives every screen one anchor
-     and still introduces no new hue — the palette is the same warm neutral
-     ramp, used at the other end.
+     page is not quiet, it is missing. So it became dark ink — which fixed
+     the button and left the app with no hue anywhere.
 
-     --link writes: links, prices, the "see all" at the end of a section. */
-  --accent: #262621;
-  --accent-strong: #3B3B33;
-  --link: #4A443A;
+     It is a deep pine green now, which is what the rule at the top of this
+     file said it was all along. One colour, dark enough that white sits on
+     it at 11.9:1, saturated enough to be a colour rather than a grey that
+     happens to lean green. Every primary button, selected chip and chart bar
+     becomes the one thing on the screen that is not neutral, which is the
+     whole job of an accent.
+
+     --link writes: links, prices, the "see all" at the end of a section —
+     and, in three components, the healthy end of a traffic light whose other
+     two stops are --warn-mid and --danger. That reading was invisible while
+     this was a brown-grey: "온화" and "쾌적" were set in the same colour as
+     the sentence under them. Green against amber against red is a scale a
+     reader already knows. */
+  --accent: #1C3D30;
+  --accent-strong: #12291F;
+  --link: #1C3D30;
   /* Fills and tints that sit under or beside the accent. */
-  --accent-mid: #BFB8AA;
-  --accent-soft: #F3F1EC;
+  --accent-mid: #9FB3A8;
+  --accent-soft: #EDF1EE;
 
   /* text drawn on top of a dark fill or a photo. --on-dark-2 is the secondary
      rank — a muted white, not a grey, so it holds up over a photograph. */
@@ -115,16 +176,16 @@
      because a colour channel cannot come from another custom property. */
   /* Stand-in grounds for product shots that have not been taken. Three tones
      a hair apart, so a shelf of them reads as one shelf. */
-  --ph-a: #E3E6E4;
-  --ph-b: #E9E6E1;
-  --ph-c: #E4E5E8;
+  --ph-a: #E2E7E4;
+  --ph-b: #E7EAE7;
+  --ph-c: #E1E6EA;
 
-  --bg-blur: rgba(239, 237, 231, 0.92);
+  --bg-blur: rgba(234, 236, 234, 0.92);
   --surface-blur: rgba(255, 255, 255, 0.94);
 
   /* caution: a limit, a warning, a thing to watch. Not a failure. */
   --warn: #8A4A18;
-  --warn-mid: #B5753A;
+  --warn-mid: #9F6430;
   --warn-soft: #F5EFE7;
 
   /* failure: a rejected payment, a dispute, an error. */
@@ -147,8 +208,16 @@
   --scrim-dark: linear-gradient(to top, rgba(12, 16, 13, 0.82), rgba(12, 16, 13, 0.58) 34%, rgba(12, 16, 13, 0.28) 64%, rgba(12, 16, 13, 0));
   /* The same ramp the other way up, for a photograph whose lower third is
      already pale. It lifts the background toward --bg rather than darkening
-     it, so ink text reads without the picture turning grey. */
-  --scrim-light: linear-gradient(to top, rgba(239, 237, 231, 0.90), rgba(239, 237, 231, 0.66) 34%, rgba(239, 237, 231, 0.28) 64%, rgba(239, 237, 231, 0));
+     it, so ink text reads without the picture turning grey.
+
+     It is steeper than it was. The old ramp spent 0.66 opacity at a third of
+     the way up and 0.28 at two thirds, which over a pale photograph is not a
+     scrim, it is a dust sheet: the sky behind the routine readings arrived as
+     a blue smear with no horizon in it, and the hero dissolved into the page
+     a third of the way down. More opacity where the text actually sits, and
+     a much faster fall-off above it, so the photograph is a photograph again
+     everywhere the type is not. */
+  --scrim-light: linear-gradient(to top, rgba(234, 236, 234, 0.94), rgba(234, 236, 234, 0.82) 22%, rgba(234, 236, 234, 0.40) 54%, rgba(234, 236, 234, 0));
 }
 
 body {
