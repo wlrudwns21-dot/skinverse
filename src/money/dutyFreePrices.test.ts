@@ -3,9 +3,12 @@ import { SEED_CATALOG } from '../catalog/remote'
 import {
   ANUA_DUTY_FREE,
   AUTHORING_KRW_PER_USD,
+  CAPTURE_1019_KRW_PER_USD,
+  CEPOLAB_DUTY_FREE,
   DALBA_DUTY_FREE,
   DUTY_FREE_KRW_PER_USD,
   DUTY_FREE_TABLES,
+  SULWHASOO_DUTY_FREE,
   allDutyFreeRows,
   authoredKrw,
   dutyFreeUsd,
@@ -18,33 +21,61 @@ import { FALLBACK_RATES } from './fx'
  * 있습니다. 그걸 잡는 게 첫 번째 테스트입니다.
  *
  * 면세점은 달러에 그날 환율을 곱하고 올림해서 원화를 씁니다. 그래서 두 숫자
- * 사이에는 지켜야 할 관계가 있고, 16행이 **전부** 같은 환율 하나로 맞는다는
- * 건 우연으로 일어나지 않습니다. 한 자리라도 잘못 읽었으면 그 행만 어긋납니다.
+ * 사이에는 지켜야 할 관계가 있고, 한 표의 모든 행이 **전부** 같은 환율 하나로
+ * 맞는다는 건 우연으로 일어나지 않습니다. 한 자리라도 잘못 읽었으면 그 행만
+ * 어긋납니다.
  */
 describe('면세점 가격표', () => {
-  it('달러와 원화가 환율 하나로 전부 맞는다', () => {
-    // 두 캡처가 다른 날 다른 브랜드관에서 왔는데 같은 환율 하나로 맞습니다.
-    for (const [brand, rows] of Object.entries(DUTY_FREE_TABLES)) {
+  it('달러와 원화가 표마다 자기 환율 하나로 전부 맞는다', () => {
+    // 2026-10-11 캡처 둘은 같은 환율이고, 10-19 캡처 둘은 또 다른 같은
+    // 환율입니다. 표가 자기 환율을 들고 있지 않으면 이 검산을 할 수 없습니다.
+    for (const [brand, { krwPerUsd, rows }] of Object.entries(DUTY_FREE_TABLES)) {
       for (const r of rows) {
         if (r.krw === undefined) continue
-        expect(Math.ceil(r.usd * DUTY_FREE_KRW_PER_USD), `${brand} ${r.ko}`).toBe(r.krw)
+        expect(Math.ceil(r.usd * krwPerUsd), `${brand} ${r.ko}`).toBe(r.krw)
       }
     }
   })
 
-  it('원화를 읽지 못한 행은 딱 하나이고, 그 사실이 보인다', () => {
+  it('정가가 적힌 행은 판매가보다 비싸다', () => {
+    // 정가와 판매가를 거꾸로 옮겨 적는 건 눈으로는 안 보이고 화면에서는
+    // 할인율이 사라지는 것으로만 드러납니다. 여기서 잡습니다.
+    for (const r of allDutyFreeRows()) {
+      if (r.listUsd === undefined) continue
+      expect(r.listUsd, r.ko).toBeGreaterThan(r.usd)
+    }
+  })
+
+  it('원화를 읽지 못한 행이 몇 개인지 못 박는다', () => {
     // 비워 두는 건 봐주는 게 아니라 기록입니다. 조용히 늘어나면 검산이
-    // 통과해도 의미가 없어지므로, 몇 개인지 여기에 못 박습니다.
+    // 통과해도 의미가 없어지므로, 어느 행인지 여기에 적어 둡니다.
     const unread = allDutyFreeRows().filter((r) => r.krw === undefined)
-    expect(unread.map((r) => r.ko)).toEqual(['화이트 트러플 더블 세럼 아이 크림 70g'])
+    expect(unread.map((r) => r.ko)).toEqual([
+      '화이트 트러플 더블 세럼 아이 크림 70g',
+      // 세포랩 캡처가 그리드 아래쪽에서 잘린 네 행.
+      '바이오제닉 에센스 90% (100ml)',
+      '바이오제닉 에센스 하이드레이션 90% (100ml)',
+      '바이오제닉 에센스 하이드레이션 90% (155ml)',
+      '바이오제닉 에센스 블랜디드 포뮬라 50% (30ml)',
+    ])
   })
 
   it('표마다 행 수가 맞고, 같은 제품이 두 번 적혀 있지 않다', () => {
     expect(ANUA_DUTY_FREE).toHaveLength(16)
     expect(DALBA_DUTY_FREE).toHaveLength(25)
-    for (const [brand, rows] of Object.entries(DUTY_FREE_TABLES)) {
+    expect(SULWHASOO_DUTY_FREE).toHaveLength(15)
+    expect(CEPOLAB_DUTY_FREE).toHaveLength(15)
+    for (const [brand, { rows }] of Object.entries(DUTY_FREE_TABLES)) {
       expect(new Set(rows.map((r) => r.ko)).size, brand).toBe(rows.length)
     }
+  })
+
+  it('10-19 캡처 두 표는 같은 환율을 쓴다', () => {
+    // 같은 날 같은 사이트에서 받았으니 같아야 하고, 갈라지면 둘 중 하나를
+    // 잘못 읽은 것입니다.
+    expect(DUTY_FREE_TABLES['설화수'].krwPerUsd).toBe(CAPTURE_1019_KRW_PER_USD)
+    expect(DUTY_FREE_TABLES['세포랩'].krwPerUsd).toBe(CAPTURE_1019_KRW_PER_USD)
+    expect(CAPTURE_1019_KRW_PER_USD).not.toBe(DUTY_FREE_KRW_PER_USD)
   })
 
   it('가격은 양수여야 한다', () => {

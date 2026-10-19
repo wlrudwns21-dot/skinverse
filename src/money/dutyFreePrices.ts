@@ -36,6 +36,20 @@ export const AUTHORING_KRW_PER_USD = FALLBACK_RATES.USD.krwPerUnit
  */
 export const DUTY_FREE_KRW_PER_USD = 1339.2
 
+/**
+ * 설화수·세포랩 표를 캡처한 화면의 환율. 2026-10-19.
+ *
+ * 앞의 두 표와 다릅니다 — 날이 다르면 환율도 다릅니다. 표마다 환율을 따로
+ * 들고 있어야 하는 이유가 이것이고, 그래서 `DUTY_FREE_TABLES`가 행 배열이
+ * 아니라 {환율, 행} 묶음으로 바뀌었습니다.
+ *
+ * 설화수 15행과 세포랩 11행(원화를 읽은 것만)이 전부 이 값 하나로 맞습니다.
+ * 두 브랜드관이 같은 환율이라는 건 같은 날 같은 사이트에서 받았다는 뜻이라,
+ * 상수도 브랜드가 아니라 캡처 날짜로 하나만 둡니다 — 둘로 나눠 적으면 같아야
+ * 할 두 숫자가 언젠가 갈라집니다.
+ */
+export const CAPTURE_1019_KRW_PER_USD = 1348.5
+
 export interface DutyFreeRow {
   /** 면세점 화면에 적힌 한글 제품명. */
   ko: string
@@ -50,9 +64,21 @@ export interface DutyFreeRow {
    * 값 자체는 고칠 것이 없습니다 — 우리는 판매가에 팔기로 했고 DB에 든 것도
    * 판매가입니다. 틀린 것은 이름뿐이었고, 할인 폭이 브랜드마다 다르다는 사실
    * (에스트라 20%, 아누아·AHC 40%, 달바는 제품별)이 그 이름 때문에 보이지
-   * 않았습니다. 정가를 담을 자리는 아직 없습니다.
+   * 않았습니다.
    */
   usd: number
+  /**
+   * 같은 화면의 **정가**(USD) — 취소선으로 긋는 값.
+   *
+   * 한동안 담을 자리가 없었습니다. 이제 DB에 `list_price`가 있고 화면이
+   * 할인율을 찍으므로, 캡처에 정가가 보이면 여기 적습니다. 아누아·달바
+   * 캡처에는 판매가만 있어 비어 있고, 2026-10-19 캡처에는 둘 다 있습니다.
+   *
+   * 비워 두는 쪽이 0을 넣는 것보다 낫습니다. `offPercent()`가 0을 "모름"으로
+   * 읽어 취소선을 지우도록 만들어져 있고, 없는 숫자를 지어내면 그 구분이
+   * 사라집니다.
+   */
+  listUsd?: number
   /**
    * 같은 화면의 원화. `ceil(usd × DUTY_FREE_KRW_PER_USD)`로 검산됩니다.
    *
@@ -204,10 +230,95 @@ export const DALBA_DUTY_FREE: DutyFreeRow[] = [
   { ko: '워터풀 톤업 라이트 에센스 선 세럼 50ml', usd: 16.06, krw: 21508, unsureName: true },
 ]
 
-/** 지금까지 적어둔 면세점 가격표 전부. */
-export const DUTY_FREE_TABLES: Record<string, DutyFreeRow[]> = {
-  ANUA: ANUA_DUTY_FREE,
-  "d'Alba": DALBA_DUTY_FREE,
+/**
+ * 설화수 브랜드관, 2026-10-19 캡처. 15종.
+ *
+ * 처음으로 정가와 판매가가 **둘 다** 찍힌 캡처입니다. 그래서 `listUsd`가
+ * 생겼고, 할인 폭이 제품마다 34 / 37 / 39%로 갈린다는 것도 보입니다 —
+ * 판매가만 적던 때라면 보이지 않았을 사실입니다.
+ *
+ * 아직 파는 제품이 없습니다. 제품이 올라올 때 쓰려고 적어둡니다.
+ */
+export const SULWHASOO_DUTY_FREE: DutyFreeRow[] = [
+  { ko: '에센셜 데일리 세트 (2종)', listUsd: 94, usd: 56.93, krw: 76771 },
+  { ko: '순행클렌징폼 듀오세트', listUsd: 47, usd: 28.46, krw: 38379 },
+  { ko: '윤조에센스 6세대 90ml 듀오', listUsd: 158, usd: 103.55, krw: 139638 },
+  { ko: 'New 탄력크림 EX 듀오', listUsd: 152, usd: 92.05, krw: 124130 },
+  { ko: '자음생 2종 세트', listUsd: 141, usd: 86.01, krw: 115985 },
+  { ko: '에센셜 탄력케어 세트 (3종)', listUsd: 153, usd: 92.65, krw: 124939 },
+  { ko: '윤조에센스 120ml 듀오', listUsd: 192, usd: 126.72, krw: 170882 },
+  { ko: '퍼펙팅쿠션 (본품15g+리필15g)', listUsd: 56, usd: 35.07, krw: 47292 },
+  { ko: '자음생 아이크림 듀오', listUsd: 147, usd: 89.04, krw: 120071 },
+  { ko: '자음생 캡슐세럼 듀오', listUsd: 265, usd: 173.67, krw: 234194 },
+  { ko: '자음생 인텐시브 3종 기획세트', listUsd: 288, usd: 190.08, krw: 256323 },
+  { ko: '자음생 캡슐세럼 단품 기획세트', listUsd: 147, usd: 97.02, krw: 130832 },
+  { ko: 'NEW 옥용팩 듀오', listUsd: 70, usd: 42.7, krw: 57581 },
+  { ko: 'NEW 옥용팩 120ml', listUsd: 39, usd: 24.57, krw: 33133 },
+  { ko: '윤조90, 자음생리치 2종기획세트 (LTD)', listUsd: 231, usd: 152.46, krw: 205593 },
+]
+
+/**
+ * 세포랩(cepoLAB) 브랜드관, 2026-10-19 캡처. 15종.
+ *
+ * 전 품목 38% 단일 할인입니다 — 설화수처럼 제품마다 갈리지 않습니다.
+ *
+ * 네 행은 캡처가 그리드 아래쪽에서 잘려 원화를 읽지 못했습니다. 환율이
+ * 나머지 열한 행으로 확정돼 있으니 산술로 채울 수는 있지만, 그러면 검산
+ * 테스트가 제 답을 제가 채점하는 꼴이 됩니다. 읽지 못한 건 비워 둡니다.
+ *
+ * 아직 파는 제품이 없습니다.
+ */
+export const CEPOLAB_DUTY_FREE: DutyFreeRow[] = [
+  // 이름이 "(100ml*2…" 에서 잘렸습니다. 수량 표기가 더 붙을 수 있습니다.
+  {
+    ko: '[면세단독] 바이오제닉 에센스 90% 듀오 Set (100ml*2)',
+    listUsd: 81,
+    usd: 50.01,
+    krw: 67439,
+    unsureName: true,
+  },
+  { ko: '바이오제닉 에센스 90% 트리오 Set (100ml*3)', listUsd: 115, usd: 71.01, krw: 95757 },
+  { ko: '바이오제닉 모이스처라이저 (80ml)', listUsd: 22, usd: 13.58, krw: 18313 },
+  { ko: '바이오제닉 에센스 90% (30ml*2)', listUsd: 28, usd: 17.29, krw: 23316 },
+  { ko: '바이오제닉 에센스 90% (100ml)', listUsd: 43, usd: 26.55 },
+  { ko: '바이오제닉 에센스 하이드레이션 90% (100ml)', listUsd: 43, usd: 26.55 },
+  { ko: '바이오제닉 에센스 하이드레이션 90% (155ml)', listUsd: 76, usd: 46.93 },
+  { ko: '바이오제닉 에센스 블랜디드 포뮬라 50% (30ml)', listUsd: 9, usd: 5.55 },
+  { ko: '바이오제닉 에센스 블랜디드 포뮬라 50% (100ml)', listUsd: 27, usd: 16.67, krw: 22480 },
+  { ko: '바이오제닉 리바이브 마스크팩 (12g*4p)', listUsd: 24, usd: 14.82, krw: 19985 },
+  { ko: '바이오제닉 솝 밸류팩 (100g*3ea)', listUsd: 30, usd: 18.52, krw: 24975 },
+  { ko: '바이오제닉 에센스 90% (30ml)', listUsd: 15, usd: 9.26, krw: 12488 },
+  // 이름이 "& 모이스…" 에서 잘렸습니다. 모이스처라이저와의 묶음으로 보입니다.
+  {
+    ko: '[면세단독] 바이오제닉 에센스 90% (155ml) & 모이스처라이저',
+    listUsd: 93,
+    usd: 57.42,
+    krw: 77431,
+    unsureName: true,
+  },
+  { ko: '바이오제닉 에센스 90% (155ml)', listUsd: 76, usd: 46.93, krw: 63286 },
+  { ko: '바이오제닉 솝 (100g)', listUsd: 12, usd: 7.41, krw: 9993 },
+]
+
+/** 한 번의 캡처에서 나온 가격표 하나. */
+export interface DutyFreeTable {
+  /** 그 화면이 쓰고 있던 환율. 캡처마다 다릅니다. */
+  krwPerUsd: number
+  rows: DutyFreeRow[]
+}
+
+/**
+ * 지금까지 적어둔 면세점 가격표 전부.
+ *
+ * 환율이 표 안에 들어 있는 건 2026-10-19 캡처 때문입니다. 그 전까지는 두
+ * 표가 우연히 같은 환율이라 상수 하나로 검산이 됐는데, 날이 다르면 환율도
+ * 다릅니다. 검산이 전부 통과하려면 표마다 자기 환율을 들고 있어야 합니다.
+ */
+export const DUTY_FREE_TABLES: Record<string, DutyFreeTable> = {
+  ANUA: { krwPerUsd: DUTY_FREE_KRW_PER_USD, rows: ANUA_DUTY_FREE },
+  "d'Alba": { krwPerUsd: DUTY_FREE_KRW_PER_USD, rows: DALBA_DUTY_FREE },
+  설화수: { krwPerUsd: CAPTURE_1019_KRW_PER_USD, rows: SULWHASOO_DUTY_FREE },
+  세포랩: { krwPerUsd: CAPTURE_1019_KRW_PER_USD, rows: CEPOLAB_DUTY_FREE },
 }
 
 /**
@@ -236,7 +347,7 @@ export function settledUsd(krw: number, rate = AUTHORING_KRW_PER_USD): number {
 
 /** 적어둔 모든 가격표에서 제품 id로 달러 판매가 찾기. 없으면 null. */
 export function dutyFreeUsd(productId: string): number | null {
-  for (const rows of Object.values(DUTY_FREE_TABLES)) {
+  for (const { rows } of Object.values(DUTY_FREE_TABLES)) {
     const hit = rows.find((r) => r.productId === productId)
     if (hit) return hit.usd
   }
@@ -244,4 +355,5 @@ export function dutyFreeUsd(productId: string): number | null {
 }
 
 /** 모든 가격표의 행을 한 줄로. 검산 테스트가 씁니다. */
-export const allDutyFreeRows = (): DutyFreeRow[] => Object.values(DUTY_FREE_TABLES).flat()
+export const allDutyFreeRows = (): DutyFreeRow[] =>
+  Object.values(DUTY_FREE_TABLES).flatMap((t) => t.rows)
