@@ -23,12 +23,38 @@ import { dewPoint, drynessBand, type DrynessBand } from './climate'
 
 // ── the inputs a product is scored against ──────────────────────────────────
 
+/** One axis a product speaks to, and how strongly. */
+export interface FitAxis {
+  axis: MetricKey | 'uv'
+  strength: 'primary' | 'secondary'
+}
+
 /** Just enough of a product to rank it; the caller keeps the rest. */
 export interface Rankable {
   id: string
   tag: ProductTag
-  /** The axis it answers to. `uv` means it is scored against the UV index. */
+  /**
+   * The axis it answers to. `uv` means it is scored against the UV index.
+   *
+   * Still here, and still single, because the modifiers below are about the
+   * product's headline purpose: whether the report singled out *this* axis,
+   * whether *this* axis is falling. Breadth is handled by `fits`.
+   */
   metric: MetricKey | 'uv'
+  /**
+   * Every axis the product speaks to, from the catalogue's own `fits` column.
+   *
+   * This was sitting unused while the score was computed from `metric` alone,
+   * and it is the difference between ranking a product and ranking the
+   * shelf it is filed on. Two AESTURA hydration creams scored identically
+   * for every customer, for ever, because the only thing being looked at was
+   * the word "Hydration" — while the catalogue already recorded that one of
+   * them also answers to sensitivity and the other does not.
+   *
+   * Empty is allowed and falls back to `metric` as a lone primary, so a
+   * product registered without the column still ranks the way it used to.
+   */
+  fits?: FitAxis[]
 }
 
 export interface RecommendContext {
@@ -57,6 +83,8 @@ export interface RecommendContext {
 export type ReasonKind =
   /** The axis this product targets is low on its own terms. */
   | 'axisNeed'
+  /** It also speaks to other axes this customer is short on. */
+  | 'alsoHelps'
   /** It targets the axis the report singled out. */
   | 'focusAxis'
   /** That axis has been getting worse. */
@@ -90,8 +118,29 @@ export interface Reason {
 
 export interface Recommendation {
   id: string
-  /** 0–99. Presented as a match percentage. */
+  /**
+   * The ranking signal. Higher means "put this nearer the top".
+   *
+   * **Not a percentage, and not for printing.** It is dominated by how far
+   * behind the customer's skin is on the axis the product answers to, which
+   * is the right way to order a shelf and a terrible thing to show someone:
+   * it was being printed as "매치 %", so a customer whose skin measured 85
+   * across the board was told that 24 of our 25 products were a 15% match.
+   * Good skin made the shop say "none of this is for you".
+   *
+   * Use {@link Recommendation.match} for display. `rank` fills it in.
+   */
   score: number
+  /**
+   * 0–100, and the number the shop prints.
+   *
+   * It answers the question a shopper is actually asking — "how well does
+   * this suit me compared with everything else here?" — by placing `score`
+   * on the range this customer's own catalogue spans. So it says nothing
+   * about how bad anyone's skin is, which is not a shopper's question and
+   * was never what the old number meant either, however it was labelled.
+   */
+  match: number
   /** Biggest contribution first, so the screen can show the top one or two. */
   reasons: Reason[]
 }
@@ -146,6 +195,32 @@ export const WEIGHTS = {
   ownership: 7,
 } as const
 
+/**
+ * How much of a secondary axis's need counts, and how much breadth can earn.
+ *
+ * A product that also helps with something else is worth more, and the honest
+ * amount is "a bit". Two guards keep it there.
+ *
+ * The weight is well under half, because a secondary claim is the maker's
+ * "and it also…", not what the product was formulated around.
+ *
+ * The cap is the one that matters, and it exists because of how this data is
+ * produced: `fits` is typed in per product, and without a ceiling the ranking
+ * would reward whoever wrote the longest list. A sunscreen with four axes
+ * recorded would beat an identical sunscreen with three, which is a fact
+ * about data entry and not about either product. Breadth is also averaged
+ * rather than summed, so listing the same need twice in different words
+ * cannot buy anything either.
+ */
+const SECONDARY_WEIGHT = 0.35
+const BREADTH_CAP = 14
+
+/** Where the printed match percentage starts and stops. */
+const MATCH_FLOOR = 58
+const MATCH_CEIL = 96
+/** What everything scores when nothing separates it — see `toMatch`. */
+const MATCH_FLAT = 76
+
 const isDryAir = (d: DrynessBand) => d === 'drying' || d === 'harsh' || d === 'severe'
 const isHot = (t: TempBand) => t === 'warm' || t === 'hot'
 const isCold = (t: TempBand) => t === 'cold' || t === 'cool'
@@ -191,15 +266,51 @@ export function scoreProduct(product: Rankable, context: RecommendContext): Reco
     reasons.push({ kind, points })
   }
 
-  // Base: how badly the thing this product addresses is doing.
-  if (product.metric === 'uv') {
-    add('uvLoad', UV_NEED[uv])
-  } else {
-    // A score of 40 is a need of 60. Linear on purpose — the scale is already
-    // the vendor's own judgement of severity, so re-curving it would be us
-    // second-guessing a model we cannot see.
-    add('axisNeed', 100 - context.metrics[product.metric])
+  /**
+   * How much help one axis is asking for.
+   *
+   * A score of 40 is a need of 60. Linear on purpose — the scale is already
+   * the vendor's own judgement of severity, so re-curving it would be us
+   * second-guessing a model we cannot see.
+   */
+  const need = (axis: MetricKey | 'uv') =>
+    axis === 'uv' ? UV_NEED[uv] : 100 - context.metrics[axis]
 
+  // Fall back to the headline axis for a product registered before `fits`.
+  const fits: FitAxis[] =
+    product.fits && product.fits.length > 0
+      ? product.fits
+      : [{ axis: product.metric, strength: 'primary' }]
+
+  const primary = fits.filter((f) => f.strength === 'primary')
+  const secondary = fits.filter((f) => f.strength !== 'primary')
+
+  /*
+   * Base: how badly the things this product is *for* are doing.
+   *
+   * The mean rather than the sum. A balm that is primary on both elasticity
+   * and wrinkles is one product doing one job well, not two products — summing
+   * would put it on a different scale from every single-axis item and it would
+   * win every list by arithmetic.
+   */
+  const base = primary.length
+    ? primary.reduce((sum, f) => sum + need(f.axis), 0) / primary.length
+    : need(product.metric)
+  add(primary.some((f) => f.axis === 'uv') ? 'uvLoad' : 'axisNeed', Math.round(base))
+
+  // And a bounded nod to what else it covers.
+  if (secondary.length) {
+    const mean = secondary.reduce((sum, f) => sum + need(f.axis), 0) / secondary.length
+    add('alsoHelps', Math.min(BREADTH_CAP, Math.round(mean * SECONDARY_WEIGHT)))
+  }
+
+  /*
+   * The report's focus and the fall both name a single axis, so they are
+   * asked about the product's headline purpose rather than its whole list —
+   * a sunscreen that happens to list pigmentation as a secondary is not the
+   * product the report meant when it singled pigmentation out.
+   */
+  if (product.metric !== 'uv') {
     if (context.focus === product.metric) add('focusAxis', WEIGHTS.focusAxis)
     if (context.falling.includes(product.metric)) add('axisFalling', WEIGHTS.axisFalling)
   }
@@ -263,11 +374,40 @@ export function scoreProduct(product: Rankable, context: RecommendContext): Reco
 
   return {
     id: product.id,
-    // Capped below 100: a match percentage of exactly 100 claims a certainty
-    // no skin analysis has.
-    score: Math.max(1, Math.min(99, Math.round(total))),
+    score: Math.round(total),
+    // Only `rank` can work this out, because it depends on the rest of the
+    // catalogue. Scoring one product on its own leaves it at the flat value
+    // rather than inventing a comparison there is nothing to make.
+    match: MATCH_FLAT,
     reasons,
   }
+}
+
+/**
+ * Turn ranking scores into the percentages the shop prints.
+ *
+ * Relative, and deliberately so. "How well does this suit me?" only has an
+ * answer next to the alternatives — a customer comparing two serums wants to
+ * know which one is more for them, and neither "your hydration is 48" nor
+ * "this product is objectively 64% good" is that answer.
+ *
+ * It is also the only way the number survives healthy skin. Anchored to a
+ * fixed scale, a customer measuring 85 everywhere needs little enough that
+ * every product lands at the bottom of it, and we are back to a shop telling
+ * someone with good skin that nothing suits them.
+ *
+ * When nothing separates the catalogue — every product scoring the same,
+ * which is what a perfectly flat set of readings produces — there is no
+ * ranking to express and everything gets the same middling number. Spreading
+ * a tie across the full range would be inventing a recommendation.
+ */
+function toMatch(scores: number[]): number[] {
+  const hi = Math.max(...scores)
+  const lo = Math.min(...scores)
+  if (hi - lo < 1) return scores.map(() => MATCH_FLAT)
+  return scores.map((s) =>
+    Math.round(MATCH_FLOOR + ((MATCH_CEIL - MATCH_FLOOR) * (s - lo)) / (hi - lo)),
+  )
 }
 
 /**
@@ -278,8 +418,12 @@ export function rank<T extends Rankable>(
   products: T[],
   context: RecommendContext,
 ): Recommendation[] {
-  return products
-    .map((product) => scoreProduct(product, context))
+  const scored = products.map((product) => scoreProduct(product, context))
+  const matches = toMatch(scored.map((r) => r.score))
+  // Monotonic in `score`, so sorting by one and printing the other can never
+  // produce a list whose percentages run out of order.
+  return scored
+    .map((r, i) => ({ ...r, match: matches[i] }))
     .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
 }
 

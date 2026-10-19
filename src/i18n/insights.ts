@@ -150,6 +150,7 @@ const ko: InsightStrings = {
 
   reason: {
     axisNeed: '가장 필요한 항목',
+    alsoHelps: '다른 항목도 함께 케어',
     polluted: '미세먼지 많음',
     hasIt: '이미 보유 중', runningOut: '다 쓰실 때가 됐어요',
     focusAxis: '이번 집중 항목',
@@ -261,6 +262,7 @@ const en: InsightStrings = {
 
   reason: {
     axisNeed: 'Your lowest-scoring need',
+    alsoHelps: 'Also covers other needs',
     polluted: 'High particulates',
     hasIt: 'Already have it', runningOut: 'About to run out',
     focusAxis: 'This cycle’s focus',
@@ -372,6 +374,7 @@ const zh: InsightStrings = {
 
   reason: {
     axisNeed: '最需要改善的一项',
+    alsoHelps: '同时兼顾其他项目',
     polluted: '雾霾较重',
     hasIt: '已购买', runningOut: '快用完了',
     focusAxis: '本轮重点',
@@ -483,6 +486,7 @@ const th: InsightStrings = {
 
   reason: {
     axisNeed: 'จุดที่ต้องการที่สุด',
+    alsoHelps: 'ดูแลจุดอื่นด้วย',
     polluted: 'ฝุ่นละอองสูง',
     hasIt: 'มีอยู่แล้ว', runningOut: 'ใกล้หมดแล้ว',
     focusAxis: 'จุดเน้นรอบนี้',

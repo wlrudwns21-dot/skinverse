@@ -20,9 +20,16 @@ const ctx = (over: Partial<RecommendContext> = {}): RecommendContext => ({
   ...over,
 })
 
-const product = (id: string, tag: ProductTag, metric: MetricKey | 'uv'): Rankable => ({ id, tag, metric })
+const product = (
+  id: string,
+  tag: ProductTag,
+  metric: MetricKey | 'uv',
+  fits?: Rankable['fits'],
+): Rankable => ({ id, tag, metric, fits })
 
 const hydrator = product('hyd', 'Hydration', 'hydration')
+/** Same shelf, same axis, nothing in the catalogue to tell them apart. */
+const hydrator2 = product('hyd2', 'Hydration', 'hydration')
 const poreCare = product('pore', 'Pore', 'pores')
 const soother = product('sooth', 'Soothing', 'sensitivity')
 const brightener = product('bright', 'Brightening', 'pigmentation')
@@ -39,19 +46,71 @@ describe('the axis a product targets drives its score', () => {
     expect(high.score).toBe(10)
   })
 
-  it('never claims a perfect match', () => {
+  /*
+   * `score` used to be clamped to 1–99 because it was printed as "N% 매치".
+   * It is not printed any more — `match` is — so it is left unclamped: a
+   * ranking signal that saturates stops ranking, and two products pinned at
+   * 99 for different reasons would sort by id rather than by fit.
+   */
+  it('runs past 100 rather than saturating, because it is a rank not a percent', () => {
     // A hydration score of 1, in very dry air, on dehydrated skin.
     const best = scoreProduct(hydrator, ctx({
       metrics: M({ hydration: 1 }), weather: w(5, 20, 1), condition: 'dehydrated', focus: 'hydration',
     }))
-    expect(best.score).toBe(99)
+    expect(best.score).toBeGreaterThan(99)
   })
 
-  it('never drops to zero either', () => {
+  it('goes negative when everything argues against the product', () => {
+    // Fully hydrated skin, saturated air, and a vendor reading of oily: there
+    // is a real case for putting this last, and clamping at 1 threw it away.
     const worst = scoreProduct(hydrator, ctx({
       metrics: M({ hydration: 100 }), weather: w(28, 85, 1), condition: 'oily',
     }))
-    expect(worst.score).toBeGreaterThanOrEqual(1)
+    expect(worst.score).toBeLessThan(0)
+  })
+})
+
+describe('the percentage the shop actually prints', () => {
+  /*
+   * The bug this file exists to prevent coming back.
+   *
+   * `score` is a deficit: 100 minus the reading. Printing it as a match
+   * percentage meant the better a customer's skin, the more emphatically the
+   * shop told them nothing suited them — measured, a customer reading 85 on
+   * every axis saw 15% on every product but sunscreen.
+   */
+  const catalogue = [hydrator, poreCare, brightener, sunscreen]
+
+  it('does not collapse when the customer has good skin', () => {
+    const healthy = rank(catalogue, ctx({
+      metrics: M({ hydration: 85, pores: 85, pigmentation: 85, elasticity: 85, wrinkles: 85, sensitivity: 85 }),
+    }))
+    for (const r of healthy) expect(r.match).toBeGreaterThanOrEqual(58)
+    expect(healthy[0].match).toBeGreaterThanOrEqual(90)
+  })
+
+  it('still puts the same product first as the score does', () => {
+    const list = rank(catalogue, ctx({ metrics: M({ hydration: 30 }), focus: 'hydration' }))
+    const byScore = [...list].sort((a, b) => b.score - a.score)
+    expect(list.map((r) => r.id)).toEqual(byScore.map((r) => r.id))
+    // Monotonic, so the printed numbers can never run out of order.
+    const matches = list.map((r) => r.match)
+    expect([...matches].sort((a, b) => b - a)).toEqual(matches)
+  })
+
+  it('stays inside its band', () => {
+    const list = rank(catalogue, ctx({ metrics: M({ hydration: 20, pores: 95 }) }))
+    for (const r of list) {
+      expect(r.match).toBeGreaterThanOrEqual(58)
+      expect(r.match).toBeLessThanOrEqual(96)
+    }
+  })
+
+  it('gives everything the same number when nothing separates them', () => {
+    // A flat set of readings is a real outcome, and spreading a tie across
+    // the whole range would be inventing a recommendation nobody earned.
+    const flat = rank([hydrator, hydrator2], ctx({ metrics: M() }))
+    expect(new Set(flat.map((r) => r.match)).size).toBe(1)
   })
 })
 
@@ -195,5 +254,75 @@ describe('fallingAxes', () => {
 
   it('returns nothing when there is no earlier scan to compare with', () => {
     expect(fallingAxes(M(), null, 5)).toEqual([])
+  })
+})
+
+describe('the axes a product covers, not just the shelf it sits on', () => {
+  /*
+   * The catalogue records every axis a product speaks to and how strongly,
+   * and the scorer used to read only `metric`. Two AESTURA hydration creams
+   * therefore scored identically for every customer for ever, although the
+   * catalogue already said one of them also answers to sensitivity.
+   */
+  const plainCream = product('plain', 'Hydration', 'hydration', [
+    { axis: 'hydration', strength: 'primary' },
+  ])
+  const soothingCream = product('soothing', 'Hydration', 'hydration', [
+    { axis: 'hydration', strength: 'primary' },
+    { axis: 'sensitivity', strength: 'secondary' },
+  ])
+
+  it('separates two products on the same axis by what else they cover', () => {
+    const sensitive = ctx({ metrics: M({ hydration: 50, sensitivity: 20 }) })
+    expect(scoreProduct(soothingCream, sensitive).score)
+      .toBeGreaterThan(scoreProduct(plainCream, sensitive).score)
+  })
+
+  it('does not pay for a secondary axis the customer does not need', () => {
+    // Sensitivity at 95: the extra claim is true and worth almost nothing.
+    const fine = ctx({ metrics: M({ hydration: 50, sensitivity: 95 }) })
+    const gap = scoreProduct(soothingCream, fine).score - scoreProduct(plainCream, fine).score
+    expect(gap).toBeLessThanOrEqual(2)
+  })
+
+  it('caps breadth, so a longer list cannot buy a better ranking', () => {
+    // Every secondary maxed out — the most breadth can ever be worth.
+    const everything = product('all', 'Hydration', 'hydration', [
+      { axis: 'hydration', strength: 'primary' },
+      { axis: 'sensitivity', strength: 'secondary' },
+      { axis: 'pores', strength: 'secondary' },
+      { axis: 'pigmentation', strength: 'secondary' },
+      { axis: 'wrinkles', strength: 'secondary' },
+      { axis: 'elasticity', strength: 'secondary' },
+    ])
+    const dire = ctx({ metrics: M({ hydration: 50, sensitivity: 0, pores: 0, pigmentation: 0, wrinkles: 0, elasticity: 0 }) })
+    const gap = scoreProduct(everything, dire).score - scoreProduct(plainCream, dire).score
+    expect(gap).toBeLessThanOrEqual(14)
+  })
+
+  it('averages rather than sums its primaries', () => {
+    // A balm primary on two axes is one product doing one job, not two.
+    // Summing would put it on a different scale from everything else and it
+    // would win every list by arithmetic.
+    const balm = product('balm', 'Firming', 'elasticity', [
+      { axis: 'elasticity', strength: 'primary' },
+      { axis: 'wrinkles', strength: 'primary' },
+    ])
+    const both50 = ctx({ metrics: M({ elasticity: 50, wrinkles: 50 }) })
+    const single = product('firm', 'Firming', 'elasticity', [
+      { axis: 'elasticity', strength: 'primary' },
+    ])
+    expect(scoreProduct(balm, both50).score).toBe(scoreProduct(single, both50).score)
+  })
+
+  it('still ranks a product registered without the column', () => {
+    // `fits` is optional, and absence falls back to the headline axis rather
+    // than scoring the product at nothing.
+    const bare = product('bare', 'Hydration', 'hydration')
+    const declared = product('declared', 'Hydration', 'hydration', [
+      { axis: 'hydration', strength: 'primary' },
+    ])
+    const c = ctx({ metrics: M({ hydration: 40 }) })
+    expect(scoreProduct(bare, c).score).toBe(scoreProduct(declared, c).score)
   })
 })

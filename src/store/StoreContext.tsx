@@ -184,8 +184,15 @@ interface Prefs {
   city: string
 }
 
-/** Contributions every product has, so they explain no ranking on their own. */
-const BASE_REASONS = new Set<ReasonKind>(['axisNeed', 'uvLoad'])
+/**
+ * Contributions every product has, so they explain no ranking on their own.
+ *
+ * `alsoHelps` is here rather than among the modifiers because 21 of the 25
+ * products list a secondary axis: it is close enough to universal that
+ * leading a card with it would push "이번 집중 항목" — the one reason that
+ * names why *this* product and not the one beside it — into second place.
+ */
+const BASE_REASONS = new Set<ReasonKind>(['axisNeed', 'uvLoad', 'alsoHelps'])
 
 /**
  * Up to two reasons for a card, most informative first.
@@ -1304,7 +1311,10 @@ function useStoreValue() {
 
   const toView = (p: CatalogProduct): ProductView => {
     const match = recommendations.get(p.id)
-    const matchN = match?.score ?? 50
+    /* `match`, never `score`. The score is a need, not a fit: printed as a
+       percentage it told a customer with healthy skin that nothing in the
+       shop was for them. See Recommendation in routine/recommend.ts. */
+    const matchN = match?.match ?? 50
     return {
       // The base need is always the largest contribution and every product has
       // one, so leading with it tells the customer nothing about why *this*
