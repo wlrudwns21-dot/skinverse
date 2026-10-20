@@ -140,6 +140,22 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 16524, ko: 16281, th: 16464, zh: 16007 },
   },
+  'sw-first-care-serum-vi-90-duo': {
+    w: 1170,
+    pages: { en: 13050, ko: 12553, th: 12839, zh: 12324 },
+  },
+  'sw-ginseng-serum-duo': {
+    w: 1170,
+    pages: { en: 14524, ko: 14165, th: 14218, zh: 13746 },
+  },
+  'sw-ginseng-serum-set': {
+    w: 1170,
+    pages: { en: 17630, ko: 16894, th: 17210, zh: 15919 },
+  },
+  'sw-gentle-cleansing-foam-duo': {
+    w: 1170,
+    pages: { en: 11005, ko: 10854, th: 10896, zh: 10587 },
+  },
 }
 
 /**
