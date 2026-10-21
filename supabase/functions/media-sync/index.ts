@@ -29,10 +29,10 @@
  * can time out, the owner watches a count climb, and if a batch fails it stops
  * there and says so rather than reporting a success it did not have.
  *
- * The list is the whole bucket, not just the new files, so most batches have
- * nothing to do. `already()` is what makes that cheap: a file the bucket
- * already holds at the right size is skipped without touching GitHub, which
- * also means a re-run can never fail on artwork that has left the repository.
+ * The list is the whole bucket, not just the new files, so most of it is
+ * already there. `nextWork` is what keeps that cheap: it HEADs ahead until it
+ * has found a batch of files the bucket is actually missing, so every request
+ * does real work instead of spending itself skipping.
  *
  * Every upload upserts, so re-running any offset is free and safe. There is no
  * state anywhere: the offset in the address is all of it.
@@ -69,7 +69,7 @@ const MANIFEST = 'scripts/media-manifest.json'
 /** Where they go. Fixed — not a parameter. */
 const BUCKET = 'product-media'
 
-/** How many files one request handles, and how many at a time within it. */
+/** How many files one request uploads, and how many at a time within it. */
 const BATCH = 100
 const CONCURRENCY = 6
 
@@ -252,9 +252,9 @@ const SKIP = Symbol('already in the bucket')
  * This is what lets the manifest stay a record of the whole bucket after the
  * artwork has left the repository. `public/products` is not in git any more —
  * it was 60MB that Vercel re-fetched on every deploy — so a re-run would try
- * to download 814 files that raw.githubusercontent.com no longer has and
- * report 814 failures. Asking the bucket first turns that into 814 quick
- * HEADs and no work, and leaves only genuinely new artwork to fetch.
+ * to download files that raw.githubusercontent.com no longer has and report
+ * them all as failures. Asking the bucket first turns that into a quick HEAD
+ * and no work, and leaves only genuinely new artwork to fetch.
  *
  * The size is checked as well as the existence, so a file that was truncated
  * on the way in last time is re-uploaded rather than passed over. Anything
@@ -309,6 +309,53 @@ async function move(
   return null
 }
 
+/**
+ * Find the next files that actually need uploading, skipping what is there.
+ *
+ * The batch used to be "the next hundred rows of the manifest", which was
+ * right while the manifest was the migration and every row needed moving. It
+ * is wrong now that the list is the whole bucket and a new product is a
+ * handful of rows at the end of it: the manifest is sorted by path, so
+ * `products/sw-...` sorts after every other brand, and adding Sulwhasoo put
+ * 155 new files at positions 814 to 968. The owner would have had to sit
+ * through eight rounds of skipping a hundred files each before the first
+ * upload — and a page that looks like it is doing nothing is a page people
+ * close.
+ *
+ * So the scan is cheap and the batch is the work. HEAD is a round trip with
+ * no body, sixty at a time, so sweeping the whole list costs a couple of
+ * seconds and the hundred uploads that follow are all real.
+ */
+async function nextWork(
+  files: [string, number][],
+  from: number,
+  limit: number,
+): Promise<{ todo: [string, number][]; scannedTo: number; skipped: number }> {
+  const todo: [string, number][] = []
+  let i = from
+  let skipped = 0
+  const SCAN = 60
+
+  while (i < files.length && todo.length < limit) {
+    const end = Math.min(i + SCAN, files.length)
+    const slice = files.slice(i, end)
+    const present = await Promise.all(slice.map(([path, size]) => already(path, size)))
+
+    for (let k = 0; k < slice.length; k += 1) {
+      if (present[k]) {
+        skipped += 1
+      } else {
+        todo.push(slice[k])
+        // Stop on the file that fills the batch, so the next request picks up
+        // immediately after it rather than re-walking what we just uploaded.
+        if (todo.length >= limit) return { todo, scannedTo: i + k + 1, skipped }
+      }
+    }
+    i = end
+  }
+  return { todo, scannedTo: i, skipped }
+}
+
 /** Run the batch with a bounded number in flight. */
 async function runBatch(
   slice: [string, number][],
@@ -361,7 +408,11 @@ Deno.serve(async (req: Request) => {
     return fail(
       401,
       '주소가 맞지 않습니다',
-      `<p>주소 끝의 <code>token=</code> 값이 등록한 비밀값과 다릅니다.</p>`,
+      `<p>주소 끝의 <code>token=</code> 값이 등록한 비밀값과 다릅니다.</p>
+       <p class="muted">비밀값은 Dashboard → Edge Functions → Secrets 의
+       <code>MEDIA_SYNC_TOKEN</code> 에 있습니다. 값이 기억나지 않으시면
+       거기서 새 값으로 덮어쓰고, 그 값을 주소 끝에 넣으시면 됩니다.
+       꼠쇠 표(&lt; &gt;)는 빼고, 앞뒤 공백이 따라들어가지 않았는지 확인해 주세요.</p>`,
     )
   }
   if (!SUPABASE_URL || !AUTH) {
@@ -416,23 +467,39 @@ Deno.serve(async (req: Request) => {
       `<p class="n">${total} / ${total}</p>
        <div class="bar"><i style="width:100%"></i></div>
        <p style="margin-top:1.5rem">사진 ${total}장이 모두 저장소에 들어갔습니다.</p>
-       <p>이제 Vercel 환경변수만 넣으면 됩니다. 클로드에게 끝났다고 알려주세요.</p>`,
+       <p>클로드에게 끝났다고 알려주세요.</p>`,
     )
   }
 
-  const slice = manifest.files.slice(from, from + BATCH)
-  const { done, skipped, errors } = await runBatch(slice, ref, AUTH.headers)
+  const { todo, scannedTo, skipped: passed } = await nextWork(manifest.files, from, BATCH)
+
+  // Nothing left anywhere ahead of us: the bucket already holds the rest.
+  if (todo.length === 0) {
+    return page(
+      '사진 옮기기 완료',
+      `<p class="n">${total} / ${total}</p>
+       <div class="bar"><i style="width:100%"></i></div>
+       <p style="margin-top:1.5rem">사진 ${total}장이 모두 저장소에 들어가 있습니다.</p>
+       <p class="muted">이번에 확인만 하고 넘어간 것 ${passed}장 — 이미 올라가 있어 다시 올리지 않았습니다.</p>`,
+    )
+  }
+
+  // `skipped` is dropped: nextWork already filtered, so runBatch can only skip
+  // a file that appeared in the bucket between the scan and the upload, which
+  // is a harmless race and not something to report.
+  const { done, errors } = await runBatch(todo, ref, AUTH.headers)
 
   /**
    * Where the next request starts.
    *
    * Only a clean batch advances. With a failure in it the offset stays put,
    * because the files that failed may have been anywhere in the batch and
-   * `from + done` would step over them. Re-running the batch re-uploads the
-   * ones that worked, which costs a few seconds and skips nothing.
+   * stepping over them would skip them for good.
    */
-  const resume = errors.length ? from : from + slice.length
-  const moved = from + done
+  const resume = errors.length ? from : scannedTo
+  // Everything behind the scan is accounted for: either it was already in the
+  // bucket or this request has just put it there.
+  const moved = Math.min(total, scannedTo - todo.length + done)
   const pct = Math.round((moved / total) * 100)
 
   const bar = `<div class="bar"><i style="width:${pct}%"></i></div>`
@@ -456,11 +523,7 @@ Deno.serve(async (req: Request) => {
     '사진 옮기는 중',
     `${count}${bar}
      <p style="margin-top:1.5rem">잠시만 기다려 주세요. 화면이 알아서 다음으로 넘어갑니다.</p>
-     ${
-       skipped
-         ? `<p class="muted">이번 ${slice.length}장 중 ${skipped}장은 이미 저장소에 있어 건너뛰었습니다.</p>`
-         : ''
-     }
+     <p class="muted">${passed}장은 이미 저장소에 있어 건너뛰고, ${todo.length}장을 올렸습니다.</p>
      <p class="muted">창을 닫아도 괜찮습니다 — 다시 같은 주소를 열면 이어서 합니다.</p>
      <noscript><a class="btn" href="${esc(here(resume))}">다음</a></noscript>`,
     here(resume),
