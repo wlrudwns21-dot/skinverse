@@ -156,6 +156,10 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 11005, ko: 10854, th: 10896, zh: 10587 },
   },
+  'sw-ginseng-cream-rich-duo': {
+    w: 1170,
+    pages: { en: 15229, ko: 14609, th: 14908, zh: 14184 },
+  },
 }
 
 /**
