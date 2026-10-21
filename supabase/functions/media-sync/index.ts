@@ -136,6 +136,64 @@ const AUTH = storageAuth()
  */
 const TOKEN = (Deno.env.get('MEDIA_SYNC_TOKEN') ?? '').trim()
 
+/**
+ * Every reading of the token the caller might have meant.
+ *
+ * A secret in a query string is not a secret in a string. `+` decodes to a
+ * space, `&` ends the parameter, `#` ends the whole URL — so a token with any
+ * of those in it arrives as something the owner never typed, and the only
+ * feedback is "does not match", which sends them hunting for a value that was
+ * right all along. That is what this cost on the first two attempts.
+ *
+ * So both readings are tried: the normal one, and the raw parameter decoded
+ * without the plus-is-a-space rule. Both are trimmed, because `TOKEN` is
+ * trimmed and a value pasted out of a dashboard tends to bring a space with
+ * it. `&` and `#` cannot be recovered here — nothing reaches the function to
+ * recover — which is why the 401 page says to use letters and digits.
+ */
+function offeredTokens(url: URL, req: Request): string[] {
+  const out: string[] = []
+  const add = (v: string | null | undefined) => {
+    const t = (v ?? '').trim()
+    if (t && !out.includes(t)) out.push(t)
+  }
+
+  add(url.searchParams.get('token'))
+
+  const raw = url.search
+    .replace(/^\?/, '')
+    .split('&')
+    .map((pair) => pair.split('='))
+    .find(([k]) => k === 'token')?.[1]
+  if (raw) {
+    // decodeURIComponent leaves '+' alone, which is the point.
+    try {
+      add(decodeURIComponent(raw))
+    } catch {
+      // A stray '%' makes this throw. The plain reading above still stands.
+    }
+  }
+
+  add(req.headers.get('x-sync-token'))
+  return out
+}
+
+/**
+ * What arrived, described without describing what was expected.
+ *
+ * Enough for the owner to spot the angle brackets they pasted or the space
+ * that rode along, and nothing an attacker could use: it never mentions the
+ * stored value, not even its length.
+ */
+function describeOffered(url: URL): string {
+  const seen = url.searchParams.get('token') ?? ''
+  if (!seen) return '주소에 token 값이 아예 없습니다'
+  const notes: string[] = [`${seen.length}자가 도착했습니다`]
+  if (/\s/.test(seen)) notes.push('공백이 섞여 있습니다 (복사할 때 딸려왔거나, 원래 값에 + 가 있었을 수 있습니다)')
+  if (/[<>]/.test(seen)) notes.push('꺾쇠표 < > 가 들어 있습니다 — 안내문의 괄호까지 복사하신 것 같습니다')
+  return notes.join(' · ')
+}
+
 /** Length-independent comparison, so the token cannot be guessed a byte at a time. */
 function tokenMatches(given: string): boolean {
   if (!TOKEN || !given) return false
@@ -394,7 +452,7 @@ async function runBatch(
 
 Deno.serve(async (req: Request) => {
   const url = new URL(req.url)
-  const token = url.searchParams.get('token') ?? req.headers.get('x-sync-token') ?? ''
+  const offered = offeredTokens(url, req)
 
   if (!TOKEN) {
     return fail(
@@ -404,15 +462,19 @@ Deno.serve(async (req: Request) => {
        <p class="muted">Dashboard → Edge Functions → Secrets</p>`,
     )
   }
-  if (!tokenMatches(token)) {
+  if (!offered.some(tokenMatches)) {
     return fail(
       401,
       '주소가 맞지 않습니다',
       `<p>주소 끝의 <code>token=</code> 값이 등록한 비밀값과 다릅니다.</p>
+       <p class="muted">도착한 값: ${esc(describeOffered(url))}</p>
        <p class="muted">비밀값은 Dashboard → Edge Functions → Secrets 의
-       <code>MEDIA_SYNC_TOKEN</code> 에 있습니다. 값이 기억나지 않으시면
-       거기서 새 값으로 덮어쓰고, 그 값을 주소 끝에 넣으시면 됩니다.
-       꼠쇠 표(&lt; &gt;)는 빼고, 앞뒤 공백이 따라들어가지 않았는지 확인해 주세요.</p>`,
+       <code>MEDIA_SYNC_TOKEN</code> 에 있습니다. Supabase는 저장하면 값을 가려서
+       다시 볼 수 없으니, 기억나지 않으시면 거기서 <b>새 값으로 덮어쓰세요.</b></p>
+       <p class="muted">새 값은 <b>영문과 숫자만</b> 쓰시는 것이 안전합니다.
+       주소에 넣는 값이라 <code>+</code> 는 공백으로 바뀜고,
+       <code>&amp;</code> 와 <code>#</code> 는 거기서 주소가 끊긝니다 —
+       값은 맞는데 계속 거절되는 가장 흔한 이유입니다.</p>`,
     )
   }
   if (!SUPABASE_URL || !AUTH) {
