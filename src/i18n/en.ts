@@ -2,6 +2,8 @@ import type { Strings } from './types'
 
 export const en: Strings = {
   myPage: 'MY', bag: 'Bag', match: 'match',
+  provisionalPrice: 'Provisional price',
+  provisionalNote: 'We have not been able to confirm this product\u2019s duty-free price yet, so the figure shown is one we set ourselves. It will be corrected as soon as we have the real one.',
   kicker: 'AI SKIN ANALYSIS', heroT: 'Your skin, decoded in 40 seconds.',
   heroSub: '6-point diagnosis, matched K-beauty routine, shipped worldwide from Seoul.',
   startBtn: 'Start Analysis', todayIn: 'Today in', skinScore: 'Skin Score', skinScoreU: 'SKIN SCORE',

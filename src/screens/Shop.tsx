@@ -66,6 +66,16 @@ export function Shop() {
                       <span style={s('color:var(--warn);font-weight:600')}>{p.offPct}%</span>
                     </div>
                   )}
+                  {/* A price we chose rather than one we read off the
+                      duty-free screen. It sits above the number in the caution
+                      tone, because a figure nobody has confirmed printed in the
+                      same type as four that have been is the shop asserting
+                      something it does not know. */}
+                  {p.priceProvisional && (
+                    <div style={s('display:inline-block;font-size:9px;letter-spacing:0.08em;font-weight:600;color:var(--warn);background:var(--warn-soft);border-radius:var(--radius-sm);padding:2px 6px;margin-bottom:4px')}>
+                      {st.t.provisionalPrice}
+                    </div>
+                  )}
                   <div style={s('font-size:13px;color:var(--ink);letter-spacing:0.04em')}>
                     {p.priceS} <span style={s('font-size:10px;color:var(--ink-4)')}>{p.ml}</span>
                   </div>
@@ -245,8 +255,22 @@ export function ProductDetail() {
               <span style={s('color:var(--warn);font-weight:600')}>{sel.offPct}% OFF</span>
             </span>
           )}
+          {sel.priceProvisional && (
+            <span style={s('font-size:10px;letter-spacing:0.08em;font-weight:600;color:var(--warn);background:var(--warn-soft);border-radius:var(--radius-sm);padding:3px 8px')}>
+              {st.t.provisionalPrice}
+            </span>
+          )}
           <span style={s('font-size:11px;color:var(--link);font-weight:500')}>{sel.matchS} {st.t.match}</span>
         </div>
+
+        {/* The badge says which kind of number it is. This says why, because
+            someone about to spend this much is owed the reason and not a
+            label. */}
+        {sel.priceProvisional && (
+          <div style={s('margin-top:12px;font-size:11.5px;line-height:1.7;color:var(--warn);background:var(--warn-soft);border-radius:var(--radius-sm);padding:11px 13px')}>
+            {st.t.provisionalNote}
+          </div>
+        )}
 
         {sel.reasons.length > 0 && (
           <div style={s('margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-2);line-height:1.8')}>

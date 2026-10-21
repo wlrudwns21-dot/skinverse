@@ -80,6 +80,14 @@ export interface ProductRow {
    * through, so the percentage between the two cannot drift.
    */
   list_price?: number | string | null
+  /**
+   * True while the price is a stand-in rather than the duty-free price.
+   *
+   * It reaches the shop because the shopper is the one who needs to know. A
+   * number nobody has confirmed, printed in the same type as four that have
+   * been, is the shop asserting something it does not know.
+   */
+  price_provisional?: boolean | null
   /** Whether a human checked `ingredients` against the maker's own label. */
   ingredients_checked?: boolean | null
   /**
@@ -103,6 +111,7 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     nameL: row.name_l ?? undefined,
     price: Number(row.price),
     listPrice: Number(row.list_price ?? 0),
+    priceProvisional: Boolean(row.price_provisional),
     priceKrw: Number(row.price_krw ?? 0),
     useDays: Number(row.use_days ?? 60),
     tag: row.tag as ProductTag,

@@ -103,6 +103,15 @@ export interface Product {
    * captured, and showing "0% off" there would be a claim we cannot make.
    */
   listPrice?: number
+  /**
+   * The price is a placeholder we chose, not the maker's.
+   *
+   * Carried all the way to the tile on purpose. The alternative — keeping the
+   * product dark until a real price arrives — is cleaner but it was not what
+   * was wanted, and a provisional price shown as if it were settled is the one
+   * outcome worth refusing.
+   */
+  priceProvisional?: boolean
   tag: ProductTag
   /** Which scan axis this product answers to. `uv` matches on local UV index. */
   metric: MetricKey | 'uv'

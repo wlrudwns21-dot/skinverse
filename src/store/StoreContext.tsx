@@ -123,6 +123,8 @@ export interface ProductView {
   listPriceS?: string
   /** Whole percent off list, when a list price is recorded and is higher. */
   offPct?: number
+  /** The price is a stand-in. The screens say so beside it. */
+  priceProvisional?: boolean
   matchS: string
   matchN: number
   /** Why this product is being recommended — at most two, strongest first. */
@@ -1360,6 +1362,7 @@ function useStoreValue() {
         const off = offPercent(p.price, p.listPrice)
         return off === null ? {} : { listPriceS: money(p.listPrice ?? 0), offPct: off }
       })(),
+      priceProvisional: p.priceProvisional,
       matchS: matchN + '%',
       matchN,
       open: () => setState((s) => ({ ...s, screen: 'detail', selId: p.id })),

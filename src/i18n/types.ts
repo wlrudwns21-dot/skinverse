@@ -8,6 +8,10 @@ export interface Strings {
   myPage: string
   bag: string
   match: string
+  /** Badge beside a price we chose ourselves, because the real one is unknown. */
+  provisionalPrice: string
+  /** The sentence under it on the detail page, saying so in full. */
+  provisionalNote: string
 
   // Home
   kicker: string

@@ -2,6 +2,8 @@ import type { Strings } from './types'
 
 export const zh: Strings = {
   myPage: 'MY', bag: '购物袋', match: '匹配',
+  provisionalPrice: '临时价格',
+  provisionalNote: '本商品的免税店售价尚未确认，此处显示的是我们自行设定的价格。一经确认将立即更正。',
   kicker: 'AI 肌肤分析', heroT: '40秒读懂你的肌肤。',
   heroSub: '6项诊断，专属K-beauty护肤方案，首尔直邮全球。',
   startBtn: '开始分析', todayIn: '今日天气 ·', skinScore: '肌肤评分', skinScoreU: '肌肤评分',

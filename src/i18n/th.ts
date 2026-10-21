@@ -2,6 +2,8 @@ import type { Strings } from './types'
 
 export const th: Strings = {
   myPage: 'MY', bag: 'ตะกร้า', match: 'ตรงกัน',
+  provisionalPrice: 'ราคาชั่วคราว',
+  provisionalNote: 'เรายังไม่สามารถยืนยันราคาดิวตี้ฟรีของสินค้านี้ได้ ราคาที่แสดงจึงเป็นราคาที่เรากำหนดเอง และจะแก้ไขทันทีที่ทราบราคาจริง',
   kicker: 'วิเคราะห์ผิวด้วย AI', heroT: 'อ่านผิวของคุณใน 40 วินาที',
   heroSub: 'วินิจฉัย 6 ด้าน รูทีน K-beauty เฉพาะคุณ ส่งตรงจากโซลทั่วโลก',
   startBtn: 'เริ่มวิเคราะห์', todayIn: 'วันนี้ที่', skinScore: 'คะแนนผิว', skinScoreU: 'คะแนนผิว',
