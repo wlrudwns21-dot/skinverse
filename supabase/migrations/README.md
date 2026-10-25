@@ -33,6 +33,38 @@ supabase db push
 반대로, 대시보드나 MCP로 DB를 직접 고쳤다면 그 변경은 여기 없습니다.
 `supabase db pull`로 내려받아 커밋해 주세요.
 
+## 테이블을 만들면 권한도 같은 파일에 적어야 합니다
+
+2026년 10월 30일부터 Supabase는 `public`에 새로 생긴 테이블을 Data API에
+자동으로 열어주지 않습니다. `grant`가 없으면 supabase-js·REST·GraphQL에서
+`42501 permission denied`가 나고, **RLS 정책으로는 해결되지 않습니다** —
+Postgres는 정책을 보기 전에 권한부터 확인하기 때문입니다.
+
+`..081952_grant_data_api_explicitly`가 기존 28개 테이블의 권한을 전부
+받아 적었고, 같은 파일에서 `alter default privileges`로 자동 부여를 껐습니다.
+그 전까지 이 디렉터리에는 테이블 권한을 주는 구문이 한 줄도 없었고,
+프로젝트를 만들 때 Supabase가 걸어둔 기본값에 기대고 있었습니다.
+그래서 이 마이그레이션들만으로는 빈 DB에 스키마를 세울 수 없었습니다 —
+`supabase db reset`이나 preview branch에서 테이블이 전부 안 보였을 것입니다.
+
+새 테이블은 만든 그 자리에서 열어 주세요:
+
+```sql
+create table public.foo (...);
+
+grant select on public.foo to anon;
+grant select, insert, update, delete on public.foo to authenticated, service_role;
+
+alter table public.foo enable row level security;
+create policy ... on public.foo ...;
+```
+
+필요한 것만 주시면 됩니다. 쓰기를 `security definer` 함수가 맡는 테이블이면
+`grant select`만으로 충분하고, 운영자만 보는 테이블이면 `anon`은 빼세요
+(`product_costs`가 그렇게 돼 있습니다). `grant ... on all tables in schema public`
+으로 한 번에 푸는 것은 하지 마세요 — 그 한 줄이 이 파일이 지켜둔 구분을
+전부 되돌립니다.
+
 ## 읽는 순서
 
 시간순이 곧 이야기 순서입니다. 특히 이 셋은 앞의 것을 고치는 내용이라
