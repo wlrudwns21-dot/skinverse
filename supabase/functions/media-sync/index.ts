@@ -40,10 +40,18 @@
  * ── what stops anyone else running it ───────────────────────────────────────
  *
  * `MEDIA_SYNC_TOKEN`, which the owner sets in Dashboard > Edge Functions >
- * Secrets and nobody else knows. Without it this returns 401 and touches
- * nothing. JWT verification is off because a browser following a link cannot
- * send an Authorization header — the token is the authentication, and that is
- * the only reason it is off.
+ * Secrets and nobody else knows. Without it this touches nothing. JWT
+ * verification is off because a browser following a link cannot send an
+ * Authorization header — the token is the authentication, and that is the
+ * only reason it is off.
+ *
+ * It is typed into a form, not carried in the address. The address bar is the
+ * wrong place for a secret: it is in the history, in the screenshot, and — as
+ * this page refreshes itself through the batches — in every refresh as well.
+ * It leaked that way twice before the form existed. What the form accepts goes
+ * into an HttpOnly cookie and the address stays clean from then on. A link
+ * with `?token=` still works, and the first thing it does is move the token
+ * out of the address and send the browser back here without it.
  *
  * Even with the token, the damage it can do is bounded to re-uploading the
  * repository's own product images: the source repository is fixed below, the
@@ -148,8 +156,9 @@ const TOKEN = (Deno.env.get('MEDIA_SYNC_TOKEN') ?? '').trim()
  * So both readings are tried: the normal one, and the raw parameter decoded
  * without the plus-is-a-space rule. Both are trimmed, because `TOKEN` is
  * trimmed and a value pasted out of a dashboard tends to bring a space with
- * it. `&` and `#` cannot be recovered here — nothing reaches the function to
- * recover — which is why the 401 page says to use letters and digits.
+ * it. `&` and `#` still cannot be recovered — nothing reaches the function to
+ * recover — but that only ever bites a link someone typed by hand, and such a
+ * link now lands on the form, which has none of these problems.
  */
 function offeredTokens(url: URL, req: Request): string[] {
   const out: string[] = []
@@ -175,8 +184,45 @@ function offeredTokens(url: URL, req: Request): string[] {
   }
 
   add(req.headers.get('x-sync-token'))
+  add(cookieToken(req))
   return out
 }
+
+/**
+ * The name of the cookie the token rides in after it has been typed once.
+ *
+ * Path is `/` rather than this function's path on purpose: the comment on
+ * `here()` explains that the path an edge function sees for itself is not
+ * always the one the browser used, and a cookie scoped to the wrong path is
+ * simply never sent back.
+ */
+const COOKIE = 'ms_t'
+
+function cookieToken(req: Request): string {
+  const jar = req.headers.get('cookie') ?? ''
+  for (const part of jar.split(';')) {
+    const eq = part.indexOf('=')
+    if (eq < 0) continue
+    if (part.slice(0, eq).trim() !== COOKIE) continue
+    try {
+      return decodeURIComponent(part.slice(eq + 1).trim())
+    } catch {
+      return ''
+    }
+  }
+  return ''
+}
+
+/**
+ * Hand the browser the token back, to send with every later request.
+ *
+ * `HttpOnly` so no script can read it, `Secure` because the function is only
+ * reachable over TLS, `SameSite=Strict` so another site cannot make the
+ * browser spend it. Two hours is far longer than a sync takes and short
+ * enough that a shared laptop does not keep it.
+ */
+const cookieHeader = (token: string) =>
+  `${COOKIE}=${encodeURIComponent(token)}; Path=/; Max-Age=7200; HttpOnly; Secure; SameSite=Strict`
 
 /**
  * What arrived, described without describing what was expected.
@@ -267,6 +313,39 @@ ${body}
 }
 
 const fail = (status: number, title: string, body: string) => page(title, body, undefined, status)
+
+/**
+ * Ask for the token once, in a form, instead of taking it from the address.
+ *
+ * The address bar is the wrong place for a secret. It is in the history, in
+ * the screenshot, and — because this page refreshes itself through the
+ * batches — in every one of those refreshes too. It leaked twice that way
+ * before this form existed, and each leak cost a rotation.
+ *
+ * A POSTed form body is in none of those places. It also ends the `+`
+ * problem: in a form body the browser sends `+` as `%2B`, so a token with a
+ * plus in it finally arrives as itself.
+ */
+function askPage(note: string, status = 200): Response {
+  return page(
+    '비밀값을 입력해 주세요',
+    `${note}
+     <form method="post" autocomplete="off">
+       <p><input type="password" name="token" required autofocus
+                 style="width:100%;box-sizing:border-box;padding:.7rem .8rem;font:inherit;
+                        border:1px solid currentColor;border-radius:10px;background:transparent;
+                        color:inherit"></p>
+       <p><button class="btn" type="submit" style="font:inherit;background:transparent;color:inherit;cursor:pointer">시작하기</button></p>
+     </form>
+     <p class="muted">Dashboard → Edge Functions → Secrets 의 <code>MEDIA_SYNC_TOKEN</code> 값입니다.
+     Supabase는 저장하면 값을 가려서 다시 볼 수 없으니, 기억나지 않으시면 거기서
+     <b>새 값으로 덮어쓰고</b> 그 값을 넣으세요.</p>
+     <p class="muted">여기에 넣은 값은 주소에 남지 않습니다. 이 브라우저에만 두 시간 동안 보관되고,
+     그동안은 다시 묻지 않습니다.</p>`,
+    undefined,
+    status,
+  )
+}
 
 interface Manifest {
   bucket: string
@@ -450,9 +529,15 @@ async function runBatch(
   return { done, skipped, errors }
 }
 
+/** 303 so the browser re-asks with GET, and a relative target so it resolves here. */
+function redirect(to: string, token?: string): Response {
+  const headers = new Headers({ Location: to, 'Cache-Control': 'no-store' })
+  if (token) headers.append('Set-Cookie', cookieHeader(token))
+  return new Response(null, { status: 303, headers })
+}
+
 Deno.serve(async (req: Request) => {
   const url = new URL(req.url)
-  const offered = offeredTokens(url, req)
 
   if (!TOKEN) {
     return fail(
@@ -462,21 +547,53 @@ Deno.serve(async (req: Request) => {
        <p class="muted">Dashboard → Edge Functions → Secrets</p>`,
     )
   }
-  if (!offered.some(tokenMatches)) {
-    return fail(
-      401,
-      '주소가 맞지 않습니다',
-      `<p>주소 끝의 <code>token=</code> 값이 등록한 비밀값과 다릅니다.</p>
-       <p class="muted">도착한 값: ${esc(describeOffered(url))}</p>
-       <p class="muted">비밀값은 Dashboard → Edge Functions → Secrets 의
-       <code>MEDIA_SYNC_TOKEN</code> 에 있습니다. Supabase는 저장하면 값을 가려서
-       다시 볼 수 없으니, 기억나지 않으시면 거기서 <b>새 값으로 덮어쓰세요.</b></p>
-       <p class="muted">새 값은 <b>영문과 숫자만</b> 쓰시는 것이 안전합니다.
-       주소에 넣는 값이라 <code>+</code> 는 공백으로 바뀜고,
-       <code>&amp;</code> 와 <code>#</code> 는 거기서 주소가 끊긝니다 —
-       값은 맞는데 계속 거절되는 가장 흔한 이유입니다.</p>`,
+
+  // The form, and nothing else, posts here.
+  if (req.method === 'POST') {
+    let typed = ''
+    try {
+      typed = String((await req.formData()).get('token') ?? '').trim()
+    } catch {
+      typed = ''
+    }
+    if (!tokenMatches(typed)) {
+      return askPage(
+        `<p>그 값이 아닙니다.</p>
+         <p class="muted">${typed ? `${typed.length}자가 도착했습니다` : '아무것도 입력되지 않았습니다'}.</p>`,
+        401,
+      )
+    }
+    return redirect('?from=0', typed)
+  }
+
+  const good = offeredTokens(url, req).find(tokenMatches)
+
+  if (!good) {
+    const seen = url.searchParams.get('token') ?? ''
+    return askPage(
+      seen
+        ? `<p>주소에 들어 있던 값이 등록한 비밀값과 다릅니다. 아래에 다시 넣어 주세요.</p>
+           <p class="muted">주소로 도착한 값: ${esc(describeOffered(url))}</p>`
+        : '',
+      seen ? 401 : 200,
     )
   }
+
+  /**
+   * A token that arrived in the address does not stay there.
+   *
+   * It is moved into the cookie and the browser is sent back to the same page
+   * without it, so it is out of the address bar — and out of every later
+   * self-refresh — before a single file is uploaded. An old bookmark keeps
+   * working, and stops leaking on its first use.
+   */
+  if (url.searchParams.get('token')) {
+    const clean = new URLSearchParams(url.search)
+    clean.delete('token')
+    const q = clean.toString()
+    return redirect(q ? `?${q}` : '?from=0', good)
+  }
+
   if (!SUPABASE_URL || !AUTH) {
     return fail(500, '설정 오류', `<p>함수에 저장소 접근 정보가 없습니다.</p>`)
   }
@@ -519,6 +636,7 @@ Deno.serve(async (req: Request) => {
    */
   const here = (n: number) => {
     const q = new URLSearchParams(url.search)
+    q.delete('token') // never put it back into an address
     q.set('from', String(n))
     return '?' + q.toString()
   }
