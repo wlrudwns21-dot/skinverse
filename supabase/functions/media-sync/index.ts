@@ -265,6 +265,21 @@ const esc = (s: string) =>
  * misinterpret, under any charset. Written in Korean in the source and
  * converted on the way out, so the source stays readable.
  *
+ * The layer has since been identified, and it is not one we can argue with.
+ * The gateway in front of edge functions rewrites the Content-Type of every
+ * GET response to a bare `text/plain`, whatever the function set. A throwaway
+ * function proved it: `text/html`, `text/html; charset=utf-8`, with and
+ * without Cache-Control, with an explicit Content-Length, even
+ * `application/xhtml+xml` — all five came back `text/plain` on GET, and the
+ * same header on a POST came back untouched.
+ *
+ * So the charset was never dropped by a decoder, it was removed wholesale,
+ * and this escaping is what makes the page legible at all. It also explains
+ * the page the owner sees: a browser handed `text/plain` prints the markup
+ * instead of drawing it, which is why the password field "does not appear"
+ * and why the meta refresh never advances a batch on its own. Nothing here
+ * can fix that — the page has to stop being the way this is driven.
+ *
  * `Array.from` walks code points, not UTF-16 units, so a character outside the
  * BMP survives as one reference instead of two broken halves.
  */
