@@ -160,6 +160,22 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 15229, ko: 14609, th: 14908, zh: 14184 },
   },
+  'sw-pore-purifying-peeloff-mask-120': {
+    w: 1170,
+    pages: { en: 12606, ko: 12349, th: 12345, zh: 11945 },
+  },
+  'cp-biogenic-essence-hydration-155': {
+    w: 1170,
+    pages: { en: 12949, ko: 12587, th: 12652, zh: 12352 },
+  },
+  'cp-biogenic-essence-trio-100': {
+    w: 1170,
+    pages: { en: 14011, ko: 13587, th: 13737, zh: 13368 },
+  },
+  'cp-biogenic-moisturizer-80': {
+    w: 1170,
+    pages: { en: 12463, ko: 12167, th: 12286, zh: 11978 },
+  },
 }
 
 /**
