@@ -252,6 +252,41 @@ function tokenMatches(given: string): boolean {
   return diff === 0
 }
 
+/**
+ * The other way in: a secret this project's own database holds.
+ *
+ * `MEDIA_SYNC_TOKEN` is for a person with a browser, and a person with a
+ * browser is the part of this that keeps going wrong — the gateway note below
+ * explains why the page barely renders, and every round of it has had to be
+ * clicked through by hand. The database does not have that problem. It can
+ * reach this function over pg_net, so the sync can be driven from a SQL
+ * statement and the owner never has to open the page at all.
+ *
+ * That needs a secret the database can send, and the env var is not one: only
+ * the dashboard can read it back, and nothing in SQL can. So there is a second
+ * secret, generated in the database and never leaving it, checked here by
+ * asking the database whether the token it was handed is that secret.
+ *
+ * `media_sync_token_ok` is SECURITY DEFINER and granted to service_role alone,
+ * which is the key this function already holds in order to write to the
+ * bucket. It takes a token and answers yes or no — it never returns the
+ * secret, so a leak of this function's source gives nothing away. Anything
+ * unexpected answers no and the caller falls through to the normal 401.
+ */
+async function dbTokenOk(given: string): Promise<boolean> {
+  if (!SUPABASE_URL || !AUTH || !given) return false
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/media_sync_token_ok`, {
+      method: 'POST',
+      headers: { ...AUTH.headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_token: given }),
+    })
+    return res.ok && (await res.json()) === true
+  } catch {
+    return false
+  }
+}
+
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
@@ -328,6 +363,21 @@ ${body}
 }
 
 const fail = (status: number, title: string, body: string) => page(title, body, undefined, status)
+
+/**
+ * The same answers, for a caller that is not a person.
+ *
+ * `?format=json` is what the database asks for. It matters less that this is
+ * tidier than scraping a number out of the HTML, and more that the HTML is
+ * not reliable to scrape: the gateway strips the Content-Type off every GET,
+ * so the page is already being handled as text rather than markup, and the
+ * one thing a driver must get right is where to resume. That is a field here.
+ */
+const asJson = (status: number, body: Record<string, unknown>) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+  })
 
 /**
  * Ask for the token once, in a form, instead of taking it from the address.
@@ -553,15 +603,8 @@ function redirect(to: string, token?: string): Response {
 
 Deno.serve(async (req: Request) => {
   const url = new URL(req.url)
-
-  if (!TOKEN) {
-    return fail(
-      503,
-      '아직 준비가 안 됐습니다',
-      `<p>Supabase 대시보드에서 <code>MEDIA_SYNC_TOKEN</code> 비밀값을 먼저 등록해 주세요.</p>
-       <p class="muted">Dashboard → Edge Functions → Secrets</p>`,
-    )
-  }
+  /** The database asks for this. A browser never does. */
+  const wantsJson = url.searchParams.get('format') === 'json'
 
   // The form, and nothing else, posts here.
   if (req.method === 'POST') {
@@ -581,9 +624,30 @@ Deno.serve(async (req: Request) => {
     return redirect('?from=0', typed)
   }
 
-  const good = offeredTokens(url, req).find(tokenMatches)
+  const offered = offeredTokens(url, req)
+  let good = offered.find(tokenMatches)
+
+  // Nothing matched the env secret. Before refusing, ask the database whether
+  // it recognises one of them — that is how a sync driven from SQL gets in.
+  if (!good) {
+    for (const t of offered) {
+      if (await dbTokenOk(t)) {
+        good = t
+        break
+      }
+    }
+  }
 
   if (!good) {
+    if (wantsJson) return asJson(401, { ok: false, reason: 'bad_token' })
+    if (!TOKEN) {
+      return fail(
+        503,
+        '아직 준비가 안 됐습니다',
+        `<p>Supabase 대시보드에서 <code>MEDIA_SYNC_TOKEN</code> 비밀값을 먼저 등록해 주세요.</p>
+         <p class="muted">Dashboard → Edge Functions → Secrets</p>`,
+      )
+    }
     const seen = url.searchParams.get('token') ?? ''
     return askPage(
       seen
@@ -610,17 +674,20 @@ Deno.serve(async (req: Request) => {
   }
 
   if (!SUPABASE_URL || !AUTH) {
+    if (wantsJson) return asJson(500, { ok: false, reason: 'no_storage_credentials' })
     return fail(500, '설정 오류', `<p>함수에 저장소 접근 정보가 없습니다.</p>`)
   }
 
   const ref = url.searchParams.get('ref') ?? 'main'
   if (!REF.test(ref) || ref.includes('..')) {
+    if (wantsJson) return asJson(400, { ok: false, reason: 'bad_ref' })
     return fail(400, '설정 오류', `<p>브랜치 이름이 올바르지 않습니다.</p>`)
   }
 
   const rawFrom = url.searchParams.get('from') ?? '0'
   const from = /^\d{1,6}$/.test(rawFrom) ? Number(rawFrom) : NaN
   if (!Number.isInteger(from) || from < 0) {
+    if (wantsJson) return asJson(400, { ok: false, reason: 'bad_from' })
     return fail(400, '설정 오류', `<p>시작 번호가 올바르지 않습니다.</p>`)
   }
 
@@ -628,10 +695,12 @@ Deno.serve(async (req: Request) => {
   try {
     manifest = await loadManifest(ref)
   } catch (e) {
+    const why = e instanceof Error ? e.message : String(e)
+    if (wantsJson) return asJson(502, { ok: false, reason: 'manifest_unreadable', detail: why })
     return fail(
       502,
       '사진 목록을 읽지 못했습니다',
-      `<p>${esc(e instanceof Error ? e.message : String(e))}</p>
+      `<p>${esc(why)}</p>
        <p class="muted">깃허브에 <code>${esc(MANIFEST)}</code> 가 올라가 있어야 합니다.</p>`,
     )
   }
@@ -657,6 +726,7 @@ Deno.serve(async (req: Request) => {
   }
 
   if (from >= total) {
+    if (wantsJson) return asJson(200, { ok: true, done: true, moved: total, total, uploaded: 0, skipped: 0 })
     return page(
       '사진 옮기기 완료',
       `<p class="n">${total} / ${total}</p>
@@ -670,6 +740,9 @@ Deno.serve(async (req: Request) => {
 
   // Nothing left anywhere ahead of us: the bucket already holds the rest.
   if (todo.length === 0) {
+    if (wantsJson) {
+      return asJson(200, { ok: true, done: true, moved: total, total, uploaded: 0, skipped: passed })
+    }
     return page(
       '사진 옮기기 완료',
       `<p class="n">${total} / ${total}</p>
@@ -701,6 +774,20 @@ Deno.serve(async (req: Request) => {
   const count = `<p class="n">${moved} / ${total}</p>`
 
   if (errors.length) {
+    if (wantsJson) {
+      return asJson(200, {
+        ok: false,
+        done: false,
+        moved,
+        total,
+        resume,
+        uploaded: done,
+        skipped: passed,
+        errors: errors.slice(0, 20),
+        errorCount: errors.length,
+        auth: AUTH.how,
+      })
+    }
     return page(
       '중간에 멈췄습니다',
       `${count}${bar}
@@ -712,6 +799,18 @@ Deno.serve(async (req: Request) => {
        <p class="muted">계속 같은 곳에서 멈추면 이 화면을 캡처해서 클로드에게 보여주세요.
        인증 방식: <code>${esc(AUTH.how)}</code></p>`,
     )
+  }
+
+  if (wantsJson) {
+    return asJson(200, {
+      ok: true,
+      done: resume >= total,
+      moved,
+      total,
+      resume,
+      uploaded: done,
+      skipped: passed,
+    })
   }
 
   return page(
