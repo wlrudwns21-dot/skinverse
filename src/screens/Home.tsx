@@ -1,3 +1,4 @@
+import { airBand } from '../routine/air'
 import { PhotoBanner } from '../components/PhotoBanner'
 import {
   categoryNames,
@@ -28,12 +29,16 @@ export function Home() {
      coloured. Fine dust is only a reading on the days the service reported it;
      on the days it is silent the slot carries UV instead, so the row never has
      a hole where a number should be. */
+  /* `air` is a pair of particulate readings, not a number. Interpolating it
+     straight into the slot printed "[object Object]" on every day the
+     air-quality service answered — which is most days, and only invisible here
+     because this container cannot reach it. Everywhere else in the app says the
+     band, so this does too. */
+  const air = st.weather.air
   const readings: { label: string; value: string; warn?: boolean }[] = [
     { label: st.t.temp, value: st.weather.t + '°' },
     { label: st.t.humidity, value: st.weather.h + '%' },
-    st.weather.air === null || st.weather.air === undefined
-      ? { label: 'UV', value: String(st.weather.uv) }
-      : { label: st.t.dust, value: String(st.weather.air), warn: dusty },
+    air ? { label: st.t.dust, value: st.t.airBand[airBand(air)], warn: dusty } : { label: 'UV', value: String(st.weather.uv) },
   ]
 
   return (
@@ -72,7 +77,51 @@ export function Home() {
           three unrelated announcements. */}
       <div style={s(`${GUTTER};${SECTION}`)}>
         <div style={s(CARD)}>
-          <div style={s('padding:17px 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px')}>
+          {/* Where these numbers are from, and a way to make them follow the
+              visitor instead of a city they picked once. The routine screen has
+              had this since the beginning, buried in a <select>; nobody looking
+              at the weather on the home screen would think to go there for it.
+
+              Said before the readings rather than after, because "22°" means
+              something different depending on whether it is measured where the
+              reader is standing. */}
+          <div style={s('padding:13px 18px 0;display:flex;align-items:center;justify-content:space-between;gap:10px')}>
+            <div style={s('display:flex;align-items:baseline;gap:7px;min-width:0')}>
+              <span style={s(`font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:${st.weatherIsLive ? 'var(--accent)' : 'var(--ink-4)'};flex-shrink:0`)}>
+                {st.weatherIsLive ? st.a.liveWeather : st.a.sampleWeather}
+              </span>
+              <span style={s('font-size:11.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap')}>
+                {st.placeLabel}
+              </span>
+            </div>
+            {/* Pressing it again while it is already on is not a no-op: it
+                re-reads the position, which is the whole point for someone who
+                has moved since this morning. */}
+            <button
+              type="button"
+              onClick={st.requestLocation}
+              disabled={st.geoStatus === 'asking'}
+              style={s(
+                'flex-shrink:0;border:none;background:transparent;font:inherit;padding:0;' +
+                  `font-size:11.5px;letter-spacing:0.02em;display:inline-flex;align-items:center;gap:5px;color:${
+                    st.geoStatus === 'asking' ? 'var(--ink-4)' : 'var(--link)'
+                  };cursor:${st.geoStatus === 'asking' ? 'default' : 'pointer'};` +
+                  `border-bottom:1px solid ${st.geoStatus === 'asking' ? 'transparent' : 'var(--accent-mid)'};padding-bottom:1px`,
+              )}
+            >
+              {st.geoStatus === 'asking' ? st.a.locating : `📍 ${st.a.useMyLocation}`}
+            </button>
+          </div>
+
+          {/* Only when the browser actually refused. An explanation of a
+              permission prompt nobody has seen is noise on every other day. */}
+          {(st.geoStatus === 'denied' || st.geoStatus === 'unavailable') && (
+            <div style={s('padding:8px 18px 0;font-size:11px;line-height:1.6;color:var(--warn-mid)')}>
+              {st.a.locationDenied}
+            </div>
+          )}
+
+          <div style={s('padding:14px 18px 17px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px')}>
             {readings.map((r) => (
               <div key={r.label}>
                 <div style={s('font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-3)')}>{r.label}</div>
