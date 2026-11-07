@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Lang } from './types'
+import { LANGS } from './types'
 import {
   ageOn,
   dialCodeFor,
@@ -15,7 +15,6 @@ import {
   normalisePhone,
 } from './signup'
 
-const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 const TODAY = new Date(2026, 8, 16) // 2026-09-16, local
 
 describe('dialling codes', () => {

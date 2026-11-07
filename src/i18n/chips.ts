@@ -4,13 +4,13 @@ export type ChipKey = 'All' | ProductTag
 
 /** Shop filter labels, in the order the chips are rendered. */
 export const chipLabels: Record<ChipKey, Localized> = {
-  All: { en: 'All', ko: '전체', zh: '全部', th: 'ทั้งหมด' },
-  Hydration: { en: 'Hydration', ko: '수분', zh: '补水', th: 'เติมน้ำ' },
-  Soothing: { en: 'Soothing', ko: '진정', zh: '舒缓', th: 'ปลอบประโลม' },
-  Pore: { en: 'Pore', ko: '모공', zh: '毛孔', th: 'รูขุมขน' },
-  Brightening: { en: 'Brightening', ko: '미백', zh: '焕亮', th: 'ผิวกระจ่างใส' },
-  Firming: { en: 'Firming', ko: '탄력', zh: '紧致', th: 'กระชับผิว' },
-  SPF: { en: 'SPF', ko: '자외선 차단', zh: '防晒', th: 'กันแดด' },
+  All: { en: 'All', ko: '전체', zh: '全部', th: 'ทั้งหมด', ja: 'すべて' },
+  Hydration: { en: 'Hydration', ko: '수분', zh: '补水', th: 'เติมน้ำ', ja: '保湿' },
+  Soothing: { en: 'Soothing', ko: '진정', zh: '舒缓', th: 'ปลอบประโลม', ja: '鎮静' },
+  Pore: { en: 'Pore', ko: '모공', zh: '毛孔', th: 'รูขุมขน', ja: '毛穴' },
+  Brightening: { en: 'Brightening', ko: '미백', zh: '焕亮', th: 'ผิวกระจ่างใส', ja: '明るさ' },
+  Firming: { en: 'Firming', ko: '탄력', zh: '紧致', th: 'กระชับผิว', ja: 'ハリ' },
+  SPF: { en: 'SPF', ko: '자외선 차단', zh: '防晒', th: 'กันแดด', ja: '日焼け止め' },
 }
 
 export const chipKeys = Object.keys(chipLabels) as ChipKey[]

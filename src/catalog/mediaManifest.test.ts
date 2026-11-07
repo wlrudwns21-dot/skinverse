@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import { detailPages, detailTiles } from './detailPages'
 import { aesturaProducts } from '../data/aestura'
-import type { Lang } from '../data/types'
+import { LANGS } from '../data/types'
 
 /**
  * The list the sync function works from, checked against what is actually on
@@ -18,7 +18,6 @@ import type { Lang } from '../data/types'
 
 const ROOT = join(__dirname, '..', '..')
 const MANIFEST = join(ROOT, 'scripts', 'media-manifest.json')
-const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
 interface Manifest {
   bucket: string

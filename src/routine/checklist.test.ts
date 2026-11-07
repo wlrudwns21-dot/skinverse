@@ -13,7 +13,7 @@ import {
   type DayAdherence,
 } from './checklist'
 import { extraPresets, presetsFor, presetById } from './extras'
-import type { Lang } from '../data/types'
+import { LANGS } from '../data/types'
 
 /** A local Date, built from local parts so the test means the same everywhere. */
 const at = (hour: number, minute = 0) => new Date(2026, 8, 15, hour, minute)
@@ -197,7 +197,6 @@ describe('the overall rate', () => {
 })
 
 describe('the extras a member may add', () => {
-  const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
   it('translates every preset', () => {
     for (const preset of extraPresets) {

@@ -1,4 +1,5 @@
 import { readLimit, restrictsChildren, type Fact } from './plainKorean'
+import { LANGS } from '../data/types'
 
 /**
  * A scan's results, assembled for a customer.
@@ -91,7 +92,7 @@ export function describe(
   locale: string,
 ): string | null {
   if (!blurb) return null
-  const order = [locale, 'ko', 'en', 'zh', 'th']
+  const order = [locale, 'ko', ...LANGS]
   for (const key of order) {
     const text = blurb[key]
     if (typeof text === 'string' && text.trim()) return text.trim()

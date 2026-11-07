@@ -22,7 +22,7 @@ export type Slot = 'am' | 'pm' | 'both'
  * is added here because it is not a scan axis — it is matched on the local UV
  * index — and so has no row there.
  */
-const UV: Localized = { ko: '자외선', en: 'UV', zh: '紫外线', th: 'รังสียูวี' }
+const UV: Localized = { ko: '자외선', en: 'UV', zh: '紫外线', th: 'รังสียูวี', ja: '紫外線' }
 
 export function axisName(axis: MetricKey | 'uv', lang: Lang): string {
   if (axis === 'uv') return UV[lang]
@@ -36,19 +36,19 @@ export function axisName(axis: MetricKey | 'uv', lang: Lang): string {
  * which of the two routines it belongs to, not when sunlight is.
  */
 export const slotNames: Record<Slot, Localized> = {
-  am: { ko: '아침', en: 'Morning', zh: '早间', th: 'เช้า' },
-  pm: { ko: '저녁', en: 'Evening', zh: '晚间', th: 'เย็น' },
-  both: { ko: '아침 · 저녁', en: 'Morning & evening', zh: '早晚', th: 'เช้าและเย็น' },
+  am: { ko: '아침', en: 'Morning', zh: '早间', th: 'เช้า', ja: '朝' },
+  pm: { ko: '저녁', en: 'Evening', zh: '晚间', th: 'เย็น', ja: '夜' },
+  both: { ko: '아침 · 저녁', en: 'Morning & evening', zh: '早晚', th: 'เช้าและเย็น', ja: '朝 · 夜' },
 }
 
 /** Which step of the routine it is, in the order a routine is applied. */
 export const stepNames: Record<string, Localized> = {
-  cleanser: { ko: '클렌저', en: 'Cleanser', zh: '洁面', th: 'คลีนเซอร์' },
-  toner: { ko: '토너 · 미스트', en: 'Toner / mist', zh: '化妆水 / 喷雾', th: 'โทนเนอร์ / มิสต์' },
-  serum: { ko: '세럼', en: 'Serum', zh: '精华', th: 'เซรั่ม' },
-  cream: { ko: '크림', en: 'Cream', zh: '面霜', th: 'ครีม' },
-  spf: { ko: '자외선차단', en: 'Sunscreen', zh: '防晒', th: 'กันแดด' },
-  mask: { ko: '마스크', en: 'Mask', zh: '面膜', th: 'มาสก์' },
+  cleanser: { ko: '클렌저', en: 'Cleanser', zh: '洁面', th: 'คลีนเซอร์', ja: 'クレンザー' },
+  toner: { ko: '토너 · 미스트', en: 'Toner / mist', zh: '化妆水 / 喷雾', th: 'โทนเนอร์ / มิสต์', ja: 'トナー / ミスト' },
+  serum: { ko: '세럼', en: 'Serum', zh: '精华', th: 'เซรั่ม', ja: 'セラム' },
+  cream: { ko: '크림', en: 'Cream', zh: '面霜', th: 'ครีม', ja: 'クリーム' },
+  spf: { ko: '자외선차단', en: 'Sunscreen', zh: '防晒', th: 'กันแดด', ja: '日焼け止め' },
+  mask: { ko: '마스크', en: 'Mask', zh: '面膜', th: 'มาสก์', ja: 'マスク' },
 }
 
 export function stepName(step: string, lang: Lang): string {
@@ -63,14 +63,14 @@ export function stepName(step: string, lang: Lang): string {
  * says to watch for them — neither claims a result on skin.
  */
 export const analysisLabels = {
-  routine: { ko: '루틴에서의 자리', en: 'Where it sits in a routine', zh: '在护肤流程中的位置', th: 'ตำแหน่งในรูทีน' },
-  slot: { ko: '사용 시간', en: 'When', zh: '使用时间', th: 'เวลาใช้' },
-  step: { ko: '단계', en: 'Step', zh: '步骤', th: 'ขั้นตอน' },
-  fits: { ko: '어떤 피부에 맞는지', en: 'Which readings it answers', zh: '适合哪些肌肤指标', th: 'ตอบโจทย์ค่าใด' },
-  pros: { ko: '성분에서 확인한 점', en: 'Read off the ingredient list', zh: '从成分表读到的', th: 'อ่านได้จากรายการส่วนผสม' },
-  cons: { ko: '쓰기 전에 알아둘 점', en: 'Worth knowing before you use it', zh: '使用前需知', th: 'ควรรู้ก่อนใช้' },
-  primary: { ko: '주', en: 'Primary', zh: '主要', th: 'หลัก' },
-  secondary: { ko: '부', en: 'Also', zh: '次要', th: 'รอง' },
+  routine: { ko: '루틴에서의 자리', en: 'Where it sits in a routine', zh: '在护肤流程中的位置', th: 'ตำแหน่งในรูทีน', ja: 'ルーティンでの位置' },
+  slot: { ko: '사용 시간', en: 'When', zh: '使用时间', th: 'เวลาใช้', ja: '使う時間' },
+  step: { ko: '단계', en: 'Step', zh: '步骤', th: 'ขั้นตอน', ja: 'ステップ' },
+  fits: { ko: '어떤 피부에 맞는지', en: 'Which readings it answers', zh: '适合哪些肌肤指标', th: 'ตอบโจทย์ค่าใด', ja: 'どの測定値に効くか' },
+  pros: { ko: '성분에서 확인한 점', en: 'Read off the ingredient list', zh: '从成分表读到的', th: 'อ่านได้จากรายการส่วนผสม', ja: '成分表から読み取れること' },
+  cons: { ko: '쓰기 전에 알아둘 점', en: 'Worth knowing before you use it', zh: '使用前需知', th: 'ควรรู้ก่อนใช้', ja: '使う前に知っておきたいこと' },
+  primary: { ko: '주', en: 'Primary', zh: '主要', th: 'หลัก', ja: '主' },
+  secondary: { ko: '부', en: 'Also', zh: '次要', th: 'รอง', ja: '副' },
   /**
    * Shown in place of the analysis when the ingredient list is unverified.
    * A product in that state cannot be sold at all — the database refuses it —
@@ -80,6 +80,5 @@ export const analysisLabels = {
     ko: '성분표가 아직 확인되지 않아 분석을 표시하지 않습니다.',
     en: 'The ingredient list has not been verified, so no analysis is shown.',
     zh: '成分表尚未核实，故不显示分析。',
-    th: 'ยังไม่ได้ตรวจสอบรายการส่วนผสม จึงไม่แสดงผลวิเคราะห์',
-  },
+    th: 'ยังไม่ได้ตรวจสอบรายการส่วนผสม จึงไม่แสดงผลวิเคราะห์', ja: '成分表がまだ確認できていないため、分析は表示していません。' },
 } satisfies Record<string, Localized>

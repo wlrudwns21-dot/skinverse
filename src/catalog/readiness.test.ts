@@ -19,8 +19,8 @@ const base = (over: Partial<CatalogProduct> = {}): CatalogProduct => ({
   img: '/products/x/main.webp',
   ing: '정제수',
   inci: 'Water',
-  sub: { ko: 'a', en: 'a', zh: 'a', th: 'a' },
-  why: { ko: 'b', en: 'b', zh: 'b', th: 'b' },
+  sub: { ko: 'a', en: 'a', zh: 'a', th: 'a', ja: 'a' },
+  why: { ko: 'b', en: 'b', zh: 'b', th: 'b', ja: 'b' },
   line: '',
   slot: 'both',
   step: 'cream',
@@ -64,7 +64,7 @@ describe('gapsOf', () => {
   it('wants copy in all four languages, not just one', () => {
     expect(gapsOf(base({ sub: { ko: 'a' } as never }))).toContain('copy')
     expect(gapsOf(base({ why: { ko: 'b', en: 'b', zh: 'b' } as never }))).toContain('copy')
-    expect(gapsOf(base({ sub: { ko: ' ', en: 'a', zh: 'a', th: 'a' } as never }))).toContain('copy')
+    expect(gapsOf(base({ sub: { ko: ' ', en: 'a', zh: 'a', th: 'a', ja: 'a' } as never }))).toContain('copy')
   })
 
   it('refuses to sell a product with no price', () => {

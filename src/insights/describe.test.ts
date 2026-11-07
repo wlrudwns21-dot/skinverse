@@ -1,10 +1,9 @@
 import { describe as suite, expect, it } from 'vitest'
-import type { Lang } from '../data/types'
+import { LANGS } from '../data/types'
 import { insightT } from '../i18n/insights'
 import { describe as describeInsight, describeAll, skinTypeLabel } from './describe'
 import type { Insight } from './report'
 
-const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
 /** One of every finding the report can produce. */
 const ALL: Insight[] = [

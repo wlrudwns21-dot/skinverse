@@ -11,6 +11,7 @@ const LABEL: Record<Lang, { open: string; close: string }> = {
   en: { open: 'Show the full page', close: 'Collapse' },
   zh: { open: '展开详情', close: '收起' },
   th: { open: 'ดูรายละเอียดทั้งหมด', close: 'ย่อ' },
+  ja: { open: '詳細ページを開く', close: '閉じる' },
 }
 
 export interface DetailPageProps {

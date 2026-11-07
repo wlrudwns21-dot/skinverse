@@ -11,7 +11,7 @@ const field =
   'width:100%;box-sizing:border-box;border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;margin-top:4px;outline:none;font-family:inherit'
 const label = 'font-size:11px;color:var(--ink-3);font-weight:500'
 
-const LANGS: [Lang, string][] = [['ko', '한국어'], ['en', 'English'], ['zh', '中文'], ['th', 'ไทย']]
+const LANGS: [Lang, string][] = [['ko', '한국어'], ['en', 'English'], ['zh', '中文'], ['ja', '日本語'], ['th', 'ไทย']]
 const STEPS: [string, string][] = [
   ['cleanser', '클렌저'], ['toner', '토너 · 미스트'], ['serum', '세럼'],
   ['cream', '크림'], ['spf', '자외선차단'], ['mask', '마스크'],
@@ -19,7 +19,7 @@ const STEPS: [string, string][] = [
 
 type Row = ReturnType<typeof useAdmin>['prodList'][number]
 
-const blank = (): Localized => ({ ko: '', en: '', zh: '', th: '' })
+const blank = (): Localized => ({ ko: '', en: '', zh: '', th: '', ja: '' })
 const fill = (l: Partial<Localized> | undefined): Localized => ({ ...blank(), ...l })
 
 /**

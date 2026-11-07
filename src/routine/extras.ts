@@ -32,14 +32,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '립 마스크',
       en: 'Lip mask',
       zh: '唇膜',
-      th: 'ลิปมาสก์',
-    },
+      th: 'ลิปมาสก์', ja: 'リップマスク' },
     note: {
       ko: '입술은 피지선이 없어 가장 먼저 트는 부위예요.',
       en: 'Lips have no oil glands, so they crack before anything else does.',
       zh: '嘴唇没有皮脂腺，所以总是最先干裂。',
-      th: 'ริมฝีปากไม่มีต่อมไขมัน จึงแห้งแตกก่อนส่วนอื่น',
-    },
+      th: 'ริมฝีปากไม่มีต่อมไขมัน จึงแห้งแตกก่อนส่วนอื่น', ja: '唇は皮脂腺がないので、どこよりも先に荒れます。' },
   },
   {
     id: 'eyeCream',
@@ -48,14 +46,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '아이크림',
       en: 'Eye cream',
       zh: '眼霜',
-      th: 'อายครีม',
-    },
+      th: 'อายครีม', ja: 'アイクリーム' },
     note: {
       ko: '눈가 피부는 얼굴에서 가장 얇아 건조와 주름이 먼저 보입니다.',
       en: 'The thinnest skin on the face: dryness and lines show here first.',
       zh: '眼周是面部最薄的皮肤，干燥与细纹最先显现。',
-      th: 'ผิวรอบดวงตาบางที่สุดบนใบหน้า ความแห้งและริ้วรอยจึงปรากฏก่อน',
-    },
+      th: 'ผิวรอบดวงตาบางที่สุดบนใบหน้า ความแห้งและริ้วรอยจึงปรากฏก่อน', ja: '目もとの皮膚は顔でいちばん薄く、乾燥とシワが最初に出ます。' },
   },
   {
     id: 'neck',
@@ -64,14 +60,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '목까지 바르기',
       en: 'Take it down the neck',
       zh: '延伸至颈部',
-      th: 'ทาต่อถึงลำคอ',
-    },
+      th: 'ทาต่อถึงลำคอ', ja: '首まで塗る' },
     note: {
       ko: '목은 같은 자외선을 받지만 관리는 거의 받지 못합니다.',
       en: 'The neck takes the same UV as the face and almost none of the care.',
       zh: '颈部承受与面部相同的紫外线，却几乎得不到护理。',
-      th: 'ลำคอเจอยูวีเท่าใบหน้า แต่แทบไม่ได้รับการดูแล',
-    },
+      th: 'ลำคอเจอยูวีเท่าใบหน้า แต่แทบไม่ได้รับการดูแล', ja: '首は顔と同じ紫外線を受けるのに、ケアはほとんど受けません。' },
   },
   {
     id: 'sunscreenReapply',
@@ -80,14 +74,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '선크림 재도포',
       en: 'Reapply sunscreen',
       zh: '补涂防晒',
-      th: 'ทากันแดดซ้ำ',
-    },
+      th: 'ทากันแดดซ้ำ', ja: '日焼け止めの塗り直し' },
     note: {
       ko: '차단 성분은 땀과 빛 자체로 분해돼요. UV 8 이상이면 필수.',
       en: 'Filters break down under sweat and light. Above UV 8 it is not optional.',
       zh: '防晒成分会被汗水和光照分解。UV 8 以上必须补涂。',
-      th: 'สารกันแดดสลายจากเหงื่อและแสง เกินยูวี 8 คือต้องทาซ้ำ',
-    },
+      th: 'สารกันแดดสลายจากเหงื่อและแสง เกินยูวี 8 คือต้องทาซ้ำ', ja: '紫外線カット成分は汗と光そのもので分解されます。UV 8 以上なら必須です。' },
   },
   {
     id: 'facialMist',
@@ -96,14 +88,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '수분 미스트',
       en: 'Hydrating mist',
       zh: '保湿喷雾',
-      th: 'สเปรย์น้ำแร่',
-    },
+      th: 'สเปรย์น้ำแร่', ja: '保湿ミスト' },
     note: {
       ko: '에어컨이나 난방 아래서 하루 중 수분을 다시 채웁니다.',
       en: 'Tops the water back up through a day under air conditioning or heating.',
       zh: '在空调或暖气环境中，白天随时补水。',
-      th: 'เติมน้ำให้ผิวระหว่างวันในห้องแอร์หรือฮีตเตอร์',
-    },
+      th: 'เติมน้ำให้ผิวระหว่างวันในห้องแอร์หรือฮีตเตอร์', ja: '冷房や暖房の下で、一日のあいだに水分を足し直します。' },
   },
   {
     id: 'sheetMask',
@@ -112,14 +102,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '시트 마스크',
       en: 'Sheet mask',
       zh: '面膜',
-      th: 'ชีทมาสก์',
-    },
+      th: 'ชีทมาสก์', ja: 'シートマスク' },
     note: {
       ko: '주 2–3회. 매일 하면 오히려 각질층이 무릅니다.',
       en: 'Two or three times a week. Daily and the barrier goes soggy instead.',
       zh: '每周 2~3 次。天天敷反而会让角质层过度水合。',
-      th: 'สัปดาห์ละ 2–3 ครั้ง ถ้าทุกวันผิวจะอุ้มน้ำมากเกินไป',
-    },
+      th: 'สัปดาห์ละ 2–3 ครั้ง ถ้าทุกวันผิวจะอุ้มน้ำมากเกินไป', ja: '週2〜3回。毎日使うと、かえって角質層がふやけます。' },
   },
   {
     id: 'exfoliate',
@@ -128,14 +116,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '각질 정돈 (PHA)',
       en: 'Gentle exfoliation (PHA)',
       zh: '温和去角质 (PHA)',
-      th: 'ผลัดผิวอ่อนโยน (PHA)',
-    },
+      th: 'ผลัดผิวอ่อนโยน (PHA)', ja: '角質ケア（PHA）' },
     note: {
       ko: '주 2회까지. 광은 연마가 아니라 수분에서 나옵니다.',
       en: 'Twice a week at most. Glow comes from water, not from sanding.',
       zh: '每周最多两次。光泽来自水分，而非打磨。',
-      th: 'ไม่เกินสัปดาห์ละสองครั้ง ความเงามาจากน้ำ ไม่ใช่การขัด',
-    },
+      th: 'ไม่เกินสัปดาห์ละสองครั้ง ความเงามาจากน้ำ ไม่ใช่การขัด', ja: '週2回まで。ツヤは削ることではなく、水分から生まれます。' },
   },
   {
     id: 'retinal',
@@ -144,14 +130,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '레티날 (밤)',
       en: 'Retinal (night)',
       zh: '视黄醛（夜间）',
-      th: 'เรตินัล (กลางคืน)',
-    },
+      th: 'เรตินัล (กลางคืน)', ja: 'レチナール（夜）' },
     note: {
       ko: '장벽이 자리를 잡은 뒤에. 다른 액티브와 같은 날 겹치지 마세요.',
       en: 'Only once the barrier is settled, and never stacked with another active.',
       zh: '待屏障稳定后再用，且勿与其他活性成分叠加。',
-      th: 'ใช้เมื่อเกราะผิวแข็งแรงแล้ว และอย่าซ้อนกับแอคทีฟอื่น',
-    },
+      th: 'ใช้เมื่อเกราะผิวแข็งแรงแล้ว และอย่าซ้อนกับแอคทีฟอื่น', ja: 'バリアが落ち着いてから。ほかの有効成分と同じ日に重ねないでください。' },
   },
   {
     id: 'humidifier',
@@ -160,14 +144,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '가습기 켜기',
       en: 'Run a humidifier',
       zh: '开加湿器',
-      th: 'เปิดเครื่องทำความชื้น',
-    },
+      th: 'เปิดเครื่องทำความชื้น', ja: '加湿器をつける' },
     note: {
       ko: '자는 동안의 수분 손실이 하루 중 가장 큽니다.',
       en: 'The largest water loss of the day happens while you are asleep.',
       zh: '一天中水分流失最多的时段是睡眠中。',
-      th: 'ผิวเสียน้ำมากที่สุดของวันระหว่างที่คุณหลับ',
-    },
+      th: 'ผิวเสียน้ำมากที่สุดของวันระหว่างที่คุณหลับ', ja: '一日でいちばん水分を失うのは、眠っているあいだです。' },
   },
   {
     id: 'water',
@@ -176,14 +158,12 @@ export const extraPresets: ExtraPreset[] = [
       ko: '물 한 잔',
       en: 'A glass of water',
       zh: '喝一杯水',
-      th: 'น้ำหนึ่งแก้ว',
-    },
+      th: 'น้ำหนึ่งแก้ว', ja: '水を一杯' },
     note: {
       ko: '바르는 수분만으로는 채워지지 않는 부분이 있습니다.',
       en: 'There is a part of this that no amount of topical hydration reaches.',
       zh: '有些缺水，是外用保湿补不回来的。',
-      th: 'ความชุ่มชื้นบางส่วน สกินแคร์ทาภายนอกเติมให้ไม่ได้',
-    },
+      th: 'ความชุ่มชื้นบางส่วน สกินแคร์ทาภายนอกเติมให้ไม่ได้', ja: '塗る保湿だけでは届かない部分があります。' },
   },
 ]
 
@@ -201,33 +181,28 @@ export const extrasTitle: Localized = {
   ko: '내 루틴 추가',
   en: 'Add to my routine',
   zh: '添加到我的护理',
-  th: 'เพิ่มในรูทีนของฉัน',
-}
+  th: 'เพิ่มในรูทีนของฉัน', ja: '自分で足すケア' }
 
 export const extrasSub: Localized = {
   ko: '기본 루틴은 분석 결과와 날씨로 정해집니다. 아래에서 직접 더할 수 있어요.',
   en: 'The base routine is set by your scan and the weather. These you choose yourself.',
   zh: '基础方案由检测结果与天气决定，以下步骤可自行添加。',
-  th: 'รูทีนพื้นฐานกำหนดจากผลสแกนและสภาพอากาศ ส่วนด้านล่างคุณเลือกเอง',
-}
+  th: 'รูทีนพื้นฐานกำหนดจากผลสแกนและสภาพอากาศ ส่วนด้านล่างคุณเลือกเอง', ja: '基本のルーティンは診断結果と天気で決まります。ここから自分で足せます。' }
 
 export const addStep: Localized = {
   ko: '단계 추가',
   en: 'Add a step',
   zh: '添加步骤',
-  th: 'เพิ่มขั้นตอน',
-}
+  th: 'เพิ่มขั้นตอน', ja: 'ステップを足す' }
 
 export const removeStep: Localized = {
   ko: '빼기',
   en: 'Remove',
   zh: '移除',
-  th: 'นำออก',
-}
+  th: 'นำออก', ja: '外す' }
 
 export const extrasFull: Localized = {
   ko: '이 시간대는 5개까지 추가할 수 있어요.',
   en: 'Five added steps is the most for one part of the day.',
   zh: '同一时段最多添加 5 个步骤。',
-  th: 'เพิ่มได้สูงสุด 5 ขั้นตอนต่อช่วงเวลา',
-}
+  th: 'เพิ่มได้สูงสุด 5 ขั้นตอนต่อช่วงเวลา', ja: 'この時間帯に足せるのは5つまでです。' }

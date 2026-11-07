@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Lang } from '../data/types'
+import { LANGS } from '../data/types'
 import {
   CONCERNS,
   concernOf,
@@ -10,7 +10,6 @@ import {
   zoneHelp,
 } from './concerns'
 
-const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
 /**
  * The exact list the edge function asks Perfect Corp for.

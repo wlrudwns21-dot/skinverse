@@ -3,9 +3,20 @@
 import type { Fit, Slot } from '../catalog/analysis'
 import type { DetailArt } from '../catalog/detailPages'
 
-export type Lang = 'en' | 'ko' | 'zh' | 'th'
+/**
+ * Every language the shop speaks, in the order a picker lists them.
+ *
+ * `Lang` is derived from this array rather than written beside it. Adding
+ * Japanese meant finding six test files that each kept their own copy of the
+ * list — and a test that iterates four languages while the app ships five is a
+ * test that passes without checking the new one. There is one list now, and
+ * anything that walks the languages imports it.
+ */
+export const LANGS = ['en', 'ko', 'zh', 'ja', 'th'] as const
 
-/** A string that exists in all four supported languages. */
+export type Lang = (typeof LANGS)[number]
+
+/** A string that exists in every supported language. */
 export type Localized = Record<Lang, string>
 
 /** The six diagnostic axes the AI scan reports on. */

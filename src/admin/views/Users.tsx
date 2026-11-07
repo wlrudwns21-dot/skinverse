@@ -20,7 +20,7 @@ import { useAdmin } from '../AdminContext'
 
 const ROW_COLS = 'display:grid;grid-template-columns:1.6fr 0.8fr 0.6fr 0.7fr 0.8fr 0.9fr;gap:8px'
 
-const LANGS: Record<string, string> = { ko: '한국어', en: 'English', zh: '中文', th: 'ไทย' }
+const LANGS: Record<string, string> = { ko: '한국어', en: 'English', zh: '中文', ja: '日本語', th: 'ไทย' }
 const CONDITIONS: Record<string, string> = {
   dehydrated: '수분 부족',
   oily: '지성',

@@ -10,8 +10,8 @@ const STATUS_STYLE: Record<support.ThreadStatus, [string, string]> = {
   closed: ['종료', 'background:var(--surface-2);color:var(--ink-3)'],
 }
 
-const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
-const LANG_LABEL: Record<Lang, string> = { ko: '한국어', en: 'English', zh: '中文', th: 'ไทย' }
+const LANGS: Lang[] = ['ko', 'en', 'zh', 'ja', 'th']
+const LANG_LABEL: Record<Lang, string> = { ko: '한국어', en: 'English', zh: '中文', ja: '日本語', th: 'ไทย' }
 
 /** Keywords and the four translations of one canned answer. */
 function FaqEditor({ faq, onSaved }: { faq: support.Faq; onSaved: () => void }) {

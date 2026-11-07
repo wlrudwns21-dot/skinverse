@@ -1,3 +1,4 @@
+import { LANGS } from '../data/types'
 import type { Lang } from '../data/types'
 import type { CatalogProduct } from './types'
 
@@ -52,8 +53,6 @@ export const gapLabels: Record<Gap, string> = {
  * a reason the sale is blocked.
  */
 export const BLOCKING: Gap[] = ['price']
-
-const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
 const hasAllLangs = (l: Partial<Record<Lang, string>> | undefined): boolean =>
   LANGS.every((k) => Boolean(l?.[k]?.trim()))

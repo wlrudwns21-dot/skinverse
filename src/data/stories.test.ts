@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { NAME, WORDMARK } from './brand'
-import type { Lang, Localized } from './types'
+import { LANGS } from './types'
+import type { Localized } from './types'
 import {
   categoryNames,
   coreTip,
@@ -17,7 +18,6 @@ import {
   storiesToRoutine,
 } from './stories'
 
-const LANGS: Lang[] = ['ko', 'en', 'zh', 'th']
 
 /**
  * The stories are shown in four languages with no runtime fallback: an empty

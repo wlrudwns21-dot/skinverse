@@ -561,6 +561,125 @@ const th: InsightStrings = {
   },
 }
 
-const table: Record<Lang, InsightStrings> = { ko, en, zh, th }
+/**
+ * Japanese.
+ *
+ * `sub` and `top` are not used here. They exist to pick the right Korean
+ * particle for a noun, which Japanese does not need: は and が attach to
+ * anything, so the axis name goes in plainly.
+ */
+const ja: InsightStrings = {
+  reportTitle: '診断レポート',
+  reportSub: '測定値が実際に語っていること',
+
+  weakest: (axis, score) => `${axis}が ${score}点でいちばん遅れています。今回のルーティンはここに集中します。`,
+  even: (spread) => `六つの項目が ${spread}点の差のなかに収まっています。急ぐ項目はなく、維持の段階です。`,
+  strongest: (axis, score) => `${axis}は ${score}点で良い状態です。今のやり方を続けてください。`,
+
+  overallUp: (delta, days) => `${days}日で総合スコアが ${delta}点 上がりました。`,
+  overallDown: (delta, days) => `${days}日で総合スコアが ${delta}点 下がりました。`,
+  axisUp: (axis, delta) => `${axis}が ${delta}点 改善しました — いちばん大きく動いた項目です。`,
+  axisDown: (axis, delta) => `${axis}が ${delta}点 下がりました — いちばん大きく動いた項目です。`,
+
+  weatherDriedOut: (delta, humidity) =>
+    `水分が ${delta}点 下がりましたが、同じ期間に湿度も ${Math.abs(humidity)}%ポイント 下がっています。ルーティンの問題というより、空気が乾いた影響です。`,
+  weatherHelped: (delta, humidity) =>
+    `水分が ${delta}点 上がりましたが、同じ期間に湿度も ${humidity}%ポイント 上がっています。かなりの部分は天気のおかげです。`,
+
+  skinAgeFlat: (age) => `AI が測定した肌年齢は ${age}歳です。`,
+  skinAgeBetter: (age, delta) => `肌年齢が ${delta}歳 若くなり、${age}歳になりました。`,
+  skinAgeWorse: (age, delta) => `肌年齢が ${delta}歳 上がり、${age}歳になりました。`,
+
+  zoneContrast: (t, u) => `Tゾーンは ${t}、Uゾーンは ${u} と別々に出ました。部位ごとに質感を変えるのがよいです。`,
+  vendorType: (label) => `AI 判定の肌タイプ: ${label}`,
+  oilinessUp: (delta) => `皮脂の指数が ${delta}点 良くなりました（皮脂が減りました）。`,
+  oilinessDown: (delta) => `皮脂の指数が ${delta}点 悪くなりました（皮脂が増えました）。`,
+  firstScan: '最初の診断です。次の診断から変化を追っていきます。',
+
+  skinTypeLabel: {
+    Normal: '普通肌', Oily: '脂性肌', Dry: '乾燥肌', Combination: '混合肌', Redness: '敏感肌（赤み）',
+    'Dry & Redness': '乾燥 · 赤み', 'Oily & Redness': '脂性 · 赤み',
+    'Combination & Redness': '混合 · 赤み',
+  },
+  tZone: 'Tゾーン', uZone: 'Uゾーン',
+
+  reason: {
+    axisNeed: 'いちばん必要な項目',
+    alsoHelps: 'ほかの項目も一緒にケア',
+    polluted: '大気汚染が多い',
+    hasIt: 'すでにお持ちです', runningOut: 'そろそろ使い切るころです',
+    focusAxis: '今回の集中項目',
+    axisFalling: '最近 下がっています',
+    dryAir: '乾いた空気',
+    humidAir: '高い湿度',
+    heat: '高い気温 · 皮脂の増加',
+    cold: '寒さ · バリアへの刺激',
+    uvLoad: '紫外線の指数',
+    oilySkin: '脂性肌',
+    drySkin: '乾燥肌',
+  },
+  whyThis: 'おすすめの理由',
+
+  map: {
+    title: '肌マップ',
+    sub: '項目を押すと、ご自身の写真の上に実際の検出結果が表示されます',
+    none: '今回の診断では検出画像を受け取れませんでした。スコアは下でご確認いただけます。',
+    expires: '検出画像はこの画面でだけ一時的に表示され、保存されません。',
+  },
+  detail: {
+    title: '項目別の詳細', sub: 'AI が測定した16項目すべて',
+    skinType: 'AI 判定の肌タイプ', tapForMore: '押して詳しく',
+    measured: '何を測った値か', whatToDo: 'こんなときは',
+  },
+
+  basis: {
+    title: 'このルーティンの根拠', sub: '何を測って、こうなったのか', show: '詳しく', hide: '閉じる',
+    weatherTitle: '測定した天気', derivedTitle: '肌に実際に働く値', faceTitle: 'AI 診断から読んだ値',
+    temp: '気温', humidity: '相対湿度', uv: '紫外線指数',
+    vpd: '飽差（VPD）',
+    vpdHelp: '肌の表面（32°C で飽和）と空気との圧力差です。水分を引き出す実際の力にあたります。',
+    absHumidity: '絶対湿度',
+    absHumidityHelp: '空気が実際に抱えている水の量です。相対湿度と違って、気温にごまかされません。',
+    dewPoint: '露点',
+    dewPointHelp: '24°C を超えると汗が乾かず、重い質感が肌の上で浮きます。',
+    occlusiveYes: '露点が 24°C を超えました — 汗が蒸発しないので、クリームやオイルは入らずに浮きます。診断結果とは関係なく、ジェル質感を適用しました。',
+    occlusiveNo: '露点が 24°C より下なので、汗はふつうに蒸発します。質感の選択は、乾燥の負荷と診断結果が決めます。',
+    drynessLoad: '乾燥の負荷', sebumLoad: '皮脂の負荷', coldStress: '寒さの刺激',
+    loadHelp: '乾燥の負荷は絶対湿度と飽差を、皮脂の負荷は気温と露点を組み合わせた値です（0〜100）。皮脂の軸には相対湿度を入れていません — 気温が同じなら、湿度は皮脂の分泌を変えないからです。',
+    weakest: 'いちばん低い項目',
+    weakestHelp: (axis) => `${axis}がいちばん低く出たので、朝と夜のトリートメント段階をここに合わせました。`,
+    hydrationRead: (score, threshold) => `水分が ${score}点で、基準（${threshold}点）を下回っています。天気とは別に、質感をひとつリッチにしました。`,
+    hydrationOk: (score, threshold) => `水分が ${score}点で、基準（${threshold}点）以上です。質感は天気だけで決めました。`,
+  },
+
+  trendTitle: '変化の推移',
+  trendSub: '診断したときの湿度と一緒に表示されます',
+  noTrend: '診断を2回以上すると、変化の推移が表示されます。',
+  scanCount: (n) => `診断 ${n}回`,
+  trendOverall: '総合スコア',
+  sinceFirst: '最初の診断から',
+  sinceFirstUp: (d, n, days) => `最初の診断から ${d}点 上がりました · ${n}回 · ${days}日`,
+  sinceFirstDown: (d, n, days) => `最初の診断から ${d}点 下がりました · ${n}回 · ${days}日`,
+  sinceFirstFlat: (n, days) => `最初の診断から大きな変化なし · ${n}回 · ${days}日`,
+  vsLastUp: (d) => `前回より +${d}`,
+  vsLastDown: (d) => `前回より −${d}`,
+  vsLastFlat: '前回と同じくらい',
+  axisTrend: {
+    title: '項目ごとの変化',
+    sub: '診断のたびに、それぞれの項目がどう動いたか',
+    range: (n, worst, best) => `${n}回 測定 · 最低 ${worst} · 最高 ${best}`,
+    firstToLatest: (first, latest) => `${first} → ${latest}`,
+    totalUp: (d) => `最初の診断から +${d}`,
+    totalDown: (d) => `最初の診断から −${d}`,
+    totalFlat: '最初の診断から大きな変化なし',
+    stepUp: (d) => `前回比 +${d}`,
+    stepDown: (d) => `前回比 −${d}`,
+    stepFlat: '前回と同じくらい',
+    needsTwo: '2回目の診断から、項目ごとの変化が見られます。',
+    scopeNote: '記録に残る6項目です。下の16の細かい項目は、今回の診断の測定値です。',
+  },
+}
+
+const table: Record<Lang, InsightStrings> = { ko, en, zh, th, ja }
 
 export const insightT = (lang: Lang): InsightStrings => table[lang]

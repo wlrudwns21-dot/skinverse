@@ -68,8 +68,7 @@ export const INCI_NOTE: Localized = {
   ko: '제조사가 이 언어로 공개한 전성분이 없어 국제 표기(INCI)로 보여드립니다.',
   en: 'Shown in INCI, the international ingredient naming system.',
   zh: '制造商未以此语言公开全成分，故以国际命名（INCI）显示。',
-  th: 'ผู้ผลิตไม่ได้เปิดเผยส่วนผสมในภาษานี้ จึงแสดงด้วยชื่อสากล (INCI)',
-}
+  th: 'ผู้ผลิตไม่ได้เปิดเผยส่วนผสมในภาษานี้ จึงแสดงด้วยชื่อสากล (INCI)', ja: 'メーカーがこの言語で公開した全成分がないため、国際表記（INCI）で表示しています。' }
 
 /**
  * How much of the list to show before asking.
@@ -102,12 +101,10 @@ export const moreLabel: Localized = {
   ko: '전성분 모두 보기',
   en: 'Show the full list',
   zh: '查看全部成分',
-  th: 'ดูส่วนผสมทั้งหมด',
-}
+  th: 'ดูส่วนผสมทั้งหมด', ja: '全成分を見る' }
 
 export const lessLabel: Localized = {
   ko: '접기',
   en: 'Collapse',
   zh: '收起',
-  th: 'ย่อ',
-}
+  th: 'ย่อ', ja: '閉じる' }
