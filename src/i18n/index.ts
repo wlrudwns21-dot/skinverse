@@ -14,11 +14,24 @@ export function strings(lang: Lang): Strings {
   return dictionaries[lang] ?? en
 }
 
-/** Language picker options, in the order the prototype lists them. */
+/**
+ * Language picker options, in the order the prototype lists them.
+ *
+ * Japanese is deliberately absent. The app's own wording is fully translated
+ * — `ja.ts` is complete, as are the auth, routine and report dictionaries —
+ * but the 37 products in the database have no Japanese `sub`, `why`, pros or
+ * cons, and `p.sub[lang]` reads the locale straight out with no fallback. A
+ * reader who picked Japanese today would get a shop whose chrome is in
+ * Japanese and whose products say nothing at all, which is worse than a
+ * language that is not offered yet.
+ *
+ * `LANGS` still carries it, so every test, every `Localized` literal and the
+ * admin console's readiness check all cover Japanese already. The only thing
+ * standing between here and the picker is the product copy.
+ */
 export const langOptions: { value: Lang; short: string; full: string }[] = [
   { value: 'en', short: '🌐 EN', full: 'English' },
   { value: 'ko', short: '🌐 한국어', full: '한국어' },
   { value: 'zh', short: '🌐 中文', full: '中文' },
-  { value: 'ja', short: '🌐 日本語', full: '日本語' },
   { value: 'th', short: '🌐 ไทย', full: 'ไทย' },
 ]
