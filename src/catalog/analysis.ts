@@ -69,6 +69,13 @@ export const analysisLabels = {
   fits: { ko: '어떤 피부에 맞는지', en: 'Which readings it answers', zh: '适合哪些肌肤指标', th: 'ตอบโจทย์ค่าใด', ja: 'どの測定値に効くか' },
   pros: { ko: '성분에서 확인한 점', en: 'Read off the ingredient list', zh: '从成分表读到的', th: 'อ่านได้จากรายการส่วนผสม', ja: '成分表から読み取れること' },
   cons: { ko: '쓰기 전에 알아둘 점', en: 'Worth knowing before you use it', zh: '使用前需知', th: 'ควรรู้ก่อนใช้', ja: '使う前に知っておきたいこと' },
+  /**
+   * The label on the fold that holds the fit table, the recommendation and
+   * the merits. It names what is inside rather than saying "more", because a
+   * reader deciding whether to tap wants to know it is the ingredient
+   * reading and not another block of marketing.
+   */
+  analysis: { ko: '성분 분석 보기', en: 'Read the ingredient analysis', zh: '查看成分分析', th: 'ดูการวิเคราะห์ส่วนผสม', ja: '成分分析を見る' },
   primary: { ko: '주', en: 'Primary', zh: '主要', th: 'หลัก', ja: '主' },
   secondary: { ko: '부', en: 'Also', zh: '次要', th: 'รอง', ja: '副' },
   /**

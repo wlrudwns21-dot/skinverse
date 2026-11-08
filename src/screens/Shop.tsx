@@ -165,8 +165,16 @@ function Ingredients({
             caution tone rather than the muted one: a reader who has just read
             sixty ingredient names has earned a straight answer about how firm
             the list is, and the muted rank is where this app puts things that
-            do not change a decision. */}
-        {source && (
+            do not change a decision.
+
+            It opens with the list rather than standing above it. These notes
+            run to a paragraph, and collapsed they were a block of caution
+            colour sitting between the analysis and the artwork for every
+            reader, including the ones who never open the list. The reader who
+            does open sixty ingredient names is the one asking where they came
+            from, so that is when it appears. When the list is short enough not
+            to collapse at all, so is this. */}
+        {source && (open || !long) && (
           <div
             style={s(
               'font-size:10.5px;line-height:1.6;color:var(--warn);background:var(--warn-soft);' +
@@ -203,6 +211,50 @@ function Ingredients({
  */
 function Block({ children }: { children: ReactNode }) {
   return <div style={s(`${CARD};padding:16px;margin-top:12px`)}>{children}</div>
+}
+
+/**
+ * The ingredient analysis, folded away until it is asked for.
+ *
+ * It is the longest thing on this screen — a fit table, a paragraph and three
+ * merits — and it sat between the price and the maker's artwork, so every
+ * reader scrolled roughly two thousand pixels of it whether they came to read
+ * or to look. Folded, the page reaches the artwork in about a third of that
+ * and the analysis is one tap away for the reader who wants it.
+ *
+ * What does NOT go in here is the caution list. Collapsing the merits and
+ * leaving the cautions out is fine in a way the reverse would not be: a reader
+ * who never opens this still sees everything that might put them off. Folding
+ * both away would make the default view an advertisement, which is the one
+ * shape this screen must not take.
+ */
+function Folded({ label, count, children }: { label: string; count: number; children: ReactNode }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={s('margin-top:12px')}>
+      <div
+        onClick={() => setOpen((v) => !v)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setOpen((v) => !v) }}
+        style={s(
+          `${CARD};cursor:pointer;padding:15px 16px;display:flex;align-items:center;gap:9px`,
+        )}
+      >
+        <span style={s('flex:1;font-size:12.5px;font-weight:500;letter-spacing:0.02em')}>{label}</span>
+        <span style={s('font-size:11px;color:var(--ink-4);font-variant-numeric:tabular-nums')}>{count}</span>
+        {/* A caret, so the control reads as a disclosure rather than a link. */}
+        <span
+          aria-hidden
+          style={s(`font-size:10px;color:var(--ink-3);transform:rotate(${open ? '180' : '0'}deg)`)}
+        >
+          ▾
+        </span>
+      </div>
+      {open && children}
+    </div>
+  )
 }
 
 function Note({ mark, tint, children }: { mark: string; tint: string; children: ReactNode }) {
@@ -300,6 +352,11 @@ export function ProductDetail() {
           </Block>
         )}
 
+        {(sel.fits.length > 0 || sel.why || sel.pros.length > 0) && (
+        <Folded
+          label={L.analysis[st.lang]}
+          count={sel.fits.length + (sel.why ? 1 : 0) + sel.pros.length}
+        >
         {sel.fits.length > 0 && (
           <Block>
             <div>
@@ -334,9 +391,9 @@ export function ProductDetail() {
           </Block>
         )}
 
-        {/* Pros and cons sit together, in that order, and neither can be
-            collapsed away: a product shown with only its merits is an
-            advertisement, and this screen is meant to be read. */}
+        {/* The merits fold away with the rest of the analysis. The cautions
+            below do not, so the default view can never be only the good news —
+            see the note on `Folded`. */}
         {sel.pros.length > 0 && (
           <Block>
             <div>
@@ -346,6 +403,8 @@ export function ProductDetail() {
               ))}
             </div>
           </Block>
+        )}
+        </Folded>
         )}
 
         {sel.cons.length > 0 && (
