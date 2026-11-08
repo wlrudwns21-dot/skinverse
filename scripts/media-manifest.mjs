@@ -37,7 +37,7 @@ const CHECK = process.argv.includes('--check')
  * the list has crossed a network and a path is a bucket write target. Keeping
  * the two in step is the point of writing it out in both places.
  */
-export const MEDIA_PATH = /^products\/[a-z0-9][a-z0-9-]*\/(main\.webp|detail\/(ko|en|zh|th)\/\d{1,3}\.webp)$/
+export const MEDIA_PATH = /^products\/[a-z0-9][a-z0-9-]*\/(main\.webp|detail\/(ko|en|zh|ja|th)\/\d{1,3}\.webp)$/
 
 async function walk(dir) {
   const out = []

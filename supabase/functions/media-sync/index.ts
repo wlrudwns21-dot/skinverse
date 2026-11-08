@@ -88,7 +88,7 @@ const CONCURRENCY = 6
  * a bucket write target.
  */
 const MEDIA_PATH =
-  /^products\/[a-z0-9][a-z0-9-]*\/(main\.webp|detail\/(ko|en|zh|th)\/\d{1,3}\.webp)$/
+  /^products\/[a-z0-9][a-z0-9-]*\/(main\.webp|detail\/(ko|en|zh|ja|th)\/\d{1,3}\.webp)$/
 
 /** A git ref, narrow enough that it cannot climb out of the repository. */
 const REF = /^[A-Za-z0-9._/-]{1,100}$/

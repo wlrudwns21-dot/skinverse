@@ -61,7 +61,7 @@ describe('the manifest itself', () => {
   it('only contains paths the function will accept', () => {
     // Re-checked after crossing a network, because by then each one is a
     // bucket write target. Keep this in step with MEDIA_PATH in both sources.
-    const allowed = /^products\/[a-z0-9][a-z0-9-]*\/(main\.webp|detail\/(ko|en|zh|th)\/\d{1,3}\.webp)$/
+    const allowed = /^products\/[a-z0-9][a-z0-9-]*\/(main\.webp|detail\/(ko|en|zh|ja|th)\/\d{1,3}\.webp)$/
     expect(manifest.files.map(([p]) => p).filter((p) => !allowed.test(p))).toEqual([])
   })
 })
