@@ -1,0 +1,522 @@
+[
+ {
+  "id": "ahc-proshot-volume5-intra-serum-40",
+  "brand": "AHC",
+  "name": "Pro Shot Hyaluro-Deep Volume 5 Intra-Serum",
+  "name_l": {
+   "ko": "프로 샷 히알루로 딥 볼륨 5 인트라 세럼",
+   "zh": "Pro Shot 玻尿酸深层丰盈5 导入精华",
+   "ja": "プロショット ヒアルロ ディープ ボリューム5 イントラセラム"
+  },
+  "ml": "40mL",
+  "kind": "Serum",
+  "tag": "Hydration",
+  "metric": "hydration",
+  "line": "HYALURO-DEEP VOLUME 5 · 물광 탄력 프로샷 듀오",
+  "step": "serum",
+  "slot": "both",
+  "gradient": "linear-gradient(160deg,var(--surface-2),var(--ph-a))",
+  "image": "/products/ahc-proshot-volume5-intra-serum-40/main.webp",
+  "price_krw": 16990,
+  "list_price_krw": 28318,
+  "use_days": 60,
+  "sort": 507,
+  "stock": 0,
+  "active": true,
+  "ingredients_checked": true,
+  "sub": {
+   "ko": "볼륨 5 듀오의 세럼 쪽. 히알루론산이 다섯 형태.",
+   "en": "The serum half of the Volume 5 duo. Five forms of hyaluronic acid.",
+   "zh": "丰盈5 双件组中的精华。五种透明质酸。",
+   "ja": "ボリューム5 デュオのセラム側。ヒアルロン酸が5つの形で。",
+   "th": "เซรั่มในชุดคู่ Volume 5 กรดไฮยาลูรอนิกห้ารูปแบบ"
+  },
+  "why": {
+   "ko": "이름의 5는 히알루론산 형태 수입니다. 17·26·29·30·38번째에 서로 다른 다섯 가지가 실제로 들어 있습니다. 앞쪽 아홉 자리가 물과 보습제·용제라 묽고 가볍게 발리고, 판테놀이 10번째입니다. 주름개선 기능성의 근거인 아데노신은 22번째, 세라마이드엔피가 43번째로 맨 끝입니다. 상세페이지의 플럼핑 +37.6%는 이 세럼 단독이 아니라 듀오를 4주 함께 쓴 결과이니, 아래 단점을 함께 읽어주세요.",
+   "en": "The 5 in the name is a count of hyaluronic acid forms, and five distinct ones are there at 17, 26, 29, 30 and 38. The first nine places are water, humectants and solvents, so it goes on thin and light, with panthenol tenth. Adenosine — what the wrinkle-care designation rests on — is twenty-second, and ceramide NP is last at forty-third. The +37.6% plumping figure on the page is a four-week result for the duo, not for this serum alone. Read it with the drawback below.",
+   "zh": "名称中的 5 是透明质酸的形态数量，成分表第 17、26、29、30、38 位确实是五种不同形式。前九位为水、保湿剂与溶剂，因此质地稀薄轻盈，泛醇位列第十。抗皱功能性所依据的腺苷在第二十二位，神经酰胺 NP 则在末位第四十三。页面上的丰盈 +37.6% 是双件组连用四周的结果，并非本精华单独使用，请与下方缺点一并阅读。",
+   "ja": "名前の5は、ヒアルロン酸の形の数です。17・26・29・30・38番目に、互いに違う5種類が実際に入っています。前の9か所が水と保湿剤・溶剤なので、さらっと軽く伸び、パンテノールが10番目です。シワ改善の機能性の根拠であるアデノシンは22番目、セラミドNPが43番目で最後です。詳細ページの「うるおいプランピング +37.6%」はこのセラム単独ではなく、デュオを4週間併用した結果なので、下の短所と一緒にお読みください。",
+   "th": "เลข 5 ในชื่อคือจำนวนรูปแบบของกรดไฮยาลูรอนิก และมีห้าชนิดที่ต่างกันจริงที่ลำดับ 17, 26, 29, 30 และ 38 เก้าลำดับแรกเป็นน้ำ สารให้ความชุ่มชื้นและตัวทำละลาย เนื้อจึงบางเบา โดยแพนทีนอลอยู่ลำดับที่สิบ อะดีโนซีนซึ่งเป็นสารที่ใช้ขอรับรองด้านริ้วรอยอยู่ลำดับที่ยี่สิบสอง และเซราไมด์ NP อยู่ท้ายสุดลำดับที่สี่สิบสาม ตัวเลข +37.6% บนหน้ารายละเอียดเป็นผลของการใช้ชุดคู่ร่วมกันสี่สัปดาห์ ไม่ใช่เซรั่มนี้เพียงอย่างเดียว โปรดอ่านประกอบกับข้อจำกัดด้านล่าง"
+  },
+  "fits": [
+   {
+    "axis": "hydration",
+    "strength": "primary",
+    "note": {
+     "ko": "히알루론산 다섯 형태(17·26·29·30·38번째)와 판테놀 10번째.",
+     "en": "Five forms of hyaluronic acid at 17, 26, 29, 30 and 38, with panthenol tenth.",
+     "zh": "五种透明质酸位列第 17、26、29、30、38，泛醇第十。",
+     "ja": "ヒアルロン酸が5つの形（17・26・29・30・38番目）、パンテノールが10番目。",
+     "th": "กรดไฮยาลูรอนิกห้ารูปแบบที่ลำดับ 17, 26, 29, 30 และ 38 พร้อมแพนทีนอลลำดับที่สิบ"
+    }
+   },
+   {
+    "axis": "wrinkles",
+    "strength": "secondary",
+    "note": {
+     "ko": "아데노신이 22번째입니다 — 주름개선 기능성의 근거 성분입니다.",
+     "en": "Adenosine is twenty-second, the ingredient the wrinkle-care designation rests on.",
+     "zh": "腺苷位列第二十二，即抗皱功能性所依据的成分。",
+     "ja": "アデノシンが22番目です — シワ改善の機能性の根拠となる成分です。",
+     "th": "อะดีโนซีนอยู่ลำดับที่ยี่สิบสอง เป็นสารที่ใช้ขอรับรองด้านริ้วรอย"
+    }
+   },
+   {
+    "axis": "elasticity",
+    "strength": "secondary",
+    "note": {
+     "ko": "베타-글루칸 28번째, 에스신 32번째.",
+     "en": "Beta-glucan twenty-eighth, escin thirty-second.",
+     "zh": "β-葡聚糖第二十八，七叶树皂苷第三十二。",
+     "ja": "β-グルカン28番目、エスシン32番目。",
+     "th": "เบต้ากลูแคนลำดับที่ยี่สิบแปด เอสซินลำดับที่สามสิบสอง"
+    }
+   }
+  ],
+  "pros": [
+   {
+    "ko": "이름의 숫자를 셀 수 있습니다. 볼륨 5는 히알루론산 다섯 형태를 가리키고, 17·26·29·30·38번째에 서로 다른 다섯 가지가 실제로 있습니다. 숫자를 내건 제품이 성분표와 맞는 경우가 늘 있는 일은 아닙니다.",
+    "en": "The number in the name can be counted. Volume 5 points at five forms of hyaluronic acid, and five distinct ones are there at 17, 26, 29, 30 and 38. A product that puts a figure on the box and matches it on the list is not a given.",
+    "zh": "名称中的数字可以核对。「丰盈5」指五种透明质酸，而成分表第 17、26、29、30、38 位确实是五种不同形式。在包装上写数字又能对得上成分表的产品并不多见。",
+    "ja": "名前の数字が数えられます。「ボリューム5」はヒアルロン酸の5つの形を指していて、実際に 17・26・29・30・38番目に互いに違う5種類があります。数字を掲げた製品が成分表と合っていることは、いつもあることではありません。",
+    "th": "ตัวเลขในชื่อนับได้จริง Volume 5 หมายถึงกรดไฮยาลูรอนิกห้ารูปแบบ และมีห้าชนิดที่ต่างกันอยู่ที่ลำดับ 17, 26, 29, 30 และ 38 สินค้าที่ใส่ตัวเลขบนกล่องแล้วตรงกับรายการส่วนผสมไม่ใช่เรื่องปกติเสมอไป"
+   },
+   {
+    "ko": "앞쪽이 무겁지 않습니다. 1~9번째가 물·보습제·용제이고 유분이 없어, 세럼 단계에서 얇게 올리기 좋습니다. 기름진 성분은 36번째 글리세릴리놀리에이트와 37번째 해바라기씨오일이 처음입니다.",
+    "en": "The front of the list is not heavy. Places one to nine are water, humectants and solvents with no oil, so it layers thin at the serum step. The first oily thing is glyceryl linoleate at thirty-six, then sunflower seed oil at thirty-seven.",
+    "zh": "前段并不厚重。第 1 至 9 位是水、保湿剂与溶剂，没有油脂，适合在精华步骤薄薄叠涂。第一个油性成分是第三十六位的甘油亚油酸酯，其后是第三十七位的向日葵籽油。",
+    "ja": "前のほうが重くありません。1〜9番目が水・保湿剤・溶剤で油分がないので、セラムの段階で薄く重ねやすいです。油性の成分は36番目のグリセリルリノレートと37番目のヒマワリ種子油が最初です。",
+    "th": "ส่วนต้นของรายการไม่หนัก ลำดับ 1 ถึง 9 เป็นน้ำ สารให้ความชุ่มชื้นและตัวทำละลาย ไม่มีน้ำมัน จึงซ้อนชั้นบาง ๆ ได้ในขั้นเซรั่ม น้ำมันตัวแรกคือกลีเซอรีลลิโนลีเอตลำดับที่สามสิบหก ตามด้วยน้ำมันเมล็ดทานตะวันลำดับที่สามสิบเจ็ด"
+   },
+   {
+    "ko": "주름개선 기능성 표시의 근거가 성분표에 있습니다. 아데노신이 22번째입니다. 기능성 문구만 있고 해당 성분을 찾을 수 없는 경우와 다릅니다.",
+    "en": "The wrinkle-care designation has something behind it on the list: adenosine, twenty-second. That is not the same as a claim with no matching ingredient to find.",
+    "zh": "抗皱功能性标示在成分表中有据可循：腺苷位列第二十二。这与只有功效文案却找不到对应成分的情况不同。",
+    "ja": "シワ改善の機能性表示の根拠が成分表にあります。アデノシンが22番目です。機能性の文言だけがあって該当成分が見つからない場合とは違います。",
+    "th": "การรับรองด้านริ้วรอยมีที่มาในรายการส่วนผสม คือ อะดีโนซีน ลำดับที่ยี่สิบสอง ต่างจากกรณีที่มีเพียงข้อความแต่หาสารที่เกี่ยวข้องไม่พบ"
+   }
+  ],
+  "cons": [
+   {
+    "ko": "플럼핑 +37.6%는 이 제품 단독 수치가 아닙니다. 상세페이지 각주에 적힌 대로, 이 세럼과 아이크림을 4주 함께 쓴 뒤 볼 부위를 측정한 결과입니다(2023.08.14~09.25, 30~59세 여성 32명, 개인차 있음, P&K피부임상연구센터). 세럼만 썼을 때의 수치는 제공되지 않았습니다.",
+    "en": "The +37.6% plumping figure is not this product on its own. The page's own footnote says it is the cheek area measured after four weeks of using this serum together with the eye cream (2023-08-14 to 2023-09-25, 32 women aged 30 to 59, individual results vary, P&K Skin Clinical Research Center). No figure for the serum used alone is given.",
+    "zh": "丰盈 +37.6% 并非本品单独使用的数据。页面脚注写明，这是本精华与眼霜连用四周后测量脸颊部位的结果（2023.08.14～09.25，30～59 岁女性 32 名，个体差异存在，P&K 皮肤临床研究中心）。未提供单独使用精华的数据。",
+    "ja": "「うるおいプランピング +37.6%」はこの製品単独の数値ではありません。詳細ページの注記のとおり、このセラムとアイクリームを4週間併用したあと頬部位を測定した結果です（2023.08.14〜09.25、30〜59歳の成人女性32名、個人差あり、P&K皮膚臨床研究センター）。セラム単独の数値は示されていません。",
+    "th": "ตัวเลข +37.6% ไม่ใช่ผลของสินค้านี้เพียงอย่างเดียว เชิงอรรถบนหน้าระบุว่าเป็นการวัดบริเวณแก้มหลังใช้เซรั่มนี้ร่วมกับอายครีมเป็นเวลาสี่สัปดาห์ (14 ส.ค. – 25 ก.ย. 2023, ผู้หญิง 32 คน อายุ 30 ถึง 59 ปี ผลลัพธ์แตกต่างกันในแต่ละบุคคล, P&K Skin Clinical Research Center) ไม่มีตัวเลขสำหรับการใช้เซรั่มเพียงอย่างเดียว"
+   },
+   {
+    "ko": "히알루론산 다섯 형태 중 넷이 26번째 이후입니다. 가짓수가 다섯인 것과 양이 많은 것은 다른 이야기이고, 앞쪽에 있는 것은 17번째 하나뿐입니다.",
+    "en": "Four of the five hyaluronic acids sit from twenty-sixth onward. Five kinds is not the same as a lot, and only one of them — the seventeenth — is anywhere near the front.",
+    "zh": "五种透明质酸中有四种位于第二十六位之后。种类有五种与含量高是两回事，真正靠前的只有第十七位那一种。",
+    "ja": "ヒアルロン酸の5つの形のうち4つが26番目より後ろです。種類が5つあることと量が多いことは別の話で、前のほうにあるのは17番目の一つだけです。",
+    "th": "สี่ในห้ารูปแบบของไฮยาลูรอนอยู่ตั้งแต่ลำดับที่ยี่สิบหกเป็นต้นไป ห้าชนิดไม่เท่ากับปริมาณมาก และมีเพียงลำดับที่สิบเจ็ดเท่านั้นที่อยู่ค่อนข้างต้น"
+   },
+   {
+    "ko": "향료가 20번째이고, 33번째 멘틸락테이트의 청량감이 자극으로 느껴질 수 있습니다. 향에 예민한 피부라면 감안하세요.",
+    "en": "Fragrance is twentieth, and the cooling from menthyl lactate at thirty-three can read as a sting. Weigh that if your skin reacts to scent.",
+    "zh": "香精位列第二十，第三十三位乳酸薄荷酯带来的清凉感也可能被感觉为刺激。对香料敏感的肌肤需留意。",
+    "ja": "香料が20番目で、33番目の乳酸メンチルの清涼感が刺激に感じられることがあります。香りに敏感な肌なら踏まえてください。",
+    "th": "น้ำหอมอยู่ลำดับที่ยี่สิบ และความเย็นจากเมนทิลแลคเตตลำดับที่สามสิบสามอาจรู้สึกแสบได้ ผิวที่แพ้กลิ่นควรพิจารณา"
+   }
+  ],
+  "ingredients": "정제수, 부틸렌글라이콜, 메틸글루세스-10, 솔비톨, 글리세린, 다이프로필렌글라이콜, 프로판다이올, 펜틸렌글라이콜, 1,2-헥산다이올, 판테놀, 베타인, 카보머, 아이리쉬모스추출물, C12-14알케스-12, 사탕수수추출물, 트로메타민, 하이드롤라이즈드하이알루로닉애씨드, 암모늄아크릴로일다이메틸타우레이트/브이피코폴리머, 에틸헥실글리세린, 향료, 잔탄검, 아데노신, 셀룰로오스, 소듐파이테이트, 개구리밥추출물, 소듐하이알루로네이트, 폴리글루타믹애씨드, 베타-글루칸, 하이드록시프로필트라이모늄하이알루로네이트, 소듐아세틸레이티드하이알루로네이트, 카페인, 에스신, 멘틸락테이트, 토코페롤, 수크로오스팔미테이트, 글리세릴리놀리에이트, 해바라기씨오일, 소듐하이알루로네이트크로스폴리머, 하이드로제네이티드레시틴, 콜레스테롤, 폴리글리세릴-10라우레이트, 키토산, 세라마이드엔피",
+  "inci": "Water, Butylene Glycol, Methyl Gluceth-10, Sorbitol, Glycerin, Dipropylene Glycol, Propanediol, Pentylene Glycol, 1,2-Hexanediol, Panthenol, Betaine, Carbomer, Chondrus Crispus Extract, C12-14 Pareth-12, Saccharum Officinarum (Sugarcane) Extract, Tromethamine, Hydrolyzed Hyaluronic Acid, Ammonium Acryloyldimethyltaurate/VP Copolymer, Ethylhexylglycerin, Fragrance, Xanthan Gum, Adenosine, Cellulose, Sodium Phytate, Spirodela Polyrhiza Extract, Sodium Hyaluronate, Polyglutamic Acid, Beta-Glucan, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Caffeine, Escin, Menthyl Lactate, Tocopherol, Sucrose Palmitate, Glyceryl Linoleate, Helianthus Annuus (Sunflower) Seed Oil, Sodium Hyaluronate Crosspolymer, Hydrogenated Lecithin, Cholesterol, Polyglyceryl-10 Laurate, Chitosan, Ceramide NP",
+  "ingredients_l": {
+   "zh": "水、丁二醇、甲基葡糖醇聚醚-10、山梨（糖）醇、甘油、双丙甘醇、1,3-丙二醇、戊二醇、1,2-己二醇、泛醇、甜菜碱、卡波姆、皱波角叉菜提取物、C12-14 链烷醇聚醚-12、甘蔗提取物、氨丁三醇、水解透明质酸、丙烯酰二甲基牛磺酸铵/VP 共聚物、乙基己基甘油、香精、黄原胶、腺苷、纤维素、植酸钠、紫萍提取物、透明质酸钠、聚谷氨酸、β-葡聚糖、羟丙基三甲基铵透明质酸、乙酰化透明质酸钠、咖啡因、七叶树皂苷、乳酸薄荷酯、生育酚、蔗糖棕榈酸酯、甘油亚油酸酯、向日葵（HELIANTHUS ANNUUS）籽油、透明质酸钠交联聚合物、氢化卵磷脂、胆甾醇、聚甘油-10 月桂酸酯、壳聚糖、神经酰胺 NP"
+  },
+  "ingredients_source": {
+   "ko": "업로드 원본 상세페이지 하단의 전성분을 전사하고, sungyesa.com/beauty/5854 게재분과 대조했습니다(43개, 순서 일치). 순서는 원문을 그대로 두었고, 영문 INCI와 중문 표기는 국문을 기준으로 표준 명칭으로 옮긴 것이라 제조사가 발행한 번역본은 아닙니다.",
+   "en": "Transcribed from the full list at the foot of the maker's own detail page and checked against the copy at sungyesa.com/beauty/5854 (43 items, same order). The order is left as published. The English INCI and the Chinese names were mapped from the Korean to the standard nomenclature — they are not a translation issued by the maker.",
+   "zh": "转录自品牌详情页底部的全成分，并与 sungyesa.com/beauty/5854 所载核对（43 项，顺序一致）。顺序保留原文。英文 INCI 与中文名称系依韩文对照标准命名转写，并非厂商发布的译本。",
+   "ja": "メーカーの詳細ページ下部の全成分を書き起こし、sungyesa.com/beauty/5854 の掲載分と照合しました（43項目、順序一致）。順序は原文のままです。英文INCIと中国語表記は韓国語を基準に標準名称へ置き換えたもので、メーカーが発行した翻訳ではありません。",
+   "th": "ถอดความจากรายการส่วนผสมฉบับเต็มที่ท้ายหน้ารายละเอียดของผู้ผลิต และตรวจสอบกับฉบับที่ sungyesa.com/beauty/5854 (43 รายการ ลำดับตรงกัน) คงลำดับตามต้นฉบับ ส่วนชื่อ INCI ภาษาอังกฤษและชื่อภาษาจีนถอดจากภาษาเกาหลีตามระบบชื่อมาตรฐาน ไม่ใช่คำแปลที่ผู้ผลิตจัดทำ"
+  }
+ },
+ {
+  "id": "mc-txa-capsule-cream-55",
+  "brand": "medicube",
+  "name": "TXA Niacinamide Capsule Cream",
+  "name_l": {
+   "ko": "TXA 나이아신아마이드 캡슐 크림",
+   "zh": "TXA 烟酰胺胶囊面霜",
+   "ja": "TXA ナイアシンアミド カプセルクリーム"
+  },
+  "ml": "55g",
+  "kind": "Cream",
+  "tag": "Brightening",
+  "metric": "pigmentation",
+  "line": "TXA + NIACINAMIDE 5%",
+  "step": "cream",
+  "slot": "both",
+  "gradient": "linear-gradient(160deg,var(--surface-2),var(--ph-b))",
+  "image": "/products/mc-txa-capsule-cream-55/main.webp",
+  "price_krw": 21161,
+  "list_price_krw": 0,
+  "use_days": 60,
+  "sort": 801,
+  "stock": 0,
+  "active": true,
+  "ingredients_checked": true,
+  "sub": {
+   "ko": "나이아신아마이드 5%를 세 번째에 둔 토닝 크림.",
+   "en": "A toning cream with niacinamide 5% in third place.",
+   "zh": "将 5% 烟酰胺置于第三位的提亮面霜。",
+   "ja": "ナイアシンアミド5%を3番目に置いたトーニングクリーム。",
+   "th": "ครีมปรับสีผิวที่มีไนอาซินาไมด์ 5% อยู่ลำดับที่สาม"
+  },
+  "why": {
+   "ko": "실제로 앞에 있는 것은 나이아신아마이드입니다. 3번째이고, 함량 50,000ppm — 5% — 이 성분표에 직접 적혀 있습니다. 제품 이름이 된 트라넥사믹애씨드는 62개 중 32번째로 중간을 넘깁니다. 주름개선 근거인 아데노신 23번째, 비사보롤 45번째, 페룰릭애씨드 46번째가 뒤를 받치고, 히알루론산이 여덟 형태로 꼬리에 모여 있으며 세라마이드엔피가 55번째입니다. 향료는 목록에 없습니다.",
+   "en": "What is actually near the front is niacinamide. It is third, and the list prints its amount: 50,000ppm, which is 5%. Tranexamic acid — the TXA the product is named after — is thirty-second of sixty-two, past the midpoint. Adenosine backs the wrinkle-care designation at twenty-third, with bisabolol forty-fifth and ferulic acid forty-sixth behind it. Eight forms of hyaluronic acid cluster in the tail and ceramide NP is fifty-fifth. Fragrance is not on the list.",
+   "zh": "真正靠前的是烟酰胺：位列第三，且成分表直接标注含量 50,000ppm，即 5%。作为产品名称的氨甲环酸（TXA）在 62 项中排第三十二，已过中段。抗皱功能性所依据的腺苷位列第二十三，红没药醇第四十五、阿魏酸第四十六在后支撑。八种透明质酸集中于末段，神经酰胺 NP 位列第五十五。成分表中没有香精。",
+   "ja": "実際に前のほうにあるのはナイアシンアミドです。3番目で、配合量 50,000ppm — つまり5% — が成分表に直接書かれています。製品名になっているトラネキサム酸は、62項目のうち32番目で中間を越えます。シワ改善の根拠であるアデノシンが23番目、ビサボロール45番目、フェルラ酸46番目が後ろを支え、ヒアルロン酸が8つの形で末尾に集まり、セラミドNPが55番目です。香料は一覧にありません。",
+   "th": "สิ่งที่อยู่ต้นรายการจริง ๆ คือไนอาซินาไมด์ อยู่ลำดับที่สาม และรายการระบุปริมาณไว้ตรง ๆ ว่า 50,000ppm หรือ 5% ส่วนกรดทรานเอกซามิก (TXA) ซึ่งเป็นชื่อของผลิตภัณฑ์ อยู่ลำดับที่สามสิบสองจากหกสิบสอง ซึ่งเลยกึ่งกลางไปแล้ว อะดีโนซีนที่รองรับการรับรองด้านริ้วรอยอยู่ลำดับที่ยี่สิบสาม ตามด้วยบิซาโบลอลลำดับที่สี่สิบห้าและกรดเฟรูลิกลำดับที่สี่สิบหก กรดไฮยาลูรอนิกแปดรูปแบบรวมอยู่ท้ายรายการ และเซราไมด์ NP อยู่ลำดับที่ห้าสิบห้า ไม่มีน้ำหอมในรายการ"
+  },
+  "fits": [
+   {
+    "axis": "pigmentation",
+    "strength": "primary",
+    "note": {
+     "ko": "나이아신아마이드 3번째(50,000ppm), 글루타티온 39번째, 3-O-에틸아스코빅애씨드 51번째, 알파-알부틴 53번째.",
+     "en": "Niacinamide third at 50,000ppm, glutathione thirty-ninth, 3-O-ethyl ascorbic acid fifty-first, alpha-arbutin fifty-third.",
+     "zh": "烟酰胺第三（50,000ppm）、谷胱甘肽第三十九、3-O-乙基抗坏血酸第五十一、α-熊果苷第五十三。",
+     "ja": "ナイアシンアミド3番目（50,000ppm）、グルタチオン39番目、3-O-エチルアスコルビン酸51番目、α-アルブチン53番目。",
+     "th": "ไนอาซินาไมด์ลำดับที่สาม (50,000ppm) กลูตาไธโอนลำดับที่สามสิบเก้า 3-O-เอทิลแอสคอร์บิกแอซิดลำดับที่ห้าสิบเอ็ด แอลฟา-อาร์บูตินลำดับที่ห้าสิบสาม"
+    }
+   },
+   {
+    "axis": "wrinkles",
+    "strength": "secondary",
+    "note": {
+     "ko": "아데노신이 23번째입니다 — 주름개선 기능성의 근거 성분입니다.",
+     "en": "Adenosine is twenty-third, the ingredient the wrinkle-care designation rests on.",
+     "zh": "腺苷位列第二十三，即抗皱功能性所依据的成分。",
+     "ja": "アデノシンが23番目です — シワ改善の機能性の根拠となる成分です。",
+     "th": "อะดีโนซีนอยู่ลำดับที่ยี่สิบสาม เป็นสารที่ใช้ขอรับรองด้านริ้วรอย"
+    }
+   },
+   {
+    "axis": "sensitivity",
+    "strength": "secondary",
+    "note": {
+     "ko": "비사보롤 45번째, 세라마이드엔피 55번째. 향료는 없습니다.",
+     "en": "Bisabolol forty-fifth, ceramide NP fifty-fifth, and no fragrance.",
+     "zh": "红没药醇第四十五、神经酰胺 NP 第五十五，且不含香精。",
+     "ja": "ビサボロール45番目、セラミドNP 55番目。香料はありません。",
+     "th": "บิซาโบลอลลำดับที่สี่สิบห้า เซราไมด์ NP ลำดับที่ห้าสิบห้า และไม่มีน้ำหอม"
+    }
+   }
+  ],
+  "pros": [
+   {
+    "ko": "숫자가 성분표에 적혀 있습니다. 나이아신아마이드가 3번째이고 50,000ppm, 즉 5%가 괄호로 명시돼 있습니다. 함량을 목록에 직접 쓰는 제품은 많지 않고, 쓰여 있으면 확인할 수 있습니다.",
+    "en": "The figure is printed on the list itself. Niacinamide is third and carries 50,000ppm — 5% — in brackets. Few products put an amount on the list, and when one does, it can be checked.",
+    "zh": "数字写在成分表上。烟酰胺位列第三，并以括号标注 50,000ppm，即 5%。在成分表中直接标注含量的产品并不多，而写了就能核对。",
+    "ja": "数字が成分表に書かれています。ナイアシンアミドが3番目で、50,000ppm — つまり5% — が括弧で明示されています。配合量を一覧に直接書く製品は多くなく、書かれていれば確認できます。",
+    "th": "ตัวเลขระบุอยู่ในรายการส่วนผสมเอง ไนอาซินาไมด์อยู่ลำดับที่สามพร้อมวงเล็บระบุ 50,000ppm หรือ 5% มีไม่กี่ผลิตภัณฑ์ที่ระบุปริมาณไว้ในรายการ และเมื่อระบุไว้ก็ตรวจสอบได้"
+   },
+   {
+    "ko": "향료가 목록에 없습니다. 62개를 끝까지 읽어도 향료 항목이 나오지 않습니다. 다만 레몬그라스와 스타아니스 오일이 47·48번째에 있으니 아래 단점을 함께 보세요.",
+    "en": "There is no fragrance on the list. Read all sixty-two and no fragrance entry appears. Lemongrass and anise oils do sit at forty-seven and forty-eight, so read the drawback below with this.",
+    "zh": "成分表中没有香精。通读六十二项也不会出现香精一项。不过柠檬草油与八角油分别位于第四十七、四十八位，请与下方缺点一并阅读。",
+    "ja": "香料が一覧にありません。62項目を最後まで読んでも香料の項目は出てきません。ただしレモングラス油とスターアニス油が47・48番目にあるので、下の短所も併せてご覧ください。",
+    "th": "ไม่มีน้ำหอมในรายการ อ่านครบหกสิบสองรายการก็ไม่พบรายการน้ำหอม แต่มีน้ำมันตะไคร้และน้ำมันโป๊ยกั๊กอยู่ลำดับที่สี่สิบเจ็ดและสี่สิบแปด โปรดอ่านประกอบกับข้อจำกัดด้านล่าง"
+   },
+   {
+    "ko": "토닝 제품인데 장벽 성분을 버리지 않았습니다. 히알루론산이 여덟 형태로 들어 있고 세라마이드엔피가 55번째입니다. 미백 성분만 넣고 보습을 비워 두는 구성과는 다릅니다.",
+    "en": "A toning cream that did not drop the barrier ingredients. Hyaluronic acid appears in eight forms and ceramide NP is fifty-fifth. That is not the same as a brightening list with the moisture left empty.",
+    "zh": "作为提亮产品，并未舍弃屏障成分。透明质酸以八种形式出现，神经酰胺 NP 位列第五十五。这与只放美白成分、保湿留白的配方不同。",
+    "ja": "トーニング製品でありながら、バリア成分を落としていません。ヒアルロン酸が8つの形で入っていて、セラミドNPが55番目です。美白成分だけを入れて保湿を空けておく構成とは違います。",
+    "th": "เป็นครีมปรับสีผิวที่ไม่ได้ตัดสารบำรุงเกราะผิวออก กรดไฮยาลูรอนิกมีแปดรูปแบบ และเซราไมด์ NP อยู่ลำดับที่ห้าสิบห้า ต่างจากสูตรที่ใส่เพียงสารกระจ่างใสแล้วปล่อยความชุ่มชื้นว่างไว้"
+   }
+  ],
+  "cons": [
+   {
+    "ko": "이름이 된 성분이 앞에 있지 않습니다. 트라넥사믹애씨드는 62개 중 32번째로 중간을 넘깁니다. 용기의 5%는 트라넥사믹애씨드가 아니라 3번째 나이아신아마이드의 수치이고, 상세페이지의 순도 99%는 투입 원료의 순도이지 완제품 함량이 아닙니다.",
+    "en": "The ingredient in the name is not near the front. Tranexamic acid is thirty-second of sixty-two, past the midpoint. The 5% on the jar belongs to niacinamide in third place, not to TXA, and the 99% on the page is the purity of the raw material, not how much is in the cream.",
+    "zh": "成为产品名称的成分并不靠前。氨甲环酸在 62 项中排第三十二，已过中段。罐身上的 5% 属于位列第三的烟酰胺，而非 TXA；页面上的纯度 99% 指投入原料的纯度，并非成品中的含量。",
+    "ja": "名前になっている成分が前にありません。トラネキサム酸は62項目のうち32番目で、中間を越えます。容器の5%はトラネキサム酸ではなく3番目のナイアシンアミドの数値であり、詳細ページの純度99%は投入原料の純度で、完成品の配合量ではありません。",
+    "th": "สารที่เป็นชื่อผลิตภัณฑ์ไม่ได้อยู่ต้นรายการ กรดทรานเอกซามิกอยู่ลำดับที่สามสิบสองจากหกสิบสอง ซึ่งเลยกึ่งกลาง ตัวเลข 5% บนกระปุกเป็นของไนอาซินาไมด์ในลำดับที่สาม ไม่ใช่ของ TXA และ 99% บนหน้ารายละเอียดคือความบริสุทธิ์ของวัตถุดิบ ไม่ใช่ปริมาณในครีม"
+   },
+   {
+    "ko": "실물에 적용된 버전을 확정하지 못했습니다. 여기 실은 것은 신세계면세점 게재분(62개)이고, 메디큐브 공식 PC 페이지는 63개로 구성과 순서가 다릅니다. 받으시는 제품이 어느 쪽인지는 확인되지 않았습니다.",
+    "en": "Which version is in the jar is not settled. What is recorded here is the Shinsegae duty-free listing of sixty-two. medicube's own desktop page shows sixty-three in a different composition and order. We could not confirm which one the jar you receive carries.",
+    "zh": "未能确定实物所采用的版本。此处所载为新世界免税店公布的六十二项，而 medicube 官网电脑版为六十三项，构成与顺序皆不同。您收到的产品属于哪一版尚未确认。",
+    "ja": "実物に適用されているバージョンを確定できていません。ここに載せたのは新世界免税店の掲載分（62項目）で、medicube 公式PCページは63項目と構成・順序が異なります。お手元に届く製品がどちらなのかは確認できていません。",
+    "th": "ยังไม่ยืนยันว่าสินค้าจริงใช้รายการเวอร์ชันใด ที่บันทึกไว้นี้คือรายการหกสิบสองรายการจากร้านดิวตี้ฟรี Shinsegae ส่วนหน้าเว็บเดสก์ท็อปของ medicube เองแสดงหกสิบสามรายการ โดยองค์ประกอบและลำดับต่างกัน เราไม่สามารถยืนยันได้ว่ากระปุกที่คุณได้รับเป็นเวอร์ชันใด"
+   },
+   {
+    "ko": "향료는 없지만 향이 없는 것은 아닙니다. 레몬그라스잎오일이 47번째, 스타아니스열매/씨오일이 48번째에 있습니다. 정유는 향을 내고 예민한 피부에 자극이 될 수 있어, 무향을 찾으신다면 감안하세요.",
+    "en": "No fragrance does not mean no scent. Lemongrass leaf oil is forty-seventh and anise fruit/seed oil forty-eighth. Essential oils carry scent and can irritate reactive skin, so weigh that if you are looking for unscented.",
+    "zh": "没有香精并不等于没有气味。柠檬草叶油位列第四十七，八角果/籽油第四十八。精油本身带有气味，对敏感肌可能造成刺激，若您想要无香产品请留意。",
+    "ja": "香料がないことと、香りがないことは別です。レモングラス葉油が47番目、スターアニス果実/種子油が48番目にあります。精油は香りを持ち、敏感な肌には刺激になることがあるので、無香料をお探しなら踏まえてください。",
+    "th": "ไม่มีน้ำหอมไม่ได้แปลว่าไม่มีกลิ่น น้ำมันใบตะไคร้อยู่ลำดับที่สี่สิบเจ็ด และน้ำมันผล/เมล็ดโป๊ยกั๊กลำดับที่สี่สิบแปด น้ำมันหอมระเหยมีกลิ่นและอาจระคายเคืองผิวที่บอบบาง หากคุณต้องการสูตรไร้กลิ่นโปรดพิจารณา"
+   }
+  ],
+  "ingredients": "정제수, 글리세린, 나이아신아마이드(50,000ppm), 메틸프로판다이올, 프로판다이올, 1,2-헥산다이올, 다이프로필렌글라이콜, 카프릴릭/카프릭트라이글리세라이드, 글리세레스-26, 부틸렌글라이콜, 알지닌, 에틸헥실팔미테이트, 카보머, 세테아릴알코올, 세테아릴올리베이트, 솔비탄올리베이트, C12-14알케스-12, 암모늄아크릴로일다이메틸타우레이트/브이피코폴리머, 시메티콘, 에틸헥실글리세린, 인도멀구슬나무꽃추출물, 인도멀구슬나무잎추출물, 아데노신, 폴리아크릴레이트-13, 다이소듐이디티에이, 사이아노코발아민, 트라이에틸시트레이트, 베타인, 폴리아이소부텐, 글리세릴스테아레이트, 하이드롤라이즈드스클레로튬검, 트라넥사믹애씨드, 오크라열매추출물, 판테놀, 아이비고드열매추출물, 참산호말추출물, 폴리솔베이트20, 솔비탄아이소스테아레이트, 글루타티온, 딸기추출물, 밤껍질추출물, 유자껍질추출물, 만주자작나무껍질/잎추출물, 피마자씨오일, 비사보롤, 페룰릭애씨드, 레몬그라스잎오일, 스타아니스열매/씨오일, 옥틸도데칸올, 하이드롤라이즈드하이알루로닉애씨드, 3-O-에틸아스코빅애씨드, 소듐하이알루로네이트, 알파-알부틴, 하이드로제네이티드레시틴, 세라마이드엔피, 하이드록시프로필트라이모늄하이알루로네이트, 카프릴릴글라이콜, 소듐아세틸레이티드하이알루로네이트, 하이알루로닉애씨드, 소듐하이알루로네이트크로스폴리머, 하이드롤라이즈드소듐하이알루로네이트, 포타슘하이알루로네이트",
+  "inci": "Water, Glycerin, Niacinamide (50,000ppm), Methylpropanediol, Propanediol, 1,2-Hexanediol, Dipropylene Glycol, Caprylic/Capric Triglyceride, Glycereth-26, Butylene Glycol, Arginine, Ethylhexyl Palmitate, Carbomer, Cetearyl Alcohol, Cetearyl Olivate, Sorbitan Olivate, C12-14 Pareth-12, Ammonium Acryloyldimethyltaurate/VP Copolymer, Simethicone, Ethylhexylglycerin, Melia Azadirachta Flower Extract, Melia Azadirachta Leaf Extract, Adenosine, Polyacrylate-13, Disodium EDTA, Cyanocobalamin, Triethyl Citrate, Betaine, Polyisobutene, Glyceryl Stearate, Hydrolyzed Sclerotium Gum, Tranexamic Acid, Hibiscus Esculentus Fruit Extract, Panthenol, Coccinia Indica Fruit Extract, Corallina Officinalis Extract, Polysorbate 20, Sorbitan Isostearate, Glutathione, Fragaria Chiloensis (Strawberry) Fruit Extract, Castanea Crenata (Chestnut) Shell Extract, Citrus Junos Peel Extract, Betula Platyphylla Japonica Bark/Leaf Extract, Ricinus Communis (Castor) Seed Oil, Bisabolol, Ferulic Acid, Cymbopogon Citratus Leaf Oil, Illicium Verum (Anise) Fruit/Seed Oil, Octyldodecanol, Hydrolyzed Hyaluronic Acid, 3-O-Ethyl Ascorbic Acid, Sodium Hyaluronate, Alpha-Arbutin, Hydrogenated Lecithin, Ceramide NP, Hydroxypropyltrimonium Hyaluronate, Caprylyl Glycol, Sodium Acetylated Hyaluronate, Hyaluronic Acid, Sodium Hyaluronate Crosspolymer, Hydrolyzed Sodium Hyaluronate, Potassium Hyaluronate",
+  "ingredients_source": {
+   "ko": "메디큐브가 이 제품의 전성분을 한 곳으로 통일해 두지 않았습니다. 여기 실은 것은 신세계면세점 게재분 62개이고, 공식몰 모바일(2245)과 세트(2249) 노출 목록과 일치합니다. 공식 PC 페이지는 63개로 구성과 순서가 달라, 실물에 적용된 버전은 확정하지 못했습니다(확인일 2026-10-28). 영문 INCI와 중문 표기는 국문을 기준으로 표준 명칭으로 옮긴 것입니다.",
+   "en": "medicube does not publish one single ingredient list for this product. What is recorded here is the Shinsegae duty-free listing of sixty-two, which agrees with the maker's own mobile (2245) and set (2249) listings. The maker's desktop page shows sixty-three in a different composition and order, so the version in the jar is not settled (checked 2026-10-28). The English INCI and the Chinese names were mapped from the Korean to the standard nomenclature.",
+   "zh": "medicube 并未为本品提供统一的全成分。此处所载为新世界免税店公布的六十二项，与品牌官网移动端（2245）及套装（2249）所示一致。官网电脑版为六十三项，构成与顺序不同，故实物所用版本尚未确定（核对日 2026-10-28）。英文 INCI 与中文名称系依韩文对照标准命名转写。",
+   "ja": "medicube はこの製品の全成分を一か所に統一していません。ここに載せたのは新世界免税店の掲載分62項目で、公式モバイル（2245）およびセット（2249）の表示と一致します。公式PCページは63項目で構成と順序が異なるため、実物に適用されているバージョンは確定できていません（確認日 2026-10-28）。英文INCIと中国語表記は韓国語を基準に標準名称へ置き換えたものです。",
+   "th": "medicube ไม่ได้เผยแพร่รายการส่วนผสมฉบับเดียวสำหรับสินค้านี้ ที่บันทึกไว้คือรายการหกสิบสองรายการจากร้านดิวตี้ฟรี Shinsegae ซึ่งตรงกับรายการบนมือถือ (2245) และชุดเซต (2249) ของผู้ผลิตเอง หน้าเดสก์ท็อปของผู้ผลิตแสดงหกสิบสามรายการโดยองค์ประกอบและลำดับต่างกัน จึงยังไม่ยืนยันเวอร์ชันที่ใช้จริง (ตรวจสอบ 2026-10-28) ชื่อ INCI ภาษาอังกฤษและชื่อภาษาจีนถอดจากภาษาเกาหลีตามระบบชื่อมาตรฐาน"
+  }
+ },
+ {
+  "id": "mc-deep-vitac-capsule-cream-duo",
+  "brand": "medicube",
+  "name": "Deep Vita C Capsule Cream Duo",
+  "name_l": {
+   "ko": "딥 비타씨 캡슐 크림 듀오",
+   "zh": "深层维生素C 胶囊面霜 双件组",
+   "ja": "ディープビタC カプセルクリーム デュオ"
+  },
+  "ml": "55g × 2",
+  "kind": "Cream",
+  "tag": "Brightening",
+  "metric": "pigmentation",
+  "line": "VITAMIN WATER 50% · 면세 전용",
+  "step": "cream",
+  "slot": "both",
+  "gradient": "linear-gradient(160deg,var(--surface-2),var(--ph-c))",
+  "image": "/products/mc-deep-vitac-capsule-cream-duo/main.webp",
+  "price_krw": 46291,
+  "list_price_krw": 0,
+  "use_days": 120,
+  "sort": 802,
+  "stock": 0,
+  "active": true,
+  "ingredients_checked": true,
+  "sub": {
+   "ko": "용기의 비타민워터 50%가 1번째에 함량과 함께 적혀 있습니다.",
+   "en": "The 50% vitamin water on the jar is first on the list, with the amount printed.",
+   "zh": "罐身上的 50% 维生素水位列第一，并标注含量。",
+   "ja": "容器の「ビタミンウォーター50%」が1番目に、配合量とともに書かれています。",
+   "th": "วิตามินวอเตอร์ 50% บนกระปุกอยู่ลำดับแรกของรายการ พร้อมระบุปริมาณ"
+  },
+  "why": {
+   "ko": "비타민나무수가 1번째이고 500,000ppm, 곧 50%가 성분표에 적혀 있어 용기의 숫자와 맞습니다. 나이아신아마이드가 4번째, 주름개선 근거인 아데노신이 23번째입니다. 다만 이름의 비타민C는 뒤쪽입니다 — 소듐아스코빌포스페이트 39번째, 아스코빌글루코사이드 43번째, 3-O-에틸아스코빅애씨드 44번째, 순수 아스코빅애씨드 46번째, 아스코빌프로필하이알루로네이트 53번째, 아스코빌팔미테이트 54번째로 여섯 형태가 모두 39번째 이후에 모여 있습니다. 비타민 B군과 베타-카로틴·루틴도 48번째부터 끝까지 이어집니다.",
+   "en": "Sea buckthorn water is first and the list prints 500,000ppm — 50% — so the figure on the jar checks out. Niacinamide is fourth and adenosine, behind the wrinkle-care designation, is twenty-third. The vitamin C in the name, though, sits at the back: sodium ascorbyl phosphate thirty-ninth, ascorbyl glucoside forty-third, 3-O-ethyl ascorbic acid forty-fourth, plain ascorbic acid forty-sixth, ascorbyl propyl hyaluronate fifty-third and ascorbyl palmitate fifty-fourth — six forms, all from thirty-nine onward. The B vitamins, beta-carotene and rutin run from forty-eight to the end.",
+   "zh": "沙棘水位列第一，成分表标注 500,000ppm 即 50%，与罐身数字一致。烟酰胺第四，抗皱功能性所依据的腺苷第二十三。但名称中的维生素 C 偏后：抗坏血酸磷酸酯钠第三十九、抗坏血酸葡糖苷第四十三、3-O-乙基抗坏血酸第四十四、纯抗坏血酸第四十六、抗坏血酸丙基透明质酸第五十三、抗坏血酸棕榈酸酯第五十四——六种形式全在第三十九位之后。B 族维生素与 β-胡萝卜素、芦丁则自第四十八位延续至末尾。",
+   "ja": "ヒッポファエラムノイデス水（サジー水）が1番目で、500,000ppm — つまり50% — が成分表に書かれており、容器の数字と合っています。ナイアシンアミドが4番目、シワ改善の根拠であるアデノシンが23番目です。ただし名前のビタミンCは後ろのほうです — アスコルビルリン酸Na 39番目、アスコルビルグルコシド43番目、3-O-エチルアスコルビン酸44番目、純粋なアスコルビン酸46番目、アスコルビルプロピルヒアルロン酸53番目、アスコルビルパルミテート54番目と、6つの形がすべて39番目以降に集まっています。ビタミンB群とβ-カロテン・ルチンも48番目から最後まで続きます。",
+   "th": "น้ำซีบัคธอร์นอยู่ลำดับแรก และรายการระบุ 500,000ppm หรือ 50% ซึ่งตรงกับตัวเลขบนกระปุก ไนอาซินาไมด์อยู่ลำดับที่สี่ และอะดีโนซีนที่รองรับการรับรองด้านริ้วรอยอยู่ลำดับที่ยี่สิบสาม แต่วิตามินซีในชื่อผลิตภัณฑ์อยู่ค่อนไปทางท้าย ได้แก่ โซเดียมแอสคอร์บิลฟอสเฟตลำดับที่สามสิบเก้า แอสคอร์บิลกลูโคไซด์ลำดับที่สี่สิบสาม 3-O-เอทิลแอสคอร์บิกแอซิดลำดับที่สี่สิบสี่ กรดแอสคอร์บิกบริสุทธิ์ลำดับที่สี่สิบหก แอสคอร์บิลโพรพิลไฮยาลูโรเนตลำดับที่ห้าสิบสาม และแอสคอร์บิลปาล์มิเตตลำดับที่ห้าสิบสี่ รวมหกรูปแบบซึ่งอยู่ตั้งแต่ลำดับที่สามสิบเก้าเป็นต้นไปทั้งหมด วิตามินบี เบต้าแคโรทีนและรูตินก็เรียงจากลำดับที่สี่สิบแปดไปจนจบ"
+  },
+  "fits": [
+   {
+    "axis": "pigmentation",
+    "strength": "primary",
+    "note": {
+     "ko": "나이아신아마이드 4번째, 알파-알부틴 37번째, 비타민C 여섯 형태가 39번째부터.",
+     "en": "Niacinamide fourth, alpha-arbutin thirty-seventh, six vitamin C forms from thirty-nine on.",
+     "zh": "烟酰胺第四、α-熊果苷第三十七，六种维生素 C 形式自第三十九位起。",
+     "ja": "ナイアシンアミド4番目、α-アルブチン37番目、ビタミンC6つの形が39番目から。",
+     "th": "ไนอาซินาไมด์ลำดับที่สี่ แอลฟา-อาร์บูตินลำดับที่สามสิบเจ็ด และวิตามินซีหกรูปแบบตั้งแต่ลำดับที่สามสิบเก้า"
+    }
+   },
+   {
+    "axis": "hydration",
+    "strength": "secondary",
+    "note": {
+     "ko": "비타민나무수가 1번째 500,000ppm, 판테놀 38번째.",
+     "en": "Sea buckthorn water first at 500,000ppm, panthenol thirty-eighth.",
+     "zh": "沙棘水第一，500,000ppm；泛醇第三十八。",
+     "ja": "サジー水が1番目で500,000ppm、パンテノール38番目。",
+     "th": "น้ำซีบัคธอร์นลำดับแรกที่ 500,000ppm แพนทีนอลลำดับที่สามสิบแปด"
+    }
+   },
+   {
+    "axis": "wrinkles",
+    "strength": "secondary",
+    "note": {
+     "ko": "아데노신이 23번째입니다 — 주름개선 기능성의 근거 성분입니다.",
+     "en": "Adenosine is twenty-third, the ingredient the wrinkle-care designation rests on.",
+     "zh": "腺苷位列第二十三，即抗皱功能性所依据的成分。",
+     "ja": "アデノシンが23番目です — シワ改善の機能性の根拠となる成分です。",
+     "th": "อะดีโนซีนอยู่ลำดับที่ยี่สิบสาม เป็นสารที่ใช้ขอรับรองด้านริ้วรอย"
+    }
+   }
+  ],
+  "pros": [
+   {
+    "ko": "용기의 숫자를 성분표에서 확인할 수 있습니다. 비타민워터 50%는 1번째 비타민나무수의 500,000ppm이고, 괄호로 함량이 직접 적혀 있습니다. 숫자를 내걸고 성분표에서 확인되지 않는 제품과 다릅니다.",
+    "en": "The figure on the jar can be checked on the list. Vitamin Water 50% is the sea buckthorn water in first place at 500,000ppm, with the amount in brackets. That is not the same as a number on the box with nothing on the list to match it.",
+    "zh": "罐身上的数字可在成分表中核对。维生素水 50% 即位列第一的沙棘水 500,000ppm，括号内直接标注含量。这与包装写了数字却在成分表中无从对应的产品不同。",
+    "ja": "容器の数字を成分表で確認できます。「ビタミンウォーター50%」は1番目のサジー水の500,000ppmで、配合量が括弧で直接書かれています。数字を掲げながら成分表では確認できない製品とは違います。",
+    "th": "ตัวเลขบนกระปุกตรวจสอบได้จากรายการส่วนผสม วิตามินวอเตอร์ 50% คือน้ำซีบัคธอร์นในลำดับแรกที่ 500,000ppm โดยระบุปริมาณในวงเล็บ ต่างจากผลิตภัณฑ์ที่เขียนตัวเลขบนกล่องแต่หาสิ่งที่ตรงกันในรายการไม่ได้"
+   },
+   {
+    "ko": "비타민C를 한 형태로 걸지 않았습니다. 수용성·유용성·당결합형이 섞인 여섯 형태가 들어 있어, 순수 아스코빅애씨드 하나만 넣는 구성보다 안정성 쪽으로 분산돼 있습니다.",
+    "en": "It does not stake everything on one form of vitamin C. Six forms are present — water-soluble, oil-soluble and sugar-bound — which spreads the stability risk more than a list carrying plain ascorbic acid alone.",
+    "zh": "并未把维生素 C 押在单一形式上。六种形式兼具水溶、油溶与糖苷型，比只放纯抗坏血酸的配方更分散了稳定性风险。",
+    "ja": "ビタミンCを一つの形に賭けていません。水溶性・油溶性・糖結合型が混ざった6つの形が入っていて、純粋なアスコルビン酸だけを入れる構成より安定性のリスクが分散されています。",
+    "th": "ไม่ได้ฝากทุกอย่างไว้กับวิตามินซีรูปแบบเดียว มีถึงหกรูปแบบทั้งชนิดละลายน้ำ ละลายน้ำมัน และชนิดจับกับน้ำตาล จึงกระจายความเสี่ยงด้านความคงตัวมากกว่าสูตรที่ใส่เพียงกรดแอสคอร์บิกบริสุทธิ์"
+   }
+  ],
+  "cons": [
+   {
+    "ko": "이름의 비타민C는 전부 뒤쪽입니다. 여섯 형태가 39·43·44·46·53·54번째이고, 순수 아스코빅애씨드는 46번째입니다. 앞에 있는 것은 비타민나무수인데, 이것도 비타민C가 든 원료이긴 하지만 유도체와 같은 것은 아닙니다.",
+    "en": "Every vitamin C in the name sits at the back. The six forms are thirty-ninth, forty-third, forty-fourth, forty-sixth, fifty-third and fifty-fourth, with plain ascorbic acid at forty-six. What is at the front is sea buckthorn water, which is itself a source of vitamin C but is not the same thing as the derivatives.",
+    "zh": "名称中的维生素 C 全在后段。六种形式分别位于第三十九、四十三、四十四、四十六、五十三、五十四位，纯抗坏血酸在第四十六。排在前面的是沙棘水，它本身确实含维生素 C，但与这些衍生物并非一回事。",
+    "ja": "名前のビタミンCはすべて後ろのほうです。6つの形が39・43・44・46・53・54番目で、純粋なアスコルビン酸は46番目です。前にあるのはサジー水で、これ自体ビタミンCを含む原料ではありますが、誘導体と同じものではありません。",
+    "th": "วิตามินซีในชื่อผลิตภัณฑ์อยู่ท้ายรายการทั้งหมด หกรูปแบบอยู่ที่ลำดับสามสิบเก้า สี่สิบสาม สี่สิบสี่ สี่สิบหก ห้าสิบสาม และห้าสิบสี่ โดยกรดแอสคอร์บิกบริสุทธิ์อยู่ลำดับที่สี่สิบหก สิ่งที่อยู่ต้นรายการคือน้ำซีบัคธอร์น ซึ่งเป็นแหล่งวิตามินซีก็จริง แต่ไม่ใช่สิ่งเดียวกับอนุพันธ์เหล่านั้น"
+   },
+   {
+    "ko": "비타민 목록이 길지만 자리가 끝입니다. 피리독신 48번째, 바이오틴 50번째, 폴릭애씨드 51번째, 사이아노코발아민 55번째, 티아민 56번째, 리보플라빈 57번째, 베타-카로틴 59번째, 루틴 60번째입니다. 가짓수가 많은 것과 양이 많은 것은 다른 이야기입니다.",
+    "en": "The vitamin roll-call is long but it is all at the end. Pyridoxine forty-eighth, biotin fiftieth, folic acid fifty-first, cyanocobalamin fifty-fifth, thiamine fifty-sixth, riboflavin fifty-seventh, beta-carotene fifty-ninth, rutin sixtieth. A long list of kinds is not the same as a lot of any of them.",
+    "zh": "维生素种类虽多，位置却都在末段。吡哆素第四十八、生物素第五十、叶酸第五十一、氰钴胺第五十五、硫胺第五十六、核黄素第五十七、β-胡萝卜素第五十九、芦丁第六十。种类多与含量高是两回事。",
+    "ja": "ビタミンの顔ぶれは多いものの、位置はすべて末尾です。ピリドキシン48番目、ビオチン50番目、葉酸51番目、シアノコバラミン55番目、チアミン56番目、リボフラビン57番目、β-カロテン59番目、ルチン60番目。種類が多いことと量が多いことは別の話です。",
+    "th": "รายชื่อวิตามินยาวแต่อยู่ท้ายทั้งหมด ไพริดอกซีนลำดับที่สี่สิบแปด ไบโอตินลำดับที่ห้าสิบ กรดโฟลิกลำดับที่ห้าสิบเอ็ด ไซยาโนโคบาลามินลำดับที่ห้าสิบห้า ไทอามีนลำดับที่ห้าสิบหก ไรโบฟลาวินลำดับที่ห้าสิบเจ็ด เบต้าแคโรทีนลำดับที่ห้าสิบเก้า รูตินลำดับที่หกสิบ จำนวนชนิดที่มากไม่เท่ากับปริมาณที่มาก"
+   },
+   {
+    "ko": "향료가 24번째입니다. 또 라벨은 55g인데 공식몰과 신라면세점 고시는 55ml로 적혀 있습니다. 어느 쪽이 맞는지 확인되지 않아 단위를 임의로 바꾸지 않고 라벨대로 55g으로 적었습니다.",
+    "en": "Fragrance is twenty-fourth. Also, the label reads 55g while the maker's own store and Shilla duty-free both notify 55ml. We could not establish which is right, so the unit was not changed on our side — it is recorded as 55g, as the label has it.",
+    "zh": "香精位列第二十四。另外，标签标示 55g，而品牌官网与新罗免税店的申报均为 55ml。我们无法确定何者为准，故未擅自更改单位，按标签记为 55g。",
+    "ja": "香料が24番目です。またラベルは55gですが、公式ストアと新羅免税店の表示はいずれも55mlです。どちらが正しいか確認できなかったため、単位は勝手に変えずラベルどおり55gと記載しています。",
+    "th": "น้ำหอมอยู่ลำดับที่ยี่สิบสี่ นอกจากนี้ ฉลากระบุ 55g ขณะที่ร้านค้าของผู้ผลิตเองและร้านดิวตี้ฟรี Shilla แจ้งเป็น 55ml เราไม่สามารถระบุได้ว่าค่าใดถูกต้อง จึงไม่เปลี่ยนหน่วยเอง และบันทึกเป็น 55g ตามฉลาก"
+   }
+  ],
+  "ingredients": "비타민나무수(500,000ppm), 글리세린, 정제수, 나이아신아마이드, 메틸프로판다이올, 프로판다이올, 1,2-헥산다이올, 부틸렌글라이콜, 다이프로필렌글라이콜, 카프릴릭/카프릭트라이글리세라이드, 글리세레스-26, 에틸헥실팔미테이트, 세테아릴알코올, 알지닌, 카보머, 암모늄아크릴로일다이메틸타우레이트/브이피코폴리머, 세테아릴올리베이트, 해바라기씨오일, 솔비탄올리베이트, 시메티콘, 폴리글리세릴-10라우레이트, 에틸헥실글리세린, 아데노신, 향료, 폴리아크릴레이트-13, 돌콩오일, 다이소듐이디티에이, 폴리아이소부텐, 하이드롤라이즈드스클레로튬검, 글리세릴스테아레이트, 글루코노락톤, 폴리솔베이트20, 솔비탄아이소스테아레이트, 하이드로제네이티드레시틴, 아나토씨오일, 폴리글리세릴-10스테아레이트, 알파-알부틴, 판테놀, 소듐아스코빌포스페이트, 펜틸렌글라이콜, 페룰릭애씨드, 토코페롤, 아스코빌글루코사이드, 3-O-에틸아스코빅애씨드, 비사보롤, 아스코빅애씨드, 하이드록시페닐프로파미도벤조익애씨드, 피리독신, 유비퀴논, 바이오틴, 폴릭애씨드, 소듐하이알루로네이트, 아스코빌프로필하이알루로네이트, 아스코빌팔미테이트, 사이아노코발아민, 티아민에이치씨엘, 리보플라빈, 리놀레익애씨드, 베타-카로틴, 루틴, 하이드록시신나믹애씨드",
+  "inci": "Hippophae Rhamnoides Water (500,000ppm), Glycerin, Water, Niacinamide, Methylpropanediol, Propanediol, 1,2-Hexanediol, Butylene Glycol, Dipropylene Glycol, Caprylic/Capric Triglyceride, Glycereth-26, Ethylhexyl Palmitate, Cetearyl Alcohol, Arginine, Carbomer, Ammonium Acryloyldimethyltaurate/VP Copolymer, Cetearyl Olivate, Helianthus Annuus (Sunflower) Seed Oil, Sorbitan Olivate, Simethicone, Polyglyceryl-10 Laurate, Ethylhexylglycerin, Adenosine, Fragrance, Polyacrylate-13, Glycine Soja (Soybean) Oil, Disodium EDTA, Polyisobutene, Hydrolyzed Sclerotium Gum, Glyceryl Stearate, Gluconolactone, Polysorbate 20, Sorbitan Isostearate, Hydrogenated Lecithin, Bixa Orellana Seed Oil, Polyglyceryl-10 Stearate, Alpha-Arbutin, Panthenol, Sodium Ascorbyl Phosphate, Pentylene Glycol, Ferulic Acid, Tocopherol, Ascorbyl Glucoside, 3-O-Ethyl Ascorbic Acid, Bisabolol, Ascorbic Acid, Hydroxyphenyl Propamidobenzoic Acid, Pyridoxine, Ubiquinone, Biotin, Folic Acid, Sodium Hyaluronate, Ascorbyl Propyl Hyaluronate, Ascorbyl Palmitate, Cyanocobalamin, Thiamine HCl, Riboflavin, Linoleic Acid, Beta-Carotene, Rutin, Hydroxycinnamic Acid",
+  "ingredients_source": {
+   "ko": "메디큐브 공식몰(themedicube.co.kr, product_no=1560) 게재분 61개를 채택하고, 신라면세점(shilladfs.com/estore/kr/ko/p/5944863) 게재분과 전체 순서까지 대조해 일치를 확인했습니다. 라벨은 55g, 공식몰과 신라 고시는 55ml로 서로 다르며 단위는 임의로 바꾸지 않았습니다. 실물 라벨의 로트는 확인하지 못했습니다. 영문 INCI와 중문 표기는 국문을 기준으로 표준 명칭으로 옮긴 것입니다.",
+   "en": "Taken from medicube's own store (themedicube.co.kr, product_no=1560), sixty-one items, and checked against the Shilla duty-free listing (shilladfs.com/estore/kr/ko/p/5944863) down to the order, which agrees. The label reads 55g while the maker's store and Shilla both notify 55ml — the unit was not changed on our side. The lot on the physical label was not verified. The English INCI and the Chinese names were mapped from the Korean to the standard nomenclature.",
+   "zh": "采用 medicube 官网（themedicube.co.kr, product_no=1560）所载六十一项，并与新罗免税店（shilladfs.com/estore/kr/ko/p/5944863）所载逐项核对顺序，结果一致。标签为 55g，而官网与新罗申报均为 55ml，单位未擅自更改。实物标签批号未经核实。英文 INCI 与中文名称系依韩文对照标准命名转写。",
+   "ja": "medicube 公式ストア（themedicube.co.kr, product_no=1560）の掲載分61項目を採用し、新羅免税店（shilladfs.com/estore/kr/ko/p/5944863）の掲載分と順序まで照合して一致を確認しました。ラベルは55g、公式ストアと新羅の表示は55mlと異なり、単位は勝手に変えていません。実物ラベルのロットは確認できていません。英文INCIと中国語表記は韓国語を基準に標準名称へ置き換えたものです。",
+   "th": "นำมาจากร้านค้าของ medicube เอง (themedicube.co.kr, product_no=1560) จำนวนหกสิบเอ็ดรายการ และตรวจสอบกับรายการของร้านดิวตี้ฟรี Shilla (shilladfs.com/estore/kr/ko/p/5944863) จนถึงลำดับ ซึ่งตรงกัน ฉลากระบุ 55g ขณะที่ร้านค้าของผู้ผลิตและ Shilla แจ้ง 55ml โดยเราไม่ได้เปลี่ยนหน่วยเอง และไม่ได้ตรวจสอบล็อตบนฉลากจริง ชื่อ INCI ภาษาอังกฤษและชื่อภาษาจีนถอดจากภาษาเกาหลีตามระบบชื่อมาตรฐาน"
+  }
+ },
+ {
+  "id": "mc-pdrn-pink-peptide-ampoule-duo",
+  "brand": "medicube",
+  "name": "PDRN Pink Peptide Serum Duo",
+  "name_l": {
+   "ko": "PDRN 핑크 펩타이드 세럼 듀오",
+   "zh": "PDRN 粉胜肽精华 双瓶装",
+   "ja": "PDRN ピンクペプチド セラム デュオ"
+  },
+  "ml": "30mL × 2",
+  "kind": "Ampoule",
+  "tag": "Brightening",
+  "metric": "pigmentation",
+  "line": "PDRN 1% · 면세 전용",
+  "step": "serum",
+  "slot": "both",
+  "gradient": "linear-gradient(160deg,var(--surface-2),var(--ph-b))",
+  "image": "/products/mc-pdrn-pink-peptide-ampoule-duo/main.webp",
+  "price_krw": 33065,
+  "list_price_krw": 0,
+  "use_days": 120,
+  "sort": 803,
+  "stock": 0,
+  "active": true,
+  "ingredients_checked": true,
+  "sub": {
+   "ko": "소듐디엔에이가 8번째. 40개짜리 짧은 목록입니다.",
+   "en": "Sodium DNA is eighth, on a short list of forty.",
+   "zh": "DNA 钠位列第八，全表仅四十项。",
+   "ja": "DNA-Na が8番目。40項目の短い一覧です。",
+   "th": "โซเดียมดีเอ็นเออยู่ลำดับที่แปด ในรายการสั้นสี่สิบรายการ"
+  },
+  "why": {
+   "ko": "PDRN으로 표기되는 소듐디엔에이가 8번째입니다. 40개짜리 짧은 목록에서 8번째는 앞쪽이고, 용기의 PDRN 1%(10,000ppm)와 어긋나지 않는 자리입니다. 미백 근거인 나이아신아마이드가 6번째, 주름개선 근거인 아데노신이 22번째로 2중 기능성의 두 성분이 모두 확인됩니다. 다만 이름의 핑크 펩타이드 다섯 종은 34~38번째에 모여 있고, 연어알추출물 39번째와 아텔로콜라겐 40번째가 맨 끝입니다.",
+   "en": "Sodium DNA — what is labelled PDRN — is eighth. On a list of only forty, eighth is near the front, and it does not contradict the PDRN 1% (10,000ppm) on the bottle. Niacinamide, behind the brightening designation, is sixth, and adenosine, behind the wrinkle-care one, is twenty-second, so both halves of the dual designation are accounted for. The five pink peptides in the name, though, cluster at thirty-four to thirty-eight, with salmon egg extract thirty-ninth and atelocollagen fortieth at the very end.",
+   "zh": "标示为 PDRN 的 DNA 钠位列第八。在仅四十项的成分表中，第八已属靠前，与瓶身的 PDRN 1%（10,000ppm）并不矛盾。美白功能性所依据的烟酰胺位列第六，抗皱所依据的腺苷位列第二十二，双重功能性的两项成分均可核实。但名称中的五种粉胜肽集中在第三十四至三十八位，鲑鱼卵提取物第三十九、去端肽胶原第四十位于末尾。",
+   "ja": "PDRN と表記される DNA-Na が8番目です。40項目しかない一覧で8番目は前のほうであり、ボトルの PDRN 1%（10,000ppm）と矛盾しない位置です。美白の根拠であるナイアシンアミドが6番目、シワ改善の根拠であるアデノシンが22番目で、2重機能性の両方の成分が確認できます。ただし名前のピンクペプチド5種は34〜38番目に集まっていて、サケ卵エキス39番目とアテロコラーゲン40番目がいちばん最後です。",
+   "th": "โซเดียมดีเอ็นเอ ซึ่งระบุว่าเป็น PDRN อยู่ลำดับที่แปด ในรายการที่มีเพียงสี่สิบรายการ ลำดับที่แปดถือว่าค่อนข้างต้น และไม่ขัดกับ PDRN 1% (10,000ppm) บนขวด ไนอาซินาไมด์ที่รองรับการรับรองด้านความกระจ่างใสอยู่ลำดับที่หก และอะดีโนซีนที่รองรับด้านริ้วรอยอยู่ลำดับที่ยี่สิบสอง จึงตรวจสอบได้ทั้งสองด้านของการรับรองคู่ แต่เปปไทด์สีชมพูห้าชนิดในชื่อผลิตภัณฑ์รวมอยู่ที่ลำดับสามสิบสี่ถึงสามสิบแปด โดยสารสกัดไข่ปลาแซลมอนลำดับที่สามสิบเก้าและอะทีโลคอลลาเจนลำดับที่สี่สิบอยู่ท้ายสุด"
+  },
+  "fits": [
+   {
+    "axis": "pigmentation",
+    "strength": "primary",
+    "note": {
+     "ko": "나이아신아마이드가 6번째입니다 — 미백 기능성의 근거 성분입니다.",
+     "en": "Niacinamide is sixth, the ingredient the brightening designation rests on.",
+     "zh": "烟酰胺位列第六，即美白功能性所依据的成分。",
+     "ja": "ナイアシンアミドが6番目です — 美白の機能性の根拠となる成分です。",
+     "th": "ไนอาซินาไมด์อยู่ลำดับที่หก เป็นสารที่ใช้ขอรับรองด้านความกระจ่างใส"
+    }
+   },
+   {
+    "axis": "elasticity",
+    "strength": "primary",
+    "note": {
+     "ko": "소듐디엔에이 8번째, 하이드롤라이즈드콜라겐 30번째, 펩타이드 다섯 종 34~38번째.",
+     "en": "Sodium DNA eighth, hydrolysed collagen thirtieth, five peptides at thirty-four to thirty-eight.",
+     "zh": "DNA 钠第八、水解胶原第三十、五种胜肽第三十四至三十八。",
+     "ja": "DNA-Na 8番目、加水分解コラーゲン30番目、ペプチド5種34〜38番目。",
+     "th": "โซเดียมดีเอ็นเอลำดับที่แปด คอลลาเจนไฮโดรไลซ์ลำดับที่สามสิบ เปปไทด์ห้าชนิดลำดับที่สามสิบสี่ถึงสามสิบแปด"
+    }
+   },
+   {
+    "axis": "wrinkles",
+    "strength": "secondary",
+    "note": {
+     "ko": "아데노신이 22번째입니다 — 주름개선 기능성의 근거 성분입니다.",
+     "en": "Adenosine is twenty-second, the ingredient the wrinkle-care designation rests on.",
+     "zh": "腺苷位列第二十二，即抗皱功能性所依据的成分。",
+     "ja": "アデノシンが22番目です — シワ改善の機能性の根拠となる成分です。",
+     "th": "อะดีโนซีนอยู่ลำดับที่ยี่สิบสอง เป็นสารที่ใช้ขอรับรองด้านริ้วรอย"
+    }
+   }
+  ],
+  "pros": [
+   {
+    "ko": "핵심 성분이 실제로 앞에 있습니다. PDRN으로 내세운 소듐디엔에이가 40개 중 8번째입니다. 같은 성분을 목록 끝에 한 줄 넣고 이름에 올리는 제품들과 다릅니다.",
+    "en": "The headline ingredient really is near the front. The sodium DNA sold as PDRN is eighth of forty. That is not the same as products that put the ingredient in the last line of the list and the first line of the name.",
+    "zh": "核心成分确实靠前。以 PDRN 为卖点的 DNA 钠在四十项中位列第八。这与把该成分放在成分表末尾、却写进产品名的做法不同。",
+    "ja": "核となる成分が実際に前にあります。PDRN として掲げられている DNA-Na が40項目のうち8番目です。同じ成分を一覧の最後に一行入れて名前に掲げる製品とは違います。",
+    "th": "สารหลักอยู่ต้นรายการจริง โซเดียมดีเอ็นเอที่ขายในชื่อ PDRN อยู่ลำดับที่แปดจากสี่สิบ ต่างจากผลิตภัณฑ์ที่ใส่สารนั้นไว้บรรทัดท้ายของรายการแต่ยกขึ้นเป็นชื่อสินค้า"
+   },
+   {
+    "ko": "2중 기능성의 근거가 둘 다 성분표에 있습니다. 미백 쪽 나이아신아마이드가 6번째, 주름 쪽 아데노신이 22번째입니다. 둘 중 하나만 확인되는 경우가 흔한데 여기서는 둘 다 보입니다.",
+    "en": "Both halves of the dual designation have something behind them. Niacinamide for brightening is sixth and adenosine for wrinkles is twenty-second. It is common for only one of the two to be findable — here both are.",
+    "zh": "双重功能性的两项依据都在成分表中。美白端的烟酰胺第六，抗皱端的腺苷第二十二。通常只能核实其中之一，这里两者皆可见。",
+    "ja": "2重機能性の根拠が両方とも成分表にあります。美白側のナイアシンアミドが6番目、シワ側のアデノシンが22番目です。どちらか一方しか確認できないことが多いなかで、ここでは両方が見えます。",
+    "th": "ทั้งสองด้านของการรับรองคู่มีที่มาในรายการส่วนผสม ไนอาซินาไมด์สำหรับความกระจ่างใสอยู่ลำดับที่หก และอะดีโนซีนสำหรับริ้วรอยอยู่ลำดับที่ยี่สิบสอง โดยทั่วไปมักพบเพียงอย่างใดอย่างหนึ่ง แต่ที่นี่พบทั้งคู่"
+   },
+   {
+    "ko": "목록이 40개로 짧고 무거운 유분이 없습니다. 아이소프로필미리스테이트 4번째 외에는 오일이라 할 만한 것이 거의 없어, 세럼 단계에서 얇게 올라갑니다.",
+    "en": "The list is short at forty and carries no heavy oils. Beyond isopropyl myristate in fourth place there is little that counts as an oil, so it layers thin at the serum step.",
+    "zh": "成分表仅四十项，且无厚重油脂。除第四位的肉豆蔻酸异丙酯外几乎没有可称为油的成分，因此在精华步骤可薄薄叠涂。",
+    "ja": "一覧が40項目と短く、重い油分がありません。4番目のミリスチン酸イソプロピル以外にオイルと呼べるものがほとんどなく、セラムの段階で薄く伸びます。",
+    "th": "รายการสั้นเพียงสี่สิบรายการและไม่มีน้ำมันหนัก นอกจากไอโซโพรพิลไมริสเตตในลำดับที่สี่แล้วแทบไม่มีสิ่งที่นับเป็นน้ำมัน จึงซ้อนชั้นบาง ๆ ได้ในขั้นเซรั่ม"
+   }
+  ],
+  "cons": [
+   {
+    "ko": "이름의 펩타이드 다섯 종은 끝쪽입니다. 팔미토일펜타펩타이드-4 34번째, 팔미토일트라이펩타이드-1 35번째, 팔미토일테트라펩타이드-7 36번째, 카퍼트라이펩타이드-1 37번째, 아세틸헥사펩타이드-8 38번째입니다. 다섯 가지라는 것은 가짓수이지 양이 아닙니다.",
+    "en": "The five peptides in the name are at the end. Palmitoyl pentapeptide-4 is thirty-fourth, palmitoyl tripeptide-1 thirty-fifth, palmitoyl tetrapeptide-7 thirty-sixth, copper tripeptide-1 thirty-seventh and acetyl hexapeptide-8 thirty-eighth. Five is a count of kinds, not an amount.",
+    "zh": "名称中的五种胜肽位于末段。棕榈酰五肽-4 第三十四、棕榈酰三肽-1 第三十五、棕榈酰四肽-7 第三十六、铜三肽-1 第三十七、乙酰基六肽-8 第三十八。五种指的是种类数，而非含量。",
+    "ja": "名前のペプチド5種は末尾のほうです。パルミトイルペンタペプチド-4 が34番目、パルミトイルトリペプチド-1 が35番目、パルミトイルテトラペプチド-7 が36番目、銅トリペプチド-1 が37番目、アセチルヘキサペプチド-8 が38番目です。5種類というのは種類の数であって量ではありません。",
+    "th": "เปปไทด์ห้าชนิดในชื่อผลิตภัณฑ์อยู่ท้ายรายการ พาลมิทอยล์เพนตะเปปไทด์-4 ลำดับที่สามสิบสี่ พาลมิทอยล์ไตรเปปไทด์-1 ลำดับที่สามสิบห้า พาลมิทอยล์เตตระเปปไทด์-7 ลำดับที่สามสิบหก คอปเปอร์ไตรเปปไทด์-1 ลำดับที่สามสิบเจ็ด และอะซิทิลเฮกซะเปปไทด์-8 ลำดับที่สามสิบแปด ห้าคือจำนวนชนิด ไม่ใช่ปริมาณ"
+   },
+   {
+    "ko": "기능성 표시가 판매처마다 다릅니다. 제조사 공식몰과 상세페이지 원본에는 미백·주름개선 2중 기능성이 적혀 있는데, 신세계면세점 고시에는 그 표시가 없습니다. 성분은 양쪽 목록이 40개로 순서까지 같아 차이가 없고, 다른 것은 표시뿐입니다.",
+    "en": "The functional-claim labelling differs by seller. The maker's own store and the original detail page carry the dual brightening and wrinkle-care designation, while the Shinsegae duty-free notification does not. The ingredients are not in dispute — both listings are the same forty in the same order — only the labelling.",
+    "zh": "功能性标示因渠道而异。品牌官网与详情页原件标有美白与抗皱的双重功能性，而新世界免税店的申报则没有。成分本身并无分歧——两份清单皆为同样四十项、顺序一致——不同的只是标示。",
+    "ja": "機能性表示が販売店ごとに違います。メーカー公式ストアと詳細ページ原本には美白・シワ改善の2重機能性が記載されていますが、新世界免税店の表示にはありません。成分は両方の一覧が40項目で順序まで同じなので差がなく、違うのは表示だけです。",
+    "th": "การระบุการรับรองแตกต่างกันตามผู้จำหน่าย ร้านค้าของผู้ผลิตเองและหน้ารายละเอียดต้นฉบับระบุการรับรองคู่ทั้งด้านความกระจ่างใสและริ้วรอย ขณะที่การแจ้งของร้านดิวตี้ฟรี Shinsegae ไม่มี ส่วนผสมไม่ได้ขัดแย้งกัน ทั้งสองรายการมีสี่สิบรายการเรียงลำดับเหมือนกัน ต่างกันเพียงการระบุเท่านั้น"
+   },
+   {
+    "ko": "향료가 20번째입니다. 40개짜리 목록에서 20번째는 딱 절반 지점이라 적은 양이라고 보기 어렵습니다. 향에 예민한 피부라면 감안하세요.",
+    "en": "Fragrance is twentieth. On a list of forty that is the exact midpoint, which is hard to read as a trace. Weigh that if your skin reacts to scent.",
+    "zh": "香精位列第二十。在四十项的成分表中恰为中点，难以视为微量。对香料敏感的肌肤需留意。",
+    "ja": "香料が20番目です。40項目の一覧でちょうど真ん中なので、ごく微量とは言いにくい位置です。香りに敏感な肌なら踏まえてください。",
+    "th": "น้ำหอมอยู่ลำดับที่ยี่สิบ ในรายการสี่สิบรายการนี่คือจุดกึ่งกลางพอดี จึงยากที่จะถือว่าเป็นปริมาณเล็กน้อย ผิวที่แพ้กลิ่นควรพิจารณา"
+   }
+  ],
+  "ingredients": "정제수, 글리세린, 다이프로필렌글라이콜, 아이소프로필미리스테이트, 글리세레스-26, 나이아신아마이드, 1,2-헥산다이올, 소듐디엔에이, 부틸렌글라이콜, 폴리글리세린-3, 소듐아크릴레이트/소듐아크릴로일다이메틸타우레이트코폴리머, 폴리아이소부텐, 아크릴레이트/C10-30알킬아크릴레이트크로스폴리머, 이리추출물, 트로메타민, 글리세릴아크릴레이트/아크릴릭애씨드코폴리머, 피브이엠/엠에이코폴리머, 에틸헥실글리세린, 카프릴릴글라이콜, 향료, 인도멀구슬나무잎추출물, 아데노신, 카프릴릴/카프릴글루코사이드, 솔비탄올리에이트, 인도멀구슬나무꽃추출물, 소듐하이알루로네이트, 다이소듐이디티에이, 울금뿌리추출물, 사이아노코발아민, 하이드롤라이즈드콜라겐, 유비퀴논, 홀리바질잎추출물, 참산호말추출물, 팔미토일펜타펩타이드-4, 팔미토일트라이펩타이드-1, 팔미토일테트라펩타이드-7, 카퍼트라이펩타이드-1, 아세틸헥사펩타이드-8, 연어알추출물, 아텔로콜라겐",
+  "inci": "Water, Glycerin, Dipropylene Glycol, Isopropyl Myristate, Glycereth-26, Niacinamide, 1,2-Hexanediol, Sodium DNA, Butylene Glycol, Polyglycerin-3, Sodium Acrylate/Sodium Acryloyldimethyl Taurate Copolymer, Polyisobutene, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Iris Florentina Root Extract, Tromethamine, Glyceryl Acrylate/Acrylic Acid Copolymer, PVM/MA Copolymer, Ethylhexylglycerin, Caprylyl Glycol, Fragrance, Melia Azadirachta Leaf Extract, Adenosine, Caprylyl/Capryl Glucoside, Sorbitan Oleate, Melia Azadirachta Flower Extract, Sodium Hyaluronate, Disodium EDTA, Curcuma Longa (Turmeric) Root Extract, Cyanocobalamin, Hydrolyzed Collagen, Ubiquinone, Ocimum Sanctum Leaf Extract, Corallina Officinalis Extract, Palmitoyl Pentapeptide-4, Palmitoyl Tripeptide-1, Palmitoyl Tetrapeptide-7, Copper Tripeptide-1, Acetyl Hexapeptide-8, Salmon Egg Extract, Atelocollagen",
+  "ingredients_l": {
+   "zh": "水、甘油、双丙甘醇、肉豆蔻酸异丙酯、甘油聚醚-26、烟酰胺、1,2-己二醇、DNA钠、丁二醇、聚甘油-3、丙烯酸钠/丙烯酰二甲基牛磺酸钠共聚物、聚异丁烯、丙烯酸（酯）类/C10-30 烷醇丙烯酸酯交联聚合物、香根鸢尾根提取物、氨丁三醇、甘油丙烯酸酯/丙烯酸共聚物、PVM/MA 共聚物、乙基己基甘油、辛甘醇、香精、印度楝叶提取物、腺苷、辛基/癸基葡糖苷、山梨坦油酸酯、印度楝花提取物、透明质酸钠、EDTA 二钠、姜黄根提取物、氰钴胺、水解胶原、泛醌、圣罗勒叶提取物、药用珊瑚藻提取物、棕榈酰五肽-4、棕榈酰三肽-1、棕榈酰四肽-7、铜三肽-1、乙酰基六肽-8、鲑鱼卵提取物、去端肽胶原",
+   "ja": "水、グリセリン、DPG、ミリスチン酸イソプロピル、グリセレス-26、ナイアシンアミド、1,2-ヘキサンジオール、DNA-Na、BG、ポリグリセリン-3、(アクリル酸Na/アクリロイルジメチルタウリンNa)コポリマー、ポリイソブテン、(アクリレーツ/アクリル酸アルキル(C10-30))クロスポリマー、ニオイイリス根エキス、トロメタミン、(アクリル酸グリセリル/アクリル酸)コポリマー、(PVM/MA)コポリマー、エチルヘキシルグリセリン、カプリリルグリコール、香料、インドセンダン葉エキス、アデノシン、カプリリル/カプリルグルコシド、オレイン酸ソルビタン、インドセンダン花エキス、ヒアルロン酸Na、EDTA-2Na、ウコン根エキス、シアノコバラミン、加水分解コラーゲン、ユビキノン、カミメボウキ葉エキス、サンゴモエキス、パルミトイルペンタペプチド-4、パルミトイルトリペプチド-1、パルミトイルテトラペプチド-7、銅トリペプチド-1、アセチルヘキサペプチド-8、サケ卵エキス、アテロコラーゲン"
+  },
+  "ingredients_source": {
+   "ko": "메디큐브 공식몰(themedicube.co.kr, product_no=1717) 게재분 40개를 채택하고, 신세계면세점(ssgdfs.com, goos_cd=277708000047) 게재분과 전체 순서까지 대조해 일치를 확인했습니다. 울트라 라이트(2725) 목록은 다른 제품이라 쓰지 않았습니다. 미백·주름개선 2중 기능성 표시는 원본과 공식몰에는 있고 신세계 고시에는 없습니다. 영문 INCI와 중문 표기는 국문을 기준으로 표준 명칭으로 옮긴 것이고, 일문은 제조사 표기를 따랐습니다.",
+   "en": "Taken from medicube's own store (themedicube.co.kr, product_no=1717), forty items, and checked against the Shinsegae duty-free listing (ssgdfs.com, goos_cd=277708000047) down to the order, which agrees. The Ultra Light listing (2725) belongs to a different product and was not used. The dual brightening and wrinkle-care designation appears on the original artwork and the maker's store but not in the Shinsegae notification. The English INCI and the Chinese names were mapped from the Korean to the standard nomenclature; the Japanese follows the maker's own wording.",
+   "zh": "采用 medicube 官网（themedicube.co.kr, product_no=1717）所载四十项，并与新世界免税店（ssgdfs.com, goos_cd=277708000047）所载逐项核对顺序，结果一致。Ultra Light（2725）清单属于另一产品，未予采用。美白与抗皱的双重功能性标示见于原始详情页与品牌官网，新世界申报中则无。英文 INCI 与中文名称系依韩文对照标准命名转写；日文沿用厂商表述。",
+   "ja": "medicube 公式ストア（themedicube.co.kr, product_no=1717）の掲載分40項目を採用し、新世界免税店（ssgdfs.com, goos_cd=277708000047）の掲載分と順序まで照合して一致を確認しました。ウルトラライト（2725）の一覧は別製品のため使用していません。美白・シワ改善の2重機能性表示は原本と公式ストアにはあり、新世界の表示にはありません。英文INCIと中国語表記は韓国語を基準に標準名称へ置き換えたもので、日本語はメーカーの表記に従いました。",
+   "th": "นำมาจากร้านค้าของ medicube เอง (themedicube.co.kr, product_no=1717) จำนวนสี่สิบรายการ และตรวจสอบกับรายการของร้านดิวตี้ฟรี Shinsegae (ssgdfs.com, goos_cd=277708000047) จนถึงลำดับ ซึ่งตรงกัน รายการ Ultra Light (2725) เป็นของสินค้าอื่นจึงไม่ได้นำมาใช้ การรับรองคู่ด้านความกระจ่างใสและริ้วรอยปรากฏบนหน้ารายละเอียดต้นฉบับและร้านค้าของผู้ผลิต แต่ไม่มีในการแจ้งของ Shinsegae ชื่อ INCI ภาษาอังกฤษและชื่อภาษาจีนถอดจากภาษาเกาหลีตามระบบชื่อมาตรฐาน ส่วนภาษาญี่ปุ่นใช้ตามถ้อยคำของผู้ผลิตเอง"
+  }
+ }
+]
