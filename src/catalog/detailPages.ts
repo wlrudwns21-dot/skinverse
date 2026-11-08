@@ -138,6 +138,10 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 17527, ja: 17613, ko: 17096, th: 17275, zh: 16870 },
   },
+  'ahc-proshot-volume5-intra-serum-40': {
+    w: 1170,
+    pages: { en: 17191, ja: 17179, ko: 16720, th: 16949, zh: 16528 },
+  },
   'ahc-volume5-night-gel-50': {
     w: 1170,
     pages: { en: 16100, ja: 16233, ko: 15962, th: 15908, zh: 15618 },
@@ -193,6 +197,18 @@ export const detailPages: Record<string, DetailArt> = {
   'cp-biogenic-moisturizer-80': {
     w: 1170,
     pages: { en: 12463, ja: 12364, ko: 12167, th: 12286, zh: 11978 },
+  },
+  'mc-txa-capsule-cream-55': {
+    w: 1170,
+    pages: { en: 12471, ja: 12209, ko: 11995, th: 12006, zh: 11727 },
+  },
+  'mc-deep-vitac-capsule-cream-duo': {
+    w: 1170,
+    pages: { en: 12398, ja: 12118, ko: 11881, th: 11916, zh: 11514 },
+  },
+  'mc-pdrn-pink-peptide-ampoule-duo': {
+    w: 1170,
+    pages: { en: 11818, ja: 11333, ko: 11315, th: 11168, zh: 10881 },
   },
 }
 
