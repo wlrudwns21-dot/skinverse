@@ -34,7 +34,7 @@ describe('detailTiles', () => {
   })
 
   it('returns nothing rather than another language, when a page is missing', () => {
-    // Every registered page is in all four languages today, so the case that
+    // Every registered page is in all five languages today, so the case that
     // has to be proven is the product with no artwork at all.
     expect(detailTiles('nope', 'ko')).toEqual([])
     expect(detailTiles('ae-atobarrier365-cream-80', 'ko', { w: 1170, pages: { en: 100 } })).toEqual([])

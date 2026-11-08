@@ -1,5 +1,5 @@
 import type { Fit, Slot } from './analysis'
-import type { DetailArt } from './detailPages'
+import { detailPages } from './detailPages'
 import type { Lang, Localized, MetricKey, Product, ProductTag } from '../data/types'
 
 /** A catalogue row: the storefront's view of a product plus its operational fields. */
@@ -56,8 +56,9 @@ export interface ProductRow {
   gradient: string
   /** Path under `public/` to the main product shot; empty when unphotographed. */
   image?: string | null
-  /** The maker's detail artwork: export width and page height per locale. */
-  detail_pages?: DetailArt | null
+  // The row also carries `detail_pages`, which this deliberately does not
+  // read. See `toCatalogProduct` for why the artwork's dimensions come from
+  // the repository instead.
   ingredients: string
   sub: Localized
   why: Localized
@@ -120,7 +121,28 @@ export function toCatalogProduct(row: ProductRow): CatalogProduct {
     kind: row.kind,
     g: row.gradient,
     img: row.image ?? '',
-    detail: row.detail_pages ?? undefined,
+    /**
+     * From the repository, not from the row.
+     *
+     * The database has a `detail_pages` column, and for a while this read it.
+     * Nothing in the app ever wrote to it — there is no operator screen for
+     * page heights — so the only way it got filled was someone running SQL by
+     * hand after editing `detailPages.ts`. Two copies, no check that they
+     * agree, and the shop silently following the one nobody edits.
+     *
+     * That is exactly how Japanese shipped broken. The tiles were in the
+     * bucket, the manifest matched byte for byte, `detailPages.ts` had every
+     * height, 585 tests passed — and the shop drew nothing, because the column
+     * still only knew about four languages. No error: a missing height means
+     * `detailTiles` returns an empty list, which renders as an empty page.
+     *
+     * A page height is a fact about a file that ships with the build, not
+     * something the shop's operator decides, so the build is where it belongs.
+     * Reading it here removes the second copy and the whole class of failure
+     * with it: adding a language is now one edit, and the tests that already
+     * cover `detailTiles` cover what the storefront shows.
+     */
+    detail: detailPages[row.id],
     ing: row.ingredients,
     line: row.line ?? '',
     slot: row.slot ?? 'both',

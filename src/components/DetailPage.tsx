@@ -17,7 +17,11 @@ const LABEL: Record<Lang, { open: string; close: string }> = {
 export interface DetailPageProps {
   id: string
   lang: Lang
-  /** The maker's artwork dimensions, when they came from the database. */
+  /**
+   * The maker's artwork dimensions, from `detailPages.ts` by way of the
+   * catalogue. Undefined for a product whose pages have not been drawn yet,
+   * which renders nothing rather than an empty frame.
+   */
   heights?: DetailArt
   /** For the alt text, so a screen reader says which product's page this is. */
   name: string
