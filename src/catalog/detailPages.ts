@@ -138,6 +138,10 @@ export const detailPages: Record<string, DetailArt> = {
     w: 1170,
     pages: { en: 17527, ja: 17613, ko: 17096, th: 17275, zh: 16870 },
   },
+  'ahc-volume5-skincare-set': {
+    w: 1170,
+    pages: { en: 25174, ja: 25086, ko: 24429, th: 24550, zh: 23641 },
+  },
   'ahc-proshot-volume5-intra-serum-40': {
     w: 1170,
     pages: { en: 17191, ja: 17179, ko: 16720, th: 16949, zh: 16528 },

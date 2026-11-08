@@ -1,0 +1,135 @@
+[
+ {
+  "id": "ahc-volume5-skincare-set",
+  "brand": "AHC",
+  "name": "Hyaluro-Deep Volume 5 Skincare Set",
+  "name_l": {
+   "ko": "히알루로 딥 볼륨 5 스킨케어 세트",
+   "zh": "玻尿酸深层丰盈5 护肤套装",
+   "ja": "ヒアルロ ディープ ボリューム5 スキンケアセット"
+  },
+  "ml": "5종 세트",
+  "kind": "Set",
+  "tag": "Hydration",
+  "metric": "hydration",
+  "line": "HYALURO-DEEP VOLUME 5 · 클렌징부터 나이트케어까지",
+  "step": "cream",
+  "slot": "both",
+  "gradient": "linear-gradient(160deg,var(--surface-2),var(--ph-a))",
+  "image": "/products/ahc-volume5-skincare-set/main.webp",
+  "price_krw": 38027,
+  "list_price_krw": 63379,
+  "use_days": 90,
+  "sort": 508,
+  "stock": 0,
+  "active": true,
+  "ingredients_checked": true,
+  "sub": {
+   "ko": "클렌징·에센스·에멀전·젤·아이크림 다섯 가지. 전부 볼륨 5 라인입니다.",
+   "en": "Cleanser, essence, emulsion, gel and eye cream. All five on the Volume 5 line.",
+   "zh": "洁面、精华、乳液、凝胶与眼霜共五件，同属丰盈5 系列。",
+   "ja": "クレンジング・エッセンス・エマルジョン・ジェル・アイクリームの5点。すべてボリューム5のラインです。",
+   "th": "คลีนเซอร์ เอสเซนส์ อิมัลชัน เจล และอายครีม รวมห้าชิ้น ทั้งหมดอยู่ในไลน์ Volume 5"
+  },
+  "why": {
+   "ko": "이름의 5는 히알루론산 형태 수이고, 세트 안에서 그 숫자가 반복됩니다. 플럼핑 에센스는 14·24·28·29·30번째, 트리트먼트 에멀전은 16·23·24·35·38번째에 서로 다른 다섯 형태가 들어 있습니다. 보습의 중심인 판테놀이 에센스 4번째, 에멀전 6번째로 꽤 앞이고, 주름개선 기능성의 근거인 아데노신이 에센스 18번째·에멀전 17번째에 있습니다. 다섯 가지가 같은 라인으로 묶여 있어 세안부터 밤까지 한 줄로 이어집니다. 다만 구성품 용량이 어디에도 적혀 있지 않으니 아래를 함께 보세요.",
+   "en": "The 5 in the name counts hyaluronic acid forms, and the number repeats through the box. The Plumping Essence carries five distinct forms at 14, 24, 28, 29 and 30, and the Treatment Emulsion five more at 16, 23, 24, 35 and 38. Panthenol, the backbone of the hydration, is fourth in the essence and sixth in the emulsion — well forward for a step that is mostly water. Adenosine, which the wrinkle-care designation rests on, is eighteenth in the essence and seventeenth in the emulsion. Five products on one line run from cleansing through to night. The component sizes, though, are printed nowhere — see below.",
+   "zh": "名称中的 5 是透明质酸的形态数量，而这个数字在整套中反复出现。丰盈精华在第 14、24、28、29、30 位含五种不同形式，修护乳液在第 16、23、24、35、38 位另有五种。作为保湿主干的泛醇在精华中位列第四、乳液中第六，对于以水为主的步骤而言相当靠前。抗皱功能性所依据的腺苷在精华第十八、乳液第十七。五件同属一条产品线，从洁面延续至夜间护理。但各件容量并未标示，请参阅下方说明。",
+   "ja": "名前の5はヒアルロン酸の形の数で、その数字がセットの中で繰り返されます。プランピングエッセンスは14・24・28・29・30番目、トリートメントエマルジョンは16・23・24・35・38番目に、互いに違う5つの形が入っています。保湿の軸となるパンテノールがエッセンス4番目・エマルジョン6番目とかなり前にあり、シワ改善の機能性の根拠であるアデノシンはエッセンス18番目・エマルジョン17番目です。5点が同じラインでまとまっているので、洗顔から夜まで一続きになります。ただし構成品の容量がどこにも記載されていないため、下もあわせてご覧ください。",
+   "th": "เลข 5 ในชื่อนับจำนวนรูปแบบของกรดไฮยาลูรอนิก และตัวเลขนี้ปรากฏซ้ำทั่วทั้งชุด Plumping Essence มีห้ารูปแบบที่ต่างกันที่ลำดับ 14, 24, 28, 29 และ 30 ส่วน Treatment Emulsion มีอีกห้ารูปแบบที่ลำดับ 16, 23, 24, 35 และ 38 แพนทีนอลซึ่งเป็นแกนของการให้ความชุ่มชื้นอยู่ลำดับที่สี่ในเอสเซนส์และลำดับที่หกในอิมัลชัน ถือว่าค่อนข้างต้นสำหรับขั้นตอนที่มีน้ำเป็นหลัก อะดีโนซีนที่รองรับการรับรองด้านริ้วรอยอยู่ลำดับที่สิบแปดในเอสเซนส์และลำดับที่สิบเจ็ดในอิมัลชัน ห้าชิ้นในไลน์เดียวกันจึงต่อเนื่องตั้งแต่ล้างหน้าจนถึงกลางคืน แต่ขนาดของแต่ละชิ้นไม่ได้ระบุไว้ที่ใดเลย โปรดดูด้านล่าง"
+  },
+  "fits": [
+   {
+    "axis": "hydration",
+    "strength": "primary",
+    "note": {
+     "ko": "판테놀이 에센스 4번째·에멀전 6번째, 히알루론산이 구성품마다 다섯 형태씩.",
+     "en": "Panthenol fourth in the essence and sixth in the emulsion, with five forms of hyaluronic acid in each.",
+     "zh": "泛醇在精华第四、乳液第六，且每件各含五种透明质酸。",
+     "ja": "パンテノールがエッセンス4番目・エマルジョン6番目、ヒアルロン酸が各品に5つの形ずつ。",
+     "th": "แพนทีนอลลำดับที่สี่ในเอสเซนส์และลำดับที่หกในอิมัลชัน พร้อมกรดไฮยาลูรอนิกห้ารูปแบบในแต่ละชิ้น"
+    }
+   },
+   {
+    "axis": "wrinkles",
+    "strength": "secondary",
+    "note": {
+     "ko": "아데노신이 에센스 18번째·에멀전 17번째 — 주름개선 기능성의 근거 성분입니다.",
+     "en": "Adenosine is eighteenth in the essence and seventeenth in the emulsion, the ingredient the wrinkle-care designation rests on.",
+     "zh": "腺苷在精华第十八、乳液第十七，即抗皱功能性所依据的成分。",
+     "ja": "アデノシンがエッセンス18番目・エマルジョン17番目 — シワ改善の機能性の根拠となる成分です。",
+     "th": "อะดีโนซีนอยู่ลำดับที่สิบแปดในเอสเซนส์และลำดับที่สิบเจ็ดในอิมัลชัน เป็นสารที่ใช้ขอรับรองด้านริ้วรอย"
+    }
+   },
+   {
+    "axis": "elasticity",
+    "strength": "secondary",
+    "note": {
+     "ko": "에센스에 비피다발효용해물 22번째, 아세틸글루코사민 23번째, 에스신 33번째.",
+     "en": "In the essence, bifida ferment lysate is twenty-second, acetyl glucosamine twenty-third and escin thirty-third.",
+     "zh": "精华中双歧杆菌发酵产物溶胞物第二十二、乙酰氨基葡糖第二十三、七叶树皂苷第三十三。",
+     "ja": "エッセンスにビフィダ発酵溶解質22番目、アセチルグルコサミン23番目、エスシン33番目。",
+     "th": "ในเอสเซนส์ บิฟิดาเฟอร์เมนต์ไลเสตอยู่ลำดับที่ยี่สิบสอง อะเซทิลกลูโคซามีนลำดับที่ยี่สิบสาม และเอสซินลำดับที่สามสิบสาม"
+    }
+   }
+  ],
+  "pros": [
+   {
+    "ko": "이름의 숫자가 세트 전체에서 맞습니다. 볼륨 5는 히알루론산 다섯 형태를 가리키는데, 에센스(14·24·28·29·30번째)와 에멀전(16·23·24·35·38번째)이 각각 다섯 형태를 따로 갖고 있습니다. 한 제품에서만 맞추고 나머지는 비우는 구성과 다릅니다.",
+    "en": "The number in the name holds across the whole box. Volume 5 points at five forms of hyaluronic acid, and the essence (14, 24, 28, 29, 30) and the emulsion (16, 23, 24, 35, 38) each carry five of their own. That is not the same as matching the claim in one product and leaving the rest empty.",
+    "zh": "名称中的数字在整套中都对得上。「丰盈5」指五种透明质酸，而精华（第 14、24、28、29、30）与乳液（第 16、23、24、35、38）各自都含有五种。这与只在一件产品上兑现、其余留白的做法不同。",
+    "ja": "名前の数字がセット全体で合っています。「ボリューム5」はヒアルロン酸の5つの形を指しますが、エッセンス（14・24・28・29・30番目）とエマルジョン（16・23・24・35・38番目）がそれぞれ別に5つずつ持っています。一つの製品だけで数字を合わせ、残りは空けておく構成とは違います。",
+    "th": "ตัวเลขในชื่อเป็นจริงทั้งชุด Volume 5 หมายถึงกรดไฮยาลูรอนิกห้ารูปแบบ และเอสเซนส์ (ลำดับ 14, 24, 28, 29, 30) กับอิมัลชัน (ลำดับ 16, 23, 24, 35, 38) ต่างก็มีห้ารูปแบบของตัวเอง ต่างจากการทำให้ตรงกับคำโฆษณาเพียงชิ้นเดียวแล้วปล่อยที่เหลือว่าง"
+   },
+   {
+    "ko": "보습 성분이 앞에 있습니다. 판테놀이 에센스에서 4번째, 에멀전에서 6번째입니다. 물과 용제가 앞을 채우는 단계에서 이 자리는 흔치 않습니다.",
+    "en": "The humectant is at the front. Panthenol is fourth in the essence and sixth in the emulsion. On a step whose opening places are usually water and solvents, that position is uncommon.",
+    "zh": "保湿成分位置靠前。泛醇在精华中第四、乳液中第六。在前几位通常被水与溶剂占据的步骤里，这个位置并不常见。",
+    "ja": "保湿成分が前にあります。パンテノールがエッセンスで4番目、エマルジョンで6番目です。前のほうを水と溶剤が占めがちな段階で、この位置は多くありません。",
+    "th": "สารให้ความชุ่มชื้นอยู่ต้นรายการ แพนทีนอลอยู่ลำดับที่สี่ในเอสเซนส์และลำดับที่หกในอิมัลชัน ในขั้นตอนที่ลำดับต้น ๆ มักเป็นน้ำและตัวทำละลาย ตำแหน่งนี้พบไม่บ่อย"
+   },
+   {
+    "ko": "세안부터 밤까지 한 라인으로 이어집니다. 클렌징 폼·에센스·에멀전·젤·아이크림이 전부 볼륨 5라, 단계마다 다른 브랜드를 섞을 때 생기는 질감이나 향의 충돌이 없습니다.",
+    "en": "It runs as one line from cleansing through to night. Foam, essence, emulsion, gel and eye cream are all Volume 5, so there is none of the texture or scent clash that comes of mixing a different brand into each step.",
+    "zh": "从洁面到夜间护理为同一条产品线。洁面、精华、乳液、凝胶与眼霜同属丰盈5，因此不会出现各步骤混用不同品牌时的质地或气味冲突。",
+    "ja": "洗顔から夜まで一つのラインで続きます。クレンジングフォーム・エッセンス・エマルジョン・ジェル・アイクリームがすべてボリューム5なので、段階ごとに別ブランドを混ぜたときのような質感や香りのぶつかりがありません。",
+    "th": "ใช้ต่อเนื่องเป็นไลน์เดียวตั้งแต่ล้างหน้าจนถึงกลางคืน โฟม เอสเซนส์ อิมัลชัน เจล และอายครีมล้วนเป็น Volume 5 จึงไม่มีการขัดกันของเนื้อสัมผัสหรือกลิ่นแบบที่เกิดเมื่อผสมแบรนด์ต่างกันในแต่ละขั้นตอน"
+   }
+  ],
+  "cons": [
+   {
+    "ko": "구성품 용량이 확인되지 않았습니다. 제조사 상세페이지에도, 확인 가능한 판매처 자료에도 각 구성품이 몇 mL인지 적혀 있지 않습니다. 단품 정규 용량은 에센스 130mL·에멀전 100mL·젤 50mL·아이크림 30mL이지만, 세트에 담긴 것이 정품 용량인지 견본 용량인지는 확인하지 못했습니다. 용량을 기준으로 값을 비교하신다면 감안하세요.",
+    "en": "The component sizes are not confirmed. Neither the maker's detail page nor any retailer source we could check says how many millilitres each piece holds. Sold separately the line runs essence 130mL, emulsion 100mL, gel 50mL and eye cream 30mL, but whether the box contains full sizes or samples we could not establish. Weigh that if you are comparing on volume.",
+    "zh": "各组件容量未经确认。品牌详情页与可查到的渠道资料均未标明每件的毫升数。单品正装容量为精华 130mL、乳液 100mL、凝胶 50mL、眼霜 30mL，但套装内是正装还是中样，我们无法确认。若您按容量比价请留意。",
+    "ja": "構成品の容量が確認できていません。メーカーの詳細ページにも、確認できた販売店の資料にも、各構成品が何mLかは記載がありません。単品の正規容量はエッセンス130mL・エマルジョン100mL・ジェル50mL・アイクリーム30mLですが、セットに入っているものが正規容量なのかサンプル容量なのかは確かめられませんでした。容量を基準に価格を比べられるなら、踏まえてください。",
+    "th": "ขนาดของแต่ละชิ้นยังไม่ได้รับการยืนยัน ทั้งหน้ารายละเอียดของผู้ผลิตและแหล่งข้อมูลผู้จัดจำหน่ายที่ตรวจสอบได้ ไม่ได้ระบุว่าแต่ละชิ้นมีกี่มิลลิลิตร เมื่อขายแยก ไลน์นี้มีเอสเซนส์ 130mL อิมัลชัน 100mL เจล 50mL และอายครีม 30mL แต่เราไม่สามารถยืนยันได้ว่าในกล่องเป็นขนาดปกติหรือขนาดทดลอง โปรดพิจารณาหากคุณเปรียบเทียบราคาตามปริมาณ"
+   },
+   {
+    "ko": "다섯 가지 모두에 향료가 들어 있고, 자리가 앞쪽인 것도 있습니다 — 에멀전 15번째, 에센스 21번째입니다. 눈가에 바르는 아이크림에도 향료가 22번째에 있고, 에센스·에멀전의 멘틸락테이트(34번째·32번째) 청량감이 눈가에서는 자극으로 느껴질 수 있습니다. 향에 예민한 피부라면 감안하세요.",
+    "en": "All five carry fragrance, and in some it is well forward — fifteenth in the emulsion, twenty-first in the essence. The eye cream, which goes near the eyes, has fragrance twenty-second, and the cooling from menthyl lactate in the essence and emulsion (thirty-fourth and thirty-second) can read as a sting around the eye. Weigh that if your skin reacts to scent.",
+    "zh": "五件均含香精，部分位置偏前——乳液第十五、精华第二十一。用于眼周的眼霜中香精位列第二十二，而精华与乳液中的乳酸薄荷酯（第三十四、第三十二）带来的清凉感在眼周可能被感觉为刺激。对香料敏感的肌肤需留意。",
+    "ja": "5点すべてに香料が入っていて、前のほうにあるものもあります — エマルジョン15番目、エッセンス21番目です。目もとに塗るアイクリームにも香料が22番目にあり、エッセンス・エマルジョンの乳酸メンチル（34番目・32番目）の清涼感は目もとでは刺激に感じられることがあります。香りに敏感な肌なら踏まえてください。",
+    "th": "ทั้งห้าชิ้นมีน้ำหอม และบางชิ้นอยู่ค่อนข้างต้น — ลำดับที่สิบห้าในอิมัลชัน และลำดับที่ยี่สิบเอ็ดในเอสเซนส์ อายครีมที่ใช้ใกล้ดวงตามีน้ำหอมอยู่ลำดับที่ยี่สิบสอง และความเย็นจากเมนทิลแลคเตตในเอสเซนส์และอิมัลชัน (ลำดับที่สามสิบสี่และสามสิบสอง) อาจรู้สึกแสบรอบดวงตาได้ ผิวที่แพ้กลิ่นควรพิจารณา"
+   },
+   {
+    "ko": "다섯 목록의 출처가 서로 다릅니다. 클렌징 폼만 제조사 원본 상세페이지에서 전사했고, 에센스와 에멀전은 lookfantastic AU·신라면세점 게재분, 젤과 아이크림은 외부 판매처 보충분입니다. 제조사가 발행한 세트 전체 전성분은 공개된 적이 없습니다.",
+    "en": "The five lists do not come from the same place. Only the cleansing foam was transcribed from the maker's own detail page. The essence and emulsion are the listings at lookfantastic AU and Shilla duty-free, and the gel and eye cream come from third-party retailers. No ingredient list for the box as a whole has ever been published by the maker.",
+    "zh": "五份清单来源不一。仅洁面取自品牌官方详情页转录；精华与乳液来自 lookfantastic AU 与新罗免税店所载；凝胶与眼霜则取自第三方渠道。厂商从未公开整套的全成分。",
+    "ja": "5つの一覧は出所が同じではありません。クレンジングフォームだけがメーカーの詳細ページからの書き起こしで、エッセンスとエマルジョンは lookfantastic AU・新羅免税店の掲載分、ジェルとアイクリームは外部販売店の補足です。セット全体の全成分をメーカーが発行したことはありません。",
+    "th": "รายการทั้งห้ามาจากแหล่งต่างกัน มีเพียงโฟมล้างหน้าที่ถอดมาจากหน้ารายละเอียดของผู้ผลิตเอง ส่วนเอสเซนส์และอิมัลชันมาจากรายการที่ lookfantastic AU และร้านดิวตี้ฟรี Shilla ขณะที่เจลและอายครีมมาจากผู้จัดจำหน่ายภายนอก ผู้ผลิตไม่เคยเผยแพร่รายการส่วนผสมของทั้งชุด"
+   }
+  ],
+  "ingredients_source": {
+   "ko": "세트 전체 전성분을 제조사가 공개한 적이 없어, 구성품 다섯 가지의 목록을 각각 모아 순서대로 이어 붙였습니다(총 246개 — 클렌징 폼 65, 에센스 47, 에멀전 41, 젤 47, 아이크림 46). 클렌징 폼은 원본 상세페이지 전사(kurly.com/goods/1000517033 대조), 에센스·에멀전은 lookfantastic AU와 신라면세점 게재분이 순서까지 일치, 젤은 외부 참고 목록(오탈자 3건 정정, 제조사 확인 미완료), 아이크림은 ibspot·TesterKorea 보충분입니다. 에센스와 에멀전은 국문·중문 전성분을 어디서도 확인하지 못해 영문 표기를 그대로 두고 그 사실을 목록 안에 적었습니다. 구성품별 용량은 미확인입니다(2026-11-09 확인).",
+   "en": "The maker has never published an ingredient list for the box, so the five components' lists were gathered separately and joined in order (246 in all — foam 65, essence 47, emulsion 41, gel 47, eye cream 46). The foam is transcribed from the maker's own detail page and checked against kurly.com/goods/1000517033. The essence and emulsion are the listings at lookfantastic AU and Shilla duty-free, which agree down to the order. The gel is a third-party reference list with three typos corrected and no confirmation from the maker, and the eye cream is supplemented from ibspot and TesterKorea. No Korean or Chinese list could be found anywhere for the essence or the emulsion, so their English is left as published and said so inside the list. Component sizes are unconfirmed (checked 2026-11-09).",
+   "zh": "厂商从未公开整套的全成分，故分别收集五件组件的清单并按顺序连接（共 246 项——洁面 65、精华 47、乳液 41、凝胶 47、眼霜 46）。洁面转录自品牌官方详情页，并与 kurly.com/goods/1000517033 核对；精华与乳液取自 lookfantastic AU 与新罗免税店，二者连顺序都一致；凝胶为第三方参考清单（已更正三处错字，未经厂商确认）；眼霜由 ibspot 与 TesterKorea 补充。精华与乳液的韩文与中文全成分遍寻不得，故保留英文并在清单中注明。各组件容量未确认（2026-11-09 核对）。",
+   "ja": "セット全体の全成分をメーカーが公開したことがないため、構成品5点の一覧をそれぞれ集めて順に連結しました（合計246項目 — フォーム65、エッセンス47、エマルジョン41、ジェル47、アイクリーム46）。フォームはメーカーの詳細ページからの書き起こしで kurly.com/goods/1000517033 と照合、エッセンスとエマルジョンは lookfantastic AU と新羅免税店の掲載分が順序まで一致、ジェルは外部の参考一覧（誤字3件を訂正、メーカー確認は未完了）、アイクリームは ibspot・TesterKorea の補足です。エッセンスとエマルジョンは韓国語・中国語の全成分をどこでも確認できなかったため、英語表記のままとし、その旨を一覧の中に記しました。構成品ごとの容量は未確認です（2026-11-09確認）。",
+   "th": "ผู้ผลิตไม่เคยเผยแพร่รายการส่วนผสมของทั้งชุด จึงรวบรวมรายการของทั้งห้าองค์ประกอบแยกกันแล้วต่อเรียงตามลำดับ (รวม 246 รายการ — โฟม 65 เอสเซนส์ 47 อิมัลชัน 41 เจล 47 อายครีม 46) โฟมถอดความจากหน้ารายละเอียดของผู้ผลิตเอง และตรวจสอบกับ kurly.com/goods/1000517033 เอสเซนส์และอิมัลชันมาจากรายการที่ lookfantastic AU และร้านดิวตี้ฟรี Shilla ซึ่งตรงกันจนถึงลำดับ เจลเป็นรายการอ้างอิงจากภายนอก (แก้คำผิดสามจุด ยังไม่ได้รับการยืนยันจากผู้ผลิต) และอายครีมเสริมจาก ibspot และ TesterKorea ไม่พบรายการภาษาเกาหลีหรือภาษาจีนของเอสเซนส์และอิมัลชันที่ใดเลย จึงคงภาษาอังกฤษไว้ตามที่เผยแพร่และระบุไว้ในรายการ ขนาดของแต่ละองค์ประกอบยังไม่ได้รับการยืนยัน (ตรวจสอบ 2026-11-09)"
+  },
+  "ingredients": "[1. 프렙 리셋 클렌징 폼] 정제수, 글리세린, 미리스틱애씨드, 스테아릭애씨드, 라우릭애씨드, 포타슘하이드록사이드, 팔미틱애씨드, 피이지-32, 코카미도프로필베타인, 글리세릴스테아레이트, 피이지-100스테아레이트, 솔비톨, 소듐벤조에이트, 부틸렌글라이콜, 향료, 소듐클로라이드, 아크릴레이트/C10-30알킬아크릴레이트크로스폴리머, 포타슘코코일글리시네이트, 피이지-14M, 폴리쿼터늄-7, 다이소듐이디티에이, 카프릴릭/카프릭트라이글리세라이드, 카프릴로일살리실릭애씨드, 해바라기씨오일불검화물, 몬모릴로나이트, 석류씨오일, 빙하수, 올리브오일, 코코넛야자오일, 실리카, 프로판다이올, 폴리글리세릴-10올리에이트, 하이드로제네이티드레시틴, 1,2-헥산다이올, 아르니카몬타나꽃추출물, 레이디스맨틀추출물, 얼룩파인애플추출물, 키위추출물, 프룩탄, 리놀레익애씨드, 리놀레닉애씨드, 비에이치티, 티아꽃추출물, 잇꽃씨오일, 동백나무꽃추출물, 수크로오스팔미테이트, 멕시칸치아씨오일, 알로에베라잎추출물, 참마뿌리추출물, 야생딸기잎추출물, 하이드록시데실유비퀴논, 다시마추출물, 당느릅나무뿌리추출물, 제비꽃꽃추출물, 청각추출물, 다마스크장미꽃오일, 개청각추출물, 납작파래추출물, 참갈파래추출물, 바다포도추출물, 글리세릴카프릴레이트, 클로렐라 불가리스추출물, 토코페롤, 하이드롤라이즈드산호, 하이드롤라이즈드하이알루로닉애씨드  [2. 플럼핑 에센스 — 국문 전성분 미확인, 영문 표기] Water, Dipropylene Glycol, Pentylene Glycol, Panthenol, Chondrus Crispus Extract, Saccharum Officinarum (Sugarcane) Extract, Polyglyceryl-10 Laurate, Hydroxyethylcellulose, Propanediol, Glycerin, Carbomer, Tromethamine, 1,2-Hexanediol, Hydrolyzed Hyaluronic Acid, Caprylyl Glycol, Ethylhexylglycerin, Butylene Glycol, Adenosine, Allantoin, Disodium EDTA, Fragrance, Bifida Ferment Lysate, Acetyl Glucosamine, Sodium Hyaluronate, Beta-Glucan, Hydroxyacetophenone, Xylitylglucoside, Sodium Hyaluronate Crosspolymer, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Caffeine, Disodium Adenosine Triphosphate, Escin, Menthyl Lactate, Anhydroxylitol, Polyglyceryl-10 Stearate, Hydrogenated Lecithin, Tocopherol, Xylitol, Sodium Stearoyl Glutamate, Glyceryl Linoleate, Sucrose Palmitate, Sucrose Stearate, Helianthus Annuus (Sunflower) Seed Oil, Cholesterol, Chitosan, Ceramide NP  [3. 트리트먼트 에멀전 — 국문 전성분 미확인, 영문 표기] Water, Glycerin, Methylpropanediol, Pentylene Glycol, 1,2-Hexanediol, Panthenol, Caprylic/Capric Triglyceride, Cetearyl Alcohol, Cetyl Ethylhexanoate, Acetylated Hydrogenated Vegetable Glyceride, Glyceryl Stearate SE, Ammonium Acryloyldimethyltaurate/VP Copolymer, Caprylyl Glycol, Ethylhexylglycerin, Fragrance (Parfum), Hydrolyzed Hyaluronic Acid, Adenosine, Gellan Gum, Butylene Glycol, Beta-Glucan, Cynanchum Atratum Extract, Yeast Extract, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Althaea Rosea Flower Extract, Betaine, Tocopherol, Glyceryl Linoleate, Sucrose Palmitate, Caffeine, Escin, Menthyl Lactate, Dipropylene Glycol, Helianthus Annuus (Sunflower) Seed Oil, Sodium Hyaluronate, Hydrogenated Lecithin, Cholesterol, Sodium Hyaluronate Crosspolymer, Polyglyceryl-10 Laurate, Chitosan, Ceramide NP  [4. 오버데이 + 나이트 트리트먼트 젤] 정제수, 부틸렌글라이콜, 에톡시다이글라이콜, 네오펜틸글라이콜다이에틸헥사노에이트, 펜타에리스리틸테트라에틸헥사노에이트, 1,2-헥산다이올, 판테놀, 에리스리톨, 암모늄아크릴로일다이메틸타우레이트/브이피코폴리머, 카보머, 아이리쉬모스추출물, 트로메타민, 카프릴릴글라이콜, 하이드록시에틸아크릴레이트/소듐아크릴로일다이메틸타우레이트코폴리머, 사탕수수추출물, 아이소헥사데칸, 에틸헥실글리세린, 잔탄검, 향료, 하이드롤라이즈드하이알루로닉애씨드, 아데노신, 솔베트-30테트라올리에이트, 소듐파이테이트, 효모발효여과물, 다발방패버섯추출물, 백미꽃추출물, 하이드록시프로필트라이모늄하이알루로네이트, 소듐아세틸레이티드하이알루로네이트, 접시꽃추출물, 카페인, 엑토인, 에스신, 멘틸락테이트, 토코페롤, 글리세린, 글리세릴리놀리에이트, 수크로오스팔미테이트, 다이프로필렌글라이콜, 펜틸렌글라이콜, 해바라기씨오일, 소듐하이알루로네이트, 하이드로제네이티드레시틴, 콜레스테롤, 소듐하이알루로네이트크로스폴리머, 폴리글리세릴-10라우레이트, 키토산, 세라마이드엔피  [5. 캡슐 인퓨즈드 아이크림 포 페이스] 정제수, 글리세린, 부틸렌글라이콜, 카프릴릭/카프릭트라이글리세라이드, 펜틸렌글라이콜, 메틸프로판다이올, 판테놀, 1,2-헥산다이올, 아크릴레이트/C10-30알킬아크릴레이트크로스폴리머, 암모늄아크릴로일다이메틸타우레이트/브이피코폴리머, 세테아릴올리베이트, 하이드로제네이티드폴리데센, 옥틸도데칸올, 솔비탄올리베이트, 트로메타민, 하이드로제네이티드레시틴, 하이드롤라이즈드콜라겐, 에스신, 하이드로제네이티드쌀겨오일, 하이드롤라이즈드하이알루로닉애씨드, 에틸헥실글리세린, 향료, 실리카, 아라비아고무나무검, 아데노신, 소듐파이테이트, 폴리글리세릴-10스테아레이트, 베타-글루칸, 백미꽃추출물, 하이드록시프로필트라이모늄하이알루로네이트, 소듐아세틸레이티드하이알루로네이트, 카페인, 멘틸락테이트, 접시꽃추출물, 토코페롤, 글리세릴리놀리에이트, 수크로오스팔미테이트, 해바라기씨오일, 다이프로필렌글라이콜, 소듐하이알루로네이트, 개구리밥추출물, 소듐하이알루로네이트크로스폴리머, 콜레스테롤, 폴리글리세릴-10라우레이트, 키토산, 세라마이드엔피",
+  "inci": "[1. Prep + Reset Cleansing Foam] Water, Glycerin, Myristic Acid, Stearic Acid, Lauric Acid, Potassium Hydroxide, Palmitic Acid, PEG-32, Cocamidopropyl Betaine, Glyceryl Stearate, PEG-100 Stearate, Sorbitol, Sodium Benzoate, Butylene Glycol, Fragrance, Sodium Chloride, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Potassium Cocoyl Glycinate, PEG-14M, Polyquaternium-7, Disodium EDTA, Caprylic/Capric Triglyceride, Capryloyl Salicylic Acid, Helianthus Annuus (Sunflower) Seed Oil Unsaponifiables, Montmorillonite, Punica Granatum Seed Oil, Glacier Water, Olea Europaea (Olive) Fruit Oil, Cocos Nucifera (Coconut) Oil, Silica, Propanediol, Polyglyceryl-10 Oleate, Hydrogenated Lecithin, 1,2-Hexanediol, Arnica Montana Flower Extract, Alchemilla Vulgaris Extract, Ananas Sativus (Pineapple) Fruit Extract, Actinidia Chinensis (Kiwi) Fruit Extract, Fructan, Linoleic Acid, Linolenic Acid, BHT, Gardenia Taitensis Flower Extract, Carthamus Tinctorius (Safflower) Seed Oil, Camellia Japonica Flower Extract, Sucrose Palmitate, Salvia Hispanica Seed Oil, Aloe Barbadensis Leaf Extract, Dioscorea Japonica Root Extract, Fragaria Vesca (Strawberry) Leaf Extract, Hydroxydecyl Ubiquinone, Laminaria Japonica Extract, Ulmus Davidiana Root Extract, Viola Mandshurica Flower Extract, Codium Tomentosum Extract, Rosa Damascena Flower Oil, Codium Fragile Extract, Enteromorpha Compressa Extract, Ulva Pertusa Extract, Caulerpa Lentillifera Extract, Glyceryl Caprylate, Chlorella Vulgaris Extract, Tocopherol, Hydrolyzed Coral, Hydrolyzed Hyaluronic Acid  [2. Plumping Essence] Water, Dipropylene Glycol, Pentylene Glycol, Panthenol, Chondrus Crispus Extract, Saccharum Officinarum (Sugarcane) Extract, Polyglyceryl-10 Laurate, Hydroxyethylcellulose, Propanediol, Glycerin, Carbomer, Tromethamine, 1,2-Hexanediol, Hydrolyzed Hyaluronic Acid, Caprylyl Glycol, Ethylhexylglycerin, Butylene Glycol, Adenosine, Allantoin, Disodium EDTA, Fragrance, Bifida Ferment Lysate, Acetyl Glucosamine, Sodium Hyaluronate, Beta-Glucan, Hydroxyacetophenone, Xylitylglucoside, Sodium Hyaluronate Crosspolymer, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Caffeine, Disodium Adenosine Triphosphate, Escin, Menthyl Lactate, Anhydroxylitol, Polyglyceryl-10 Stearate, Hydrogenated Lecithin, Tocopherol, Xylitol, Sodium Stearoyl Glutamate, Glyceryl Linoleate, Sucrose Palmitate, Sucrose Stearate, Helianthus Annuus (Sunflower) Seed Oil, Cholesterol, Chitosan, Ceramide NP  [3. Treatment Emulsion] Water, Glycerin, Methylpropanediol, Pentylene Glycol, 1,2-Hexanediol, Panthenol, Caprylic/Capric Triglyceride, Cetearyl Alcohol, Cetyl Ethylhexanoate, Acetylated Hydrogenated Vegetable Glyceride, Glyceryl Stearate SE, Ammonium Acryloyldimethyltaurate/VP Copolymer, Caprylyl Glycol, Ethylhexylglycerin, Fragrance (Parfum), Hydrolyzed Hyaluronic Acid, Adenosine, Gellan Gum, Butylene Glycol, Beta-Glucan, Cynanchum Atratum Extract, Yeast Extract, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Althaea Rosea Flower Extract, Betaine, Tocopherol, Glyceryl Linoleate, Sucrose Palmitate, Caffeine, Escin, Menthyl Lactate, Dipropylene Glycol, Helianthus Annuus (Sunflower) Seed Oil, Sodium Hyaluronate, Hydrogenated Lecithin, Cholesterol, Sodium Hyaluronate Crosspolymer, Polyglyceryl-10 Laurate, Chitosan, Ceramide NP  [4. Overday + Night Treatment Gel] Water, Butylene Glycol, Ethoxydiglycol, Neopentyl Glycol Diethylhexanoate, Pentaerythrityl Tetraethylhexanoate, 1,2-Hexanediol, Panthenol, Erythritol, Ammonium Acryloyldimethyltaurate/VP Copolymer, Carbomer, Chondrus Crispus Extract, Tromethamine, Caprylyl Glycol, Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer, Saccharum Officinarum (Sugarcane) Extract, Isohexadecane, Ethylhexylglycerin, Xanthan Gum, Fragrance, Hydrolyzed Hyaluronic Acid, Adenosine, Sorbeth-30 Tetraoleate, Sodium Phytate, Saccharomyces Ferment Filtrate, Albatrellus Confluens Extract, Cynanchum Atratum Extract, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Althaea Rosea Flower Extract, Caffeine, Ectoin, Escin, Menthyl Lactate, Tocopherol, Glycerin, Glyceryl Linoleate, Sucrose Palmitate, Dipropylene Glycol, Pentylene Glycol, Helianthus Annuus (Sunflower) Seed Oil, Sodium Hyaluronate, Hydrogenated Lecithin, Cholesterol, Sodium Hyaluronate Crosspolymer, Polyglyceryl-10 Laurate, Chitosan, Ceramide NP  [5. Capsule-Infused Eye Cream for Face] Water, Glycerin, Butylene Glycol, Caprylic/Capric Triglyceride, Pentylene Glycol, Methylpropanediol, Panthenol, 1,2-Hexanediol, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Ammonium Acryloyldimethyltaurate/VP Copolymer, Cetearyl Olivate, Hydrogenated Polydecene, Octyldodecanol, Sorbitan Olivate, Tromethamine, Hydrogenated Lecithin, Hydrolyzed Collagen, Escin, Hydrogenated Rice Bran Oil, Hydrolyzed Hyaluronic Acid, Ethylhexylglycerin, Fragrance, Silica, Acacia Senegal Gum, Adenosine, Sodium Phytate, Polyglyceryl-10 Stearate, Beta-Glucan, Cynanchum Atratum Extract, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Caffeine, Menthyl Lactate, Althaea Rosea Flower Extract, Tocopherol, Glyceryl Linoleate, Sucrose Palmitate, Helianthus Annuus (Sunflower) Seed Oil, Dipropylene Glycol, Sodium Hyaluronate, Spirodela Polyrhiza Extract, Sodium Hyaluronate Crosspolymer, Cholesterol, Polyglyceryl-10 Laurate, Chitosan, Ceramide NP",
+  "ingredients_l": {
+   "zh": "[1. Prep + Reset Cleansing Foam] 水、甘油、肉豆蔻酸、硬脂酸、月桂酸、氢氧化钾、棕榈酸、PEG-32、椰油酰胺丙基甜菜碱、甘油硬脂酸酯、PEG-100 硬脂酸酯、山梨（糖）醇、苯甲酸钠、丁二醇、香精、氯化钠、丙烯酸（酯）类/C10-30 烷醇丙烯酸酯交联聚合物、椰油酰甘氨酸钾、PEG-14M、聚季铵盐-7、EDTA 二钠、辛酸/癸酸甘油三酯、辛酰水杨酸、向日葵籽油不皂化物、蒙脱土、石榴（PUNICA GRANATUM）籽油、冰川水、油橄榄（OLEA EUROPAEA）果油、椰子（COCOS NUCIFERA）油、硅石、1,3-丙二醇、聚甘油-10 油酸酯、氢化卵磷脂、1,2-己二醇、山金车（ARNICA MONTANA）花提取物、斗篷草提取物、凤梨果提取物、中华猕猴桃果提取物、果聚糖、亚油酸、亚麻酸、BHT、塔希提栀子花提取物、红花（CARTHAMUS TINCTORIUS）籽油、山茶（CAMELLIA JAPONICA）花提取物、蔗糖棕榈酸酯、芡欧鼠尾草（SALVIA HISPANICA）籽油、库拉索芦荟（ALOE BARBADENSIS）叶提取物、日本薯蓣根提取物、野草莓叶提取物、羟癸基泛醌、海带（LAMINARIA JAPONICA）提取物、春榆根提取物、紫花地丁花提取物、绒毛松藻提取物、大马士革玫瑰花油、刺松藻提取物、扁浒苔提取物、孔石莼提取物、长茎葡萄蕨藻提取物、甘油辛酸酯、小球藻（CHLORELLA VULGARIS）提取物、生育酚、水解珊瑚、水解透明质酸  [2. Plumping Essence — 中文全成分未确认，以英文表示] Water, Dipropylene Glycol, Pentylene Glycol, Panthenol, Chondrus Crispus Extract, Saccharum Officinarum (Sugarcane) Extract, Polyglyceryl-10 Laurate, Hydroxyethylcellulose, Propanediol, Glycerin, Carbomer, Tromethamine, 1,2-Hexanediol, Hydrolyzed Hyaluronic Acid, Caprylyl Glycol, Ethylhexylglycerin, Butylene Glycol, Adenosine, Allantoin, Disodium EDTA, Fragrance, Bifida Ferment Lysate, Acetyl Glucosamine, Sodium Hyaluronate, Beta-Glucan, Hydroxyacetophenone, Xylitylglucoside, Sodium Hyaluronate Crosspolymer, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Caffeine, Disodium Adenosine Triphosphate, Escin, Menthyl Lactate, Anhydroxylitol, Polyglyceryl-10 Stearate, Hydrogenated Lecithin, Tocopherol, Xylitol, Sodium Stearoyl Glutamate, Glyceryl Linoleate, Sucrose Palmitate, Sucrose Stearate, Helianthus Annuus (Sunflower) Seed Oil, Cholesterol, Chitosan, Ceramide NP  [3. Treatment Emulsion — 中文全成分未确认，以英文表示] Water, Glycerin, Methylpropanediol, Pentylene Glycol, 1,2-Hexanediol, Panthenol, Caprylic/Capric Triglyceride, Cetearyl Alcohol, Cetyl Ethylhexanoate, Acetylated Hydrogenated Vegetable Glyceride, Glyceryl Stearate SE, Ammonium Acryloyldimethyltaurate/VP Copolymer, Caprylyl Glycol, Ethylhexylglycerin, Fragrance (Parfum), Hydrolyzed Hyaluronic Acid, Adenosine, Gellan Gum, Butylene Glycol, Beta-Glucan, Cynanchum Atratum Extract, Yeast Extract, Hydroxypropyltrimonium Hyaluronate, Sodium Acetylated Hyaluronate, Althaea Rosea Flower Extract, Betaine, Tocopherol, Glyceryl Linoleate, Sucrose Palmitate, Caffeine, Escin, Menthyl Lactate, Dipropylene Glycol, Helianthus Annuus (Sunflower) Seed Oil, Sodium Hyaluronate, Hydrogenated Lecithin, Cholesterol, Sodium Hyaluronate Crosspolymer, Polyglyceryl-10 Laurate, Chitosan, Ceramide NP  [4. Overday + Night Treatment Gel] 水、丁二醇、乙氧基二甘醇、新戊二醇二乙基己酸酯、季戊四醇四（乙基己酸）酯、1,2-己二醇、泛醇、赤藓醇、丙烯酰二甲基牛磺酸铵/VP 共聚物、卡波姆、皱波角叉菜提取物、氨丁三醇、辛甘醇、丙烯酸羟乙酯/丙烯酰二甲基牛磺酸钠共聚物、甘蔗提取物、异十六烷、乙基己基甘油、黄原胶、香精、水解透明质酸、腺苷、山梨醇聚醚-30 四油酸酯、植酸钠、酵母菌发酵产物滤液、地花菌提取物、白薇提取物、羟丙基三甲基铵透明质酸、乙酰化透明质酸钠、蜀葵花提取物、咖啡因、依克多因、七叶树皂苷、乳酸薄荷酯、生育酚、甘油、甘油亚油酸酯、蔗糖棕榈酸酯、双丙甘醇、戊二醇、向日葵（HELIANTHUS ANNUUS）籽油、透明质酸钠、氢化卵磷脂、胆甾醇、透明质酸钠交联聚合物、聚甘油-10 月桂酸酯、壳聚糖、神经酰胺 NP  [5. Capsule-Infused Eye Cream for Face] 水、甘油、丁二醇、辛酸/癸酸甘油三酯、戊二醇、甲基丙二醇、泛醇、1,2-己二醇、丙烯酸（酯）类/C10-30 烷醇丙烯酸酯交联聚合物、丙烯酰二甲基牛磺酸铵/VP 共聚物、鲸蜡硬脂醇橄榄油酸酯、氢化聚癸烯、辛基十二醇、山梨坦橄榄油酸酯、氨丁三醇、氢化卵磷脂、水解胶原、七叶树皂苷、氢化米糠油、水解透明质酸、乙基己基甘油、香精、硅石、阿拉伯胶树（ACACIA SENEGAL）胶、腺苷、植酸钠、聚甘油-10 硬脂酸酯、β-葡聚糖、白薇提取物、羟丙基三甲基铵透明质酸、乙酰化透明质酸钠、咖啡因、乳酸薄荷酯、蜀葵花提取物、生育酚、甘油亚油酸酯、蔗糖棕榈酸酯、向日葵（HELIANTHUS ANNUUS）籽油、双丙甘醇、透明质酸钠、紫萍提取物、透明质酸钠交联聚合物、胆甾醇、聚甘油-10 月桂酸酯、壳聚糖、神经酰胺 NP"
+  }
+ }
+]
